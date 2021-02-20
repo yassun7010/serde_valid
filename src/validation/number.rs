@@ -10,8 +10,8 @@ pub fn validate_range<T>(value: T, minimum: Option<Limit<T>>, maximum: Option<Li
 where
     T: PartialOrd + PartialEq,
 {
-    if let Some(maximum) = maximum {
-        if match maximum {
+    if let Some(max) = maximum {
+        if match max {
             Limit::Inclusive(limit) => value > limit,
             Limit::Exclusive(limit) => value >= limit,
         } {
@@ -19,8 +19,8 @@ where
         };
     }
 
-    if let Some(minimum) = minimum {
-        if match minimum {
+    if let Some(min) = minimum {
+        if match min {
             Limit::Inclusive(limit) => value < limit,
             Limit::Exclusive(limit) => value <= limit,
         } {
