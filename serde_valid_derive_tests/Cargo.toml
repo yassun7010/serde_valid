@@ -1,5 +1,5 @@
 [package]
-name = "serde_valid"
+name = "serde_valid_derive_tests"
 version = "0.1.0"
 authors = ["安谷尚人 <yasutani_naoto@uniquevision.co.jp>"]
 edition = "2018"
@@ -7,8 +7,4 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-thiserror = "^1.0"
-serde_valid_derive = { version = "0.1.0", path = "../serde_valid_derive", optional = true }
-
-[features]
-derive = ["serde_valid_derive"]
+serde_valid = { version = "0.1.0", path = "../serde_valid", features = ["derive"] }
