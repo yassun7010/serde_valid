@@ -4,12 +4,21 @@ use crate::validate::abort_invalid_attribute_on_field;
 use syn::{spanned::Spanned};
 use quote::{quote, ToTokens};
 
-pub enum Number{
+pub enum LitNumber{
     Int(syn::LitInt),
     Float(syn::LitFloat)
 }
 
-impl ToTokens for Number {
+impl LitNumber {
+    fn span(&self) -> proc_macro2::Span {
+        match self {
+            Self::Int(lin) => lin.span(),
+            Self::Float(lin) => lin.span(),
+        }
+    }
+}
+
+impl ToTokens for LitNumber {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         match self {
             Self::Int(lin) => lin.to_tokens(tokens),
@@ -18,7 +27,7 @@ impl ToTokens for Number {
     }
 }
 
-fn get_number(field_ident: &syn::Ident, lit: &syn::Lit, name: &str, target: Option<Number>) -> Number {
+fn get_number(field_ident: &syn::Ident, lit: &syn::Lit, name: &str, target: Option<LitNumber>) -> LitNumber {
     if target.is_some() {
         abort_invalid_attribute_on_field(
             field_ident,
@@ -27,8 +36,8 @@ fn get_number(field_ident: &syn::Ident, lit: &syn::Lit, name: &str, target: Opti
     }
 
     match lit {
-        syn::Lit::Int(l) => Number::Int(l.to_owned()),
-        syn::Lit::Float(l) => Number::Float(l.to_owned()), 
+        syn::Lit::Int(l) => LitNumber::Int(l.to_owned()),
+        syn::Lit::Float(l) => LitNumber::Float(l.to_owned()), 
         _ => abort_invalid_attribute_on_field(
             field_ident,
             lit.span(),
@@ -67,7 +76,9 @@ pub fn extract_range_validator(
                             exclusive_maximum = Some(get_number(field_ident, lit, "exclusive_maximum", exclusive_maximum));
                         },
                         v => abort_invalid_attribute_on_field(field_ident, path.span(), &format!(
-                            "unknown argument `{}` for validator `range` (it only has `minimum` or `exclusive_minimum`, `maximum` or `exclusive_maximum`)",
+                            "unknown argument `{}` for validator `range` \
+                            (it only has `minimum` or `exclusive_minimum`, \
+                            `maximum` or `exclusive_maximum`)",
                             v
                         ))
                     }
@@ -85,9 +96,9 @@ pub fn extract_range_validator(
         
     }
     let minimum_tokens= match (minimum, exclusive_minimum) {
-        (Some(_), Some(_)) => abort_invalid_attribute_on_field(
+        (Some(_), Some(lit)) => abort_invalid_attribute_on_field(
             field_ident,
-            field_ident.span(), 
+            lit.span(), 
             "both `minimum` and `exclusive_minimum` have been set in `range` validator: conflict"
         ),
         (Some(minimum), None) => quote!(Some(::serde_valid::Limit::Inclusive(#minimum))),
@@ -95,9 +106,9 @@ pub fn extract_range_validator(
         (None, None) => quote!(None)
     };
     let maximum_tokens = match (maximum, exclusive_maximum) {
-        (Some(_), Some(_)) => abort_invalid_attribute_on_field(
+        (Some(_), Some(lit)) => abort_invalid_attribute_on_field(
             field_ident,
-            field_ident.span(), 
+            lit.span(), 
             "both `maximum` and `exclusive_maximum` have been set in `range` validator: conflict"
         ),
         (Some(maximum), None) => quote!(Some(::serde_valid::Limit::Inclusive(#maximum))),
