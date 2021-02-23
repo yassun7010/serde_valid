@@ -1,68 +1,8 @@
-
+use crate::lit::{LitNumber, Number};
 use proc_macro2::TokenStream;
 use crate::validate::abort_invalid_attribute_on_field;
 use syn::spanned::Spanned;
-use quote::{quote, ToTokens};
-
-pub enum LitNumber{
-    Int(syn::LitInt),
-    Float(syn::LitFloat)
-}
-
-pub struct Number {
-    lit: LitNumber,
-    path_ident: syn::Ident
-}
-
-impl Number {
-    pub fn path_ident(&self) -> &syn::Ident {
-        &self.path_ident
-    }
-
-    pub fn path_name(&self) -> String {
-        self.path_ident.to_string()
-    }
-}
-
-impl ToTokens for Number {
-    fn to_tokens(&self, tokens: &mut TokenStream) {
-        match &self.lit {
-            LitNumber::Int(lin) => lin.to_tokens(tokens),
-            LitNumber::Float(lin) => lin.to_tokens(tokens)
-        }
-    }
-}
-
-fn get_limit_tokens(field_ident: &syn::Ident, inclusive_limit: Option<Number>, exclusive_limit: Option<Number>) -> proc_macro2::TokenStream {
-    match (inclusive_limit, exclusive_limit) {
-        (Some(inclusive), Some(exclusive)) => abort_invalid_attribute_on_field(
-            field_ident,
-            inclusive.path_ident().span().join(exclusive.path_ident().span()).unwrap(),
-            &format!("both `{}` and `{}` have been set in `range` validator: conflict", inclusive.path_name(), exclusive.path_name())
-        ),
-        (Some(inclusive_limit), None) => quote!(Some(::serde_valid::Limit::Inclusive(#inclusive_limit))),
-        (None, Some(exclusive_limit)) => quote!(Some(::serde_valid::Limit::Exclusive(#exclusive_limit))),
-        (None, None) => quote!(None)
-    }
-}
-
-fn get_number(field_ident: &syn::Ident, lit: &syn::Lit, path_ident: syn::Ident, target: Option<Number>) -> Number {
-    if target.is_some() {
-        abort_invalid_attribute_on_field(
-            field_ident,
-                lit.span(),
-                &format!("duplicated `{}` argument of `range` validator: only unique argument is allowed", path_ident.to_string()))
-    }
-
-    match lit {
-        syn::Lit::Int(l) => Number{lit: LitNumber::Int(l.to_owned()), path_ident},
-        syn::Lit::Float(l) => Number{lit: LitNumber::Float(l.to_owned()), path_ident}, 
-        _ => abort_invalid_attribute_on_field(
-            field_ident,
-            lit.span(),
-             &format!("invalid argument type for `{}` of `range` validator: only number literals are allowed", path_ident.to_string())),
-    }
-}
+use quote::quote;
 
 pub fn extract_range_validator(
     field_ident: &syn::Ident,
@@ -139,4 +79,35 @@ pub fn extract_range_validator(
             errors.push(::serde_valid::Error::RangeError);
         }
     )
+}
+
+fn get_number(field_ident: &syn::Ident, lit: &syn::Lit, path_ident: syn::Ident, target: Option<Number>) -> Number {
+    if target.is_some() {
+        abort_invalid_attribute_on_field(
+            field_ident,
+                lit.span(),
+                &format!("duplicated `{}` argument of `range` validator: only unique argument is allowed", path_ident.to_string()))
+    }
+
+    match lit {
+        syn::Lit::Int(l) => Number::new(LitNumber::Int(l.to_owned()), path_ident),
+        syn::Lit::Float(l) => Number::new(LitNumber::Float(l.to_owned()), path_ident), 
+        _ => abort_invalid_attribute_on_field(
+            field_ident,
+            lit.span(),
+             &format!("invalid argument type for `{}` of `range` validator: only number literals are allowed", path_ident.to_string())),
+    }
+}
+
+fn get_limit_tokens(field_ident: &syn::Ident, inclusive_limit: Option<Number>, exclusive_limit: Option<Number>) -> proc_macro2::TokenStream {
+    match (inclusive_limit, exclusive_limit) {
+        (Some(inclusive), Some(exclusive)) => abort_invalid_attribute_on_field(
+            field_ident,
+            inclusive.path_ident().span().join(exclusive.path_ident().span()).unwrap(),
+            &format!("both `{}` and `{}` have been set in `range` validator: conflict", inclusive.path_name(), exclusive.path_name())
+        ),
+        (Some(inclusive_limit), None) => quote!(Some(::serde_valid::Limit::Inclusive(#inclusive_limit))),
+        (None, Some(exclusive_limit)) => quote!(Some(::serde_valid::Limit::Exclusive(#exclusive_limit))),
+        (None, None) => quote!(None)
+    }
 }

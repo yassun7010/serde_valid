@@ -1,5 +1,6 @@
 use proc_macro::TokenStream;
 mod abort;
+mod lit;
 mod validate;
 use proc_macro_error::proc_macro_error;
 use syn::{parse_macro_input, DeriveInput};
