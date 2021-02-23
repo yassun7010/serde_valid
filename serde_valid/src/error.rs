@@ -1,4 +1,5 @@
-use thiserror::Error;
-
-#[derive(Debug, Error)]
-pub enum Error {}
+#[derive(Debug, thiserror::Error)]
+pub enum Error {
+    #[error("Range Error")]
+    RangeError,
+}
