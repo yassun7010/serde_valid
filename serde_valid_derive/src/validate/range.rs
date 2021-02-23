@@ -1,7 +1,7 @@
 
 use proc_macro2::TokenStream;
 use crate::validate::abort_invalid_attribute_on_field;
-use syn::{spanned::Spanned};
+use syn::spanned::Spanned;
 use quote::{quote, ToTokens};
 
 pub enum LitNumber{
@@ -9,39 +9,58 @@ pub enum LitNumber{
     Float(syn::LitFloat)
 }
 
-impl LitNumber {
-    fn span(&self) -> proc_macro2::Span {
-        match self {
-            Self::Int(lin) => lin.span(),
-            Self::Float(lin) => lin.span(),
-        }
+pub struct Number {
+    lit: LitNumber,
+    path_ident: syn::Ident
+}
+
+impl Number {
+    pub fn path_ident(&self) -> &syn::Ident {
+        &self.path_ident
+    }
+
+    pub fn path_name(&self) -> String {
+        self.path_ident.to_string()
     }
 }
 
-impl ToTokens for LitNumber {
+impl ToTokens for Number {
     fn to_tokens(&self, tokens: &mut TokenStream) {
-        match self {
-            Self::Int(lin) => lin.to_tokens(tokens),
-            Self::Float(lin) => lin.to_tokens(tokens)
+        match &self.lit {
+            LitNumber::Int(lin) => lin.to_tokens(tokens),
+            LitNumber::Float(lin) => lin.to_tokens(tokens)
         }
     }
 }
 
-fn get_number(field_ident: &syn::Ident, lit: &syn::Lit, name: &str, target: Option<LitNumber>) -> LitNumber {
+fn get_limit_tokens(field_ident: &syn::Ident, inclusive_limit: Option<Number>, exclusive_limit: Option<Number>) -> proc_macro2::TokenStream {
+    match (inclusive_limit, exclusive_limit) {
+        (Some(inclusive), Some(exclusive)) => abort_invalid_attribute_on_field(
+            field_ident,
+            inclusive.path_ident().span().join(exclusive.path_ident().span()).unwrap(),
+            &format!("both `{}` and `{}` have been set in `range` validator: conflict", inclusive.path_name(), exclusive.path_name())
+        ),
+        (Some(inclusive_limit), None) => quote!(Some(::serde_valid::Limit::Inclusive(#inclusive_limit))),
+        (None, Some(exclusive_limit)) => quote!(Some(::serde_valid::Limit::Exclusive(#exclusive_limit))),
+        (None, None) => quote!(None)
+    }
+}
+
+fn get_number(field_ident: &syn::Ident, lit: &syn::Lit, path_ident: syn::Ident, target: Option<Number>) -> Number {
     if target.is_some() {
         abort_invalid_attribute_on_field(
             field_ident,
                 lit.span(),
-                &format!("duplicated `{}` argument of `range` validator: only unique argument is allowed", name))
+                &format!("duplicated `{}` argument of `range` validator: only unique argument is allowed", path_ident.to_string()))
     }
 
     match lit {
-        syn::Lit::Int(l) => LitNumber::Int(l.to_owned()),
-        syn::Lit::Float(l) => LitNumber::Float(l.to_owned()), 
+        syn::Lit::Int(l) => Number{lit: LitNumber::Int(l.to_owned()), path_ident},
+        syn::Lit::Float(l) => Number{lit: LitNumber::Float(l.to_owned()), path_ident}, 
         _ => abort_invalid_attribute_on_field(
             field_ident,
             lit.span(),
-             &format!("invalid argument type for `{}` of `range` validator: only number literals are allowed", name)),
+             &format!("invalid argument type for `{}` of `range` validator: only number literals are allowed", path_ident.to_string())),
     }
 }
 
@@ -61,19 +80,19 @@ pub fn extract_range_validator(
                 ref path, lit, ..
             }) = item
             {
-                let ident = path.get_ident().unwrap();
-                match ident.to_string().as_ref() {
+                let path_ident = path.get_ident().unwrap().to_owned();
+                match path_ident.to_string().as_ref() {
                         "minimum" => {
-                            minimum = Some(get_number(field_ident, lit, "minimum", minimum));
+                            minimum = Some(get_number(field_ident, lit, path_ident, minimum));
                         },
                         "exclusive_minimum" => {
-                            exclusive_minimum = Some(get_number(field_ident, lit, "exclusive_minimum", exclusive_minimum));
+                            exclusive_minimum = Some(get_number(field_ident, lit, path_ident, exclusive_minimum));
                         },
                         "maximum" => {
-                            maximum = Some(get_number(field_ident, lit, "maximum", maximum));
+                            maximum = Some(get_number(field_ident, lit, path_ident, maximum));
                         },
                         "exclusive_maximum" => {
-                            exclusive_maximum = Some(get_number(field_ident, lit, "exclusive_maximum", exclusive_maximum));
+                            exclusive_maximum = Some(get_number(field_ident, lit, path_ident, exclusive_maximum));
                         },
                         v => abort_invalid_attribute_on_field(field_ident, path.span(), &format!(
                             "unknown argument `{}` for validator `range` \
@@ -95,26 +114,12 @@ pub fn extract_range_validator(
         }
         
     }
-    let minimum_tokens= match (minimum, exclusive_minimum) {
-        (Some(_), Some(lit)) => abort_invalid_attribute_on_field(
-            field_ident,
-            lit.span(), 
-            "both `minimum` and `exclusive_minimum` have been set in `range` validator: conflict"
-        ),
-        (Some(minimum), None) => quote!(Some(::serde_valid::Limit::Inclusive(#minimum))),
-        (None, Some(exclusive_minimum)) => quote!(Some(::serde_valid::Limit::Exclusive(#exclusive_minimum))),
-        (None, None) => quote!(None)
-    };
-    let maximum_tokens = match (maximum, exclusive_maximum) {
-        (Some(_), Some(lit)) => abort_invalid_attribute_on_field(
-            field_ident,
-            lit.span(), 
-            "both `maximum` and `exclusive_maximum` have been set in `range` validator: conflict"
-        ),
-        (Some(maximum), None) => quote!(Some(::serde_valid::Limit::Inclusive(#maximum))),
-        (None, Some(exclusive_maximum)) => quote!(Some(::serde_valid::Limit::Exclusive(#exclusive_maximum))),
-        (None, None) => quote!(None)
-    };
+    let minimum_tokens = get_limit_tokens(
+        field_ident,  minimum,  exclusive_minimum
+    );
+    let maximum_tokens = get_limit_tokens(
+        field_ident,  maximum,  exclusive_maximum
+    );
     
     if minimum_tokens.to_string() == "None" && maximum_tokens.to_string() == "None" {
         abort_invalid_attribute_on_field(
