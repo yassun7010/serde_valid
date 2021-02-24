@@ -1,2 +1,2 @@
 mod number;
-pub use number::{validate_range, Limit};
+pub use number::{validate_multiples, validate_range, Limit};

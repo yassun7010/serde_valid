@@ -1,5 +1,7 @@
+mod multiples;
 mod range;
 use super::abort::{abort_invalid_attribute_on_field, abort_unnamed_fields_struct};
+use multiples::extract_multiples_validator;
 use proc_macro2::TokenStream;
 use proc_macro_error::abort;
 use quote::{quote, ToTokens, TokenStreamExt};
@@ -79,11 +81,7 @@ fn extract_validator(
                 match meta_item {
                     syn::NestedMeta::Meta(item) => match item {
                         // Validators with several args
-                        syn::Meta::List(syn::MetaList {
-                            ref path,
-                            ref nested,
-                            ..
-                        }) => {
+                        syn::Meta::List(syn::MetaList { path, nested, .. }) => {
                             let ident = path.get_ident().unwrap();
                             match ident.to_string().as_ref() {
                                 "range" => {
@@ -95,6 +93,17 @@ fn extract_validator(
                                 }
                                 v => {
                                     abort!(path.span(), "unexpected list validator: {:?}", v)
+                                }
+                            }
+                        }
+                        syn::Meta::NameValue(syn::MetaNameValue { path, lit, .. }) => {
+                            let ident = path.get_ident().unwrap();
+                            match ident.to_string().as_ref() {
+                                "multiple_of" => {
+                                    return Some(extract_multiples_validator(field_ident, lit))
+                                }
+                                v => {
+                                    abort!(path.span(), "unexpected name value validator: {:?}", v)
                                 }
                             }
                         }
