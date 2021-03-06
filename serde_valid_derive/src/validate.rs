@@ -114,7 +114,7 @@ fn extract_validator(
             }
         }
         // TODO
-        Ok(syn::Meta::Path(_)) => abort!(attribute.span(), "Support nested arguments"),
+        Ok(syn::Meta::Path(_)) => abort!(attribute.span(), "Need to support nested arguments"),
         Ok(syn::Meta::NameValue(_)) => {
             abort!(attribute.span(), "Unexpected name=value argument")
         }
