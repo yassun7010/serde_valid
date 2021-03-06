@@ -1,4 +1,4 @@
-use crate::validate::collect_validators;
+use crate::validator::collect_validators;
 use proc_macro2::TokenStream;
 use proc_macro_error::abort;
 use quote::{quote, TokenStreamExt};

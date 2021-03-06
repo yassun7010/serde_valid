@@ -1,4 +1,4 @@
-use crate::validate::number::extract_range_validator;
+use crate::validator::number::extract_range_validator;
 use proc_macro_error::abort;
 use syn::spanned::Spanned;
 

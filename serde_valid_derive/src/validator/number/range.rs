@@ -1,6 +1,6 @@
 use crate::lit::{LitNumber, Number};
 use proc_macro2::TokenStream;
-use crate::validate::abort_invalid_attribute_on_field;
+use crate::validator::abort_invalid_attribute_on_field;
 use syn::spanned::Spanned;
 use quote::quote;
 

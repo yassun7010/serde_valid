@@ -1,5 +1,5 @@
 use crate::lit::LitNumber;
-use crate::validate::abort_invalid_attribute_on_field;
+use crate::validator::abort_invalid_attribute_on_field;
 use proc_macro2::TokenStream;
 use quote::quote;
 

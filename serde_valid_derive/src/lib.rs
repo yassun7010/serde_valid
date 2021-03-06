@@ -2,7 +2,7 @@ use proc_macro::TokenStream;
 mod abort;
 mod derive;
 mod lit;
-mod validate;
+mod validator;
 
 use derive::expand_derive;
 use proc_macro_error::proc_macro_error;
