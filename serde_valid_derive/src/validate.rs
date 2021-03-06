@@ -1,44 +1,83 @@
 mod meta;
 mod number;
-use crate::abort::abort_invalid_attribute_on_field;
-use meta::collect_validators;
-use proc_macro2::TokenStream;
+
+use crate::abort::{abort_invalid_attribute_on_field, abort_unnamed_fields_struct};
+use meta::meta_list::extract_validator_from_meta_list;
+use meta::name_value::extract_validator_from_name_value;
 use proc_macro_error::abort;
-use quote::{quote, ToTokens, TokenStreamExt};
+use quote::ToTokens;
+use syn::parse_quote;
 use syn::spanned::Spanned;
 
-pub fn expand_derive(input: &syn::DeriveInput) -> proc_macro2::TokenStream {
-    let ident = &input.ident;
-    let (impl_generics, type_generics, where_clause) = input.generics.split_for_impl();
-    let mut validators = TokenStream::new();
-    validators.append_all(collect_validators(get_struct_fields(input)));
-
-    let impl_tokens = quote!(
-        impl #impl_generics ::serde_valid::Validate for #ident #type_generics #where_clause {
-            fn validate(&self) -> ::std::result::Result<(), Vec<::serde_valid::Error>> {
-                let mut errors = vec![];
-
-                #validators
-
-                if errors.is_empty() {
-                    ::std::result::Result::Ok(())
-                } else {
-                    ::std::result::Result::Err(errors)
-                }
+/// Find the types (as string) for each field of the struct
+/// Needed for the `must_match` filter
+pub fn collect_validators(fields: &syn::Fields) -> Vec<proc_macro2::TokenStream> {
+    let mut validators = vec![];
+    for field in fields {
+        let field_ident = &field
+            .ident
+            .as_ref()
+            .unwrap_or_else(|| abort_unnamed_fields_struct(field.span()));
+        for attribute in &field.attrs {
+            if attribute.path != parse_quote!(validate) {
+                continue;
+            }
+            let validator = extract_validator(field_ident, attribute);
+            match validator {
+                Some(validator) => validators.push(validator),
+                None => abort_invalid_attribute_on_field(
+                    &field_ident,
+                    attribute.span(),
+                    "it needs at least one validator",
+                ),
             }
         }
-    );
-    impl_tokens
+    }
+
+    validators
 }
 
-fn get_struct_fields(input: &syn::DeriveInput) -> &syn::Fields {
-    match input.data {
-        syn::Data::Struct(syn::DataStruct { ref fields, .. }) => fields,
-        _ => abort!(
-            input.span(),
-            "#[derive(Validate)] can only be used with structs"
+fn extract_validator(
+    field_ident: &syn::Ident,
+    attribute: &syn::Attribute,
+) -> Option<proc_macro2::TokenStream> {
+    match attribute.parse_meta() {
+        Ok(syn::Meta::List(syn::MetaList { ref nested, .. })) => {
+            // only validation from there on
+            for meta_item in nested {
+                match meta_item {
+                    syn::NestedMeta::Meta(item) => match item {
+                        syn::Meta::List(meta_list) => {
+                            return extract_validator_from_meta_list(
+                                field_ident,
+                                attribute,
+                                meta_list,
+                            )
+                        }
+                        syn::Meta::NameValue(name_value) => {
+                            return extract_validator_from_name_value(
+                                field_ident,
+                                attribute,
+                                name_value,
+                            )
+                        }
+                        _ => abort!(item.span(), "unsupport non MetaList Meta type"),
+                    },
+                    _ => unreachable!("Found a non Meta while looking for validators"),
+                };
+            }
+        }
+        // TODO
+        Ok(syn::Meta::Path(_)) => abort!(attribute.span(), "Non-support nested arguments"),
+        Ok(syn::Meta::NameValue(_)) => {
+            abort!(attribute.span(), "Unexpected name=value argument")
+        }
+        Err(e) => unreachable!(
+            "Got something other than a list of attributes while checking field `{}`: {:?}",
+            field_ident, e
         ),
-    }
+    };
+    None
 }
 
 #[allow(dead_code)]
