@@ -6,14 +6,13 @@ use quote::quote;
 
 pub fn extract_range_validator(
     field_ident: &syn::Ident,
-    attr: &syn::Attribute,
+    attribute: &syn::Attribute,
     meta_items: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
 ) -> TokenStream {
     let mut minimum = None;
     let mut exclusive_minimum = None;
     let mut maximum = None;
     let mut exclusive_maximum = None;
-
     for meta_item in meta_items {
         if let syn::NestedMeta::Meta(ref item) = *meta_item {
             if let syn::Meta::NameValue(syn::MetaNameValue {
@@ -64,12 +63,11 @@ pub fn extract_range_validator(
     if minimum_tokens.to_string() == "None" && maximum_tokens.to_string() == "None" {
         abort_invalid_attribute_on_field(
             field_ident,
-            attr.span(),
+            attribute.span(),
             "Validator `range` requires at least 1 argument out of `minimum` or `exclusive_minimum`, `maximum` or `exclusive_maximum`",
         );
     }
     let validator_param = quote!(self.#field_ident);
-
     quote!(
         if !::serde_valid::validate_range(
             #validator_param,

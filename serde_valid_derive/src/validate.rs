@@ -1,12 +1,11 @@
-mod multiples;
-mod range;
-use super::abort::{abort_invalid_attribute_on_field, abort_unnamed_fields_struct};
-use multiples::extract_multiples_validator;
+mod meta;
+mod number;
+use crate::abort::abort_invalid_attribute_on_field;
+use meta::collect_validators;
 use proc_macro2::TokenStream;
 use proc_macro_error::abort;
 use quote::{quote, ToTokens, TokenStreamExt};
-use range::extract_range_validator;
-use syn::{parse_quote, spanned::Spanned};
+use syn::spanned::Spanned;
 
 pub fn expand_derive(input: &syn::DeriveInput) -> proc_macro2::TokenStream {
     let ident = &input.ident;
@@ -40,90 +39,6 @@ fn get_struct_fields(input: &syn::DeriveInput) -> &syn::Fields {
             "#[derive(Validate)] can only be used with structs"
         ),
     }
-}
-
-/// Find the types (as string) for each field of the struct
-/// Needed for the `must_match` filter
-fn collect_validators(fields: &syn::Fields) -> Vec<proc_macro2::TokenStream> {
-    let mut validators = vec![];
-    for field in fields {
-        let field_ident = &field
-            .ident
-            .as_ref()
-            .unwrap_or_else(|| abort_unnamed_fields_struct(field.span()));
-        for attribute in &field.attrs {
-            if attribute.path != parse_quote!(validate) {
-                continue;
-            }
-            let validator = extract_validator(field_ident, attribute);
-            match validator {
-                Some(validator) => validators.push(validator),
-                None => abort_invalid_attribute_on_field(
-                    &field_ident,
-                    attribute.span(),
-                    "it needs at least one validator",
-                ),
-            }
-        }
-    }
-
-    validators
-}
-
-fn extract_validator(
-    field_ident: &syn::Ident,
-    attribute: &syn::Attribute,
-) -> Option<proc_macro2::TokenStream> {
-    match attribute.parse_meta() {
-        Ok(syn::Meta::List(syn::MetaList { ref nested, .. })) => {
-            // only validation from there on
-            for meta_item in nested {
-                match meta_item {
-                    syn::NestedMeta::Meta(item) => match item {
-                        // Validators with several args
-                        syn::Meta::List(syn::MetaList { path, nested, .. }) => {
-                            let ident = path.get_ident().unwrap();
-                            match ident.to_string().as_ref() {
-                                "range" => {
-                                    return Some(extract_range_validator(
-                                        &field_ident,
-                                        &attribute,
-                                        &nested,
-                                    ))
-                                }
-                                v => {
-                                    abort!(path.span(), "unexpected list validator: {:?}", v)
-                                }
-                            }
-                        }
-                        syn::Meta::NameValue(syn::MetaNameValue { path, lit, .. }) => {
-                            let ident = path.get_ident().unwrap();
-                            match ident.to_string().as_ref() {
-                                "multiple_of" => {
-                                    return Some(extract_multiples_validator(field_ident, lit))
-                                }
-                                v => {
-                                    abort!(path.span(), "unexpected name value validator: {:?}", v)
-                                }
-                            }
-                        }
-                        _ => abort!(item.span(), "unsupport non MetaList Meta type"),
-                    },
-                    _ => unreachable!("Found a non Meta while looking for validators"),
-                };
-            }
-        }
-        // TODO
-        Ok(syn::Meta::Path(_)) => abort!(attribute.span(), "Need to support nested arguments"),
-        Ok(syn::Meta::NameValue(_)) => {
-            abort!(attribute.span(), "Unexpected name=value argument")
-        }
-        Err(e) => unreachable!(
-            "Got something other than a list of attributes while checking field `{}`: {:?}",
-            field_ident, e
-        ),
-    }
-    None
 }
 
 #[allow(dead_code)]
