@@ -1,14 +1,14 @@
 use crate::validator::collect_validators;
 use proc_macro2::TokenStream;
 use proc_macro_error::abort;
-use quote::{quote, TokenStreamExt};
+use quote::quote;
+use std::iter::FromIterator;
 use syn::spanned::Spanned;
 
-pub fn expand_derive(input: &syn::DeriveInput) -> proc_macro2::TokenStream {
+pub fn expand_derive(input: &syn::DeriveInput) -> TokenStream {
     let ident = &input.ident;
     let (impl_generics, type_generics, where_clause) = input.generics.split_for_impl();
-    let mut validators = TokenStream::new();
-    validators.append_all(collect_validators(get_struct_fields(input)));
+    let validators = TokenStream::from_iter(collect_validators(get_struct_fields(input)));
 
     let impl_tokens = quote!(
         impl #impl_generics ::serde_valid::Validate for #ident #type_generics #where_clause {
