@@ -1,15 +1,14 @@
 mod meta_list;
 mod name_value;
 
+use crate::helper::NamedField;
+use crate::validator::Validator;
 use meta_list::extract_validator_from_meta_list;
 use name_value::extract_validator_from_name_value;
 use proc_macro_error::abort;
 use syn::spanned::Spanned;
 
-pub fn extract_meta_validator(
-    field_ident: &syn::Ident,
-    attribute: &syn::Attribute,
-) -> Option<proc_macro2::TokenStream> {
+pub fn extract_meta_validator(field: &NamedField, attribute: &syn::Attribute) -> Option<Validator> {
     match attribute.parse_meta() {
         Ok(syn::Meta::List(syn::MetaList { ref nested, .. })) => {
             // only validation from there on
@@ -17,18 +16,10 @@ pub fn extract_meta_validator(
                 match meta_item {
                     syn::NestedMeta::Meta(item) => match item {
                         syn::Meta::List(meta_list) => {
-                            return extract_validator_from_meta_list(
-                                field_ident,
-                                attribute,
-                                meta_list,
-                            )
+                            return extract_validator_from_meta_list(field, attribute, meta_list)
                         }
                         syn::Meta::NameValue(name_value) => {
-                            return extract_validator_from_name_value(
-                                field_ident,
-                                attribute,
-                                name_value,
-                            )
+                            return extract_validator_from_name_value(field, attribute, name_value)
                         }
                         _ => abort!(item.span(), "unsupport non MetaList Meta type"),
                     },
@@ -43,7 +34,8 @@ pub fn extract_meta_validator(
         }
         Err(e) => unreachable!(
             "Got something other than a list of attributes while checking field `{}`: {:?}",
-            field_ident, e
+            field.ident(),
+            e
         ),
     };
     None

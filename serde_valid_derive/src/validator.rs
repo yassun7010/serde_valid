@@ -1,29 +1,88 @@
 mod meta;
 mod number;
 
-use crate::abort::{abort_invalid_attribute_on_field, abort_unnamed_fields_struct};
+use crate::abort::abort_invalid_attribute_on_field;
+use crate::helper::{NamedField, NamedFieldBuf};
 use meta::extract_meta_validator;
+use proc_macro2::TokenStream;
 use proc_macro_error::abort;
-use quote::ToTokens;
+use quote::{quote, ToTokens};
+use std::iter::FromIterator;
 use syn::parse_quote;
 use syn::spanned::Spanned;
 
+pub enum Validator {
+    Normal(TokenStream),
+    #[allow(dead_code)]
+    Option(TokenStream),
+}
+
+pub struct FieldValidators {
+    field: NamedFieldBuf,
+    validators: Vec<TokenStream>,
+    optional_validators: Vec<TokenStream>,
+}
+
+impl FieldValidators {
+    pub fn new(field: syn::Field) -> Self {
+        Self {
+            field: NamedFieldBuf::new(field),
+            validators: vec![],
+            optional_validators: vec![],
+        }
+    }
+
+    pub fn push(&mut self, validator: Validator) {
+        match validator {
+            Validator::Normal(token) => self.validators.push(token),
+            Validator::Option(token) => self.optional_validators.push(token),
+        }
+    }
+
+    pub fn to_token(&self) -> TokenStream {
+        let ident = self.field.ident();
+
+        let normal_tokens = if !self.validators.is_empty() {
+            let validators = TokenStream::from_iter(self.validators.clone());
+            quote! (#validators)
+        } else {
+            quote! {}
+        };
+
+        let optional_tokens = if !self.optional_validators.is_empty() {
+            let option_validators =
+                TokenStream::from_iter(self.optional_validators.clone().into_iter());
+            quote!(
+                if let Some(v) = #ident {
+                    #option_validators
+                }
+            )
+        } else {
+            quote!()
+        };
+
+        quote!(
+            #normal_tokens
+            #optional_tokens
+        )
+    }
+}
+
 /// Find the types (as string) for each field of the struct
 /// Needed for the `must_match` filter
-pub fn collect_validators(fields: &syn::Fields) -> Vec<proc_macro2::TokenStream> {
-    let mut validators = vec![];
+pub fn collect_validators(fields: &syn::Fields) -> Vec<FieldValidators> {
+    let mut struct_validators = vec![];
     for field in fields {
-        let field_ident = &field
-            .ident
-            .as_ref()
-            .unwrap_or_else(|| abort_unnamed_fields_struct(field.span()));
-        for attribute in &field.attrs {
+        let mut field_validators = FieldValidators::new(field.clone());
+        let named_field = NamedField::new(field);
+        let field_ident = named_field.ident();
+        for attribute in named_field.attributes() {
             if attribute.path != parse_quote!(validate) {
                 continue;
             }
-            let validator = extract_meta_validator(field_ident, attribute);
+            let validator = extract_meta_validator(&named_field, attribute);
             match validator {
-                Some(validator) => validators.push(validator),
+                Some(validator) => field_validators.push(validator),
                 None => abort_invalid_attribute_on_field(
                     &field_ident,
                     attribute.span(),
@@ -31,9 +90,10 @@ pub fn collect_validators(fields: &syn::Fields) -> Vec<proc_macro2::TokenStream>
                 ),
             }
         }
+        struct_validators.push(field_validators)
     }
 
-    validators
+    struct_validators
 }
 
 #[allow(dead_code)]

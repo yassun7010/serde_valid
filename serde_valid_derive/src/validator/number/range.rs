@@ -1,14 +1,16 @@
 use crate::lit::{LitNumber, Number};
-use proc_macro2::TokenStream;
+use crate::helper::NamedField;
 use crate::validator::abort_invalid_attribute_on_field;
 use syn::spanned::Spanned;
 use quote::quote;
+use crate::validator::Validator;
 
 pub fn extract_range_validator(
-    field_ident: &syn::Ident,
+    field: &NamedField,
     attribute: &syn::Attribute,
     meta_items: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
-) -> TokenStream {
+) -> Validator {
+    let field_ident = field.ident();
     let mut minimum = None;
     let mut exclusive_minimum = None;
     let mut maximum = None;
@@ -68,7 +70,7 @@ pub fn extract_range_validator(
         );
     }
     let validator_param = quote!(self.#field_ident);
-    quote!(
+    let token = quote!(
         if !::serde_valid::validate_range(
             #validator_param,
             #minimum_tokens,
@@ -76,7 +78,8 @@ pub fn extract_range_validator(
         ) {
             errors.push(::serde_valid::Error::RangeError);
         }
-    )
+    );
+    Validator::Normal(token)
 }
 
 fn get_number(field_ident: &syn::Ident, lit: &syn::Lit, path_ident: syn::Ident, target: Option<Number>) -> Number {

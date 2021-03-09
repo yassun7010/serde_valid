@@ -8,7 +8,11 @@ use syn::spanned::Spanned;
 pub fn expand_derive(input: &syn::DeriveInput) -> TokenStream {
     let ident = &input.ident;
     let (impl_generics, type_generics, where_clause) = input.generics.split_for_impl();
-    let validators = TokenStream::from_iter(collect_validators(get_struct_fields(input)));
+    let validators = TokenStream::from_iter(
+        collect_validators(get_struct_fields(input))
+            .iter()
+            .map(|validator| validator.to_token()),
+    );
 
     let impl_tokens = quote!(
         impl #impl_generics ::serde_valid::Validate for #ident #type_generics #where_clause {
