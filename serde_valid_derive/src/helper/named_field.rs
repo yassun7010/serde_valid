@@ -11,12 +11,24 @@ impl<'a> NamedField<'a> {
         Self(field)
     }
 
+    #[allow(dead_code)]
     pub fn ident(&self) -> &syn::Ident {
         self.0.ident.as_ref().unwrap()
     }
 
-    pub fn attributes(&self) -> &Vec<syn::Attribute> {
+    #[allow(dead_code)]
+    pub fn attrs(&self) -> &Vec<syn::Attribute> {
         self.0.attrs.as_ref()
+    }
+
+    #[allow(dead_code)]
+    pub fn vis(&self) -> &syn::Visibility {
+        &self.0.vis
+    }
+
+    #[allow(dead_code)]
+    pub fn ty(&self) -> &syn::Type {
+        &self.0.ty
     }
 }
 
@@ -30,12 +42,23 @@ impl<'a> NamedFieldBuf {
         Self(field)
     }
 
+    #[allow(dead_code)]
     pub fn ident(&self) -> &syn::Ident {
         self.0.ident.as_ref().unwrap()
     }
 
     #[allow(dead_code)]
-    pub fn attributes(&self) -> &Vec<syn::Attribute> {
+    pub fn attrs(&self) -> &Vec<syn::Attribute> {
         self.0.attrs.as_ref()
+    }
+
+    #[allow(dead_code)]
+    pub fn vis(&self) -> &syn::Visibility {
+        &self.0.vis
+    }
+
+    #[allow(dead_code)]
+    pub fn ty(&self) -> &syn::Type {
+        &self.0.ty
     }
 }

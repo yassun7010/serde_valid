@@ -20,7 +20,7 @@ pub enum Validator {
 pub struct FieldValidators {
     field: NamedFieldBuf,
     validators: Vec<TokenStream>,
-    optional_validators: Vec<TokenStream>,
+    optional_validators: Option<Box<FieldValidators>>,
 }
 
 impl FieldValidators {
@@ -28,20 +28,29 @@ impl FieldValidators {
         Self {
             field: NamedFieldBuf::new(field),
             validators: vec![],
-            optional_validators: vec![],
+            optional_validators: None,
         }
     }
 
     pub fn push(&mut self, validator: Validator) {
         match validator {
             Validator::Normal(token) => self.validators.push(token),
-            Validator::Option(token) => self.optional_validators.push(token),
+            Validator::Option(_) => match self.optional_validators.as_mut() {
+                Some(optional_validator) => optional_validator.push(validator),
+                None => {
+                    self.optional_validators = Some(Box::new(Self::new(syn::Field {
+                        attrs: vec![],
+                        vis: self.field.vis().to_owned(),
+                        ident: None,
+                        colon_token: None,
+                        ty: self.field.ty().to_owned(),
+                    })))
+                }
+            },
         }
     }
 
     pub fn to_token(&self) -> TokenStream {
-        let ident = self.field.ident();
-
         let normal_tokens = if !self.validators.is_empty() {
             let validators = TokenStream::from_iter(self.validators.clone());
             quote! (#validators)
@@ -49,11 +58,13 @@ impl FieldValidators {
             quote! {}
         };
 
-        let optional_tokens = if !self.optional_validators.is_empty() {
-            let option_validators =
-                TokenStream::from_iter(self.optional_validators.clone().into_iter());
+        let optional_tokens = if let Some(optional_validators) = &self.optional_validators {
+            let ident = self.field.ident();
+
+            let option_ident = optional_validators.field.ident();
+            let option_validators = optional_validators.to_token();
             quote!(
-                if let Some(v) = #ident {
+                if let Some(#option_ident) = #ident {
                     #option_validators
                 }
             )
@@ -76,7 +87,7 @@ pub fn collect_validators(fields: &syn::Fields) -> Vec<FieldValidators> {
         let mut field_validators = FieldValidators::new(field.clone());
         let named_field = NamedField::new(field);
         let field_ident = named_field.ident();
-        for attribute in named_field.attributes() {
+        for attribute in named_field.attrs() {
             if attribute.path != parse_quote!(validate) {
                 continue;
             }
