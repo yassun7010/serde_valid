@@ -1,23 +1,23 @@
-use syn::punctuated::Pair;
-use syn::token::Colon2;
+use proc_macro_error::abort;
+use syn::spanned::Spanned;
 use syn::{GenericArgument, Path, PathArguments, PathSegment};
 
-pub fn extract_type_from_option(ty: &syn::Type) -> Option<&syn::Type> {
-    // TODO store (with lazy static) the vec of string
-    // TODO maybe optimization, reverse the order of segments
-
+pub fn extract_type_from_option(ty: &syn::Type) -> Option<syn::Type> {
     extract_type_path(ty)
         .and_then(|path| extract_option_segment(path))
-        .and_then(|pair_path_segment| {
-            let type_params = &pair_path_segment.arguments;
+        .and_then(|path_segment| {
+            let type_params = &path_segment.arguments;
             // It should have only on angle-bracketed param ("<String>"):
             match *type_params {
                 PathArguments::AngleBracketed(ref params) => params.args.first(),
-                _ => None,
+                _ => abort!(
+                    ty.span(),
+                    "`Option` must be angle bracketed (=`Option<*>`)."
+                ),
             }
         })
         .and_then(|generic_arg| match *generic_arg {
-            GenericArgument::Type(ref ty) => Some(ty),
+            GenericArgument::Type(ref ty) => Some(ty.to_owned()),
             _ => None,
         })
 }
@@ -34,13 +34,19 @@ fn extract_option_segment(path: &Path) -> Option<&PathSegment> {
         .segments
         .iter()
         .into_iter()
-        .fold(String::new(), |mut acc, v| {
-            acc.push_str(&v.ident.to_string());
-            acc.push('|');
-            acc
-        });
-    vec!["Option|", "std|option|Option|", "core|option|Option|"]
-        .into_iter()
-        .find(|s| &idents_of_path == *s)
-        .and_then(|_| path.segments.last())
+        .map(|seg| seg.ident.to_string())
+        .collect::<Vec<String>>()
+        .join("::");
+    if [
+        "Option",
+        "option::Option",
+        "std::option::Option",
+        "core::option::Option",
+    ]
+    .contains(&idents_of_path.as_str())
+    {
+        path.segments.last()
+    } else {
+        None
+    }
 }

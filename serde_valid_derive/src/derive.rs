@@ -11,7 +11,7 @@ pub fn expand_derive(input: &syn::DeriveInput) -> TokenStream {
     let validators = TokenStream::from_iter(
         collect_validators(get_struct_fields(input))
             .iter()
-            .map(|validator| validator.to_token()),
+            .map(|validator| validator.generate_token()),
     );
 
     let impl_tokens = quote!(

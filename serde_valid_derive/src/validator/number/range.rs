@@ -1,6 +1,7 @@
 use crate::lit::{LitNumber, Number};
 use crate::helper::NamedField;
 use crate::validator::abort_invalid_attribute_on_field;
+use proc_macro2::TokenStream;
 use syn::spanned::Spanned;
 use quote::quote;
 use crate::validator::Validator;
@@ -10,7 +11,28 @@ pub fn extract_range_validator(
     attribute: &syn::Attribute,
     meta_items: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
 ) -> Validator {
-    let field_ident = field.ident();
+    if let Some(option_field) = field.option_field() {
+        Validator::Option(
+            Box::new(extract_range_validator(
+            &option_field,
+                attribute,
+                meta_items,
+            ))
+        )
+    } else{
+        Validator::Normal(inner_extract_range_validator(
+            field.ident(),
+            attribute,
+            meta_items,
+        ))
+    }
+}
+
+pub fn inner_extract_range_validator(
+    field_ident: &syn::Ident,
+    attribute: &syn::Attribute,
+    meta_items: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
+) -> TokenStream {
     let mut minimum = None;
     let mut exclusive_minimum = None;
     let mut maximum = None;
@@ -69,17 +91,16 @@ pub fn extract_range_validator(
             "Validator `range` requires at least 1 argument out of `minimum` or `exclusive_minimum`, `maximum` or `exclusive_maximum`",
         );
     }
-    let validator_param = quote!(self.#field_ident);
     let token = quote!(
         if !::serde_valid::validate_range(
-            #validator_param,
+            #field_ident,
             #minimum_tokens,
             #maximum_tokens
         ) {
             errors.push(::serde_valid::Error::RangeError);
         }
     );
-    Validator::Normal(token)
+    token
 }
 
 fn get_number(field_ident: &syn::Ident, lit: &syn::Lit, path_ident: syn::Ident, target: Option<Number>) -> Number {

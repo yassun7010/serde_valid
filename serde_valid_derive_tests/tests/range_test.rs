@@ -143,3 +143,15 @@ fn range_exclusive_maximum_is_err_test() {
     let s = TestStruct { val: 10 };
     assert!(s.validate().is_err());
 }
+
+#[test]
+fn range_option_type_is_ok_test() {
+    #[derive(Debug, Validate)]
+    struct TestStruct {
+        #[validate(range(minimum = 0, maximum = 10))]
+        val: Option<i32>,
+    }
+
+    let s = TestStruct { val: Some(5) };
+    assert!(s.validate().is_ok());
+}

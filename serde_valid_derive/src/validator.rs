@@ -2,11 +2,12 @@ mod meta;
 mod number;
 
 use crate::abort::abort_invalid_attribute_on_field;
-use crate::helper::{NamedField, NamedFieldBuf};
+use crate::helper::NamedField;
 use meta::extract_meta_validator;
 use proc_macro2::TokenStream;
 use proc_macro_error::abort;
 use quote::{quote, ToTokens};
+use ref_cast::RefCast;
 use std::iter::FromIterator;
 use syn::parse_quote;
 use syn::spanned::Spanned;
@@ -14,19 +15,23 @@ use syn::spanned::Spanned;
 pub enum Validator {
     Normal(TokenStream),
     #[allow(dead_code)]
-    Option(TokenStream),
+    Option(Box<Validator>),
 }
 
 pub struct FieldValidators {
-    field: NamedFieldBuf,
+    field: NamedField,
     validators: Vec<TokenStream>,
     optional_validators: Option<Box<FieldValidators>>,
 }
 
 impl FieldValidators {
     pub fn new(field: syn::Field) -> Self {
+        Self::inner_new(NamedField::new(field))
+    }
+
+    fn inner_new(field: NamedField) -> Self {
         Self {
-            field: NamedFieldBuf::new(field),
+            field,
             validators: vec![],
             optional_validators: None,
         }
@@ -35,22 +40,23 @@ impl FieldValidators {
     pub fn push(&mut self, validator: Validator) {
         match validator {
             Validator::Normal(token) => self.validators.push(token),
-            Validator::Option(_) => match self.optional_validators.as_mut() {
-                Some(optional_validator) => optional_validator.push(validator),
+            Validator::Option(ty) => match self.optional_validators.as_mut() {
+                Some(optional_validator) => optional_validator.push(*ty),
                 None => {
-                    self.optional_validators = Some(Box::new(Self::new(syn::Field {
-                        attrs: vec![],
-                        vis: self.field.vis().to_owned(),
-                        ident: None,
-                        colon_token: None,
-                        ty: self.field.ty().to_owned(),
-                    })))
+                    if let Some(field) = self.field.option_field() {
+                        let mut option_validators = Box::new(Self::inner_new(field));
+                        option_validators.push(*ty);
+                        self.optional_validators = Some(option_validators);
+                    }
                 }
             },
         }
     }
 
     pub fn to_token(&self) -> TokenStream {
+        let ident = self.field.ident();
+
+        // Nomal Tokens
         let normal_tokens = if !self.validators.is_empty() {
             let validators = TokenStream::from_iter(self.validators.clone());
             quote! (#validators)
@@ -58,9 +64,8 @@ impl FieldValidators {
             quote! {}
         };
 
+        // Optional Tokens
         let optional_tokens = if let Some(optional_validators) = &self.optional_validators {
-            let ident = self.field.ident();
-
             let option_ident = optional_validators.field.ident();
             let option_validators = optional_validators.to_token();
             quote!(
@@ -77,6 +82,15 @@ impl FieldValidators {
             #optional_tokens
         )
     }
+
+    pub fn generate_token(&self) -> TokenStream {
+        let field_ident = self.field.ident();
+        let validation = self.to_token();
+        quote!(
+            let #field_ident = self.#field_ident;
+            #validation
+        )
+    }
 }
 
 /// Find the types (as string) for each field of the struct
@@ -85,7 +99,7 @@ pub fn collect_validators(fields: &syn::Fields) -> Vec<FieldValidators> {
     let mut struct_validators = vec![];
     for field in fields {
         let mut field_validators = FieldValidators::new(field.clone());
-        let named_field = NamedField::new(field);
+        let named_field = NamedField::ref_cast(field);
         let field_ident = named_field.ident();
         for attribute in named_field.attrs() {
             if attribute.path != parse_quote!(validate) {

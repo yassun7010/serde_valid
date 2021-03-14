@@ -14,11 +14,9 @@ pub fn extract_multiples_validator(field: &NamedField, lit: &syn::Lit) -> Valida
             "invalid argument type for `multiple_of` validator: only number literals are allowed",
         ),
     };
-    let validator_param = quote!(self.#field_ident);
-
     let token = quote!(
         if !::serde_valid::validate_multiples(
-            #validator_param,
+            #field_ident,
             #multiple_of,
         ) {
             errors.push(::serde_valid::Error::MultipleOfError);
