@@ -1,7 +1,7 @@
 use serde_valid::Validate;
 
 #[test]
-fn integer_range_test() {
+fn range_integer_test() {
     #[derive(Debug, Validate)]
     struct TestStruct {
         #[validate(range(minimum = 0, maximum = 2000))]
@@ -13,7 +13,7 @@ fn integer_range_test() {
 }
 
 #[test]
-fn float_range_test() {
+fn range_float_test() {
     #[derive(Debug, Validate)]
     struct TestStruct {
         #[validate(range(minimum = 0.0, maximum = 2000.0))]
@@ -25,19 +25,7 @@ fn float_range_test() {
 }
 
 #[test]
-fn float_range_limit_int_test() {
-    #[derive(Debug, Validate)]
-    struct TestStruct {
-        #[validate(range(minimum = 0.0, maximum = 2000.0))]
-        val: f32,
-    }
-
-    let s = TestStruct { val: 1234.5678 };
-    assert!(s.validate().is_ok());
-}
-
-#[test]
-fn exclusive_range_test() {
+fn range_exclusive_test() {
     #[derive(Debug, Validate)]
     struct TestStruct {
         #[validate(range(exclusive_minimum = 0, exclusive_maximum = 10))]
@@ -145,7 +133,7 @@ fn range_exclusive_maximum_is_err_test() {
 }
 
 #[test]
-fn array_type_is_ok_test() {
+fn range_array_type_is_ok_test() {
     #[derive(Debug, Validate)]
     struct TestStruct {
         #[validate(range(minimum = 0, maximum = 20))]
@@ -157,7 +145,7 @@ fn array_type_is_ok_test() {
 }
 
 #[test]
-fn nested_array_type_is_ok_test() {
+fn range_nested_array_type_is_ok_test() {
     #[derive(Debug, Validate)]
     struct TestStruct {
         #[validate(range(minimum = 0, maximum = 20))]
@@ -171,7 +159,7 @@ fn nested_array_type_is_ok_test() {
 }
 
 #[test]
-fn option_type_is_ok_test() {
+fn range_option_type_is_ok_test() {
     #[derive(Debug, Validate)]
     struct TestStruct {
         #[validate(range(minimum = 0, maximum = 10))]
@@ -183,7 +171,7 @@ fn option_type_is_ok_test() {
 }
 
 #[test]
-fn nested_option_type_is_ok_test() {
+fn range_nested_option_type_is_ok_test() {
     #[derive(Debug, Validate)]
     struct TestStruct {
         #[validate(range(minimum = 0, maximum = 10))]
@@ -195,7 +183,7 @@ fn nested_option_type_is_ok_test() {
 }
 
 #[test]
-fn array_optional_type_is_ok_test() {
+fn range_array_optional_type_is_ok_test() {
     #[derive(Debug, Validate)]
     struct TestStruct {
         #[validate(range(minimum = 0, maximum = 10))]
