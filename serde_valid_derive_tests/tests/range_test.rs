@@ -155,3 +155,15 @@ fn range_option_type_is_ok_test() {
     let s = TestStruct { val: Some(5) };
     assert!(s.validate().is_ok());
 }
+
+#[test]
+fn range_nested_option_type_is_ok_test() {
+    #[derive(Debug, Validate)]
+    struct TestStruct {
+        #[validate(range(minimum = 0, maximum = 10))]
+        val: Option<Option<i32>>,
+    }
+
+    let s = TestStruct { val: Some(Some(5)) };
+    assert!(s.validate().is_ok());
+}
