@@ -8,7 +8,7 @@ edition = "2018"
 
 [dependencies]
 thiserror = "^1.0"
-serde_valid_derive = { version = "0.1.0", path = "../serde_valid_derive", optional = true }
+serde_valid_derive = { version = "0.1.0", path = "../derive", optional = true }
 num-traits = "^0.2"
 unicode-segmentation = "^1.7"
 

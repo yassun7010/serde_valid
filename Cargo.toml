@@ -1,2 +1,2 @@
 [workspace]
-members = ["serde_valid", "serde_valid_derive", "serde_valid_derive_tests"]
+members = ["serde_valid", "derive", "derive_tests"]
