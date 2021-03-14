@@ -111,3 +111,80 @@ fn pattern_is_err_test() {
     };
     assert!(s.validate().is_err());
 }
+
+#[test]
+fn pattern_array_type_is_ok_test() {
+    #[derive(Debug, Validate)]
+    struct TestStruct {
+        #[validate(pattern = r"^\d{4}-\d{2}-\d{2}$")]
+        val: Vec<String>,
+    }
+
+    let s = TestStruct {
+        val: vec![String::from("2020-09-10"), String::from("2020-10-10")],
+    };
+    assert!(s.validate().is_ok());
+}
+
+#[test]
+fn pattern_nested_array_type_is_ok_test() {
+    #[derive(Debug, Validate)]
+    struct TestStruct {
+        #[validate(pattern = r"^\d{4}-\d{2}-\d{2}$")]
+        val: Vec<Vec<String>>,
+    }
+
+    let s = TestStruct {
+        val: vec![
+            vec![String::from("2020-09-10"), String::from("2020-10-10")],
+            vec![String::from("2020-11-10"), String::from("2020-12-10")],
+        ],
+    };
+    assert!(s.validate().is_ok());
+}
+
+#[test]
+fn pattern_option_type_is_ok_test() {
+    #[derive(Debug, Validate)]
+    struct TestStruct {
+        #[validate(pattern = r"^\d{4}-\d{2}-\d{2}$")]
+        val: Option<String>,
+    }
+
+    let s = TestStruct {
+        val: Some(String::from("2020-09-10")),
+    };
+    assert!(s.validate().is_ok());
+}
+
+#[test]
+fn pattern_nested_option_type_is_ok_test() {
+    #[derive(Debug, Validate)]
+    struct TestStruct {
+        #[validate(pattern = r"^\d{4}-\d{2}-\d{2}$")]
+        val: Option<Option<String>>,
+    }
+
+    let s = TestStruct {
+        val: Some(Some(String::from("2020-09-10"))),
+    };
+    assert!(s.validate().is_ok());
+}
+
+#[test]
+fn pattern_array_optional_type_is_ok_test() {
+    #[derive(Debug, Validate)]
+    struct TestStruct {
+        #[validate(pattern = r"^\d{4}-\d{2}-\d{2}$")]
+        val: Vec<Option<String>>,
+    }
+
+    let s = TestStruct {
+        val: vec![
+            Some(String::from("2020-09-10")),
+            Some(String::from("2020-10-10")),
+            None,
+        ],
+    };
+    assert!(s.validate().is_ok());
+}
