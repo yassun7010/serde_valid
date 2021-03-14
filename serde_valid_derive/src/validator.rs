@@ -1,5 +1,6 @@
 mod meta;
 mod number;
+mod string;
 
 use crate::abort::abort_invalid_attribute_on_field;
 use crate::helper::NamedField;
