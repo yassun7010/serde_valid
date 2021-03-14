@@ -1,7 +1,9 @@
 use serde_valid::Validate;
+use std::borrow::Cow;
+use std::ffi::{OsStr, OsString};
 
 #[test]
-fn length_test() {
+fn length_string_type_test() {
     #[derive(Debug, Validate)]
     struct TestStruct {
         #[validate(length(min_length = 4, max_length = 4))]
@@ -10,6 +12,144 @@ fn length_test() {
 
     let s = TestStruct {
         val: String::from("test"),
+    };
+    assert!(s.validate().is_ok());
+}
+
+#[test]
+fn length_str_type_test() {
+    #[derive(Debug, Validate)]
+    struct TestStruct<'a> {
+        #[validate(length(min_length = 4, max_length = 4))]
+        val: &'a str,
+    }
+
+    let s = TestStruct { val: "test" };
+    assert!(s.validate().is_ok());
+}
+
+#[test]
+fn length_cow_str_type_test() {
+    #[derive(Debug, Validate)]
+    struct TestStruct<'a> {
+        #[validate(length(min_length = 4, max_length = 4))]
+        val: Cow<'a, str>,
+    }
+
+    let s = TestStruct {
+        val: Cow::from("test"),
+    };
+    assert!(s.validate().is_ok());
+}
+
+#[test]
+fn length_vec_u8_type_test() {
+    #[derive(Debug, Validate)]
+    struct TestStruct {
+        #[validate(length(min_length = 4, max_length = 4))]
+        val: Vec<u8>,
+    }
+
+    let s = TestStruct {
+        val: "test".as_bytes().to_vec(),
+    };
+    assert!(s.validate().is_ok());
+}
+
+#[test]
+fn length_vec_char_type_test() {
+    #[derive(Debug, Validate)]
+    struct TestStruct {
+        #[validate(length(min_length = 4, max_length = 4))]
+        val: Vec<char>,
+    }
+
+    let s = TestStruct {
+        val: vec!['t', 'e', 's', 't'],
+    };
+    assert!(s.validate().is_ok());
+}
+
+#[test]
+fn length_u8_array_type_test() {
+    #[derive(Debug, Validate)]
+    struct TestStruct {
+        #[validate(length(min_length = 4, max_length = 4))]
+        val: [u8; 4],
+    }
+
+    let s = TestStruct {
+        val: [0x74, 0x65, 0x73, 0x74],
+    };
+    assert!(s.validate().is_ok());
+}
+
+#[test]
+fn length_char_array_type_test() {
+    #[derive(Debug, Validate)]
+    struct TestStruct {
+        #[validate(length(min_length = 4, max_length = 4))]
+        val: [char; 4],
+    }
+
+    let s = TestStruct {
+        val: ['t', 'e', 's', 't'],
+    };
+    assert!(s.validate().is_ok());
+}
+
+#[test]
+fn length_os_str_type_test() {
+    #[derive(Debug, Validate)]
+    struct TestStruct<'a> {
+        #[validate(length(min_length = 4, max_length = 4))]
+        val: &'a OsStr,
+    }
+
+    let s = TestStruct {
+        val: OsStr::new("fo�o"),
+    };
+    assert!(s.validate().is_ok());
+}
+
+#[test]
+fn length_os_string_type_test() {
+    #[derive(Debug, Validate)]
+    struct TestStruct {
+        #[validate(length(min_length = 4, max_length = 4))]
+        val: OsString,
+    }
+
+    let s = TestStruct {
+        val: OsString::from("fo�o"),
+    };
+    assert!(s.validate().is_ok());
+}
+
+#[test]
+fn length_path_type_test() {
+    #[derive(Debug, Validate)]
+    struct TestStruct<'a> {
+        #[validate(length(min_length = 13, max_length = 13))]
+        val: &'a std::path::Path,
+    }
+
+    let s = TestStruct {
+        val: std::path::Path::new("./foo/bar.txt"),
+    };
+    assert!(s.validate().is_ok());
+}
+
+#[test]
+fn length_path_buf_type_test() {
+    #[derive(Debug, Validate)]
+    struct TestStruct {
+        #[validate(length(min_length = 13, max_length = 13))]
+        val: std::path::PathBuf,
+    }
+
+    let s = TestStruct {
+        val: std::path::PathBuf::from("./foo/bar.txt"),
     };
     assert!(s.validate().is_ok());
 }

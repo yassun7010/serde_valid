@@ -11,6 +11,12 @@ impl Length for str {
     }
 }
 
+impl Length for &str {
+    fn length(&self) -> usize {
+        self.graphemes(true).count()
+    }
+}
+
 impl Length for String {
     fn length(&self) -> usize {
         self.graphemes(true).count()
@@ -65,6 +71,12 @@ impl Length for std::ffi::OsStr {
     }
 }
 
+impl Length for &std::ffi::OsStr {
+    fn length(&self) -> usize {
+        self.to_string_lossy().length()
+    }
+}
+
 impl Length for std::ffi::OsString {
     fn length(&self) -> usize {
         self.as_os_str().length()
@@ -72,6 +84,12 @@ impl Length for std::ffi::OsString {
 }
 
 impl Length for std::path::Path {
+    fn length(&self) -> usize {
+        self.as_os_str().length()
+    }
+}
+
+impl Length for &std::path::Path {
     fn length(&self) -> usize {
         self.as_os_str().length()
     }

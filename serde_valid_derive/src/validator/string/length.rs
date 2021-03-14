@@ -11,6 +11,20 @@ pub fn extract_length_validator(
     meta_items: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
 ) -> Validator {
     if let Some(array_field) = field.array_field() {
+        match array_field.ty() {
+            syn::Type::Path(path) => {
+                if let Some(ident) = path.path.get_ident() {
+                    if ["u8", "char"].contains(&format!("{}", ident).as_str()) {
+                        return Validator::Normal(inner_extract_length_validator(
+                            field.ident(),
+                            attribute,
+                            meta_items,
+                        ));
+                    }
+                }
+            }
+            _ => (),
+        }
         Validator::Array(Box::new(extract_length_validator(
             &array_field,
             attribute,
