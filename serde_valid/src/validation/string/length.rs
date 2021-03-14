@@ -1,6 +1,5 @@
 use crate::traits::Length;
 
-#[allow(dead_code)]
 pub fn validate_length<T>(value: &T, min_length: Option<usize>, max_length: Option<usize>) -> bool
 where
     T: Length + ?Sized,
