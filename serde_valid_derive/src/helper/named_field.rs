@@ -1,3 +1,4 @@
+use super::extract_type_from_array;
 use super::extract_type_from_option;
 use crate::abort::abort_unnamed_fields_struct;
 use ref_cast::RefCast;
@@ -34,6 +35,24 @@ impl<'a> NamedField {
     #[allow(dead_code)]
     pub fn ty(&self) -> &syn::Type {
         &self.0.ty
+    }
+
+    #[allow(dead_code)]
+    pub fn array_field(&self) -> Option<NamedField> {
+        if let Some(ty) = extract_type_from_array(&self.0.ty) {
+            Some(NamedField::new(syn::Field {
+                attrs: vec![],
+                vis: self.vis().to_owned(),
+                ident: Some(syn::Ident::new(
+                    &format!("_{}", &self.ident()),
+                    self.ident().span(),
+                )),
+                colon_token: None,
+                ty: ty,
+            }))
+        } else {
+            None
+        }
     }
 
     #[allow(dead_code)]

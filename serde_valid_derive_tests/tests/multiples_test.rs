@@ -49,7 +49,33 @@ fn float_multiple_of_is_err_test() {
 }
 
 #[test]
-fn float_optional_type_is_ok_test() {
+fn array_type_is_ok_test() {
+    #[derive(Debug, Validate)]
+    struct TestStruct {
+        #[validate(multiple_of = 4)]
+        val: Vec<i32>,
+    }
+
+    let s = TestStruct { val: vec![12, 16] };
+    assert!(s.validate().is_ok());
+}
+
+#[test]
+fn nested_array_type_is_ok_test() {
+    #[derive(Debug, Validate)]
+    struct TestStruct {
+        #[validate(multiple_of = 4)]
+        val: Vec<Vec<i32>>,
+    }
+
+    let s = TestStruct {
+        val: vec![vec![4, 8], vec![12, 16]],
+    };
+    assert!(s.validate().is_ok());
+}
+
+#[test]
+fn optional_type_is_ok_test() {
     #[derive(Debug, Validate)]
     struct TestStruct {
         #[validate(multiple_of = 4)]
@@ -61,7 +87,7 @@ fn float_optional_type_is_ok_test() {
 }
 
 #[test]
-fn float_nested_optional_type_is_ok_test() {
+fn nested_optional_type_is_ok_test() {
     #[derive(Debug, Validate)]
     struct TestStruct {
         #[validate(multiple_of = 4)]
@@ -70,6 +96,20 @@ fn float_nested_optional_type_is_ok_test() {
 
     let s = TestStruct {
         val: Some(Some(12)),
+    };
+    assert!(s.validate().is_ok());
+}
+
+#[test]
+fn array_optional_type_is_ok_test() {
+    #[derive(Debug, Validate)]
+    struct TestStruct {
+        #[validate(multiple_of = 4)]
+        val: Vec<Option<i32>>,
+    }
+
+    let s = TestStruct {
+        val: vec![Some(4), Some(8), None],
     };
     assert!(s.validate().is_ok());
 }

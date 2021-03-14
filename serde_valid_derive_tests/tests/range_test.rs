@@ -145,7 +145,33 @@ fn range_exclusive_maximum_is_err_test() {
 }
 
 #[test]
-fn range_option_type_is_ok_test() {
+fn array_type_is_ok_test() {
+    #[derive(Debug, Validate)]
+    struct TestStruct {
+        #[validate(range(minimum = 0, maximum = 20))]
+        val: Vec<i32>,
+    }
+
+    let s = TestStruct { val: vec![12, 16] };
+    assert!(s.validate().is_ok());
+}
+
+#[test]
+fn nested_array_type_is_ok_test() {
+    #[derive(Debug, Validate)]
+    struct TestStruct {
+        #[validate(range(minimum = 0, maximum = 20))]
+        val: Vec<Vec<i32>>,
+    }
+
+    let s = TestStruct {
+        val: vec![vec![4, 8], vec![12, 16]],
+    };
+    assert!(s.validate().is_ok());
+}
+
+#[test]
+fn option_type_is_ok_test() {
     #[derive(Debug, Validate)]
     struct TestStruct {
         #[validate(range(minimum = 0, maximum = 10))]
@@ -157,7 +183,7 @@ fn range_option_type_is_ok_test() {
 }
 
 #[test]
-fn range_nested_option_type_is_ok_test() {
+fn nested_option_type_is_ok_test() {
     #[derive(Debug, Validate)]
     struct TestStruct {
         #[validate(range(minimum = 0, maximum = 10))]
@@ -165,5 +191,19 @@ fn range_nested_option_type_is_ok_test() {
     }
 
     let s = TestStruct { val: Some(Some(5)) };
+    assert!(s.validate().is_ok());
+}
+
+#[test]
+fn array_optional_type_is_ok_test() {
+    #[derive(Debug, Validate)]
+    struct TestStruct {
+        #[validate(range(minimum = 0, maximum = 10))]
+        val: Vec<Option<i32>>,
+    }
+
+    let s = TestStruct {
+        val: vec![Some(4), Some(8), None],
+    };
     assert!(s.validate().is_ok());
 }

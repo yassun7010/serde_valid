@@ -14,14 +14,15 @@ use syn::spanned::Spanned;
 
 pub enum Validator {
     Normal(TokenStream),
-    #[allow(dead_code)]
     Option(Box<Validator>),
+    Array(Box<Validator>),
 }
 
 pub struct FieldValidators {
     field: NamedField,
     validators: Vec<TokenStream>,
     optional_validators: Option<Box<FieldValidators>>,
+    array_validators: Option<Box<FieldValidators>>,
 }
 
 impl FieldValidators {
@@ -34,6 +35,7 @@ impl FieldValidators {
             field,
             validators: vec![],
             optional_validators: None,
+            array_validators: None,
         }
     }
 
@@ -47,6 +49,16 @@ impl FieldValidators {
                         let mut option_validators = Box::new(Self::inner_new(field));
                         option_validators.push(*ty);
                         self.optional_validators = Some(option_validators);
+                    }
+                }
+            },
+            Validator::Array(ty) => match self.array_validators.as_mut() {
+                Some(array_validator) => array_validator.push(*ty),
+                None => {
+                    if let Some(field) = self.field.array_field() {
+                        let mut array_validators = Box::new(Self::inner_new(field));
+                        array_validators.push(*ty);
+                        self.array_validators = Some(array_validators);
                     }
                 }
             },
@@ -77,9 +89,23 @@ impl FieldValidators {
             quote!()
         };
 
+        // Array Tokens
+        let array_tokens = if let Some(array_validators) = &self.array_validators {
+            let array_ident = array_validators.field.ident();
+            let array_validators = array_validators.to_token();
+            quote!(
+                for #array_ident in #ident {
+                    #array_validators
+                }
+            )
+        } else {
+            quote!()
+        };
+
         quote!(
             #normal_tokens
             #optional_tokens
+            #array_tokens
         )
     }
 
@@ -87,7 +113,7 @@ impl FieldValidators {
         let field_ident = self.field.ident();
         let validation = self.to_token();
         quote!(
-            let #field_ident = self.#field_ident;
+            let #field_ident = &self.#field_ident;
             #validation
         )
     }

@@ -11,14 +11,19 @@ pub fn extract_range_validator(
     attribute: &syn::Attribute,
     meta_items: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
 ) -> Validator {
-    if let Some(option_field) = field.option_field() {
+    if let Some(array_field) = field.array_field() {
+        Validator::Array(Box::new(extract_range_validator(
+            &array_field,
+                attribute,
+                meta_items,
+        )))
+    } else if let Some(option_field) = field.option_field() {
         Validator::Option(
             Box::new(extract_range_validator(
             &option_field,
                 attribute,
                 meta_items,
-            ))
-        )
+        )))
     } else{
         Validator::Normal(inner_extract_range_validator(
             field.ident(),
@@ -93,7 +98,7 @@ pub fn inner_extract_range_validator(
     }
     let token = quote!(
         if !::serde_valid::validate_range(
-            #field_ident,
+            *#field_ident,
             #minimum_tokens,
             #maximum_tokens
         ) {
