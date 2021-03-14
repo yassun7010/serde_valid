@@ -4,4 +4,6 @@ pub enum Error {
     RangeError,
     #[error("MultipleOf Error")]
     MultipleOfError,
+    #[error("Length Error")]
+    LengthError,
 }
