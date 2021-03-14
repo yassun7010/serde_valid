@@ -6,12 +6,12 @@ pub enum LitNumber {
     Float(syn::LitFloat),
 }
 
-pub struct Number {
+pub struct NumberInfo {
     lit: LitNumber,
     path_ident: syn::Ident,
 }
 
-impl Number {
+impl NumberInfo {
     pub fn new(lit: LitNumber, path_ident: syn::Ident) -> Self {
         Self { lit, path_ident }
     }
@@ -33,7 +33,7 @@ impl ToTokens for LitNumber {
     }
 }
 
-impl ToTokens for Number {
+impl ToTokens for NumberInfo {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         self.lit.to_tokens(tokens)
     }

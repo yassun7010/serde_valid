@@ -1,4 +1,4 @@
-use crate::lit::{LitNumber, Number};
+use crate::lit::{LitNumber, NumberInfo};
 use crate::helper::NamedField;
 use crate::validator::abort_invalid_attribute_on_field;
 use proc_macro2::TokenStream;
@@ -93,7 +93,7 @@ pub fn inner_extract_range_validator(
         abort_invalid_attribute_on_field(
             field_ident,
             attribute.span(),
-            "Validator `range` requires at least 1 argument out of `minimum` or `exclusive_minimum`, `maximum` or `exclusive_maximum`",
+            "Validator `range` requires at least 1 argument from `minimum` or `exclusive_minimum`, `maximum` or `exclusive_maximum`",
         );
     }
     let token = quote!(
@@ -108,7 +108,7 @@ pub fn inner_extract_range_validator(
     token
 }
 
-fn get_number(field_ident: &syn::Ident, lit: &syn::Lit, path_ident: syn::Ident, target: Option<Number>) -> Number {
+fn get_number(field_ident: &syn::Ident, lit: &syn::Lit, path_ident: syn::Ident, target: Option<NumberInfo>) -> NumberInfo {
     if target.is_some() {
         abort_invalid_attribute_on_field(
             field_ident,
@@ -117,8 +117,8 @@ fn get_number(field_ident: &syn::Ident, lit: &syn::Lit, path_ident: syn::Ident, 
     }
 
     match lit {
-        syn::Lit::Int(l) => Number::new(LitNumber::Int(l.to_owned()), path_ident),
-        syn::Lit::Float(l) => Number::new(LitNumber::Float(l.to_owned()), path_ident), 
+        syn::Lit::Int(l) => NumberInfo::new(LitNumber::Int(l.to_owned()), path_ident),
+        syn::Lit::Float(l) => NumberInfo::new(LitNumber::Float(l.to_owned()), path_ident), 
         _ => abort_invalid_attribute_on_field(
             field_ident,
             lit.span(),
@@ -126,7 +126,7 @@ fn get_number(field_ident: &syn::Ident, lit: &syn::Lit, path_ident: syn::Ident, 
     }
 }
 
-fn get_limit_tokens(field_ident: &syn::Ident, inclusive_limit: Option<Number>, exclusive_limit: Option<Number>) -> proc_macro2::TokenStream {
+fn get_limit_tokens(field_ident: &syn::Ident, inclusive_limit: Option<NumberInfo>, exclusive_limit: Option<NumberInfo>) -> proc_macro2::TokenStream {
     match (inclusive_limit, exclusive_limit) {
         (Some(inclusive), Some(exclusive)) => abort_invalid_attribute_on_field(
             field_ident,
