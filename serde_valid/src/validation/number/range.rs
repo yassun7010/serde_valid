@@ -1,11 +1,9 @@
-#[allow(dead_code)]
 #[derive(Debug)]
 pub enum Limit<T> {
     Inclusive(T),
     Exclusive(T),
 }
 
-#[allow(dead_code)]
 pub fn validate_range<T>(value: T, minimum: Option<Limit<T>>, maximum: Option<Limit<T>>) -> bool
 where
     T: PartialOrd + PartialEq,

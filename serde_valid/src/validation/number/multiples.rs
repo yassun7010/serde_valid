@@ -1,7 +1,6 @@
 /// MultipleOf validation.
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/numeric.html#id6>
-#[allow(dead_code)]
 pub fn validate_multiples<T>(value: T, multiple_of: T) -> bool
 where
     T: PartialEq + std::ops::Rem<Output = T> + num_traits::Zero,
