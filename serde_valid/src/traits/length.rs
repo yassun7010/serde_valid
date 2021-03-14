@@ -1,4 +1,3 @@
-use std::usize;
 use unicode_segmentation::UnicodeSegmentation;
 
 pub trait Length {

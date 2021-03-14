@@ -70,7 +70,7 @@ mod tests {
     }
 
     #[test]
-    fn test_validate_length_str_array_type() {
+    fn test_validate_length_char_array_type() {
         assert!(validate_length(&['a', 'b', 'c'], Some(3), Some(3)));
     }
 
