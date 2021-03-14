@@ -47,3 +47,29 @@ fn float_multiple_of_is_err_test() {
     let s = TestStruct { val: 12.3 };
     assert!(s.validate().is_err());
 }
+
+#[test]
+fn float_optional_type_is_ok_test() {
+    #[derive(Debug, Validate)]
+    struct TestStruct {
+        #[validate(multiple_of = 4)]
+        val: Option<i32>,
+    }
+
+    let s = TestStruct { val: Some(12) };
+    assert!(s.validate().is_ok());
+}
+
+#[test]
+fn float_nested_optional_type_is_ok_test() {
+    #[derive(Debug, Validate)]
+    struct TestStruct {
+        #[validate(multiple_of = 4)]
+        val: Option<Option<i32>>,
+    }
+
+    let s = TestStruct {
+        val: Some(Some(12)),
+    };
+    assert!(s.validate().is_ok());
+}
