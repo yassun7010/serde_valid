@@ -1,7 +1,7 @@
 use serde_valid::Validate;
 
 #[test]
-fn integer_multiple_of_is_ok_test() {
+fn multiple_of_integer_is_ok_test() {
     #[derive(Debug, Validate)]
     struct TestStruct {
         #[validate(multiple_of = 5)]
@@ -13,7 +13,7 @@ fn integer_multiple_of_is_ok_test() {
 }
 
 #[test]
-fn float_multiple_of_is_ok_test() {
+fn multiple_of_float_is_ok_test() {
     #[derive(Debug, Validate)]
     struct TestStruct {
         #[validate(multiple_of = 1.0)]
@@ -25,7 +25,7 @@ fn float_multiple_of_is_ok_test() {
 }
 
 #[test]
-fn integer_multiple_of_is_err_test() {
+fn multiple_of_integer_is_err_test() {
     #[derive(Debug, Validate)]
     struct TestStruct {
         #[validate(multiple_of = 3)]
@@ -37,7 +37,7 @@ fn integer_multiple_of_is_err_test() {
 }
 
 #[test]
-fn float_multiple_of_is_err_test() {
+fn multiple_of_float_is_err_test() {
     #[derive(Debug, Validate)]
     struct TestStruct {
         #[validate(multiple_of = 0.5)]
@@ -49,7 +49,7 @@ fn float_multiple_of_is_err_test() {
 }
 
 #[test]
-fn array_type_is_ok_test() {
+fn multiple_of_array_type_is_ok_test() {
     #[derive(Debug, Validate)]
     struct TestStruct {
         #[validate(multiple_of = 4)]
@@ -61,7 +61,7 @@ fn array_type_is_ok_test() {
 }
 
 #[test]
-fn nested_array_type_is_ok_test() {
+fn multiple_of_nested_array_type_is_ok_test() {
     #[derive(Debug, Validate)]
     struct TestStruct {
         #[validate(multiple_of = 4)]
@@ -75,7 +75,7 @@ fn nested_array_type_is_ok_test() {
 }
 
 #[test]
-fn optional_type_is_ok_test() {
+fn multiple_of_optional_type_is_ok_test() {
     #[derive(Debug, Validate)]
     struct TestStruct {
         #[validate(multiple_of = 4)]
@@ -87,7 +87,7 @@ fn optional_type_is_ok_test() {
 }
 
 #[test]
-fn nested_optional_type_is_ok_test() {
+fn multiple_of_nested_optional_type_is_ok_test() {
     #[derive(Debug, Validate)]
     struct TestStruct {
         #[validate(multiple_of = 4)]
@@ -101,7 +101,7 @@ fn nested_optional_type_is_ok_test() {
 }
 
 #[test]
-fn array_optional_type_is_ok_test() {
+fn multiple_of_array_optional_type_is_ok_test() {
     #[derive(Debug, Validate)]
     struct TestStruct {
         #[validate(multiple_of = 4)]
