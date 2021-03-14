@@ -129,7 +129,7 @@ fn max_string(
         _ => abort_invalid_attribute_on_field(
             field_ident,
             lit.span(),
-             &format!("invalid argument type for `{}` of `length` validator: only string literals are allowed", path_ident.to_string())),
+             &format!("invalid argument type for `{}` of `length` validator: only int literals are allowed", path_ident.to_string())),
     }
 }
 

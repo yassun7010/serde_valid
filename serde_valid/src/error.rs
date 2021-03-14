@@ -6,4 +6,6 @@ pub enum Error {
     MultipleOfError,
     #[error("Length Error")]
     LengthError,
+    #[error("Pattern Error")]
+    PatternError,
 }

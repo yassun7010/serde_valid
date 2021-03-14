@@ -1,5 +1,7 @@
 use crate::helper::NamedField;
-use crate::validator::{number::extract_multiples_validator, Validator};
+use crate::validator::number::extract_multiples_validator;
+use crate::validator::string::extract_pattern_validator;
+use crate::validator::Validator;
 use proc_macro_error::abort;
 use syn::spanned::Spanned;
 
@@ -11,6 +13,7 @@ pub fn extract_validator_from_name_value(
     let path_ident = path.get_ident().unwrap();
     match path_ident.to_string().as_ref() {
         "multiple_of" => return Some(extract_multiples_validator(field, lit)),
+        "pattern" => return Some(extract_pattern_validator(field, lit)),
         v => {
             abort!(path.span(), "unexpected name value validator: {:?}", v)
         }
