@@ -1,7 +1,9 @@
 use crate::traits::IsMatch;
 use regex::Regex;
 
-#[allow(dead_code)]
+/// Pattern validation.
+///
+/// See <https://json-schema.org/understanding-json-schema/reference/string.html#id6>
 pub fn validate_string_pattern<T>(value: &T, pattern: Regex) -> bool
 where
     T: IsMatch + ?Sized,

@@ -1,5 +1,8 @@
 use crate::traits::Length;
 
+/// Length validation.
+///
+/// See <https://json-schema.org/understanding-json-schema/reference/string.html#id5>
 pub fn validate_string_length<T>(
     value: &T,
     min_length: Option<usize>,

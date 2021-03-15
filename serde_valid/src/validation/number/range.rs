@@ -4,6 +4,9 @@ pub enum Limit<T> {
     Exclusive(T),
 }
 
+/// Range validation.
+///
+/// See <https://json-schema.org/understanding-json-schema/reference/numeric.html#id7>
 pub fn validate_number_range<T>(
     value: T,
     minimum: Option<Limit<T>>,
