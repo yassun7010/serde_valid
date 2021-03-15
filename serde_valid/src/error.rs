@@ -10,4 +10,6 @@ pub enum Error {
     PatternError,
     #[error("Items Error")]
     ItemsError,
+    #[error("UniqueItems Error")]
+    UniqueItemsError,
 }
