@@ -97,7 +97,7 @@ pub fn inner_extract_range_validator(
         );
     }
     let token = quote!(
-        if !::serde_valid::validate_range(
+        if !::serde_valid::validate_number_range(
             *#field_ident,
             #minimum_tokens,
             #maximum_tokens

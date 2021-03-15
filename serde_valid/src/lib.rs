@@ -3,7 +3,8 @@ mod traits;
 mod validation;
 pub use error::Error;
 pub use validation::{
-    validate_length, validate_multiples, validate_pattern, validate_range, Limit,
+    validate_number_multiples, validate_number_range, validate_string_length,
+    validate_string_pattern, Limit,
 };
 
 pub trait Validate {

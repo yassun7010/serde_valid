@@ -25,7 +25,7 @@ fn inner_extract_multiples_validator(field_ident: &syn::Ident, lit: &syn::Lit) -
         ),
     };
     let token = quote!(
-        if !::serde_valid::validate_multiples(
+        if !::serde_valid::validate_number_multiples(
             *#field_ident,
             #multiple_of,
         ) {

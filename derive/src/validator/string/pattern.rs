@@ -24,7 +24,7 @@ fn inner_extract_pattern_validator(field_ident: &syn::Ident, lit: &syn::Lit) -> 
     };
     let token = quote!(
         let pattern = regex::Regex::new(#pattern).unwrap();
-        if !::serde_valid::validate_pattern(
+        if !::serde_valid::validate_string_pattern(
             #field_ident,
             pattern,
         ) {

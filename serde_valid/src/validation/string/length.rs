@@ -1,6 +1,10 @@
 use crate::traits::Length;
 
-pub fn validate_length<T>(value: &T, min_length: Option<usize>, max_length: Option<usize>) -> bool
+pub fn validate_string_length<T>(
+    value: &T,
+    min_length: Option<usize>,
+    max_length: Option<usize>,
+) -> bool
 where
     T: Length + ?Sized,
 {
@@ -28,31 +32,39 @@ mod tests {
     use std::path::{Path, PathBuf};
 
     #[test]
-    fn test_validate_length_unicode_ok() {
-        assert!(validate_length("abcde", Some(5), Some(5)));
-        assert!(validate_length("a̐éö̲", Some(3), Some(3)));
-        assert!(validate_length("あ堯", Some(2), Some(2)));
-        assert!(validate_length("😍👺👻", Some(3), Some(3)));
+    fn test_validate_string_length_unicode_ok() {
+        assert!(validate_string_length("abcde", Some(5), Some(5)));
+        assert!(validate_string_length("a̐éö̲", Some(3), Some(3)));
+        assert!(validate_string_length("あ堯", Some(2), Some(2)));
+        assert!(validate_string_length("😍👺👻", Some(3), Some(3)));
     }
 
     #[test]
-    fn test_validate_length_str_type() {
-        assert!(validate_length("abcde", Some(5), Some(5)));
+    fn test_validate_string_length_str_type() {
+        assert!(validate_string_length("abcde", Some(5), Some(5)));
     }
 
     #[test]
-    fn test_validate_length_string_type() {
-        assert!(validate_length(&String::from("abcde"), Some(5), Some(5)));
+    fn test_validate_string_length_string_type() {
+        assert!(validate_string_length(
+            &String::from("abcde"),
+            Some(5),
+            Some(5)
+        ));
     }
 
     #[test]
-    fn test_validate_length_cow_str_type() {
-        assert!(validate_length(&Cow::from("abcde"), Some(5), Some(5)));
+    fn test_validate_string_length_cow_str_type() {
+        assert!(validate_string_length(
+            &Cow::from("abcde"),
+            Some(5),
+            Some(5)
+        ));
     }
 
     #[test]
-    fn test_validate_length_vec_u8_type() {
-        assert!(validate_length(
+    fn test_validate_string_length_vec_u8_type() {
+        assert!(validate_string_length(
             &"abcde".as_bytes().to_vec(),
             Some(5),
             Some(5)
@@ -60,33 +72,41 @@ mod tests {
     }
 
     #[test]
-    fn test_validate_length_vec_char_type() {
-        assert!(validate_length(&vec!['a', 'b', 'c'], Some(3), Some(3)));
+    fn test_validate_string_length_vec_char_type() {
+        assert!(validate_string_length(
+            &vec!['a', 'b', 'c'],
+            Some(3),
+            Some(3)
+        ));
     }
 
     #[test]
-    fn test_validate_length_u8_array_type() {
-        assert!(validate_length("abcde".as_bytes(), Some(5), Some(5)));
+    fn test_validate_string_length_u8_array_type() {
+        assert!(validate_string_length("abcde".as_bytes(), Some(5), Some(5)));
     }
 
     #[test]
-    fn test_validate_length_char_array_type() {
-        assert!(validate_length(&['a', 'b', 'c'], Some(3), Some(3)));
+    fn test_validate_string_length_char_array_type() {
+        assert!(validate_string_length(&['a', 'b', 'c'], Some(3), Some(3)));
     }
 
     #[test]
-    fn test_validate_length_os_str_type() {
-        assert!(validate_length(OsStr::new("fo�o"), Some(4), Some(4)));
+    fn test_validate_string_length_os_str_type() {
+        assert!(validate_string_length(OsStr::new("fo�o"), Some(4), Some(4)));
     }
 
     #[test]
-    fn test_validate_length_os_string_type() {
-        assert!(validate_length(&OsString::from("fo�o"), Some(4), Some(4)));
+    fn test_validate_string_length_os_string_type() {
+        assert!(validate_string_length(
+            &OsString::from("fo�o"),
+            Some(4),
+            Some(4)
+        ));
     }
 
     #[test]
-    fn test_validate_length_path_type() {
-        assert!(validate_length(
+    fn test_validate_string_length_path_type() {
+        assert!(validate_string_length(
             Path::new("./foo/bar.txt"),
             Some(13),
             Some(13)
@@ -94,8 +114,8 @@ mod tests {
     }
 
     #[test]
-    fn test_validate_length_path_buf_type() {
-        assert!(validate_length(
+    fn test_validate_string_length_path_buf_type() {
+        assert!(validate_string_length(
             &PathBuf::from("./foo/bar.txt"),
             Some(13),
             Some(13)
@@ -103,22 +123,22 @@ mod tests {
     }
 
     #[test]
-    fn test_validate_length_min_fail() {
-        assert!(!validate_length("abcde", Some(6), None));
+    fn test_validate_string_length_min_fail() {
+        assert!(!validate_string_length("abcde", Some(6), None));
     }
 
     #[test]
-    fn test_validate_length_min_ok() {
-        assert!(validate_length("abcde", Some(5), None));
+    fn test_validate_string_length_min_ok() {
+        assert!(validate_string_length("abcde", Some(5), None));
     }
 
     #[test]
-    fn test_validate_length_max_fail() {
-        assert!(!validate_length("abcde", None, Some(4)));
+    fn test_validate_string_length_max_fail() {
+        assert!(!validate_string_length("abcde", None, Some(4)));
     }
 
     #[test]
-    fn test_validate_length_max_ok() {
-        assert!(validate_length("abcde", None, Some(5)));
+    fn test_validate_string_length_max_ok() {
+        assert!(validate_string_length("abcde", None, Some(5)));
     }
 }

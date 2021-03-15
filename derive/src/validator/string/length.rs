@@ -96,7 +96,7 @@ pub fn inner_extract_length_validator(
         );
     }
     let token = quote!(
-        if !::serde_valid::validate_length(
+        if !::serde_valid::validate_string_length(
             #field_ident,
             #min_length_tokens,
             #max_length_tokens
