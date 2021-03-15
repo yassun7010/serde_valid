@@ -133,7 +133,7 @@ fn range_exclusive_maximum_is_err_test() {
 }
 
 #[test]
-fn range_array_type_is_ok_test() {
+fn range_vec_type_is_ok_test() {
     #[derive(Debug, Validate)]
     struct TestStruct {
         #[validate(range(minimum = 0, maximum = 20))]
@@ -145,7 +145,7 @@ fn range_array_type_is_ok_test() {
 }
 
 #[test]
-fn range_nested_array_type_is_ok_test() {
+fn range_nested_vec_type_is_ok_test() {
     #[derive(Debug, Validate)]
     struct TestStruct {
         #[validate(range(minimum = 0, maximum = 20))]
@@ -183,7 +183,7 @@ fn range_nested_option_type_is_ok_test() {
 }
 
 #[test]
-fn range_array_optional_type_is_ok_test() {
+fn range_vec_optional_type_is_ok_test() {
     #[derive(Debug, Validate)]
     struct TestStruct {
         #[validate(range(minimum = 0, maximum = 10))]

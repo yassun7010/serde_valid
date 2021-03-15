@@ -49,7 +49,7 @@ fn multiple_of_float_is_err_test() {
 }
 
 #[test]
-fn multiple_of_array_type_is_ok_test() {
+fn multiple_of_vec_type_is_ok_test() {
     #[derive(Debug, Validate)]
     struct TestStruct {
         #[validate(multiple_of = 4)]
@@ -61,7 +61,7 @@ fn multiple_of_array_type_is_ok_test() {
 }
 
 #[test]
-fn multiple_of_nested_array_type_is_ok_test() {
+fn multiple_of_nested_vec_type_is_ok_test() {
     #[derive(Debug, Validate)]
     struct TestStruct {
         #[validate(multiple_of = 4)]
@@ -101,7 +101,7 @@ fn multiple_of_nested_optional_type_is_ok_test() {
 }
 
 #[test]
-fn multiple_of_array_optional_type_is_ok_test() {
+fn multiple_of_vec_optional_type_is_ok_test() {
     #[derive(Debug, Validate)]
     struct TestStruct {
         #[validate(multiple_of = 4)]

@@ -207,7 +207,7 @@ fn length_max_length_is_err_test() {
 }
 
 #[test]
-fn length_array_type_is_ok_test() {
+fn length_vec_type_is_ok_test() {
     #[derive(Debug, Validate)]
     struct TestStruct {
         #[validate(length(min_length = 0, max_length = 4))]
@@ -221,7 +221,7 @@ fn length_array_type_is_ok_test() {
 }
 
 #[test]
-fn length_nested_array_type_is_ok_test() {
+fn length_nested_vec_type_is_ok_test() {
     #[derive(Debug, Validate)]
     struct TestStruct {
         #[validate(length(min_length = 0, max_length = 3))]
@@ -266,7 +266,7 @@ fn length_nested_option_type_is_ok_test() {
 }
 
 #[test]
-fn length_array_optional_type_is_ok_test() {
+fn length_vec_optional_type_is_ok_test() {
     #[derive(Debug, Validate)]
     struct TestStruct {
         #[validate(length(min_length = 0, max_length = 5))]

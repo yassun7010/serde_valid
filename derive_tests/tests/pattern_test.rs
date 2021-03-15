@@ -113,7 +113,7 @@ fn pattern_is_err_test() {
 }
 
 #[test]
-fn pattern_array_type_is_ok_test() {
+fn pattern_vec_type_is_ok_test() {
     #[derive(Debug, Validate)]
     struct TestStruct {
         #[validate(pattern = r"^\d{4}-\d{2}-\d{2}$")]
@@ -127,7 +127,7 @@ fn pattern_array_type_is_ok_test() {
 }
 
 #[test]
-fn pattern_nested_array_type_is_ok_test() {
+fn pattern_nested_vec_type_is_ok_test() {
     #[derive(Debug, Validate)]
     struct TestStruct {
         #[validate(pattern = r"^\d{4}-\d{2}-\d{2}$")]
@@ -172,7 +172,7 @@ fn pattern_nested_option_type_is_ok_test() {
 }
 
 #[test]
-fn pattern_array_optional_type_is_ok_test() {
+fn pattern_vec_optional_type_is_ok_test() {
     #[derive(Debug, Validate)]
     struct TestStruct {
         #[validate(pattern = r"^\d{4}-\d{2}-\d{2}$")]
