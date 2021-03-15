@@ -1,3 +1,4 @@
+mod array;
 mod meta;
 mod number;
 mod string;

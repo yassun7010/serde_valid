@@ -5,39 +5,19 @@ use proc_macro2::TokenStream;
 use quote::quote;
 use syn::spanned::Spanned;
 
-pub fn extract_string_length_validator(
+pub fn extract_array_length_validator(
     field: &NamedField,
     attribute: &syn::Attribute,
     meta_items: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
 ) -> Validator {
-    if let Some(array_field) = field.array_field() {
-        match array_field.ty() {
-            syn::Type::Path(path) => {
-                if let Some(ident) = path.path.get_ident() {
-                    if ["u8", "char"].contains(&format!("{}", ident).as_str()) {
-                        return Validator::Normal(inner_extract_string_length_validator(
-                            field.ident(),
-                            attribute,
-                            meta_items,
-                        ));
-                    }
-                }
-            }
-            _ => (),
-        }
-        Validator::Array(Box::new(extract_string_length_validator(
-            &array_field,
-            attribute,
-            meta_items,
-        )))
-    } else if let Some(option_field) = field.option_field() {
-        Validator::Option(Box::new(extract_string_length_validator(
+    if let Some(option_field) = field.option_field() {
+        Validator::Option(Box::new(extract_array_length_validator(
             &option_field,
             attribute,
             meta_items,
         )))
     } else {
-        Validator::Normal(inner_extract_string_length_validator(
+        Validator::Normal(inner_extract_array_length_validator(
             field.ident(),
             attribute,
             meta_items,
@@ -45,30 +25,30 @@ pub fn extract_string_length_validator(
     }
 }
 
-pub fn inner_extract_string_length_validator(
+pub fn inner_extract_array_length_validator(
     field_ident: &syn::Ident,
     attribute: &syn::Attribute,
     meta_items: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
 ) -> TokenStream {
-    let mut min_length = None;
-    let mut max_length = None;
+    let mut min_items = None;
+    let mut max_items = None;
     for meta_item in meta_items {
         if let syn::NestedMeta::Meta(ref item) = *meta_item {
             if let syn::Meta::NameValue(syn::MetaNameValue { ref path, lit, .. }) = item {
                 let path_ident = path.get_ident().unwrap().to_owned();
                 match path_ident.to_string().as_ref() {
-                    "min_length" => {
-                        min_length = Some(limit_int(field_ident, lit, path_ident, min_length));
+                    "min_items" => {
+                        min_items = Some(limit_int(field_ident, lit, path_ident, min_items));
                     }
-                    "max_length" => {
-                        max_length = Some(limit_int(field_ident, lit, path_ident, max_length));
+                    "max_items" => {
+                        max_items = Some(limit_int(field_ident, lit, path_ident, max_items));
                     }
                     v => abort_invalid_attribute_on_field(
                         field_ident,
                         path.span(),
                         &format!(
                             "unknown argument `{}` for validator `length` \
-                            (it only has `min_length` or `max_length`)",
+                            (it only has `min_items` or `max_items`)",
                             v
                         ),
                     ),
@@ -85,23 +65,23 @@ pub fn inner_extract_string_length_validator(
             }
         }
     }
-    let min_length_tokens = get_length_tokens(min_length);
-    let max_length_tokens = get_length_tokens(max_length);
+    let min_items_tokens = get_length_tokens(min_items);
+    let max_items_tokens = get_length_tokens(max_items);
 
-    if min_length_tokens.to_string() == "None" && max_length_tokens.to_string() == "None" {
+    if min_items_tokens.to_string() == "None" && max_items_tokens.to_string() == "None" {
         abort_invalid_attribute_on_field(
             field_ident,
             attribute.span(),
-            "Validator `length` requires at least 1 argument from `min_length` or `max_length`",
+            "Validator `length` requires at least 1 argument from `min_items` or `max_items`",
         );
     }
     let token = quote!(
-        if !::serde_valid::validate_string_length(
+        if !::serde_valid::validate_array_length(
             #field_ident,
-            #min_length_tokens,
-            #max_length_tokens
+            #min_items_tokens,
+            #max_items_tokens
         ) {
-            errors.push(::serde_valid::Error::LengthError);
+            errors.push(::serde_valid::Error::ItemsError);
         }
     );
     token

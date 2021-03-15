@@ -8,4 +8,6 @@ pub enum Error {
     LengthError,
     #[error("Pattern Error")]
     PatternError,
+    #[error("Items Error")]
+    ItemsError,
 }
