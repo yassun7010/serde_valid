@@ -12,4 +12,6 @@ pub enum Error {
     ItemsError,
     #[error("UniqueItems Error")]
     UniqueItemsError,
+    #[error("Properties Error")]
+    PropertiesError,
 }

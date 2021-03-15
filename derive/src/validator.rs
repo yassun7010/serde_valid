@@ -1,6 +1,7 @@
 mod array;
 mod meta;
 mod number;
+mod object;
 mod string;
 
 use crate::abort::abort_invalid_attribute_on_field;
