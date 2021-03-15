@@ -12,6 +12,7 @@ serde_valid_derive = { version = "0.1.0", path = "../derive", optional = true }
 num-traits = "^0.2"
 unicode-segmentation = "^1.7"
 regex = "^1.4"
+itertools = "^0.10"
 
 [features]
 derive = ["serde_valid_derive"]
