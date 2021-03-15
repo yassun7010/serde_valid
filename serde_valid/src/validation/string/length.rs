@@ -35,16 +35,23 @@ mod tests {
     use std::path::{Path, PathBuf};
 
     #[test]
-    fn test_validate_string_length_unicode_ok() {
+    fn test_validate_string_length_ascii_is_true() {
         assert!(validate_string_length("abcde", Some(5), Some(5)));
-        assert!(validate_string_length("a̐éö̲", Some(3), Some(3)));
-        assert!(validate_string_length("あ堯", Some(2), Some(2)));
-        assert!(validate_string_length("😍👺👻", Some(3), Some(3)));
     }
 
     #[test]
-    fn test_validate_string_length_str_type() {
-        assert!(validate_string_length("abcde", Some(5), Some(5)));
+    fn test_validate_string_length_unicode_is_true() {
+        assert!(validate_string_length("a̐éö̲", Some(3), Some(3)));
+    }
+
+    #[test]
+    fn test_validate_string_length_japanese_is_true() {
+        assert!(validate_string_length("あ堯", Some(2), Some(2)));
+    }
+
+    #[test]
+    fn test_validate_string_length_emoji_is_true() {
+        assert!(validate_string_length("😍👺👻", Some(3), Some(3)));
     }
 
     #[test]
@@ -124,24 +131,23 @@ mod tests {
             Some(13)
         ));
     }
-
     #[test]
-    fn test_validate_string_length_min_fail() {
-        assert!(!validate_string_length("abcde", Some(6), None));
-    }
-
-    #[test]
-    fn test_validate_string_length_min_ok() {
+    fn test_validate_string_length_min_is_true() {
         assert!(validate_string_length("abcde", Some(5), None));
     }
 
     #[test]
-    fn test_validate_string_length_max_fail() {
-        assert!(!validate_string_length("abcde", None, Some(4)));
+    fn test_validate_string_length_min_is_false() {
+        assert!(!validate_string_length("abcde", Some(6), None));
     }
 
     #[test]
-    fn test_validate_string_length_max_ok() {
+    fn test_validate_string_length_max_is_true() {
         assert!(validate_string_length("abcde", None, Some(5)));
+    }
+
+    #[test]
+    fn test_validate_string_length_max_is_false() {
+        assert!(!validate_string_length("abcde", None, Some(4)));
     }
 }

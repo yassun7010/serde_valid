@@ -13,15 +13,23 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_validate_number_multiples_generic_ok() {
+    fn test_validate_number_multiples_integer_is_true() {
         assert!(validate_number_multiples(10, 5));
+    }
+
+    #[test]
+    fn test_validate_number_multiples_float_is_true() {
         assert!(validate_number_multiples(12.0, 1.0));
         assert!(validate_number_multiples(12.5, 0.5));
     }
 
     #[test]
-    fn test_validate_number_multiples_generic_fail() {
+    fn test_validate_number_multiples_integer_is_false() {
         assert!(!validate_number_multiples(10, 3));
+    }
+
+    #[test]
+    fn test_validate_number_multiples_float_is_false() {
         assert!(!validate_number_multiples(12.0, 5.0));
         assert!(!validate_number_multiples(12.5, 0.3));
     }

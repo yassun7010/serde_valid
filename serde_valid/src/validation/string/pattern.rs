@@ -73,4 +73,12 @@ mod tests {
             Regex::new(r"^*.txt$").unwrap()
         ));
     }
+
+    #[test]
+    fn test_validate_string_pattern_is_false() {
+        assert!(!validate_string_pattern(
+            "2020/09/10",
+            Regex::new(r"^\d{4}-\d{2}-\d{2}$").unwrap()
+        ));
+    }
 }

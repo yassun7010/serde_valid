@@ -41,7 +41,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_validate_number_range_generic_ok() {
+    fn test_validate_number_range_number_is_true() {
         // Unspecified generic type:
         assert!(validate_number_range(
             10,
@@ -83,7 +83,7 @@ mod tests {
     }
 
     #[test]
-    fn test_validate_number_range_generic_fail() {
+    fn test_validate_number_range_generic_is_false() {
         assert!(!validate_number_range(
             5,
             Some(Limit::Inclusive(6)),
@@ -107,26 +107,22 @@ mod tests {
     }
 
     #[test]
-    fn test_validate_number_range_generic_min_only() {
-        assert_eq!(
-            false,
-            validate_number_range(5, Some(Limit::Inclusive(10)), None)
-        );
-        assert_eq!(
-            true,
-            validate_number_range(15, Some(Limit::Inclusive(10)), None)
-        );
+    fn test_validate_number_range_generic_min_only_is_true() {
+        assert!(validate_number_range(15, Some(Limit::Inclusive(10)), None));
     }
 
     #[test]
-    fn test_validate_number_range_generic_max_only() {
-        assert_eq!(
-            true,
-            validate_number_range(5, None, Some(Limit::Inclusive(10)))
-        );
-        assert_eq!(
-            false,
-            validate_number_range(15, None, Some(Limit::Inclusive(10)))
-        );
+    fn test_validate_number_range_generic_min_only_is_false() {
+        assert!(!validate_number_range(5, Some(Limit::Inclusive(10)), None));
+    }
+
+    #[test]
+    fn test_validate_number_range_generic_max_only_is_true() {
+        assert!(validate_number_range(5, None, Some(Limit::Inclusive(10))));
+    }
+
+    #[test]
+    fn test_validate_number_range_generic_max_only_is_false() {
+        assert!(!validate_number_range(15, None, Some(Limit::Inclusive(10))));
     }
 }

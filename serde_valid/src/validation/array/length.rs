@@ -42,22 +42,22 @@ mod tests {
     }
 
     #[test]
-    fn test_validate_array_length_min_fail() {
-        assert!(!validate_array_length(&[1, 2, 3], Some(4), None));
-    }
-
-    #[test]
-    fn test_validate_array_length_min_ok() {
+    fn test_validate_array_length_min_is_true() {
         assert!(validate_array_length(&[1, 2, 3], Some(3), None));
     }
 
     #[test]
-    fn test_validate_array_length_max_fail() {
-        assert!(!validate_array_length(&[1, 2, 3], None, Some(2)));
+    fn test_validate_array_length_min_is_false() {
+        assert!(!validate_array_length(&[1, 2, 3], Some(4), None));
     }
 
     #[test]
-    fn test_validate_array_length_max_ok() {
+    fn test_validate_array_length_max_is_true() {
         assert!(validate_array_length(&[1, 2, 3], None, Some(3)));
+    }
+
+    #[test]
+    fn test_validate_array_length_max_is_false() {
+        assert!(!validate_array_length(&[1, 2, 3], None, Some(2)));
     }
 }
