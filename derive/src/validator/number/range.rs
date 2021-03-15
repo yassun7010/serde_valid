@@ -6,26 +6,26 @@ use syn::spanned::Spanned;
 use quote::quote;
 use crate::validator::Validator;
 
-pub fn extract_range_validator(
+pub fn extract_number_range_validator(
     field: &NamedField,
     attribute: &syn::Attribute,
     meta_items: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
 ) -> Validator {
     if let Some(array_field) = field.array_field() {
-        Validator::Array(Box::new(extract_range_validator(
+        Validator::Array(Box::new(extract_number_range_validator(
             &array_field,
                 attribute,
                 meta_items,
         )))
     } else if let Some(option_field) = field.option_field() {
         Validator::Option(
-            Box::new(extract_range_validator(
+            Box::new(extract_number_range_validator(
             &option_field,
                 attribute,
                 meta_items,
         )))
     } else{
-        Validator::Normal(inner_extract_range_validator(
+        Validator::Normal(inner_extract_number_range_validator(
             field.ident(),
             attribute,
             meta_items,
@@ -33,7 +33,7 @@ pub fn extract_range_validator(
     }
 }
 
-pub fn inner_extract_range_validator(
+pub fn inner_extract_number_range_validator(
     field_ident: &syn::Ident,
     attribute: &syn::Attribute,
     meta_items: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,

@@ -5,7 +5,7 @@ use proc_macro2::TokenStream;
 use quote::quote;
 use syn::spanned::Spanned;
 
-pub fn extract_length_validator(
+pub fn extract_string_length_validator(
     field: &NamedField,
     attribute: &syn::Attribute,
     meta_items: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
@@ -15,7 +15,7 @@ pub fn extract_length_validator(
             syn::Type::Path(path) => {
                 if let Some(ident) = path.path.get_ident() {
                     if ["u8", "char"].contains(&format!("{}", ident).as_str()) {
-                        return Validator::Normal(inner_extract_length_validator(
+                        return Validator::Normal(inner_extract_string_length_validator(
                             field.ident(),
                             attribute,
                             meta_items,
@@ -25,19 +25,19 @@ pub fn extract_length_validator(
             }
             _ => (),
         }
-        Validator::Array(Box::new(extract_length_validator(
+        Validator::Array(Box::new(extract_string_length_validator(
             &array_field,
             attribute,
             meta_items,
         )))
     } else if let Some(option_field) = field.option_field() {
-        Validator::Option(Box::new(extract_length_validator(
+        Validator::Option(Box::new(extract_string_length_validator(
             &option_field,
             attribute,
             meta_items,
         )))
     } else {
-        Validator::Normal(inner_extract_length_validator(
+        Validator::Normal(inner_extract_string_length_validator(
             field.ident(),
             attribute,
             meta_items,
@@ -45,7 +45,7 @@ pub fn extract_length_validator(
     }
 }
 
-pub fn inner_extract_length_validator(
+pub fn inner_extract_string_length_validator(
     field_ident: &syn::Ident,
     attribute: &syn::Attribute,
     meta_items: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
