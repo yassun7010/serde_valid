@@ -1,4 +1,5 @@
 use crate::traits::IsUnique;
+
 /// Unique validation.
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/array.html#uniqueness>
