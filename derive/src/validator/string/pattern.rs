@@ -30,7 +30,7 @@ fn inner_extract_string_pattern_validator(field_ident: &syn::Ident, lit: &syn::L
     };
     let token = quote!(
         let pattern = regex::Regex::new(#pattern).unwrap();
-        if !::serde_valid::validate_string_pattern(
+        if !::serde_valid::validate_string_regular_expressions(
             #field_ident,
             pattern,
         ) {

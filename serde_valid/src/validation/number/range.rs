@@ -6,7 +6,7 @@ pub enum Limit<T> {
 
 /// Range validation.
 ///
-/// See <https://json-schema.org/understanding-json-schema/reference/numeric.html#id7>
+/// See <https://json-schema.org/understanding-json-schema/reference/numeric.html#range>
 pub fn validate_number_range<T>(
     value: T,
     minimum: Option<Limit<T>>,

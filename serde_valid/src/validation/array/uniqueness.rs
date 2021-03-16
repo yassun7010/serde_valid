@@ -1,7 +1,7 @@
 use crate::traits::IsUnique;
 /// Unique validation.
 ///
-/// See <https://json-schema.org/understanding-json-schema/reference/array.html#id8>
+/// See <https://json-schema.org/understanding-json-schema/reference/array.html#uniqueness>
 pub fn validate_array_uniqueness<T>(value: &[T]) -> bool
 where
     T: std::cmp::Eq + std::hash::Hash,

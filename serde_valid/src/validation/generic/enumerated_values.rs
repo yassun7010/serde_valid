@@ -1,6 +1,6 @@
 /// EnumeratedValues validation.
 ///
-/// See <https://json-schema.org/understanding-json-schema/reference/generic.html#id4>
+/// See <https://json-schema.org/understanding-json-schema/reference/generic.html#enumerated-values>
 pub fn validate_generic_enumerated_values<T, U>(value: &T, candidates: &[U]) -> bool
 where
     T: std::cmp::PartialEq + std::cmp::PartialEq<U>,
