@@ -1,4 +1,5 @@
 mod array;
+mod generic;
 mod meta;
 mod number;
 mod object;

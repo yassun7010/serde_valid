@@ -1,5 +1,6 @@
 use crate::helper::NamedField;
 use crate::validator::array::extract_array_length_validator;
+use crate::validator::generic::extract_generic_enumerate_validator;
 use crate::validator::number::extract_number_range_validator;
 use crate::validator::object::extract_object_size_validator;
 use crate::validator::string::extract_string_length_validator;
@@ -18,6 +19,7 @@ pub fn extract_validator_from_meta_list(
         "range" => return Some(extract_number_range_validator(field, attribute, nested)),
         "length" => return Some(extract_string_length_validator(field, attribute, nested)),
         "items" => return Some(extract_array_length_validator(field, attribute, nested)),
+        "enumerate" => return Some(extract_generic_enumerate_validator(field, nested)),
         "properties" => return Some(extract_object_size_validator(field, attribute, nested)),
         v => {
             abort!(path.span(), "unexpected list validator: {:?}", v)
