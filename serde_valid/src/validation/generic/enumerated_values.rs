@@ -1,12 +1,12 @@
 /// EnumeratedValues validation.
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/generic.html#enumerated-values>
-pub fn validate_generic_enumerated_values<T, U>(value: &T, candidates: &[U]) -> bool
+pub fn validate_generic_enumerated_values<T, U>(value: &T, enumerate: &[U]) -> bool
 where
     T: std::cmp::PartialEq<U>,
     U: std::cmp::PartialEq<T>,
 {
-    candidates.iter().any(|v| v == value)
+    enumerate.iter().any(|candidate| candidate == value)
 }
 
 #[cfg(test)]
