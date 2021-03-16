@@ -3,7 +3,6 @@ use crate::traits::Size;
 /// Size validation.
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/object.html#id5>
-#[allow(dead_code)]
 pub fn validate_object_size<T>(
     value: &T,
     min_properties: Option<usize>,

@@ -1,7 +1,6 @@
 /// Length validation.
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/array.html#id7>
-#[allow(dead_code)]
 pub fn validate_array_length<T>(
     value: &[T],
     min_items: Option<usize>,
