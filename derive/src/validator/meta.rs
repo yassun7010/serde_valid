@@ -27,16 +27,19 @@ pub fn extract_meta_validator(field: &NamedField, attribute: &syn::Attribute) ->
                             return extract_validator_from_name_value(field, attribute, name_value)
                         }
                     },
-                    _ => unreachable!("Found a non Meta while looking for validators"),
+                    _ => abort!(
+                        meta_item.span(),
+                        "Found a non Meta while looking for validators"
+                    ),
                 };
             }
         }
-        // TODO
-        Ok(syn::Meta::Path(_)) => abort!(attribute.span(), "Non-support nested arguments"),
+        Ok(syn::Meta::Path(_)) => abort!(attribute.span(), "Unexpected path argument"),
         Ok(syn::Meta::NameValue(_)) => {
             abort!(attribute.span(), "Unexpected name=value argument")
         }
-        Err(e) => unreachable!(
+        Err(e) => abort!(
+            attribute.span(),
             "Got something other than a list of attributes while checking field `{}`: {:?}",
             field.ident(),
             e
