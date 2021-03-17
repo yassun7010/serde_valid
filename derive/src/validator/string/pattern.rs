@@ -28,9 +28,13 @@ fn inner_extract_string_pattern_validator(field_ident: &syn::Ident, lit: &syn::L
             "invalid argument type for `pattern` validator: only str literals are allowed",
         ),
     };
+    let pattern_ident = syn::Ident::new(
+        &format!("{}_PATTERN", &field_ident).to_uppercase(),
+        field_ident.span(),
+    );
     let token = quote!(
-        static RE: once_cell::sync::OnceCell<regex::Regex> = once_cell::sync::OnceCell::new();
-        let pattern = RE.get_or_init(|| regex::Regex::new(#pattern).unwrap());
+        static #pattern_ident : once_cell::sync::OnceCell<regex::Regex> = once_cell::sync::OnceCell::new();
+        let pattern = #pattern_ident.get_or_init(|| regex::Regex::new(#pattern).unwrap());
         if !::serde_valid::validate_string_regular_expressions(
             #field_ident,
             pattern,
