@@ -1,4 +1,4 @@
-mod number;
+mod numeric;
 mod string;
-pub use number::{LitNumber, NumberInfo};
+pub use numeric::{LitNumeric, NumericInfo};
 pub use string::LitString;

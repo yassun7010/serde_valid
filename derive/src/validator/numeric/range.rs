@@ -1,4 +1,4 @@
-use crate::lit::{LitNumber, NumberInfo};
+use crate::lit::{LitNumeric, NumericInfo};
 use crate::helper::{NamedField, SingleIdentPath};
 use crate::validator::abort_invalid_attribute_on_field;
 use proc_macro2::TokenStream;
@@ -6,26 +6,26 @@ use syn::spanned::Spanned;
 use quote::quote;
 use crate::validator::Validator;
 
-pub fn extract_number_range_validator(
+pub fn extract_numeric_range_validator(
     field: &NamedField,
     attribute: &syn::Attribute,
     meta_items: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
 ) -> Validator {
     if let Some(array_field) = field.array_field() {
-        Validator::Array(Box::new(extract_number_range_validator(
+        Validator::Array(Box::new(extract_numeric_range_validator(
             &array_field,
                 attribute,
                 meta_items,
         )))
     } else if let Some(option_field) = field.option_field() {
         Validator::Option(
-            Box::new(extract_number_range_validator(
+            Box::new(extract_numeric_range_validator(
             &option_field,
                 attribute,
                 meta_items,
         )))
     } else{
-        Validator::Normal(inner_extract_number_range_validator(
+        Validator::Normal(inner_extract_numeric_range_validator(
             field.ident(),
             attribute,
             meta_items,
@@ -33,7 +33,7 @@ pub fn extract_number_range_validator(
     }
 }
 
-pub fn inner_extract_number_range_validator(
+pub fn inner_extract_numeric_range_validator(
     field_ident: &syn::Ident,
     attribute: &syn::Attribute,
     meta_items: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
@@ -51,16 +51,16 @@ pub fn inner_extract_number_range_validator(
                 let path_ident = SingleIdentPath::new(path).ident();
                 match path_ident.to_string().as_ref() {
                         "minimum" => {
-                            minimum = Some(get_number(field_ident, lit, path_ident, minimum));
+                            minimum = Some(get_numeric(field_ident, lit, path_ident, minimum));
                         },
                         "exclusive_minimum" => {
-                            exclusive_minimum = Some(get_number(field_ident, lit, path_ident, exclusive_minimum));
+                            exclusive_minimum = Some(get_numeric(field_ident, lit, path_ident, exclusive_minimum));
                         },
                         "maximum" => {
-                            maximum = Some(get_number(field_ident, lit, path_ident, maximum));
+                            maximum = Some(get_numeric(field_ident, lit, path_ident, maximum));
                         },
                         "exclusive_maximum" => {
-                            exclusive_maximum = Some(get_number(field_ident, lit, path_ident, exclusive_maximum));
+                            exclusive_maximum = Some(get_numeric(field_ident, lit, path_ident, exclusive_maximum));
                         },
                         v => abort_invalid_attribute_on_field(field_ident, path.span(), &format!(
                             "unknown argument `{}` for validator `range` \
@@ -97,7 +97,7 @@ pub fn inner_extract_number_range_validator(
         );
     }
     let token = quote!(
-        if !::serde_valid::validate_number_range(
+        if !::serde_valid::validate_numeric_range(
             *#field_ident,
             #minimum_tokens,
             #maximum_tokens
@@ -108,7 +108,7 @@ pub fn inner_extract_number_range_validator(
     token
 }
 
-fn get_number(field_ident: &syn::Ident, lit: &syn::Lit, path_ident: &syn::Ident, target: Option<NumberInfo>) -> NumberInfo {
+fn get_numeric(field_ident: &syn::Ident, lit: &syn::Lit, path_ident: &syn::Ident, target: Option<NumericInfo>) -> NumericInfo {
     if target.is_some() {
         abort_invalid_attribute_on_field(
             field_ident,
@@ -117,16 +117,16 @@ fn get_number(field_ident: &syn::Ident, lit: &syn::Lit, path_ident: &syn::Ident,
     }
 
     match lit {
-        syn::Lit::Int(l) => NumberInfo::new(LitNumber::Int(l.to_owned()), path_ident.to_owned()),
-        syn::Lit::Float(l) => NumberInfo::new(LitNumber::Float(l.to_owned()), path_ident.to_owned()), 
+        syn::Lit::Int(l) => NumericInfo::new(LitNumeric::Int(l.to_owned()), path_ident.to_owned()),
+        syn::Lit::Float(l) => NumericInfo::new(LitNumeric::Float(l.to_owned()), path_ident.to_owned()), 
         _ => abort_invalid_attribute_on_field(
             field_ident,
             lit.span(),
-             &format!("invalid argument type for `{}` of `range` validator: only number literals are allowed", path_ident.to_string())),
+             &format!("invalid argument type for `{}` of `range` validator: only numeric literals are allowed", path_ident.to_string())),
     }
 }
 
-fn get_limit_tokens(field_ident: &syn::Ident, inclusive_limit: Option<NumberInfo>, exclusive_limit: Option<NumberInfo>) -> proc_macro2::TokenStream {
+fn get_limit_tokens(field_ident: &syn::Ident, inclusive_limit: Option<NumericInfo>, exclusive_limit: Option<NumericInfo>) -> proc_macro2::TokenStream {
     match (inclusive_limit, exclusive_limit) {
         (Some(inclusive), Some(exclusive)) => abort_invalid_attribute_on_field(
             field_ident,

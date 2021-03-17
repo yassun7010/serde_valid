@@ -1,18 +1,18 @@
 use proc_macro2::TokenStream;
 use quote::ToTokens;
 
-pub enum LitNumber {
+pub enum LitNumeric {
     Int(syn::LitInt),
     Float(syn::LitFloat),
 }
 
-pub struct NumberInfo {
-    lit: LitNumber,
+pub struct NumericInfo {
+    lit: LitNumeric,
     path_ident: syn::Ident,
 }
 
-impl NumberInfo {
-    pub fn new(lit: LitNumber, path_ident: syn::Ident) -> Self {
+impl NumericInfo {
+    pub fn new(lit: LitNumeric, path_ident: syn::Ident) -> Self {
         Self { lit, path_ident }
     }
     pub fn path_ident(&self) -> &syn::Ident {
@@ -24,16 +24,16 @@ impl NumberInfo {
     }
 }
 
-impl ToTokens for LitNumber {
+impl ToTokens for LitNumeric {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         match self {
-            LitNumber::Int(lin) => lin.to_tokens(tokens),
-            LitNumber::Float(lin) => lin.to_tokens(tokens),
+            LitNumeric::Int(lin) => lin.to_tokens(tokens),
+            LitNumeric::Float(lin) => lin.to_tokens(tokens),
         }
     }
 }
 
-impl ToTokens for NumberInfo {
+impl ToTokens for NumericInfo {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         self.lit.to_tokens(tokens)
     }
