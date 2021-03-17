@@ -51,7 +51,11 @@ mod tests {
 
     #[test]
     fn test_validate_string_length_emoji_is_true() {
-        assert!(validate_string_length("😍👺👻", Some(3), Some(3)));
+        assert!(validate_string_length(
+            "😍👺🙋🏽👨‍🎤👨‍👩‍👧‍👦",
+            Some(5),
+            Some(5)
+        ));
     }
 
     #[test]
