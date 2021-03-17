@@ -29,7 +29,8 @@ fn inner_extract_string_pattern_validator(field_ident: &syn::Ident, lit: &syn::L
         ),
     };
     let token = quote!(
-        let pattern = regex::Regex::new(#pattern).unwrap();
+        static RE: once_cell::sync::OnceCell<regex::Regex> = once_cell::sync::OnceCell::new();
+        let pattern = RE.get_or_init(|| regex::Regex::new(#pattern).unwrap());
         if !::serde_valid::validate_string_regular_expressions(
             #field_ident,
             pattern,
