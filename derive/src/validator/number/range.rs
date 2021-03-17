@@ -130,7 +130,11 @@ fn get_limit_tokens(field_ident: &syn::Ident, inclusive_limit: Option<NumberInfo
     match (inclusive_limit, exclusive_limit) {
         (Some(inclusive), Some(exclusive)) => abort_invalid_attribute_on_field(
             field_ident,
-            inclusive.path_ident().span().join(exclusive.path_ident().span()).unwrap(),
+            inclusive.path_ident().span()
+            .join(
+                exclusive.path_ident().span()
+            )
+            .unwrap_or(inclusive.path_ident().span()),
             &format!("both `{}` and `{}` have been set in `range` validator: conflict", inclusive.path_name(), exclusive.path_name())
         ),
         (Some(inclusive_limit), None) => quote!(Some(::serde_valid::Limit::Inclusive(#inclusive_limit))),
