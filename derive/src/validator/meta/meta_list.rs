@@ -1,4 +1,4 @@
-use crate::helper::NamedField;
+use crate::helper::{NamedField, SingleIdentPath};
 use crate::validator::array::extract_array_length_validator;
 use crate::validator::generic::extract_generic_enumerate_validator;
 use crate::validator::number::extract_number_range_validator;
@@ -13,7 +13,7 @@ pub fn extract_validator_from_meta_list(
     attribute: &syn::Attribute,
     syn::MetaList { path, nested, .. }: &syn::MetaList,
 ) -> Option<Validator> {
-    let ident = path.get_ident().unwrap();
+    let ident = SingleIdentPath::new(&path).ident();
 
     match ident.to_string().as_ref() {
         "range" => return Some(extract_number_range_validator(field, attribute, nested)),

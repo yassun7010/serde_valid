@@ -1,3 +1,4 @@
+use crate::helper::SingleIdentPath;
 use crate::validator::abort_invalid_attribute_on_field;
 use proc_macro2::TokenStream;
 use quote::quote;
@@ -15,9 +16,9 @@ pub fn extract_length_validator_tokens<'a>(
     let mut max = None;
     for meta_item in meta_items {
         if let syn::NestedMeta::Meta(ref item) = *meta_item {
-            if let syn::Meta::NameValue(syn::MetaNameValue { ref path, lit, .. }) = item {
-                let path_ident = path.get_ident().unwrap().to_owned();
-                let path_str = &path_ident.to_string();
+            if let syn::Meta::NameValue(syn::MetaNameValue { path, lit, .. }) = item {
+                let path_ident = SingleIdentPath::new(&path).ident();
+                let path_str = path_ident.to_string();
                 if path_str == min_label {
                     min = Some(limit_int(
                         field_ident,
@@ -76,7 +77,7 @@ pub fn extract_length_validator_tokens<'a>(
 fn limit_int(
     field_ident: &syn::Ident,
     lit: &syn::Lit,
-    path_ident: syn::Ident,
+    path_ident: &syn::Ident,
     target: Option<syn::LitInt>,
     validation_label: &str,
 ) -> syn::LitInt {

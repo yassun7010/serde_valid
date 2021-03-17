@@ -1,6 +1,6 @@
 use super::extract_type_from_array;
 use super::extract_type_from_option;
-use crate::abort::abort_unnamed_fields_struct;
+use proc_macro_error::abort;
 use ref_cast::RefCast;
 use std::convert::AsRef;
 use syn::spanned::Spanned;
@@ -12,7 +12,11 @@ pub struct NamedField(syn::Field);
 impl<'a> NamedField {
     pub fn new(field: syn::Field) -> Self {
         if field.ident.is_none() {
-            abort_unnamed_fields_struct(field.span())
+            abort!(
+                field.span(),
+                "struct has unnamed fields";
+                help = "#[derive(Validate)] can only be used on structs with named fields";
+            )
         }
         Self(field)
     }

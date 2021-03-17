@@ -1,5 +1,5 @@
 use crate::lit::{LitNumber, NumberInfo};
-use crate::helper::NamedField;
+use crate::helper::{NamedField, SingleIdentPath};
 use crate::validator::abort_invalid_attribute_on_field;
 use proc_macro2::TokenStream;
 use syn::spanned::Spanned;
@@ -48,7 +48,7 @@ pub fn inner_extract_number_range_validator(
                 ref path, lit, ..
             }) = item
             {
-                let path_ident = path.get_ident().unwrap().to_owned();
+                let path_ident = SingleIdentPath::new(path).ident();
                 match path_ident.to_string().as_ref() {
                         "minimum" => {
                             minimum = Some(get_number(field_ident, lit, path_ident, minimum));
@@ -108,7 +108,7 @@ pub fn inner_extract_number_range_validator(
     token
 }
 
-fn get_number(field_ident: &syn::Ident, lit: &syn::Lit, path_ident: syn::Ident, target: Option<NumberInfo>) -> NumberInfo {
+fn get_number(field_ident: &syn::Ident, lit: &syn::Lit, path_ident: &syn::Ident, target: Option<NumberInfo>) -> NumberInfo {
     if target.is_some() {
         abort_invalid_attribute_on_field(
             field_ident,
@@ -117,8 +117,8 @@ fn get_number(field_ident: &syn::Ident, lit: &syn::Lit, path_ident: syn::Ident, 
     }
 
     match lit {
-        syn::Lit::Int(l) => NumberInfo::new(LitNumber::Int(l.to_owned()), path_ident),
-        syn::Lit::Float(l) => NumberInfo::new(LitNumber::Float(l.to_owned()), path_ident), 
+        syn::Lit::Int(l) => NumberInfo::new(LitNumber::Int(l.to_owned()), path_ident.to_owned()),
+        syn::Lit::Float(l) => NumberInfo::new(LitNumber::Float(l.to_owned()), path_ident.to_owned()), 
         _ => abort_invalid_attribute_on_field(
             field_ident,
             lit.span(),
