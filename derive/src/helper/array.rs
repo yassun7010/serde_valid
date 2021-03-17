@@ -10,7 +10,6 @@ pub fn extract_type_from_array(ty: &syn::Type) -> Option<syn::Type> {
     .and_then(|path| extract_array_segment(path))
     .and_then(|path_segment| {
         let type_params = &path_segment.arguments;
-        // It should have only on angle-bracketed param ("<String>"):
         match *type_params {
             PathArguments::AngleBracketed(ref params) => params.args.first(),
             _ => abort!(ty.span(), "`Vec` must be angle bracketed (=`Vec<*>`)."),
