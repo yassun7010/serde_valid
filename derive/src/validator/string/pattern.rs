@@ -32,7 +32,8 @@ fn inner_extract_string_pattern_validator(field_ident: &syn::Ident, lit: &syn::L
         &format!("{}_PATTERN", &field_ident).to_uppercase(),
         field_ident.span(),
     );
-    let token = quote!(
+
+    quote!(
         static #pattern_ident : once_cell::sync::OnceCell<regex::Regex> = once_cell::sync::OnceCell::new();
         let pattern = #pattern_ident.get_or_init(|| regex::Regex::new(#pattern).unwrap());
         if !::serde_valid::validate_string_regular_expressions(
@@ -41,6 +42,5 @@ fn inner_extract_string_pattern_validator(field_ident: &syn::Ident, lit: &syn::L
         ) {
             errors.push(::serde_valid::Error::PatternError);
         }
-    );
-    token
+    )
 }

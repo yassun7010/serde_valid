@@ -30,7 +30,7 @@ pub fn extract_object_size_validator(
     }
 }
 
-pub fn inner_extract_object_size_validator(
+fn inner_extract_object_size_validator(
     field_ident: &syn::Ident,
     attribute: &syn::Attribute,
     meta_items: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,

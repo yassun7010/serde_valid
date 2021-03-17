@@ -44,7 +44,7 @@ pub fn extract_string_length_validator(
     }
 }
 
-pub fn inner_extract_string_length_validator(
+fn inner_extract_string_length_validator(
     field_ident: &syn::Ident,
     attribute: &syn::Attribute,
     meta_items: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,

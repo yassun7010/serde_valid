@@ -33,11 +33,32 @@ pub fn extract_numeric_range_validator(
     }
 }
 
-pub fn inner_extract_numeric_range_validator(
+fn inner_extract_numeric_range_validator(
     field_ident: &syn::Ident,
     attribute: &syn::Attribute,
     meta_items: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
 ) -> TokenStream {
+    let (minimum_tokens, maximum_tokens) = extract_numeric_range_validator_tokens(
+        field_ident,
+        attribute,
+        meta_items,
+    );
+    quote!(
+        if !::serde_valid::validate_numeric_range(
+            *#field_ident,
+            #minimum_tokens,
+            #maximum_tokens
+        ) {
+            errors.push(::serde_valid::Error::RangeError);
+        }
+    )
+}
+
+fn extract_numeric_range_validator_tokens(
+    field_ident: &syn::Ident,
+    attribute: &syn::Attribute,
+    meta_items: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
+) -> (TokenStream, TokenStream) {
     let mut minimum = None;
     let mut exclusive_minimum = None;
     let mut maximum = None;
@@ -96,16 +117,7 @@ pub fn inner_extract_numeric_range_validator(
             "Validator `range` requires at least 1 argument from `minimum` or `exclusive_minimum`, `maximum` or `exclusive_maximum`",
         );
     }
-    let token = quote!(
-        if !::serde_valid::validate_numeric_range(
-            *#field_ident,
-            #minimum_tokens,
-            #maximum_tokens
-        ) {
-            errors.push(::serde_valid::Error::RangeError);
-        }
-    );
-    token
+    (minimum_tokens, maximum_tokens)
 }
 
 fn get_numeric(field_ident: &syn::Ident, lit: &syn::Lit, path_ident: &syn::Ident, target: Option<NumericInfo>) -> NumericInfo {
