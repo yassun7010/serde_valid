@@ -1,6 +1,7 @@
-use serde_valid::Validate;
+#[test]
+fn validation_test() {
+    use serde_valid::Validate;
 
-fn main() {
     #[derive(Debug, Validate)]
     struct TestStruct<'a> {
         // Generic validator
@@ -45,7 +46,7 @@ fn main() {
         #[validate(items(min_items = 3, max_items = 3))]
         // Numeric validator
         #[validate(multiple_of = 5)]
-        #[validate(range(minimum = 5, maximum = 5))]
+        #[validate(range(minimum = 5, maximum = 15))]
         vec_value: Vec<i32>,
     }
 
@@ -54,7 +55,7 @@ fn main() {
         float_value: 5.0,
         string_value: "12345".to_string(),
         str_value: "12345",
-        optional_value: Some(32),
+        optional_value: Some(5),
         vec_value: vec![5, 10, 15],
     };
     assert!(s.validate().is_ok());
