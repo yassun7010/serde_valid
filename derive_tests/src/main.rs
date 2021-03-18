@@ -7,6 +7,7 @@ struct TestStruct<'a> {
     // Numeric validator
     #[validate(multiple_of = 5)]
     #[validate(range(minimum = 5, maximum = 5))]
+    #[validate(range(exclusive_minimum = 4, exclusive_maximum = 6))]
     int_value: i32,
 
     // Generic validator
@@ -14,6 +15,7 @@ struct TestStruct<'a> {
     // Numeric validator
     #[validate(multiple_of = 5.0)]
     #[validate(range(minimum = 5.0, maximum = 5.0))]
+    #[validate(range(exclusive_minimum = 4.0, exclusive_maximum = 6.0))]
     float_value: f32,
 
     // Generic validator
