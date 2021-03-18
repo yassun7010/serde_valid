@@ -1,14 +1,5 @@
 use serde_valid::Validate;
 
-fn main() {
-    validation_sample();
-}
-
-#[test]
-fn validation_test() {
-    validation_sample();
-}
-
 #[derive(Debug, Validate)]
 struct TestStruct<'a> {
     // Generic validator
@@ -67,4 +58,13 @@ fn validation_sample() {
         vec_value: vec![5, 10, 15],
     };
     assert!(s.validate().is_ok());
+}
+
+fn main() {
+    validation_sample();
+}
+
+#[test]
+fn validation_test() {
+    validation_sample();
 }
