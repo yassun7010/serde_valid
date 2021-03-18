@@ -195,3 +195,37 @@ fn range_vec_optional_type_is_ok_test() {
     };
     assert!(s.validate().is_ok());
 }
+
+#[test]
+fn range_inclusive_err_message_test() {
+    #[derive(Debug, Validate)]
+    struct TestStruct {
+        #[validate(range(minimum = 1, maximum = 10))]
+        val: i32,
+    }
+
+    let s = TestStruct { val: 0 };
+    for error in s.validate().unwrap_err() {
+        assert_eq!(
+            format!("{}", error),
+            "val: must be in `1 <= value <= 10`, but value is `0`."
+        )
+    }
+}
+
+#[test]
+fn range_exclusive_err_message_test() {
+    #[derive(Debug, Validate)]
+    struct TestStruct {
+        #[validate(range(exclusive_minimum = 1, exclusive_maximum = 10))]
+        val: i32,
+    }
+
+    let s = TestStruct { val: 0 };
+    for error in s.validate().unwrap_err() {
+        assert_eq!(
+            format!("{}", error),
+            "val: must be in `1 < value < 10`, but value is `0`."
+        )
+    }
+}

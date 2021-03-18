@@ -43,13 +43,23 @@ fn inner_extract_numeric_range_validator(
         attribute,
         meta_items,
     );
+    let field_string = field_ident.to_string();
     quote!(
         if !::serde_valid::validate_numeric_range(
             *#field_ident,
             #minimum_tokens,
             #maximum_tokens
         ) {
-            errors.push(::serde_valid::Error::RangeError);
+            errors.push(::serde_valid::Error::RangeError(
+                ::serde_valid::error::Message::new(
+                    #field_string,
+                    ::serde_valid::error::RangeErrorInfo::new(
+                        *#field_ident,
+                        #minimum_tokens,
+                        #maximum_tokens
+                    )
+                )
+            ));
         }
     )
 }

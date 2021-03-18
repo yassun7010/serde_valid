@@ -1,4 +1,4 @@
-mod error;
+pub mod error;
 mod traits;
 mod validation;
 pub use error::Error;

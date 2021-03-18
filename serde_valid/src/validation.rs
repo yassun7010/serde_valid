@@ -1,6 +1,6 @@
 mod array;
 mod generic;
-mod numeric;
+pub mod numeric;
 mod object;
 mod string;
 
