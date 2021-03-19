@@ -1,10 +1,12 @@
 mod array;
+mod generic;
 mod message;
 mod numeric;
 mod object;
 mod string;
 
 pub use array::{ItemsErrorInfo, UniqueItemsErrorInfo};
+pub use generic::EnumerateErrorInfo;
 pub use message::Message;
 pub use numeric::{MultiplesErrorInfo, RangeErrorInfo};
 pub use object::PropertiesErrorInfo;
@@ -26,6 +28,6 @@ pub enum Error {
     UniqueItemsError(Message<UniqueItemsErrorInfo>),
     #[error("{0}")]
     PropertiesError(Message<PropertiesErrorInfo>),
-    #[error("EnumeratedValues Error")]
-    EnumeratedValuesError,
+    #[error("{0}")]
+    EnumerateValuesError(Message<EnumerateErrorInfo>),
 }

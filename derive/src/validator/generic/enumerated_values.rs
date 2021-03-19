@@ -36,6 +36,7 @@ fn inner_extract_generic_enumerate_validator(
     attribute: &syn::Attribute,
     meta_items: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
 ) -> TokenStream {
+    let field_string = field_ident.to_string();
     if meta_items.len() == 0 {
         abort!(
             attribute.span(),
@@ -47,7 +48,17 @@ fn inner_extract_generic_enumerate_validator(
             #field_ident,
             &[#meta_items],
         ) {
-            errors.push(::serde_valid::Error::EnumeratedValuesError);
+            errors.push(
+                ::serde_valid::Error::EnumerateValuesError(
+                    ::serde_valid::error::Message::new(
+                        #field_string,
+                        ::serde_valid::error::EnumerateErrorInfo::new(
+                            #field_ident,
+                            &[#meta_items],
+                        )
+                    )
+                )
+            );
         }
     );
     token

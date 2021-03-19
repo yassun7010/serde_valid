@@ -97,3 +97,20 @@ fn enumerate_is_err_test() {
     let s = TestStruct { val: 0.1 };
     assert!(s.validate().is_err());
 }
+
+#[test]
+fn enumerate_err_message_test() {
+    #[derive(Debug, Validate)]
+    struct TestStruct {
+        #[validate(enumerate(1, 2, 3))]
+        val: i32,
+    }
+
+    let s = TestStruct { val: 4 };
+    for error in s.validate().unwrap_err() {
+        assert_eq!(
+            format!("{}", error),
+            "val: `4` must be in [1, 2, 3], but not."
+        )
+    }
+}
