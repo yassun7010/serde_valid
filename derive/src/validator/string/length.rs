@@ -64,14 +64,18 @@ fn inner_extract_string_length_validator(
             #min_length_tokens,
             #max_length_tokens
         ) {
-            errors.push(::serde_valid::Error::LengthError(
-                ::serde_valid::error::Message::new(
-                    #field_string,
-                    ::serde_valid::error::LengthErrorInfo::new(
-                        #field_ident,
-                        #min_length_tokens,
-                        #max_length_tokens
-            ))));
+            errors.push(
+                ::serde_valid::Error::LengthError(
+                    ::serde_valid::error::Message::new(
+                        #field_string,
+                        ::serde_valid::error::LengthErrorInfo::new(
+                            #field_ident,
+                            #min_length_tokens,
+                            #max_length_tokens
+                        )
+                    )
+                )
+            );
         }
     )
 }

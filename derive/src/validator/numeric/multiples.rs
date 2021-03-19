@@ -42,15 +42,17 @@ fn inner_extract_numeric_multiples_validator(
             *#field_ident,
             #multiple_of,
         ) {
-            errors.push(::serde_valid::Error::MultiplesError(
-                ::serde_valid::error::Message::new(
-                    #field_string,
-                    ::serde_valid::error::MultiplesErrorInfo::new(
-                        *#field_ident,
-                        #multiple_of,
+            errors.push(
+                ::serde_valid::Error::MultiplesError(
+                    ::serde_valid::error::Message::new(
+                        #field_string,
+                        ::serde_valid::error::MultiplesErrorInfo::new(
+                            *#field_ident,
+                            #multiple_of,
+                        )
                     )
                 )
-            ));
+            );
         }
     );
     token
