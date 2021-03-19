@@ -188,3 +188,22 @@ fn pattern_vec_optional_type_is_ok_test() {
     };
     assert!(s.validate().is_ok());
 }
+
+#[test]
+fn pattern_err_message_test() {
+    #[derive(Debug, Validate)]
+    struct TestStruct {
+        #[validate(pattern = r"^\d{4}-\d{2}-\d{2}$")]
+        val: String,
+    }
+
+    let s = TestStruct {
+        val: String::from("2020/09/10"),
+    };
+    for error in s.validate().unwrap_err() {
+        assert_eq!(
+            format!("{}", error),
+            "val: \"2020/09/10\" must match the pattern of \"^\\d{4}-\\d{2}-\\d{2}$\", but not."
+        )
+    }
+}

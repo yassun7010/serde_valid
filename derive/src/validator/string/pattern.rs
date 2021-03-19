@@ -20,6 +20,7 @@ pub fn extract_string_pattern_validator(field: &NamedField, lit: &syn::Lit) -> V
 }
 
 fn inner_extract_string_pattern_validator(field_ident: &syn::Ident, lit: &syn::Lit) -> TokenStream {
+    let field_string = field_ident.to_string();
     let pattern = match lit {
         syn::Lit::Str(l) => l.to_owned(),
         _ => abort_invalid_attribute_on_field(
@@ -40,7 +41,13 @@ fn inner_extract_string_pattern_validator(field_ident: &syn::Ident, lit: &syn::L
             #field_ident,
             pattern,
         ) {
-            errors.push(::serde_valid::Error::PatternError);
+            errors.push(::serde_valid::Error::PatternError(
+                ::serde_valid::error::Message::new(
+                    #field_string,
+                    ::serde_valid::error::RegularExpressionErrorInfo::new(
+                        #field_ident,
+                        pattern,
+            ))));
         }
     )
 }

@@ -4,7 +4,7 @@ mod string;
 
 pub use message::Message;
 pub use numeric::{MultiplesErrorInfo, RangeErrorInfo};
-pub use string::LengthErrorInfo;
+pub use string::{LengthErrorInfo, RegularExpressionErrorInfo};
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -14,8 +14,8 @@ pub enum Error {
     MultiplesError(Message<MultiplesErrorInfo>),
     #[error("{0}")]
     LengthError(Message<LengthErrorInfo>),
-    #[error("Pattern Error")]
-    PatternError,
+    #[error("{0}")]
+    PatternError(Message<RegularExpressionErrorInfo>),
     #[error("Items Error")]
     ItemsError,
     #[error("UniqueItems Error")]
