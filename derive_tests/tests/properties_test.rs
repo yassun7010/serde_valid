@@ -73,3 +73,23 @@ fn properties_is_err_test() {
     let s = TestStruct { val: map };
     assert!(s.validate().is_err());
 }
+
+#[test]
+fn properties_err_message_test() {
+    #[derive(Debug, Validate)]
+    struct TestStruct {
+        #[validate(properties(min_properties = 3, max_properties = 3))]
+        val: HashMap<String, String>,
+    }
+
+    let mut map = HashMap::new();
+    map.insert("key1".to_string(), "value1".to_string());
+
+    let s = TestStruct { val: map };
+    for error in s.validate().unwrap_err() {
+        assert_eq!(
+            format!("{}", error),
+            "val: properties size of {\"key1\": \"value1\"} must be in `3 <= size <= 3`, but `1`."
+        )
+    }
+}

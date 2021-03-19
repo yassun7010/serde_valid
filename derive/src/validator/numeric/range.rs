@@ -38,12 +38,12 @@ fn inner_extract_numeric_range_validator(
     attribute: &syn::Attribute,
     meta_items: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
 ) -> TokenStream {
+    let field_string = field_ident.to_string();
     let (minimum_tokens, maximum_tokens) = extract_numeric_range_validator_tokens(
         field_ident,
         attribute,
         meta_items,
     );
-    let field_string = field_ident.to_string();
     quote!(
         if !::serde_valid::validate_numeric_range(
             *#field_ident,

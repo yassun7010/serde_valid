@@ -35,6 +35,7 @@ fn inner_extract_object_size_validator(
     attribute: &syn::Attribute,
     meta_items: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
 ) -> TokenStream {
+    let field_string = field_ident.to_string();
     let (min_properties_tokens, max_properties_tokens) = extract_length_validator_tokens(
         field_ident,
         attribute,
@@ -49,7 +50,18 @@ fn inner_extract_object_size_validator(
             #min_properties_tokens,
             #max_properties_tokens
         ) {
-            errors.push(::serde_valid::Error::PropertiesError);
+            errors.push(
+                ::serde_valid::Error::PropertiesError(
+                    ::serde_valid::error::Message::new(
+                        #field_string,
+                        ::serde_valid::error::PropertiesErrorInfo::new(
+                            #field_ident,
+                            #min_properties_tokens,
+                            #max_properties_tokens
+                        )
+                    )
+                )
+            );
         }
     )
 }
