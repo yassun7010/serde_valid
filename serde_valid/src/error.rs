@@ -1,8 +1,10 @@
 mod message;
 mod numeric;
+mod string;
 
 pub use message::Message;
 pub use numeric::{MultiplesErrorInfo, RangeErrorInfo};
+pub use string::LengthErrorInfo;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -10,8 +12,8 @@ pub enum Error {
     RangeError(Message<RangeErrorInfo>),
     #[error("{0}")]
     MultiplesError(Message<MultiplesErrorInfo>),
-    #[error("Length Error")]
-    LengthError,
+    #[error("{0}")]
+    LengthError(Message<LengthErrorInfo>),
     #[error("Pattern Error")]
     PatternError,
     #[error("Items Error")]

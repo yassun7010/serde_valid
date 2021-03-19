@@ -278,3 +278,22 @@ fn length_vec_optional_type_is_ok_test() {
     };
     assert!(s.validate().is_ok());
 }
+
+#[test]
+fn length_err_message_test() {
+    #[derive(Debug, Validate)]
+    struct TestStruct {
+        #[validate(length(min_length = 1, max_length = 3))]
+        val: String,
+    }
+
+    let s = TestStruct {
+        val: String::from("test"),
+    };
+    for error in s.validate().unwrap_err() {
+        assert_eq!(
+            format!("{}", error),
+            "val: length of \"test\" must be in `1 <= length <= 3`, but not."
+        )
+    }
+}
