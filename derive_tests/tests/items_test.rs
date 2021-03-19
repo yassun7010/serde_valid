@@ -129,3 +129,20 @@ fn items_vec_optional_type_is_ok_test() {
     };
     assert!(s.validate().is_ok());
 }
+
+#[test]
+fn items_err_message_test() {
+    #[derive(Debug, Validate)]
+    struct TestStruct {
+        #[validate(items(min_items = 4, max_items = 4))]
+        val: Vec<i32>,
+    }
+
+    let s = TestStruct { val: vec![1, 2, 3] };
+    for error in s.validate().unwrap_err() {
+        assert_eq!(
+            format!("{}", error),
+            "val: items length of [1, 2, 3] must be in `4 <= length <= 4`, but `3`."
+        )
+    }
+}

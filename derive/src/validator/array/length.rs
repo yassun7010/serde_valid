@@ -29,6 +29,7 @@ fn inner_extract_array_length_validator(
     attribute: &syn::Attribute,
     meta_items: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
 ) -> TokenStream {
+    let field_string = field_ident.to_string();
     let (min_items_tokens, max_items_tokens) = extract_length_validator_tokens(
         field_ident,
         attribute,
@@ -43,7 +44,18 @@ fn inner_extract_array_length_validator(
             #min_items_tokens,
             #max_items_tokens
         ) {
-            errors.push(::serde_valid::Error::ItemsError);
+            errors.push(
+                ::serde_valid::Error::ItemsError(
+                    ::serde_valid::error::Message::new(
+                        #field_string,
+                        ::serde_valid::error::ItemsErrorInfo::new(
+                            #field_ident,
+                            #min_items_tokens,
+                            #max_items_tokens
+                        )
+                    )
+                )
+            );
         }
     )
 }

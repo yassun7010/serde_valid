@@ -1,7 +1,9 @@
+mod array;
 mod message;
 mod numeric;
 mod string;
 
+pub use array::ItemsErrorInfo;
 pub use message::Message;
 pub use numeric::{MultiplesErrorInfo, RangeErrorInfo};
 pub use string::{LengthErrorInfo, RegularExpressionErrorInfo};
@@ -16,8 +18,8 @@ pub enum Error {
     LengthError(Message<LengthErrorInfo>),
     #[error("{0}")]
     PatternError(Message<RegularExpressionErrorInfo>),
-    #[error("Items Error")]
-    ItemsError,
+    #[error("{0}")]
+    ItemsError(Message<ItemsErrorInfo>),
     #[error("UniqueItems Error")]
     UniqueItemsError,
     #[error("Properties Error")]
