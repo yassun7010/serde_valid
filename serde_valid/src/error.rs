@@ -2,14 +2,14 @@ mod message;
 mod numeric;
 
 pub use message::Message;
-pub use numeric::RangeErrorInfo;
+pub use numeric::{MultiplesErrorInfo, RangeErrorInfo};
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error("{0}")]
     RangeError(Message<RangeErrorInfo>),
-    #[error("MultipleOf Error")]
-    MultipleOfError,
+    #[error("{0}")]
+    MultiplesError(Message<MultiplesErrorInfo>),
     #[error("Length Error")]
     LengthError,
     #[error("Pattern Error")]

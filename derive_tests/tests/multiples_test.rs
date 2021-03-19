@@ -113,3 +113,20 @@ fn multiple_of_vec_optional_type_is_ok_test() {
     };
     assert!(s.validate().is_ok());
 }
+
+#[test]
+fn multiple_of_err_message_test() {
+    #[derive(Debug, Validate)]
+    struct TestStruct {
+        #[validate(multiple_of = 5)]
+        val: i32,
+    }
+
+    let s = TestStruct { val: 14 };
+    for error in s.validate().unwrap_err() {
+        assert_eq!(
+            format!("{}", error),
+            "val: `14` must be multiple of `5`, but not."
+        )
+    }
+}

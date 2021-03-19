@@ -27,6 +27,7 @@ fn inner_extract_numeric_multiples_validator(
     field_ident: &syn::Ident,
     lit: &syn::Lit,
 ) -> TokenStream {
+    let field_string = field_ident.to_string();
     let multiple_of = match lit {
         syn::Lit::Int(l) => LitNumeric::Int(l.to_owned()),
         syn::Lit::Float(l) => LitNumeric::Float(l.to_owned()),
@@ -41,7 +42,15 @@ fn inner_extract_numeric_multiples_validator(
             *#field_ident,
             #multiple_of,
         ) {
-            errors.push(::serde_valid::Error::MultipleOfError);
+            errors.push(::serde_valid::Error::MultiplesError(
+                ::serde_valid::error::Message::new(
+                    #field_string,
+                    ::serde_valid::error::MultiplesErrorInfo::new(
+                        *#field_ident,
+                        #multiple_of,
+                    )
+                )
+            ));
         }
     );
     token
