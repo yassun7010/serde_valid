@@ -12,11 +12,21 @@ pub fn extract_array_uniqueness_validator(field: &NamedField) -> Validator {
 }
 
 fn inner_extract_array_uniqueness_validator(field_ident: &syn::Ident) -> TokenStream {
+    let field_string = field_ident.to_string();
     quote!(
         if !::serde_valid::validate_array_uniqueness(
             #field_ident
         ) {
-            errors.push(::serde_valid::Error::UniqueItemsError);
+            errors.push(
+                ::serde_valid::Error::UniqueItemsError(
+                    ::serde_valid::error::Message::new(
+                        #field_string,
+                        ::serde_valid::error::UniqueItemsErrorInfo::new(
+                            #field_ident,
+                        )
+                    )
+                )
+            );
         }
     )
 }

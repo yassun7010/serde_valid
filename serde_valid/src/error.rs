@@ -3,7 +3,7 @@ mod message;
 mod numeric;
 mod string;
 
-pub use array::ItemsErrorInfo;
+pub use array::{ItemsErrorInfo, UniqueItemsErrorInfo};
 pub use message::Message;
 pub use numeric::{MultiplesErrorInfo, RangeErrorInfo};
 pub use string::{LengthErrorInfo, RegularExpressionErrorInfo};
@@ -20,8 +20,8 @@ pub enum Error {
     PatternError(Message<RegularExpressionErrorInfo>),
     #[error("{0}")]
     ItemsError(Message<ItemsErrorInfo>),
-    #[error("UniqueItems Error")]
-    UniqueItemsError,
+    #[error("{0}")]
+    UniqueItemsError(Message<UniqueItemsErrorInfo>),
     #[error("Properties Error")]
     PropertiesError,
     #[error("EnumeratedValues Error")]

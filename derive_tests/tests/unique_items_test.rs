@@ -37,3 +37,23 @@ fn unique_items_is_err_test() {
     let s = TestStruct { val: vec![1, 2, 2] };
     assert!(s.validate().is_err());
 }
+
+#[test]
+fn unique_items_err_message_test() {
+    #[derive(Debug, Validate)]
+    struct TestStruct {
+        #[validate(unique_items)]
+        val: Vec<i32>,
+    }
+
+    let s = TestStruct {
+        val: vec![1, 2, 3, 2],
+    };
+
+    for error in s.validate().unwrap_err() {
+        assert_eq!(
+            format!("{}", error),
+            "val: item of [1, 2, 3, 2] must be unique, but not."
+        )
+    }
+}
