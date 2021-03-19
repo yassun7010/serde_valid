@@ -208,7 +208,7 @@ fn range_inclusive_err_message_test() {
     for error in s.validate().unwrap_err() {
         assert_eq!(
             format!("{}", error),
-            "val: must be in `1 <= value <= 10`, but value is `0`."
+            "val: value must be in `1 <= value <= 10`, but `0`."
         )
     }
 }
@@ -225,7 +225,7 @@ fn range_exclusive_err_message_test() {
     for error in s.validate().unwrap_err() {
         assert_eq!(
             format!("{}", error),
-            "val: must be in `1 < value < 10`, but value is `0`."
+            "val: value must be in `1 < value < 10`, but `0`."
         )
     }
 }
