@@ -18,6 +18,26 @@ impl ItemsErrorMessage {
             max_items,
         }
     }
+
+    #[allow(dead_code)]
+    pub fn items(&self) -> &String {
+        &self.items
+    }
+
+    #[allow(dead_code)]
+    pub fn items_length(&self) -> usize {
+        self.items_length
+    }
+
+    #[allow(dead_code)]
+    pub fn min_items(&self) -> Option<usize> {
+        self.min_items
+    }
+
+    #[allow(dead_code)]
+    pub fn max_items(&self) -> Option<usize> {
+        self.max_items
+    }
 }
 
 impl std::fmt::Display for ItemsErrorMessage {

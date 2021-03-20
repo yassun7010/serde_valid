@@ -14,6 +14,16 @@ impl MultiplesErrorMessage {
             multiple_of: multiple_of.to_string(),
         }
     }
+
+    #[allow(dead_code)]
+    pub fn value(&self) -> &String {
+        &self.value
+    }
+
+    #[allow(dead_code)]
+    pub fn multiple_of(&self) -> &String {
+        &self.multiple_of
+    }
 }
 
 impl std::fmt::Display for MultiplesErrorMessage {

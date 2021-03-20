@@ -16,6 +16,21 @@ impl LengthErrorMessage {
             max_length,
         }
     }
+
+    #[allow(dead_code)]
+    pub fn length(&self) -> &String {
+        &self.length
+    }
+
+    #[allow(dead_code)]
+    pub fn min_length(&self) -> Option<usize> {
+        self.min_length
+    }
+
+    #[allow(dead_code)]
+    pub fn max_length(&self) -> Option<usize> {
+        self.max_length
+    }
 }
 
 impl std::fmt::Display for LengthErrorMessage {

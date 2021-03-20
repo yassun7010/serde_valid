@@ -24,6 +24,26 @@ impl PropertiesErrorMessage {
             max_properties,
         }
     }
+
+    #[allow(dead_code)]
+    pub fn properties(&self) -> &String {
+        &self.properties
+    }
+
+    #[allow(dead_code)]
+    pub fn properties_size(&self) -> usize {
+        self.properties_size
+    }
+
+    #[allow(dead_code)]
+    pub fn min_properties(&self) -> Option<usize> {
+        self.min_properties
+    }
+
+    #[allow(dead_code)]
+    pub fn max_properties(&self) -> Option<usize> {
+        self.max_properties
+    }
 }
 
 impl std::fmt::Display for PropertiesErrorMessage {

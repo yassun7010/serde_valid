@@ -12,6 +12,11 @@ impl UniqueItemsErrorMessage {
             items: format!("{:?}", items),
         }
     }
+
+    #[allow(dead_code)]
+    pub fn items(&self) -> &String {
+        &self.items
+    }
 }
 
 impl std::fmt::Display for UniqueItemsErrorMessage {

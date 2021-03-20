@@ -18,6 +18,21 @@ impl RangeErrorMessage {
             maximum: limit_numeric_to_string(maximum),
         }
     }
+
+    #[allow(dead_code)]
+    pub fn value(&self) -> &String {
+        &self.value
+    }
+
+    #[allow(dead_code)]
+    pub fn minimum(&self) -> Option<&Limit<String>> {
+        self.minimum.as_ref()
+    }
+
+    #[allow(dead_code)]
+    pub fn maximum(&self) -> Option<&Limit<String>> {
+        self.maximum.as_ref()
+    }
 }
 
 impl std::fmt::Display for RangeErrorMessage {
