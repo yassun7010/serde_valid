@@ -1,13 +1,13 @@
-mod meta_list;
-mod name_value;
-mod path;
+mod nested_meta_list;
+mod nested_meta_name_value;
+mod nested_meta_path;
 
 use super::nested::extract_nested_validator;
 use crate::helper::NamedField;
 use crate::validator::Validator;
-use meta_list::extract_validator_from_meta_list;
-use name_value::extract_validator_from_name_value;
-use path::extract_validator_from_path;
+use nested_meta_list::extract_validator_from_nested_meta_list;
+use nested_meta_name_value::extract_validator_from_nested_meta_name_value;
+use nested_meta_path::extract_validator_from_nested_meta_path;
 use proc_macro_error::abort;
 use syn::spanned::Spanned;
 
@@ -19,13 +19,17 @@ pub fn extract_meta_validator(field: &NamedField, attribute: &syn::Attribute) ->
                 match meta_item {
                     syn::NestedMeta::Meta(item) => match item {
                         syn::Meta::Path(path) => {
-                            return extract_validator_from_path(field, attribute, path)
+                            return extract_validator_from_nested_meta_path(field, attribute, path)
                         }
                         syn::Meta::List(meta_list) => {
-                            return extract_validator_from_meta_list(field, attribute, meta_list)
+                            return extract_validator_from_nested_meta_list(
+                                field, attribute, meta_list,
+                            )
                         }
                         syn::Meta::NameValue(name_value) => {
-                            return extract_validator_from_name_value(field, attribute, name_value)
+                            return extract_validator_from_nested_meta_name_value(
+                                field, attribute, name_value,
+                            )
                         }
                     },
                     _ => abort!(

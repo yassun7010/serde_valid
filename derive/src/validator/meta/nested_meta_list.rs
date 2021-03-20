@@ -8,7 +8,7 @@ use crate::validator::Validator;
 use proc_macro_error::abort;
 use syn::spanned::Spanned;
 
-pub fn extract_validator_from_meta_list(
+pub fn extract_validator_from_nested_meta_list(
     field: &NamedField,
     attribute: &syn::Attribute,
     syn::MetaList { path, nested, .. }: &syn::MetaList,
