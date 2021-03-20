@@ -2,6 +2,7 @@ mod meta_list;
 mod name_value;
 mod path;
 
+use super::nested::extract_nested_validator;
 use crate::helper::NamedField;
 use crate::validator::Validator;
 use meta_list::extract_validator_from_meta_list;
@@ -34,7 +35,7 @@ pub fn extract_meta_validator(field: &NamedField, attribute: &syn::Attribute) ->
                 };
             }
         }
-        Ok(syn::Meta::Path(_)) => abort!(attribute.span(), "Unexpected path argument"),
+        Ok(syn::Meta::Path(path)) => return extract_nested_validator(field, attribute, &path),
         Ok(syn::Meta::NameValue(_)) => {
             abort!(attribute.span(), "Unexpected name=value argument")
         }
