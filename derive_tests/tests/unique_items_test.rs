@@ -50,10 +50,11 @@ fn unique_items_err_message_test() {
         val: vec![1, 2, 3, 2],
     };
 
-    for error in s.validate().unwrap_err() {
+    for (field, error) in s.validate().unwrap_err() {
+        assert_eq!(field, "val");
         assert_eq!(
             format!("{}", error),
-            "val: item of [1, 2, 3, 2] must be unique, but not."
+            "item of [1, 2, 3, 2] must be unique, but not."
         )
     }
 }

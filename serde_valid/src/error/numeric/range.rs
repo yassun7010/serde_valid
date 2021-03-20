@@ -1,13 +1,13 @@
 use crate::validation::numeric::Limit;
 
 #[derive(Debug)]
-pub struct RangeErrorInfo {
+pub struct RangeErrorMessage {
     value: String,
     maximum: Option<Limit<String>>,
     minimum: Option<Limit<String>>,
 }
 
-impl RangeErrorInfo {
+impl RangeErrorMessage {
     pub fn new<T>(value: T, minimum: Option<Limit<T>>, maximum: Option<Limit<T>>) -> Self
     where
         T: PartialOrd + PartialEq + ToString,
@@ -20,7 +20,7 @@ impl RangeErrorInfo {
     }
 }
 
-impl std::fmt::Display for RangeErrorInfo {
+impl std::fmt::Display for RangeErrorMessage {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let minimum = if let Some(limit) = &self.minimum {
             match limit {

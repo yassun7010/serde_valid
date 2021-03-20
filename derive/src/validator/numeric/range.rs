@@ -50,15 +50,13 @@ fn inner_extract_numeric_range_validator(
             #minimum_tokens,
             #maximum_tokens
         ) {
-            errors.push(
+            errors.insert(
+                ::serde_valid::FieldName::new(#field_string),
                 ::serde_valid::Error::RangeError(
-                    ::serde_valid::error::Message::new(
-                        #field_string,
-                        ::serde_valid::error::RangeErrorInfo::new(
-                            *#field_ident,
-                            #minimum_tokens,
-                            #maximum_tokens
-                        )
+                    ::serde_valid::error::RangeErrorMessage::new(
+                        *#field_ident,
+                        #minimum_tokens,
+                        #maximum_tokens
                     )
                 )
             );

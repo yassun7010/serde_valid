@@ -1,12 +1,12 @@
 #[derive(Debug)]
-pub struct ItemsErrorInfo {
+pub struct ItemsErrorMessage {
     items: String,
     items_length: usize,
     min_items: Option<String>,
     max_items: Option<String>,
 }
 
-impl ItemsErrorInfo {
+impl ItemsErrorMessage {
     pub fn new<T>(items: &[T], min_items: Option<usize>, max_items: Option<usize>) -> Self
     where
         T: std::fmt::Debug,
@@ -20,7 +20,7 @@ impl ItemsErrorInfo {
     }
 }
 
-impl std::fmt::Display for ItemsErrorInfo {
+impl std::fmt::Display for ItemsErrorMessage {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let min_items = match &self.min_items {
             Some(items) => format!("{} <= ", items),

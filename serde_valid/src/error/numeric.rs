@@ -1,5 +1,5 @@
 mod multiples;
 mod range;
 
-pub use multiples::MultiplesErrorInfo;
-pub use range::RangeErrorInfo;
+pub use multiples::MultiplesErrorMessage;
+pub use range::RangeErrorMessage;

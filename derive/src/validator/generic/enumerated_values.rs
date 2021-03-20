@@ -48,14 +48,12 @@ fn inner_extract_generic_enumerate_validator(
             #field_ident,
             &[#meta_items],
         ) {
-            errors.push(
+            errors.insert(
+                ::serde_valid::FieldName::new(#field_string),
                 ::serde_valid::Error::EnumerateValuesError(
-                    ::serde_valid::error::Message::new(
-                        #field_string,
-                        ::serde_valid::error::EnumerateErrorInfo::new(
-                            #field_ident,
-                            &[#meta_items],
-                        )
+                    ::serde_valid::error::EnumerateErrorMessage::new(
+                        #field_ident,
+                        &[#meta_items],
                     )
                 )
             );

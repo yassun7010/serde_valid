@@ -44,15 +44,13 @@ fn inner_extract_array_length_validator(
             #min_items_tokens,
             #max_items_tokens
         ) {
-            errors.push(
+            errors.insert(
+                ::serde_valid::FieldName::new(#field_string),
                 ::serde_valid::Error::ItemsError(
-                    ::serde_valid::error::Message::new(
-                        #field_string,
-                        ::serde_valid::error::ItemsErrorInfo::new(
-                            #field_ident,
-                            #min_items_tokens,
-                            #max_items_tokens
-                        )
+                    ::serde_valid::error::ItemsErrorMessage::new(
+                        #field_ident,
+                        #min_items_tokens,
+                        #max_items_tokens
                     )
                 )
             );

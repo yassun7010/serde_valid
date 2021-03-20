@@ -205,10 +205,11 @@ fn range_inclusive_err_message_test() {
     }
 
     let s = TestStruct { val: 0 };
-    for error in s.validate().unwrap_err() {
+    for (field, error) in s.validate().unwrap_err() {
+        assert_eq!(field, "val");
         assert_eq!(
             format!("{}", error),
-            "val: value must be in `1 <= value <= 10`, but `0`."
+            "value must be in `1 <= value <= 10`, but `0`."
         )
     }
 }
@@ -222,10 +223,11 @@ fn range_exclusive_err_message_test() {
     }
 
     let s = TestStruct { val: 0 };
-    for error in s.validate().unwrap_err() {
+    for (field, error) in s.validate().unwrap_err() {
+        assert_eq!(field, "val");
         assert_eq!(
             format!("{}", error),
-            "val: value must be in `1 < value < 10`, but `0`."
+            "value must be in `1 < value < 10`, but `0`."
         )
     }
 }

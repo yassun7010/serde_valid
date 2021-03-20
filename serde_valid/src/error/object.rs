@@ -1,3 +1,3 @@
 mod size;
 
-pub use size::PropertiesErrorInfo;
+pub use size::PropertiesErrorMessage;

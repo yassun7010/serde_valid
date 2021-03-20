@@ -290,10 +290,11 @@ fn length_err_message_test() {
     let s = TestStruct {
         val: String::from("test"),
     };
-    for error in s.validate().unwrap_err() {
+    for (field, error) in s.validate().unwrap_err() {
+        assert_eq!(field, "val");
         assert_eq!(
             format!("{}", error),
-            "val: length of \"test\" must be in `1 <= length <= 3`, but not."
+            "length of \"test\" must be in `1 <= length <= 3`, but not."
         )
     }
 }

@@ -1,5 +1,5 @@
 mod length;
 mod uniqueness;
 
-pub use length::ItemsErrorInfo;
-pub use uniqueness::UniqueItemsErrorInfo;
+pub use length::ItemsErrorMessage;
+pub use uniqueness::UniqueItemsErrorMessage;

@@ -2,12 +2,12 @@ use crate::traits::IsMatch;
 use regex::Regex;
 
 #[derive(Debug)]
-pub struct RegularExpressionErrorInfo {
+pub struct RegularExpressionErrorMessage {
     value: String,
     pattern: String,
 }
 
-impl RegularExpressionErrorInfo {
+impl RegularExpressionErrorMessage {
     pub fn new<T>(value: &T, pattern: &Regex) -> Self
     where
         T: IsMatch + ?Sized + std::fmt::Debug,
@@ -19,7 +19,7 @@ impl RegularExpressionErrorInfo {
     }
 }
 
-impl std::fmt::Display for RegularExpressionErrorInfo {
+impl std::fmt::Display for RegularExpressionErrorMessage {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,

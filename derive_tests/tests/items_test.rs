@@ -139,10 +139,11 @@ fn items_err_message_test() {
     }
 
     let s = TestStruct { val: vec![1, 2, 3] };
-    for error in s.validate().unwrap_err() {
+    for (field, error) in s.validate().unwrap_err() {
+        assert_eq!(field, "val");
         assert_eq!(
             format!("{}", error),
-            "val: items length of [1, 2, 3] must be in `4 <= length <= 4`, but `3`."
+            "items length of [1, 2, 3] must be in `4 <= length <= 4`, but `3`."
         )
     }
 }

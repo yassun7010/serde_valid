@@ -50,15 +50,13 @@ fn inner_extract_object_size_validator(
             #min_properties_tokens,
             #max_properties_tokens
         ) {
-            errors.push(
+            errors.insert(
+                ::serde_valid::FieldName::new(#field_string),
                 ::serde_valid::Error::PropertiesError(
-                    ::serde_valid::error::Message::new(
-                        #field_string,
-                        ::serde_valid::error::PropertiesErrorInfo::new(
-                            #field_ident,
-                            #min_properties_tokens,
-                            #max_properties_tokens
-                        )
+                    ::serde_valid::error::PropertiesErrorMessage::new(
+                        #field_ident,
+                        #min_properties_tokens,
+                        #max_properties_tokens
                     )
                 )
             );

@@ -1,9 +1,9 @@
 #[derive(Debug)]
-pub struct UniqueItemsErrorInfo {
+pub struct UniqueItemsErrorMessage {
     items: String,
 }
 
-impl UniqueItemsErrorInfo {
+impl UniqueItemsErrorMessage {
     pub fn new<T>(items: &[T]) -> Self
     where
         T: std::fmt::Debug,
@@ -14,7 +14,7 @@ impl UniqueItemsErrorInfo {
     }
 }
 
-impl std::fmt::Display for UniqueItemsErrorInfo {
+impl std::fmt::Display for UniqueItemsErrorMessage {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "item of {} must be unique, but not.", self.items)
     }

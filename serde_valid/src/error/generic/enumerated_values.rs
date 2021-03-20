@@ -1,10 +1,10 @@
 #[derive(Debug)]
-pub struct EnumerateErrorInfo {
+pub struct EnumerateErrorMessage {
     value: String,
     enumerate: String,
 }
 
-impl EnumerateErrorInfo {
+impl EnumerateErrorMessage {
     pub fn new<T, U>(value: &T, enumerate: &[U]) -> Self
     where
         T: std::fmt::Debug,
@@ -17,7 +17,7 @@ impl EnumerateErrorInfo {
     }
 }
 
-impl std::fmt::Display for EnumerateErrorInfo {
+impl std::fmt::Display for EnumerateErrorMessage {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,

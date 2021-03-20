@@ -1,2 +1,2 @@
 mod enumerated_values;
-pub use enumerated_values::EnumerateErrorInfo;
+pub use enumerated_values::EnumerateErrorMessage;

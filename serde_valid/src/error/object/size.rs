@@ -1,14 +1,14 @@
 use crate::traits::Size;
 
 #[derive(Debug)]
-pub struct PropertiesErrorInfo {
+pub struct PropertiesErrorMessage {
     properties: String,
     properties_size: usize,
     min_properties: Option<usize>,
     max_properties: Option<usize>,
 }
 
-impl PropertiesErrorInfo {
+impl PropertiesErrorMessage {
     pub fn new<T>(
         properties: &T,
         min_properties: Option<usize>,
@@ -26,7 +26,7 @@ impl PropertiesErrorInfo {
     }
 }
 
-impl std::fmt::Display for PropertiesErrorInfo {
+impl std::fmt::Display for PropertiesErrorMessage {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let min_properties = match &self.min_properties {
             Some(properties) => format!("{} <= ", properties),

@@ -86,10 +86,11 @@ fn properties_err_message_test() {
     map.insert("key1".to_string(), "value1".to_string());
 
     let s = TestStruct { val: map };
-    for error in s.validate().unwrap_err() {
+    for (field, error) in s.validate().unwrap_err() {
+        assert_eq!(field, "val");
         assert_eq!(
             format!("{}", error),
-            "val: properties size of {\"key1\": \"value1\"} must be in `3 <= size <= 3`, but `1`."
+            "properties size of {\"key1\": \"value1\"} must be in `3 <= size <= 3`, but `1`."
         )
     }
 }

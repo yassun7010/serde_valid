@@ -1,11 +1,11 @@
 #[derive(Debug)]
-pub struct LengthErrorInfo {
+pub struct LengthErrorMessage {
     length: String,
     min_length: Option<String>,
     max_length: Option<String>,
 }
 
-impl LengthErrorInfo {
+impl LengthErrorMessage {
     pub fn new<T>(length: T, min_length: Option<usize>, max_length: Option<usize>) -> Self
     where
         T: PartialOrd + PartialEq + std::fmt::Debug,
@@ -18,7 +18,7 @@ impl LengthErrorInfo {
     }
 }
 
-impl std::fmt::Display for LengthErrorInfo {
+impl std::fmt::Display for LengthErrorMessage {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let min_length = match &self.min_length {
             Some(length) => format!("{} <= ", length),

@@ -41,14 +41,12 @@ fn inner_extract_string_pattern_validator(field_ident: &syn::Ident, lit: &syn::L
             #field_ident,
             pattern,
         ) {
-            errors.push(
+            errors.insert(
+                ::serde_valid::FieldName::new(#field_string),
                 ::serde_valid::Error::PatternError(
-                    ::serde_valid::error::Message::new(
-                        #field_string,
-                        ::serde_valid::error::RegularExpressionErrorInfo::new(
-                            #field_ident,
-                            pattern,
-                        )
+                    ::serde_valid::error::RegularExpressionErrorMessage::new(
+                        #field_ident,
+                        pattern,
                     )
                 )
             );
