@@ -2,8 +2,8 @@
 pub struct ItemsErrorMessage {
     items: String,
     items_length: usize,
-    min_items: Option<String>,
-    max_items: Option<String>,
+    min_items: Option<usize>,
+    max_items: Option<usize>,
 }
 
 impl ItemsErrorMessage {
@@ -14,8 +14,8 @@ impl ItemsErrorMessage {
         Self {
             items: format!("{:?}", items),
             items_length: items.len(),
-            min_items: min_items.map(|l| l.to_string()),
-            max_items: max_items.map(|l| l.to_string()),
+            min_items,
+            max_items,
         }
     }
 }

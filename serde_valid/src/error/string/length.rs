@@ -1,8 +1,8 @@
 #[derive(Debug)]
 pub struct LengthErrorMessage {
     length: String,
-    min_length: Option<String>,
-    max_length: Option<String>,
+    min_length: Option<usize>,
+    max_length: Option<usize>,
 }
 
 impl LengthErrorMessage {
@@ -12,8 +12,8 @@ impl LengthErrorMessage {
     {
         Self {
             length: format!("{:?}", length),
-            min_length: min_length.map(|l| l.to_string()),
-            max_length: max_length.map(|l| l.to_string()),
+            min_length,
+            max_length,
         }
     }
 }
