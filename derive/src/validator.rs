@@ -2,7 +2,6 @@ mod array;
 mod common;
 mod generic;
 mod meta;
-mod nested;
 mod numeric;
 mod object;
 mod string;

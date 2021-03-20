@@ -1,10 +1,11 @@
+mod meta_path;
 mod nested_meta_list;
 mod nested_meta_name_value;
 mod nested_meta_path;
 
-use super::nested::extract_nested_validator;
 use crate::helper::NamedField;
 use crate::validator::Validator;
+use meta_path::extract_validator_from_meta_path;
 use nested_meta_list::extract_validator_from_nested_meta_list;
 use nested_meta_name_value::extract_validator_from_nested_meta_name_value;
 use nested_meta_path::extract_validator_from_nested_meta_path;
@@ -39,7 +40,9 @@ pub fn extract_meta_validator(field: &NamedField, attribute: &syn::Attribute) ->
                 };
             }
         }
-        Ok(syn::Meta::Path(path)) => return extract_nested_validator(field, attribute, &path),
+        Ok(syn::Meta::Path(path)) => {
+            return extract_validator_from_meta_path(field, attribute, &path)
+        }
         Ok(syn::Meta::NameValue(_)) => {
             abort!(attribute.span(), "Unexpected name=value argument")
         }
