@@ -40,8 +40,8 @@ impl std::fmt::Display for RangeErrorMessage {
         };
         write!(
             f,
-            "value must be in `{}value{}`, but `{}`.",
-            minimum, maximum, self.value
+            "`{}` must be in `{}value{}`, but not.",
+            self.value, minimum, maximum
         )
     }
 }

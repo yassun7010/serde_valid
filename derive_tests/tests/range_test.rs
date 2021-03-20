@@ -211,7 +211,7 @@ fn range_inclusive_err_message_test() {
         serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
         serde_json::to_string(&json!({
             "val": [
-                "value must be in `1 <= value <= 10`, but `0`."
+                "`0` must be in `1 <= value <= 10`, but not."
             ]
         }))
         .unwrap()
@@ -232,7 +232,7 @@ fn range_exclusive_err_message_test() {
         serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
         serde_json::to_string(&json!({
             "val": [
-                "value must be in `1 < value < 10`, but `0`."
+                "`0` must be in `1 < value < 10`, but not."
             ]
         }))
         .unwrap()
