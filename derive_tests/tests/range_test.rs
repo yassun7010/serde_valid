@@ -1,3 +1,4 @@
+use serde_json::json;
 use serde_valid::Validate;
 
 #[test]
@@ -206,19 +207,15 @@ fn range_inclusive_err_message_test() {
 
     let s = TestStruct { val: 0 };
 
-    let mut results = s.validate().unwrap_err().into_iter();
-    let (field, errors) = results.next().unwrap();
-
-    assert!(results.next().is_none());
-    assert_eq!(field, "val");
-
-    let mut errors = errors.iter();
-
     assert_eq!(
-        format!("{}", errors.next().unwrap()),
-        "value must be in `1 <= value <= 10`, but `0`."
+        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
+        serde_json::to_string(&json!({
+            "val": [
+                "value must be in `1 <= value <= 10`, but `0`."
+            ]
+        }))
+        .unwrap()
     );
-    assert!(errors.next().is_none());
 }
 
 #[test]
@@ -231,17 +228,13 @@ fn range_exclusive_err_message_test() {
 
     let s = TestStruct { val: 0 };
 
-    let mut results = s.validate().unwrap_err().into_iter();
-    let (field, errors) = results.next().unwrap();
-
-    assert!(results.next().is_none());
-    assert_eq!(field, "val");
-
-    let mut errors = errors.iter();
-
     assert_eq!(
-        format!("{}", errors.next().unwrap()),
-        "value must be in `1 < value < 10`, but `0`."
+        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
+        serde_json::to_string(&json!({
+            "val": [
+                "value must be in `1 < value < 10`, but `0`."
+            ]
+        }))
+        .unwrap()
     );
-    assert!(errors.next().is_none());
 }

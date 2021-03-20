@@ -87,17 +87,13 @@ fn properties_err_message_test() {
 
     let s = TestStruct { val: map };
 
-    let mut results = s.validate().unwrap_err().into_iter();
-    let (field, errors) = results.next().unwrap();
-
-    assert!(results.next().is_none());
-    assert_eq!(field, "val");
-
-    let mut errors = errors.iter();
-
     assert_eq!(
-        format!("{}", errors.next().unwrap()),
-        "properties size of {\"key1\": \"value1\"} must be in `3 <= size <= 3`, but `1`."
+        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
+        serde_json::to_string(&json!({
+            "val": [
+                "properties size of {\"key1\": \"value1\"} must be in `3 <= size <= 3`, but `1`."
+            ]
+        }))
+        .unwrap()
     );
-    assert!(errors.next().is_none());
 }

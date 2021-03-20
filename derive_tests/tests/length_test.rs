@@ -1,3 +1,4 @@
+use serde_json::json;
 use serde_valid::Validate;
 use std::borrow::Cow;
 use std::ffi::{OsStr, OsString};
@@ -291,17 +292,13 @@ fn length_err_message_test() {
         val: String::from("test"),
     };
 
-    let mut results = s.validate().unwrap_err().into_iter();
-    let (field, errors) = results.next().unwrap();
-
-    assert!(results.next().is_none());
-    assert_eq!(field, "val");
-
-    let mut errors = errors.iter();
-
     assert_eq!(
-        format!("{}", errors.next().unwrap()),
-        "length of \"test\" must be in `1 <= length <= 3`, but not."
+        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
+        serde_json::to_string(&json!({
+            "val": [
+                "length of \"test\" must be in `1 <= length <= 3`, but not."
+            ]
+        }))
+        .unwrap()
     );
-    assert!(errors.next().is_none());
 }

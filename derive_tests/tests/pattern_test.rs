@@ -1,3 +1,4 @@
+use serde_json::json;
 use serde_valid::Validate;
 use std::borrow::Cow;
 use std::ffi::{OsStr, OsString};
@@ -201,17 +202,13 @@ fn pattern_err_message_test() {
         val: String::from("2020/09/10"),
     };
 
-    let mut results = s.validate().unwrap_err().into_iter();
-    let (field, errors) = results.next().unwrap();
-
-    assert!(results.next().is_none());
-    assert_eq!(field, "val");
-
-    let mut errors = errors.iter();
-
     assert_eq!(
-        format!("{}", errors.next().unwrap()),
-        "\"2020/09/10\" must match the pattern of \"^\\d{4}-\\d{2}-\\d{2}$\", but not."
+        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
+        serde_json::to_string(&json!({
+            "val": [
+                "\"2020/09/10\" must match the pattern of \"^\\d{4}-\\d{2}-\\d{2}$\", but not."
+            ]
+        }))
+        .unwrap()
     );
-    assert!(errors.next().is_none());
 }

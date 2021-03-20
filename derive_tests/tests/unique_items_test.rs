@@ -1,3 +1,4 @@
+use serde_json::json;
 use serde_valid::Validate;
 
 #[test]
@@ -50,17 +51,13 @@ fn unique_items_err_message_test() {
         val: vec![1, 2, 3, 2],
     };
 
-    let mut results = s.validate().unwrap_err().into_iter();
-    let (field, errors) = results.next().unwrap();
-
-    assert!(results.next().is_none());
-    assert_eq!(field, "val");
-
-    let mut errors = errors.iter();
-
     assert_eq!(
-        format!("{}", errors.next().unwrap()),
-        "item of [1, 2, 3, 2] must be unique, but not."
+        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
+        serde_json::to_string(&json!({
+            "val": [
+                "item of [1, 2, 3, 2] must be unique, but not."
+            ]
+        }))
+        .unwrap()
     );
-    assert!(errors.next().is_none());
 }

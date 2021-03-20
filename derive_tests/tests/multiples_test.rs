@@ -1,3 +1,4 @@
+use serde_json::json;
 use serde_valid::Validate;
 
 #[test]
@@ -124,17 +125,13 @@ fn multiple_of_err_message_test() {
 
     let s = TestStruct { val: 14 };
 
-    let mut results = s.validate().unwrap_err().into_iter();
-    let (field, errors) = results.next().unwrap();
-
-    assert!(results.next().is_none());
-    assert_eq!(field, "val");
-
-    let mut errors = errors.iter();
-
     assert_eq!(
-        format!("{}", errors.next().unwrap()),
-        "`14` must be multiple of `5`, but not."
+        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
+        serde_json::to_string(&json!({
+            "val": [
+                "`14` must be multiple of `5`, but not."
+            ]
+        }))
+        .unwrap()
     );
-    assert!(errors.next().is_none());
 }

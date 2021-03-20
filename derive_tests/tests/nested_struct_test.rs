@@ -71,22 +71,15 @@ fn nested_validate_err_message_test() {
         },
     };
 
-    let mut results = s.validate().unwrap_err().into_iter();
-    let (field, errors) = results.next().unwrap();
-
-    assert!(results.next().is_none());
-    assert_eq!(field, "val");
-
-    let mut errors = errors.iter();
-
     assert_eq!(
-        format!("{}", errors.next().unwrap()),
+        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
         serde_json::to_string(&json!({
-            "inner_val": [
-                "items length of [1, 2, 3] must be in `4 <= length <= 4`, but `3`."
-            ]
+            "val": [{
+                "inner_val": [
+                    "items length of [1, 2, 3] must be in `4 <= length <= 4`, but `3`."
+                ]
+            }]
         }))
         .unwrap()
     );
-    assert!(errors.next().is_none());
 }

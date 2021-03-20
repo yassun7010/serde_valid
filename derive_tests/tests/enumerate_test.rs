@@ -1,3 +1,4 @@
+use serde_json::json;
 use serde_valid::Validate;
 
 #[test]
@@ -108,17 +109,13 @@ fn enumerate_err_message_test() {
 
     let s = TestStruct { val: 4 };
 
-    let mut results = s.validate().unwrap_err().into_iter();
-    let (field, errors) = results.next().unwrap();
-
-    assert!(results.next().is_none());
-    assert_eq!(field, "val");
-
-    let mut errors = errors.iter();
-
     assert_eq!(
-        format!("{}", errors.next().unwrap()),
-        "`4` must be in [1, 2, 3], but not."
+        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
+        serde_json::to_string(&json!({
+            "val": [
+                "`4` must be in [1, 2, 3], but not."
+            ]
+        }))
+        .unwrap()
     );
-    assert!(errors.next().is_none());
 }
