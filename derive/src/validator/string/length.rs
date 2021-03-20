@@ -66,16 +66,14 @@ fn inner_extract_string_length_validator(
         ) {
             errors
                 .entry(::serde_valid::FieldName::new(#field_string))
-                .or_insert(Vec::new())
-                .push(
-                    ::serde_valid::Error::LengthError(
-                        ::serde_valid::error::LengthErrorMessage::new(
-                            #field_ident,
-                            #min_length_tokens,
-                            #max_length_tokens
-                        )
+                .or_default()
+                .push(::serde_valid::Error::LengthError(
+                    ::serde_valid::error::LengthErrorMessage::new(
+                        #field_ident,
+                        #min_length_tokens,
+                        #max_length_tokens
                     )
-                );
+                ));
         }
     )
 }

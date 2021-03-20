@@ -1,4 +1,4 @@
-use crate::traits::Size;
+use crate::traits::{Properties, Size};
 
 #[derive(Debug, serde::Serialize)]
 pub struct PropertiesErrorMessage {
@@ -15,10 +15,10 @@ impl PropertiesErrorMessage {
         max_properties: Option<usize>,
     ) -> Self
     where
-        T: std::fmt::Debug + Size,
+        T: Size + Properties,
     {
         Self {
-            properties: format!("{:?}", properties),
+            properties: properties.to_string(),
             properties_size: properties.size(),
             min_properties,
             max_properties,

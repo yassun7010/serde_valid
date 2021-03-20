@@ -75,7 +75,7 @@ fn properties_is_err_test() {
 }
 
 #[test]
-fn properties_err_message_test() {
+fn properties_hash_map_type_err_message_test() {
     #[derive(Debug, Validate)]
     struct TestStruct {
         #[validate(properties(min_properties = 3, max_properties = 3))]
@@ -92,6 +92,56 @@ fn properties_err_message_test() {
         serde_json::to_string(&json!({
             "val": [
                 "properties size of {\"key1\": \"value1\"} must be in `3 <= size <= 3`, but `1`."
+            ]
+        }))
+        .unwrap()
+    );
+}
+
+#[test]
+fn properties_btree_map_type_err_message_test() {
+    #[derive(Debug, Validate)]
+    struct TestStruct {
+        #[validate(properties(min_properties = 3, max_properties = 3))]
+        val: BTreeMap<String, String>,
+    }
+
+    let mut map = BTreeMap::new();
+    map.insert("key1".to_string(), "value1".to_string());
+
+    let s = TestStruct { val: map };
+
+    assert_eq!(
+        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
+        serde_json::to_string(&json!({
+            "val": [
+                "properties size of {\"key1\": \"value1\"} must be in `3 <= size <= 3`, but `1`."
+            ]
+        }))
+        .unwrap()
+    );
+}
+
+#[test]
+fn properties_json_map_type_err_message_test() {
+    #[derive(Debug, Deserialize, Validate)]
+    struct TestStruct {
+        #[validate(properties(min_properties = 3, max_properties = 3))]
+        val: serde_json::Map<String, serde_json::Value>,
+    }
+
+    let s: TestStruct = serde_json::from_value(json!({
+        "val": {
+            "key1": "value1",
+        }
+    }))
+    .unwrap();
+
+    assert_eq!(
+        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
+        serde_json::to_string(&json!({
+            "val": [
+                "properties size of {\"key1\":\"value1\"} must be in `3 <= size <= 3`, but `1`."
             ]
         }))
         .unwrap()

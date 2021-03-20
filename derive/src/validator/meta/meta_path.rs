@@ -34,7 +34,7 @@ fn extract_validate_validator_tokens(field: &NamedField) -> TokenStream {
         if let Err(errs) = #field_ident.validate() {
             errors
                 .entry(::serde_valid::FieldName::new(#field_string))
-                .or_insert(Vec::new())
+                .or_default()
                 .push(::serde_valid::Error::NestedErrors(
                     ::serde_valid::NestedErrors::new(errs)
                 ));

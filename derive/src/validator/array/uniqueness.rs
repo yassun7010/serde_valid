@@ -19,14 +19,12 @@ fn inner_extract_array_uniqueness_validator(field_ident: &syn::Ident) -> TokenSt
         ) {
             errors
                 .entry(::serde_valid::FieldName::new(#field_string))
-                .or_insert(Vec::new())
-                .push(
-                    ::serde_valid::Error::UniqueItemsError(
-                        ::serde_valid::error::UniqueItemsErrorMessage::new(
-                            #field_ident,
-                        )
+                .or_default()
+                .push(::serde_valid::Error::UniqueItemsError(
+                    ::serde_valid::error::UniqueItemsErrorMessage::new(
+                        #field_ident,
                     )
-                );
+                ));
         }
     )
 }

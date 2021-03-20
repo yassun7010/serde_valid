@@ -22,7 +22,10 @@ pub fn expand_derive(input: &syn::DeriveInput) -> TokenStream {
                 (),
                 ::std::collections::HashMap<::serde_valid::FieldName, Vec<::serde_valid::Error>>
             > {
-                let mut errors = ::std::collections::HashMap::new();
+                let mut errors = ::std::collections::HashMap::<
+                    ::serde_valid::FieldName,
+                    Vec<::serde_valid::Error>
+                >::new();
 
                 #validators
 

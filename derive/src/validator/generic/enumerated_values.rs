@@ -50,15 +50,13 @@ fn inner_extract_generic_enumerate_validator(
         ) {
             errors
                 .entry(::serde_valid::FieldName::new(#field_string))
-                .or_insert(Vec::new())
-                .push(
-                    ::serde_valid::Error::EnumerateValuesError(
-                        ::serde_valid::error::EnumerateErrorMessage::new(
-                            #field_ident,
-                            &[#meta_items],
-                        )
+                .or_default()
+                .push(::serde_valid::Error::EnumerateValuesError(
+                    ::serde_valid::error::EnumerateErrorMessage::new(
+                        #field_ident,
+                        &[#meta_items],
                     )
-                );
+                ));
         }
     );
     token
