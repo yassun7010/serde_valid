@@ -1,4 +1,4 @@
-#[derive(Debug)]
+#[derive(Debug, serde::Serialize)]
 pub struct EnumerateErrorMessage {
     value: String,
     enumerate: String,

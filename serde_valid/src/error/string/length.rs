@@ -1,4 +1,4 @@
-#[derive(Debug)]
+#[derive(Debug, serde::Serialize)]
 pub struct LengthErrorMessage {
     length: String,
     min_length: Option<usize>,

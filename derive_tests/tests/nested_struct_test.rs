@@ -1,3 +1,4 @@
+use serde_json::json;
 use serde_valid::Validate;
 
 #[test]
@@ -11,12 +12,12 @@ fn nested_validate_test() {
     #[derive(Debug, Validate)]
     struct TestInnerStruct {
         #[validate(items(min_items = 4, max_items = 4))]
-        val: Vec<i32>,
+        inner_val: Vec<i32>,
     }
 
     let s = TestStruct {
         val: TestInnerStruct {
-            val: vec![1, 2, 3, 4],
+            inner_val: vec![1, 2, 3, 4],
         },
     };
     assert!(s.validate().is_ok());
@@ -34,16 +35,16 @@ fn nested_validate_vec_type_test() {
     #[derive(Debug, Validate)]
     struct TestInnerStruct {
         #[validate(items(min_items = 4, max_items = 4))]
-        val: Vec<i32>,
+        inner_val: Vec<i32>,
     }
 
     let s = TestStruct {
         val: vec![
             TestInnerStruct {
-                val: vec![1, 2, 3, 4],
+                inner_val: vec![1, 2, 3, 4],
             },
             TestInnerStruct {
-                val: vec![5, 6, 7, 8],
+                inner_val: vec![5, 6, 7, 8],
             },
         ],
     };
@@ -61,11 +62,13 @@ fn nested_validate_err_message_test() {
     #[derive(Debug, Validate)]
     struct TestInnerStruct {
         #[validate(items(min_items = 4, max_items = 4))]
-        val: Vec<i32>,
+        inner_val: Vec<i32>,
     }
 
     let s = TestStruct {
-        val: TestInnerStruct { val: vec![1, 2, 3] },
+        val: TestInnerStruct {
+            inner_val: vec![1, 2, 3],
+        },
     };
 
     let mut results = s.validate().unwrap_err().into_iter();
@@ -78,7 +81,12 @@ fn nested_validate_err_message_test() {
 
     assert_eq!(
         format!("{}", errors.next().unwrap()),
-        "items length of [1, 2, 3] must be in `4 <= length <= 4`, but `3`."
+        serde_json::to_string(&json!({
+            "inner_val": [
+                "items length of [1, 2, 3] must be in `4 <= length <= 4`, but `3`."
+            ]
+        }))
+        .unwrap()
     );
     assert!(errors.next().is_none());
 }

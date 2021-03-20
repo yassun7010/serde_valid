@@ -1,4 +1,4 @@
-#[derive(Debug)]
+#[derive(Debug, serde::Serialize)]
 pub enum Limit<T> {
     Inclusive(T),
     Exclusive(T),

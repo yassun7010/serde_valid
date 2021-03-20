@@ -1,6 +1,6 @@
 use crate::traits::Size;
 
-#[derive(Debug)]
+#[derive(Debug, serde::Serialize)]
 pub struct PropertiesErrorMessage {
     properties: String,
     properties_size: usize,

@@ -29,9 +29,15 @@ fn extract_validate_validator(field: &NamedField) -> Validator {
 
 fn extract_validate_validator_tokens(field: &NamedField) -> TokenStream {
     let field_ident = field.ident();
+    let field_string = field_ident.to_string();
     quote!(
         if let Err(errs) = #field_ident.validate() {
-            errors.extend(errs);
+            errors
+                .entry(::serde_valid::FieldName::new(#field_string))
+                .or_insert(Vec::new())
+                .push(::serde_valid::Error::NestedErrors(
+                    ::serde_valid::NestedErrors::new(errs)
+                ));
         }
     )
 }

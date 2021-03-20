@@ -1,6 +1,6 @@
 use crate::validation::numeric::Limit;
 
-#[derive(Debug)]
+#[derive(Debug, serde::Serialize)]
 pub struct RangeErrorMessage {
     value: String,
     maximum: Option<Limit<String>>,

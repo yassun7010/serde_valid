@@ -1,4 +1,4 @@
-#[derive(Debug, PartialEq, Eq, Hash)]
+#[derive(Debug, serde::Serialize, PartialEq, Eq, Hash)]
 pub struct FieldName(String);
 
 impl FieldName {

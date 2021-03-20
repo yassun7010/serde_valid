@@ -1,7 +1,7 @@
 pub mod error;
 mod traits;
 mod validation;
-pub use error::{Error, FieldName};
+pub use error::{Error, FieldName, NestedErrors};
 use std::collections::HashMap;
 pub use validation::{
     validate_array_length, validate_array_uniqueness, validate_generic_enumerated_values,

@@ -1,4 +1,4 @@
-#[derive(Debug)]
+#[derive(Debug, serde::Serialize)]
 pub struct ItemsErrorMessage {
     items: String,
     items_length: usize,

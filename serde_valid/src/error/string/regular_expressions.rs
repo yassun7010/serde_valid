@@ -1,7 +1,7 @@
 use crate::traits::IsMatch;
 use regex::Regex;
 
-#[derive(Debug)]
+#[derive(Debug, serde::Serialize)]
 pub struct RegularExpressionErrorMessage {
     value: String,
     pattern: String,
