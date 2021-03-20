@@ -67,11 +67,18 @@ fn nested_validate_err_message_test() {
     let s = TestStruct {
         val: TestInnerStruct { val: vec![1, 2, 3] },
     };
-    for (field, error) in s.validate().unwrap_err() {
-        assert_eq!(field, "val");
-        assert_eq!(
-            format!("{}", error),
-            "items length of [1, 2, 3] must be in `4 <= length <= 4`, but `3`."
-        )
-    }
+
+    let mut results = s.validate().unwrap_err().into_iter();
+    let (field, errors) = results.next().unwrap();
+
+    assert!(results.next().is_none());
+    assert_eq!(field, "val");
+
+    let mut errors = errors.iter();
+
+    assert_eq!(
+        format!("{}", errors.next().unwrap()),
+        "items length of [1, 2, 3] must be in `4 <= length <= 4`, but `3`."
+    );
+    assert!(errors.next().is_none());
 }

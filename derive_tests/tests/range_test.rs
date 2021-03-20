@@ -205,13 +205,20 @@ fn range_inclusive_err_message_test() {
     }
 
     let s = TestStruct { val: 0 };
-    for (field, error) in s.validate().unwrap_err() {
-        assert_eq!(field, "val");
-        assert_eq!(
-            format!("{}", error),
-            "value must be in `1 <= value <= 10`, but `0`."
-        )
-    }
+
+    let mut results = s.validate().unwrap_err().into_iter();
+    let (field, errors) = results.next().unwrap();
+
+    assert!(results.next().is_none());
+    assert_eq!(field, "val");
+
+    let mut errors = errors.iter();
+
+    assert_eq!(
+        format!("{}", errors.next().unwrap()),
+        "value must be in `1 <= value <= 10`, but `0`."
+    );
+    assert!(errors.next().is_none());
 }
 
 #[test]
@@ -223,11 +230,18 @@ fn range_exclusive_err_message_test() {
     }
 
     let s = TestStruct { val: 0 };
-    for (field, error) in s.validate().unwrap_err() {
-        assert_eq!(field, "val");
-        assert_eq!(
-            format!("{}", error),
-            "value must be in `1 < value < 10`, but `0`."
-        )
-    }
+
+    let mut results = s.validate().unwrap_err().into_iter();
+    let (field, errors) = results.next().unwrap();
+
+    assert!(results.next().is_none());
+    assert_eq!(field, "val");
+
+    let mut errors = errors.iter();
+
+    assert_eq!(
+        format!("{}", errors.next().unwrap()),
+        "value must be in `1 < value < 10`, but `0`."
+    );
+    assert!(errors.next().is_none());
 }

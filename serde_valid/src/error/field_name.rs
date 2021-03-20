@@ -12,3 +12,9 @@ impl<'a> PartialEq<&'a str> for FieldName {
         &self.0 == other
     }
 }
+
+impl PartialEq<str> for FieldName {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}

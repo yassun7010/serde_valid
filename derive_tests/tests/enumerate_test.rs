@@ -107,8 +107,18 @@ fn enumerate_err_message_test() {
     }
 
     let s = TestStruct { val: 4 };
-    for (field, error) in s.validate().unwrap_err() {
-        assert_eq!(field, "val");
-        assert_eq!(format!("{}", error), "`4` must be in [1, 2, 3], but not.")
-    }
+
+    let mut results = s.validate().unwrap_err().into_iter();
+    let (field, errors) = results.next().unwrap();
+
+    assert!(results.next().is_none());
+    assert_eq!(field, "val");
+
+    let mut errors = errors.iter();
+
+    assert_eq!(
+        format!("{}", errors.next().unwrap()),
+        "`4` must be in [1, 2, 3], but not."
+    );
+    assert!(errors.next().is_none());
 }

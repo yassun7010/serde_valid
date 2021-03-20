@@ -50,16 +50,18 @@ fn inner_extract_object_size_validator(
             #min_properties_tokens,
             #max_properties_tokens
         ) {
-            errors.insert(
-                ::serde_valid::FieldName::new(#field_string),
-                ::serde_valid::Error::PropertiesError(
-                    ::serde_valid::error::PropertiesErrorMessage::new(
-                        #field_ident,
-                        #min_properties_tokens,
-                        #max_properties_tokens
+            errors
+                .entry(::serde_valid::FieldName::new(#field_string))
+                .or_insert(Vec::new())
+                .push(
+                    ::serde_valid::Error::PropertiesError(
+                        ::serde_valid::error::PropertiesErrorMessage::new(
+                            #field_ident,
+                            #min_properties_tokens,
+                            #max_properties_tokens
+                        )
                     )
-                )
-            );
+                );
         }
     )
 }

@@ -200,11 +200,18 @@ fn pattern_err_message_test() {
     let s = TestStruct {
         val: String::from("2020/09/10"),
     };
-    for (field, error) in s.validate().unwrap_err() {
-        assert_eq!(field, "val");
-        assert_eq!(
-            format!("{}", error),
-            "\"2020/09/10\" must match the pattern of \"^\\d{4}-\\d{2}-\\d{2}$\", but not."
-        )
-    }
+
+    let mut results = s.validate().unwrap_err().into_iter();
+    let (field, errors) = results.next().unwrap();
+
+    assert!(results.next().is_none());
+    assert_eq!(field, "val");
+
+    let mut errors = errors.iter();
+
+    assert_eq!(
+        format!("{}", errors.next().unwrap()),
+        "\"2020/09/10\" must match the pattern of \"^\\d{4}-\\d{2}-\\d{2}$\", but not."
+    );
+    assert!(errors.next().is_none());
 }

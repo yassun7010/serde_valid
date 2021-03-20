@@ -41,15 +41,17 @@ fn inner_extract_string_pattern_validator(field_ident: &syn::Ident, lit: &syn::L
             #field_ident,
             pattern,
         ) {
-            errors.insert(
-                ::serde_valid::FieldName::new(#field_string),
-                ::serde_valid::Error::PatternError(
-                    ::serde_valid::error::RegularExpressionErrorMessage::new(
-                        #field_ident,
-                        pattern,
+            errors
+                .entry(::serde_valid::FieldName::new(#field_string))
+                .or_insert(Vec::new())
+                .push(
+                    ::serde_valid::Error::PatternError(
+                        ::serde_valid::error::RegularExpressionErrorMessage::new(
+                            #field_ident,
+                            pattern,
+                        )
                     )
-                )
-            );
+                );
         }
     )
 }

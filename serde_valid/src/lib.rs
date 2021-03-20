@@ -10,7 +10,7 @@ pub use validation::{
 };
 
 pub trait Validate {
-    fn validate(&self) -> Result<(), HashMap<FieldName, self::Error>>;
+    fn validate(&self) -> Result<(), HashMap<FieldName, Vec<self::Error>>>;
 }
 
 #[cfg(feature = "derive")]

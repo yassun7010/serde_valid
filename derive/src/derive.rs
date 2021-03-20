@@ -20,7 +20,7 @@ pub fn expand_derive(input: &syn::DeriveInput) -> TokenStream {
                 &self
             ) -> ::std::result::Result<
                 (),
-                ::std::collections::HashMap<::serde_valid::FieldName, ::serde_valid::Error>
+                ::std::collections::HashMap<::serde_valid::FieldName, Vec<::serde_valid::Error>>
             > {
                 let mut errors = ::std::collections::HashMap::new();
 

@@ -123,11 +123,18 @@ fn multiple_of_err_message_test() {
     }
 
     let s = TestStruct { val: 14 };
-    for (field, error) in s.validate().unwrap_err() {
-        assert_eq!(field, "val");
-        assert_eq!(
-            format!("{}", error),
-            "`14` must be multiple of `5`, but not."
-        )
-    }
+
+    let mut results = s.validate().unwrap_err().into_iter();
+    let (field, errors) = results.next().unwrap();
+
+    assert!(results.next().is_none());
+    assert_eq!(field, "val");
+
+    let mut errors = errors.iter();
+
+    assert_eq!(
+        format!("{}", errors.next().unwrap()),
+        "`14` must be multiple of `5`, but not."
+    );
+    assert!(errors.next().is_none());
 }

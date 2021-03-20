@@ -50,11 +50,17 @@ fn unique_items_err_message_test() {
         val: vec![1, 2, 3, 2],
     };
 
-    for (field, error) in s.validate().unwrap_err() {
-        assert_eq!(field, "val");
-        assert_eq!(
-            format!("{}", error),
-            "item of [1, 2, 3, 2] must be unique, but not."
-        )
-    }
+    let mut results = s.validate().unwrap_err().into_iter();
+    let (field, errors) = results.next().unwrap();
+
+    assert!(results.next().is_none());
+    assert_eq!(field, "val");
+
+    let mut errors = errors.iter();
+
+    assert_eq!(
+        format!("{}", errors.next().unwrap()),
+        "item of [1, 2, 3, 2] must be unique, but not."
+    );
+    assert!(errors.next().is_none());
 }

@@ -44,16 +44,18 @@ fn inner_extract_array_length_validator(
             #min_items_tokens,
             #max_items_tokens
         ) {
-            errors.insert(
-                ::serde_valid::FieldName::new(#field_string),
-                ::serde_valid::Error::ItemsError(
-                    ::serde_valid::error::ItemsErrorMessage::new(
-                        #field_ident,
-                        #min_items_tokens,
-                        #max_items_tokens
+            errors
+                .entry(::serde_valid::FieldName::new(#field_string))
+                .or_insert(Vec::new())
+                .push(
+                    ::serde_valid::Error::ItemsError(
+                        ::serde_valid::error::ItemsErrorMessage::new(
+                            #field_ident,
+                            #min_items_tokens,
+                            #max_items_tokens
+                        )
                     )
-                )
-            );
+                );
         }
     )
 }
