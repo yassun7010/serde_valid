@@ -1,6 +1,6 @@
 #[derive(Debug)]
 pub struct ItemsErrorMessage {
-    items: String,
+    items: Vec<String>,
     items_length: usize,
     min_items: Option<usize>,
     max_items: Option<usize>,
@@ -12,7 +12,7 @@ impl ItemsErrorMessage {
         T: std::fmt::Debug,
     {
         Self {
-            items: format!("{:?}", items),
+            items: items.iter().map(|i| format!("{:?}", i)).collect(),
             items_length: items.len(),
             min_items,
             max_items,
@@ -20,7 +20,7 @@ impl ItemsErrorMessage {
     }
 
     #[allow(dead_code)]
-    pub fn items(&self) -> &String {
+    pub fn items(&self) -> &Vec<String> {
         &self.items
     }
 
@@ -52,8 +52,11 @@ impl std::fmt::Display for ItemsErrorMessage {
         };
         write!(
             f,
-            "items length of {} must be in `{}length{}`, but `{}`.",
-            self.items, min_items, max_items, self.items_length
+            "items length of [{}] must be in `{}length{}`, but `{}`.",
+            &self.items.join(", "),
+            min_items,
+            max_items,
+            self.items_length
         )
     }
 }
