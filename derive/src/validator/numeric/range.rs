@@ -94,7 +94,7 @@ fn extract_numeric_range_validator_tokens(
                             exclusive_maximum = Some(get_numeric(field_ident, lit, path_ident, exclusive_maximum));
                         },
                         v => abort_invalid_attribute_on_field(field_ident, path.span(), &format!(
-                            "unknown argument `{}` for validator `range` \
+                            "Unknown argument `{}` for validator `range` \
                             (it only has `minimum` or `exclusive_minimum`, \
                             `maximum` or `exclusive_maximum`)",
                             v
@@ -105,7 +105,7 @@ fn extract_numeric_range_validator_tokens(
                     field_ident,
                     item.span(),
                     &format!(
-                        "unexpected item {:?} while parsing `range` validator of field {}",
+                        "Unexpected item {:?} while parsing `range` validator of field {}",
                         item, field_ident
                     ),
                 )
@@ -135,7 +135,7 @@ fn get_numeric(field_ident: &syn::Ident, lit: &syn::Lit, path_ident: &syn::Ident
         abort_invalid_attribute_on_field(
             field_ident,
                 lit.span(),
-                &format!("duplicated `{}` argument of `range` validator: only unique argument is allowed", path_ident.to_string()))
+                &format!("Duplicated `{}` argument of `range` validator: only unique argument is allowed", path_ident.to_string()))
     }
 
     match lit {
@@ -144,7 +144,7 @@ fn get_numeric(field_ident: &syn::Ident, lit: &syn::Lit, path_ident: &syn::Ident
         _ => abort_invalid_attribute_on_field(
             field_ident,
             lit.span(),
-             &format!("invalid argument type for `{}` of `range` validator: only numeric literals are allowed", path_ident.to_string())),
+             &format!("Invalid argument type for `{}` of `range` validator: only numeric literals are allowed", path_ident.to_string())),
     }
 }
 
@@ -157,7 +157,7 @@ fn get_limit_tokens(field_ident: &syn::Ident, inclusive_limit: Option<NumericInf
                 exclusive.path_ident().span()
             )
             .unwrap_or(inclusive.path_ident().span()),
-            &format!("both `{}` and `{}` have been set in `range` validator: conflict", inclusive.path_name(), exclusive.path_name())
+            &format!("Both `{}` and `{}` have been set in `range` validator: conflict", inclusive.path_name(), exclusive.path_name())
         ),
         (Some(inclusive_limit), None) => quote!(Some(::serde_valid::Limit::Inclusive(#inclusive_limit))),
         (None, Some(exclusive_limit)) => quote!(Some(::serde_valid::Limit::Exclusive(#exclusive_limit))),

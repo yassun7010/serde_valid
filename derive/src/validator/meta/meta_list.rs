@@ -26,7 +26,7 @@ pub fn extract_validator_from_meta_list(
             ))
         }
         v => {
-            abort!(path.span(), "unexpected list validator: {:?}", v)
+            abort!(path.span(), "Unexpected list validator: {:?}", v)
         }
     }
 }

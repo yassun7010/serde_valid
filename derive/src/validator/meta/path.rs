@@ -13,7 +13,7 @@ pub fn extract_validator_from_path(
     match path_ident.to_string().as_ref() {
         "unique_items" => return Some(extract_array_uniqueness_validator(field)),
         v => {
-            abort!(path.span(), "unexpected name value validator: {:?}", v)
+            abort!(path.span(), "Unexpected name value validator: {:?}", v)
         }
     }
 }

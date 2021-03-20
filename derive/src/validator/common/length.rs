@@ -40,7 +40,7 @@ pub fn extract_length_validator_tokens<'a>(
                         field_ident,
                         path.span(),
                         &format!(
-                            "unknown argument `{}` for validator `{}` \
+                            "Unknown argument `{}` for validator `{}` \
                             (it only has `{}` or `{}`)",
                             path_str, validation_label, min_label, max_label
                         ),
@@ -51,7 +51,7 @@ pub fn extract_length_validator_tokens<'a>(
                     field_ident,
                     item.span(),
                     &format!(
-                        "unexpected item {:?} while parsing `{}` validator of field {}",
+                        "Unexpected item {:?} while parsing `{}` validator of field {}",
                         item, validation_label, field_ident
                     ),
                 )
@@ -86,7 +86,7 @@ fn limit_int(
             field_ident,
             lit.span(),
             &format!(
-                "duplicated `{}` argument of `{}` validator: only unique argument is allowed",
+                "Duplicated `{}` argument of `{}` validator: only unique argument is allowed",
                 path_ident.to_string(),
                 validation_label
             ),

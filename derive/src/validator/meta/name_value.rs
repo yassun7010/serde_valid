@@ -15,7 +15,7 @@ pub fn extract_validator_from_name_value(
         "multiple_of" => return Some(extract_numeric_multiples_validator(field, lit)),
         "pattern" => return Some(extract_string_pattern_validator(field, lit)),
         v => {
-            abort!(path.span(), "unexpected name value validator: {:?}", v)
+            abort!(path.span(), "Unexpected name value validator: {:?}", v)
         }
     }
 }
