@@ -22,6 +22,8 @@ pub fn extract_validator_from_meta_path(
 fn extract_validate_validator(field: &NamedField) -> Validator {
     if let Some(array_field) = field.array_field() {
         Validator::Array(Box::new(extract_validate_validator(&array_field)))
+    } else if let Some(option_field) = field.option_field() {
+        Validator::Option(Box::new(extract_validate_validator(&option_field)))
     } else {
         Validator::Normal(extract_validate_validator_tokens(field))
     }

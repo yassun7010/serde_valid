@@ -52,6 +52,28 @@ fn nested_validate_vec_type_test() {
 }
 
 #[test]
+fn nested_validate_option_type_test() {
+    #[derive(Debug, Validate)]
+    struct TestStruct {
+        #[validate]
+        val: Option<TestInnerStruct>,
+    }
+
+    #[derive(Debug, Validate)]
+    struct TestInnerStruct {
+        #[validate(items(min_items = 4, max_items = 4))]
+        inner_val: Vec<i32>,
+    }
+
+    let s = TestStruct {
+        val: Some(TestInnerStruct {
+            inner_val: vec![1, 2, 3, 4],
+        }),
+    };
+    assert!(s.validate().is_ok());
+}
+
+#[test]
 fn nested_validate_err_message_test() {
     #[derive(Debug, Validate)]
     struct TestStruct {
