@@ -1,4 +1,4 @@
-use crate::traits::{Properties, Size};
+use crate::traits::{Size, ToJsonString};
 
 #[derive(Debug, serde::Serialize)]
 pub struct PropertiesErrorMessage {
@@ -15,10 +15,10 @@ impl PropertiesErrorMessage {
         max_properties: Option<usize>,
     ) -> Self
     where
-        T: Size + Properties,
+        T: Size + ToJsonString,
     {
         Self {
-            properties: properties.to_string(),
+            properties: properties.to_json_string(),
             properties_size: properties.size(),
             min_properties,
             max_properties,
