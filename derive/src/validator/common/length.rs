@@ -4,8 +4,8 @@ use proc_macro2::TokenStream;
 use quote::quote;
 use syn::spanned::Spanned;
 
-pub fn extract_length_validator_tokens<'a>(
-    field_ident: &'a syn::Ident,
+pub fn extract_length_validator_tokens(
+    field_ident: &syn::Ident,
     attribute: &syn::Attribute,
     meta_items: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
     validation_label: &str,

@@ -22,7 +22,7 @@ impl Length for String {
     }
 }
 
-impl<'a> Length for std::borrow::Cow<'a, str> {
+impl Length for std::borrow::Cow<'_, str> {
     fn length(&self) -> usize {
         self.graphemes(true).count()
     }

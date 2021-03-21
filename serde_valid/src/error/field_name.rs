@@ -7,8 +7,8 @@ impl FieldName {
     }
 }
 
-impl<'a> PartialEq<&'a str> for FieldName {
-    fn eq(&self, other: &&'a str) -> bool {
+impl PartialEq<&'_ str> for FieldName {
+    fn eq(&self, other: &&'_ str) -> bool {
         &self.0 == other
     }
 }

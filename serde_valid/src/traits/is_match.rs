@@ -20,7 +20,7 @@ impl IsMatch for String {
     }
 }
 
-impl<'a> IsMatch for std::borrow::Cow<'a, str> {
+impl IsMatch for std::borrow::Cow<'_, str> {
     fn is_match(&self, pattern: &regex::Regex) -> bool {
         pattern.is_match(self)
     }
@@ -32,7 +32,7 @@ impl IsMatch for std::ffi::OsStr {
     }
 }
 
-impl<'a> IsMatch for &'a std::ffi::OsStr {
+impl IsMatch for &'_ std::ffi::OsStr {
     fn is_match(&self, pattern: &regex::Regex) -> bool {
         pattern.is_match(&self.to_string_lossy())
     }

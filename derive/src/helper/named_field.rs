@@ -9,7 +9,7 @@ use syn::spanned::Spanned;
 #[repr(transparent)]
 pub struct NamedField(syn::Field);
 
-impl<'a> NamedField {
+impl NamedField {
     pub fn new(field: syn::Field) -> Self {
         if field.ident.is_none() {
             abort!(
