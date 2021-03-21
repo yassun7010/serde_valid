@@ -18,14 +18,8 @@ pub fn expand_derive(input: &syn::DeriveInput) -> TokenStream {
         impl #impl_generics ::serde_valid::Validate for #ident #type_generics #where_clause {
             fn validate(
                 &self
-            ) -> ::std::result::Result<
-                (),
-                ::std::collections::HashMap<::serde_valid::FieldName, Vec<::serde_valid::Error>>
-            > {
-                let mut errors = ::std::collections::HashMap::<
-                    ::serde_valid::FieldName,
-                    Vec<::serde_valid::Error>
-                >::new();
+            ) -> ::std::result::Result<(), ::serde_valid::Errors> {
+                let mut errors = ::serde_valid::Errors::new();
 
                 #validators
 

@@ -12,7 +12,10 @@ pub use generic::EnumerateErrorMessage;
 pub use nested_errors::NestedErrors;
 pub use numeric::{MultiplesErrorMessage, RangeErrorMessage};
 pub use object::PropertiesErrorMessage;
+use std::collections::HashMap;
 pub use string::{LengthErrorMessage, RegularExpressionErrorMessage};
+
+pub type Errors = HashMap<FieldName, Vec<self::Error>>;
 
 #[derive(Debug, serde::Serialize, thiserror::Error)]
 #[serde(untagged)]

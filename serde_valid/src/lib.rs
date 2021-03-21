@@ -1,8 +1,7 @@
 pub mod error;
 mod traits;
 mod validation;
-pub use error::{Error, FieldName, NestedErrors};
-use std::collections::HashMap;
+pub use error::{Error, Errors, FieldName, NestedErrors};
 pub use validation::{
     validate_array_length, validate_array_uniqueness, validate_generic_enumerated_values,
     validate_numeric_multiples, validate_numeric_range, validate_object_size,
@@ -10,7 +9,7 @@ pub use validation::{
 };
 
 pub trait Validate {
-    fn validate(&self) -> Result<(), HashMap<FieldName, Vec<self::Error>>>;
+    fn validate(&self) -> Result<(), self::Errors>;
 }
 
 #[cfg(feature = "derive")]

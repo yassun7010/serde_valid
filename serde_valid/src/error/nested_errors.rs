@@ -1,11 +1,11 @@
-use crate::error::{self, FieldName};
+use crate::error;
 use std::collections::HashMap;
 
 #[derive(Debug, serde::Serialize)]
-pub struct NestedErrors(HashMap<FieldName, Vec<error::Error>>);
+pub struct NestedErrors(error::Errors);
 
 impl NestedErrors {
-    pub fn new(errors: HashMap<FieldName, Vec<error::Error>>) -> Self {
+    pub fn new(errors: error::Errors) -> Self {
         Self(errors)
     }
 }
@@ -18,7 +18,7 @@ impl std::fmt::Display for NestedErrors {
             new_errors.insert(key, errors);
         }
         match serde_json::to_string(&new_errors) {
-            Ok(json) => write!(f, "{}", json),
+            Ok(json_string) => write!(f, "{}", json_string),
             Err(_) => Err(std::fmt::Error),
         }
     }
