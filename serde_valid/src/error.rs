@@ -3,7 +3,7 @@ use crate::validation;
 #[derive(Debug, thiserror::Error)]
 pub enum Error<E>
 where
-    E: 'static + std::fmt::Debug + std::fmt::Display + std::error::Error,
+    E: 'static + std::error::Error,
 {
     #[error(transparent)]
     DeserializeError(#[from] E),
@@ -14,7 +14,7 @@ where
 
 impl<E> Error<E>
 where
-    E: 'static + std::fmt::Debug + std::fmt::Display + std::error::Error,
+    E: 'static + std::error::Error,
 {
     pub fn as_deserialize_error(&self) -> Option<&E> {
         match self {

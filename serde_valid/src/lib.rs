@@ -13,7 +13,7 @@ pub fn from_value<T, V>(value: V) -> Result<T, self::Error<V::Error>>
 where
     T: serde::de::DeserializeOwned,
     V: DeserializeWithValidation<T>,
-    V::Error: std::fmt::Debug + std::fmt::Display + std::error::Error,
+    V::Error: std::error::Error,
 {
     value.deserialize_with_validation()
 }
@@ -22,7 +22,7 @@ pub fn from_str<T, V>(str: &str) -> Result<T, self::Error<V::Error>>
 where
     T: serde::de::DeserializeOwned,
     V: DeserializeWithValidationFromStr<T>,
-    V::Error: std::fmt::Debug + std::fmt::Display + std::error::Error,
+    V::Error: std::error::Error,
 {
     V::deserialize_with_validation_from_str(str)
 }

@@ -1,6 +1,6 @@
 pub trait DeserializeWithValidation<T>
 where
-    Self::Error: std::fmt::Debug + std::fmt::Display + std::error::Error,
+    Self::Error: std::error::Error,
 {
     type Error;
     fn deserialize_with_validation(self) -> Result<T, crate::Error<Self::Error>>;
