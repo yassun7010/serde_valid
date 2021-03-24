@@ -8,7 +8,7 @@ where
 
 impl<T> DeserializeWithValidation<T> for serde_json::Value
 where
-    T: serde::de::DeserializeOwned + crate::Validate + std::fmt::Display,
+    T: serde::de::DeserializeOwned + crate::Validate,
 {
     type Error = serde_json::Error;
 
