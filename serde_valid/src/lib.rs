@@ -18,6 +18,15 @@ where
     value.deserialize_with_validation()
 }
 
+pub fn from_str<T, V>(str: &str) -> Result<T, self::Error<V::Error>>
+where
+    T: serde::de::DeserializeOwned,
+    V: DeserializeWithValidationFromStr<T>,
+    V::Error: std::fmt::Debug + std::fmt::Display + std::error::Error,
+{
+    V::deserialize_with_validation_from_str(str)
+}
+
 pub trait Validate {
     fn validate(&self) -> Result<(), self::validation::Errors>;
 }

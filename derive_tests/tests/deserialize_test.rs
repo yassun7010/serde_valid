@@ -3,7 +3,7 @@ use serde_json::json;
 use serde_valid::Validate;
 
 #[test]
-fn deserialize_is_ok_test() {
+fn deserialize_with_validation_from_value_is_ok_test() {
     #[derive(Debug, Validate, Deserialize)]
     struct TestStruct {
         #[validate(range(minimum = 0, maximum = 2000))]
@@ -14,7 +14,21 @@ fn deserialize_is_ok_test() {
 }
 
 #[test]
-fn deserialize_err_to_string_test() {
+fn deserialize_with_validation_from_str_is_ok_test() {
+    #[derive(Debug, Validate, Deserialize)]
+    struct TestStruct {
+        #[validate(range(minimum = 0, maximum = 2000))]
+        val: i32,
+    }
+
+    serde_valid::from_str::<TestStruct, serde_json::Value>(
+        &serde_json::to_string(&json!({ "val": 1234 })).unwrap(),
+    )
+    .unwrap();
+}
+
+#[test]
+fn deserialize_validation_err_to_string_test() {
     #[derive(Debug, Validate, Deserialize)]
     struct TestStruct {
         #[validate(range(minimum = 0, maximum = 1000))]
@@ -30,7 +44,7 @@ fn deserialize_err_to_string_test() {
 }
 
 #[test]
-fn deserialize_err_to_json_value_test() {
+fn deserialize_validation_err_to_json_value_test() {
     #[derive(Debug, Validate, Deserialize)]
     struct TestStruct {
         #[validate(range(minimum = 0, maximum = 1000))]
