@@ -198,6 +198,20 @@ fn range_vec_optional_type_is_ok_test() {
 }
 
 #[test]
+fn range_array_optional_type_is_ok_test() {
+    #[derive(Debug, Validate)]
+    struct TestStruct {
+        #[validate(range(minimum = 0, maximum = 10))]
+        val: [Option<i32>; 3],
+    }
+
+    let s = TestStruct {
+        val: [Some(4), Some(8), None],
+    };
+    assert!(s.validate().is_ok());
+}
+
+#[test]
 fn range_inclusive_err_message_test() {
     #[derive(Debug, Validate)]
     struct TestStruct {

@@ -1,4 +1,4 @@
-use super::extract_type_from_array;
+use super::extract_element_type_from_array;
 use super::extract_type_from_option;
 use proc_macro_error::abort;
 use ref_cast::RefCast;
@@ -43,7 +43,7 @@ impl NamedField {
 
     #[allow(dead_code)]
     pub fn array_field(&self) -> Option<NamedField> {
-        if let Some(ty) = extract_type_from_array(&self.0.ty) {
+        if let Some(ty) = extract_element_type_from_array(&self.0.ty) {
             Some(NamedField::new(syn::Field {
                 attrs: vec![],
                 vis: self.vis().to_owned(),
