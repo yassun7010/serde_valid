@@ -1,16 +1,18 @@
-use crate::error;
+use crate::validation;
 use std::collections::HashMap;
 
-#[derive(Debug, serde::Serialize)]
-pub struct NestedErrors(error::Errors);
+pub type InnerErrors = HashMap<validation::FieldName, Vec<validation::Error>>;
 
-impl NestedErrors {
-    pub fn new(errors: error::Errors) -> Self {
+#[derive(Debug, serde::Serialize, thiserror::Error)]
+pub struct Errors(InnerErrors);
+
+impl Errors {
+    pub fn new(errors: InnerErrors) -> Self {
         Self(errors)
     }
 }
 
-impl std::fmt::Display for NestedErrors {
+impl std::fmt::Display for Errors {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let mut new_errors = HashMap::new();
         for (key, errors) in &self.0 {

@@ -37,9 +37,7 @@ fn extract_validate_validator_tokens(field: &NamedField) -> TokenStream {
             errors
                 .entry(::serde_valid::FieldName::new(#field_string))
                 .or_default()
-                .push(::serde_valid::Error::NestedErrors(
-                    ::serde_valid::NestedErrors::new(errs)
-                ));
+                .push(::serde_valid::validation::Error::NestedErrors(errs));
         }
     )
 }

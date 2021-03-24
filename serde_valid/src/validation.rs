@@ -1,10 +1,12 @@
 mod array;
+pub mod error;
 mod generic;
-pub mod numeric;
+mod numeric;
 mod object;
 mod string;
 
 pub use array::{validate_array_length, validate_array_uniqueness};
+pub use error::{Error, Errors, FieldName, InnerErrors};
 pub use generic::validate_generic_enumerated_values;
 pub use numeric::{validate_numeric_multiples, validate_numeric_range, Limit};
 pub use object::validate_object_size;

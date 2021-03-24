@@ -53,8 +53,8 @@ fn inner_extract_numeric_range_validator(
             errors
                 .entry(::serde_valid::FieldName::new(#field_string))
                 .or_default()
-                .push(::serde_valid::Error::RangeError(
-                    ::serde_valid::error::RangeErrorMessage::new(
+                .push(::serde_valid::validation::Error::RangeError(
+                    ::serde_valid::validation::error::RangeErrorMessage::new(
                         *#field_ident,
                         #minimum_tokens,
                         #maximum_tokens

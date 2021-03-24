@@ -18,15 +18,17 @@ pub fn expand_derive(input: &syn::DeriveInput) -> TokenStream {
         impl #impl_generics ::serde_valid::Validate for #ident #type_generics #where_clause {
             fn validate(
                 &self
-            ) -> ::std::result::Result<(), ::serde_valid::Errors> {
-                let mut errors = ::serde_valid::Errors::new();
+            ) -> ::std::result::Result<(), ::serde_valid::validation::Errors> {
+                let mut errors = ::serde_valid::validation::InnerErrors::new();
 
                 #validators
 
                 if errors.is_empty() {
                     ::std::result::Result::Ok(())
                 } else {
-                    ::std::result::Result::Err(errors)
+                    ::std::result::Result::Err(
+                        ::serde_valid::validation::Errors::new(errors)
+                    )
                 }
             }
         }

@@ -47,8 +47,8 @@ fn inner_extract_array_length_validator(
             errors
                 .entry(::serde_valid::FieldName::new(#field_string))
                 .or_default()
-                .push(::serde_valid::Error::ItemsError(
-                    ::serde_valid::error::ItemsErrorMessage::new(
+                .push(::serde_valid::validation::Error::ItemsError(
+                    ::serde_valid::validation::error::ItemsErrorMessage::new(
                         #field_ident,
                         #min_items_tokens,
                         #max_items_tokens

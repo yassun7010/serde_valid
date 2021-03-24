@@ -44,8 +44,8 @@ fn inner_extract_string_pattern_validator(field_ident: &syn::Ident, lit: &syn::L
             errors
                 .entry(::serde_valid::FieldName::new(#field_string))
                 .or_default()
-                .push(::serde_valid::Error::PatternError(
-                    ::serde_valid::error::RegularExpressionErrorMessage::new(
+                .push(::serde_valid::validation::Error::PatternError(
+                    ::serde_valid::validation::error::RegularExpressionErrorMessage::new(
                         #field_ident,
                         pattern,
                     )

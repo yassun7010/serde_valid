@@ -51,8 +51,8 @@ fn inner_extract_generic_enumerate_validator(
             errors
                 .entry(::serde_valid::FieldName::new(#field_string))
                 .or_default()
-                .push(::serde_valid::Error::EnumerateValuesError(
-                    ::serde_valid::error::EnumerateErrorMessage::new(
+                .push(::serde_valid::validation::Error::EnumerateValuesError(
+                    ::serde_valid::validation::error::EnumerateErrorMessage::new(
                         #field_ident,
                         &[#meta_items],
                     )

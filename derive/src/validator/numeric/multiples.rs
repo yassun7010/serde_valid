@@ -45,8 +45,8 @@ fn inner_extract_numeric_multiples_validator(
             errors
                 .entry(::serde_valid::FieldName::new(#field_string))
                 .or_default()
-                .push(::serde_valid::Error::MultiplesError(
-                    ::serde_valid::error::MultiplesErrorMessage::new(
+                .push(::serde_valid::validation::Error::MultiplesError(
+                    ::serde_valid::validation::error::MultiplesErrorMessage::new(
                         *#field_ident,
                         #multiple_of,
                     )
