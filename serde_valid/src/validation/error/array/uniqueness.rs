@@ -1,9 +1,9 @@
 #[derive(Debug, serde::Serialize)]
-pub struct UniqueItemsErrorMessage {
+pub struct UniqueItemsErrorParams {
     items: Vec<String>,
 }
 
-impl UniqueItemsErrorMessage {
+impl UniqueItemsErrorParams {
     pub fn new<T>(items: &[T]) -> Self
     where
         T: std::fmt::Debug,
@@ -19,7 +19,7 @@ impl UniqueItemsErrorMessage {
     }
 }
 
-impl std::fmt::Display for UniqueItemsErrorMessage {
+impl std::fmt::Display for UniqueItemsErrorParams {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,

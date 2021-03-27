@@ -21,7 +21,7 @@ fn inner_extract_array_uniqueness_validator(field_ident: &syn::Ident) -> TokenSt
                 .entry(::serde_valid::FieldName::new(#field_string))
                 .or_default()
                 .push(::serde_valid::validation::Error::UniqueItemsError(
-                    ::serde_valid::validation::error::UniqueItemsErrorMessage::new(
+                    ::serde_valid::validation::error::UniqueItemsErrorParams::new(
                         #field_ident,
                     )
                 ));

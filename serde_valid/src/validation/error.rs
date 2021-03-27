@@ -7,7 +7,7 @@ mod numeric;
 mod object;
 mod string;
 
-pub use array::{ItemsErrorMessage, UniqueItemsErrorMessage};
+pub use array::{ItemsErrorParams, UniqueItemsErrorParams};
 pub use errors::{Errors, InnerErrors};
 pub use field_name::FieldName;
 pub use generic::EnumerateErrorMessage;
@@ -37,11 +37,11 @@ pub enum Error {
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    ItemsError(ItemsErrorMessage),
+    ItemsError(Message<ItemsErrorParams>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    UniqueItemsError(UniqueItemsErrorMessage),
+    UniqueItemsError(UniqueItemsErrorParams),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]

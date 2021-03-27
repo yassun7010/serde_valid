@@ -1,12 +1,14 @@
+use crate::validation::error::ToDefaultMessage;
+
 #[derive(Debug)]
-pub struct ItemsErrorMessage {
+pub struct ItemsErrorParams {
     items: Vec<String>,
     items_length: usize,
     min_items: Option<usize>,
     max_items: Option<usize>,
 }
 
-impl ItemsErrorMessage {
+impl ItemsErrorParams {
     pub fn new<T>(items: &[T], min_items: Option<usize>, max_items: Option<usize>) -> Self
     where
         T: std::fmt::Debug,
@@ -40,8 +42,8 @@ impl ItemsErrorMessage {
     }
 }
 
-impl std::fmt::Display for ItemsErrorMessage {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl ToDefaultMessage for ItemsErrorParams {
+    fn to_default_message(&self) -> String {
         let min_items = match &self.min_items {
             Some(items) => format!("{} <= ", items),
             None => String::new(),
@@ -50,8 +52,7 @@ impl std::fmt::Display for ItemsErrorMessage {
             Some(items) => format!(" <= {}", items),
             None => String::new(),
         };
-        write!(
-            f,
+        format!(
             "items length of [{}] must be in `{}length{}`, but `{}`.",
             &self.items.join(", "),
             min_items,

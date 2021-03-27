@@ -1,5 +1,5 @@
 use crate::helper::NamedField;
-use crate::validator::common::extract_length_validator_tokens;
+use crate::validator::common::{extract_length_validator_tokens, extract_message_tokens};
 use crate::validator::Validator;
 use proc_macro2::TokenStream;
 use quote::quote;
@@ -42,6 +42,11 @@ fn inner_extract_array_length_validator(
         attribute,
         meta_items,
     );
+    let message = extract_message_tokens(VALIDATION_LABEL, field_ident, attribute, meta_items)
+        .unwrap_or(quote!(
+            ::serde_valid::validation::error::ItemsErrorParams::to_default_message
+        ));
+
     quote!(
         if !::serde_valid::validate_array_length(
             #field_ident,
@@ -52,10 +57,13 @@ fn inner_extract_array_length_validator(
                 .entry(::serde_valid::FieldName::new(#field_string))
                 .or_default()
                 .push(::serde_valid::validation::Error::ItemsError(
-                    ::serde_valid::validation::error::ItemsErrorMessage::new(
-                        #field_ident,
-                        #min_items_tokens,
-                        #max_items_tokens
+                    ::serde_valid::validation::error::Message::new(
+                        ::serde_valid::validation::error::ItemsErrorParams::new(
+                            #field_ident,
+                            #min_items_tokens,
+                            #max_items_tokens
+                        ),
+                        #message
                     )
                 ));
         }
