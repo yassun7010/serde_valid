@@ -1,11 +1,13 @@
+use crate::validation::error::ToDefaultMessage;
+
 #[derive(Debug, serde::Serialize)]
-pub struct LengthErrorMessage {
+pub struct LengthErrorParams {
     length: String,
     min_length: Option<usize>,
     max_length: Option<usize>,
 }
 
-impl LengthErrorMessage {
+impl LengthErrorParams {
     pub fn new<T>(length: T, min_length: Option<usize>, max_length: Option<usize>) -> Self
     where
         T: PartialOrd + PartialEq + std::fmt::Debug,
@@ -33,8 +35,8 @@ impl LengthErrorMessage {
     }
 }
 
-impl std::fmt::Display for LengthErrorMessage {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl ToDefaultMessage for LengthErrorParams {
+    fn to_default_message(&self) -> String {
         let min_length = match &self.min_length {
             Some(length) => format!("{} <= ", length),
             None => String::new(),
@@ -43,8 +45,7 @@ impl std::fmt::Display for LengthErrorMessage {
             Some(length) => format!(" <= {}", length),
             None => String::new(),
         };
-        write!(
-            f,
+        format!(
             "length of {} must be in `{}length{}`, but not.",
             self.length, min_length, max_length
         )

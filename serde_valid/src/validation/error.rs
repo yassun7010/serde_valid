@@ -14,7 +14,7 @@ pub use generic::EnumerateErrorMessage;
 pub use message::{Message, ToDefaultMessage};
 pub use numeric::{MultiplesErrorParams, RangeErrorParams};
 pub use object::PropertiesErrorMessage;
-pub use string::{LengthErrorMessage, RegularExpressionErrorMessage};
+pub use string::{LengthErrorParams, RegularExpressionErrorMessage};
 
 #[derive(Debug, serde::Serialize, thiserror::Error)]
 #[serde(untagged)]
@@ -29,7 +29,7 @@ pub enum Error {
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    LengthError(LengthErrorMessage),
+    LengthError(Message<LengthErrorParams>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
