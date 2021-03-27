@@ -7,7 +7,9 @@ use crate::validator::numeric::{
     extract_numeric_multiple_of_validator_from_list, extract_numeric_range_validator,
 };
 use crate::validator::object::extract_object_size_validator;
-use crate::validator::string::extract_string_length_validator;
+use crate::validator::string::{
+    extract_string_length_validator, extract_string_pattern_of_validator_from_list,
+};
 use crate::validator::Validator;
 use proc_macro_error::abort;
 use syn::spanned::Spanned;
@@ -28,6 +30,11 @@ pub fn extract_validator_from_nested_meta_list(
             ))
         }
         "length" => return Some(extract_string_length_validator(field, attribute, meta_list)),
+        "pattern" => {
+            return Some(extract_string_pattern_of_validator_from_list(
+                field, attribute, meta_list,
+            ))
+        }
         "items" => return Some(extract_array_length_validator(field, attribute, meta_list)),
         "unique_items" => {
             return Some(extract_array_length_validator_from_list(

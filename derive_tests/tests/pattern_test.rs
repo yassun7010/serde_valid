@@ -212,3 +212,32 @@ fn pattern_err_message_test() {
         .unwrap()
     );
 }
+
+#[test]
+fn pattern_custom_err_message_test() {
+    fn error_message(
+        _params: &serde_valid::validation::error::RegularExpressionErrorParams,
+    ) -> String {
+        "this is custom message.".to_string()
+    }
+
+    #[derive(Debug, Validate)]
+    struct TestStruct {
+        #[validate(pattern(r"^\d{4}-\d{2}-\d{2}$", message_fn(error_message)))]
+        val: String,
+    }
+
+    let s = TestStruct {
+        val: String::from("2020/09/10"),
+    };
+
+    assert_eq!(
+        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
+        serde_json::to_string(&json!({
+            "val": [
+                "this is custom message."
+            ]
+        }))
+        .unwrap()
+    );
+}
