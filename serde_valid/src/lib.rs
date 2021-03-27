@@ -12,10 +12,10 @@ pub use validation::{
 pub fn from_value<T, V>(value: V) -> Result<T, self::Error<V::Error>>
 where
     T: serde::de::DeserializeOwned,
-    V: DeserializeWithValidation<T>,
+    V: DeserializeWithValidationFromValue<T>,
     V::Error: std::error::Error,
 {
-    value.deserialize_with_validation()
+    value.deserialize_with_validation_from_value()
 }
 
 pub fn from_str<T, V>(str: &str) -> Result<T, self::Error<V::Error>>
