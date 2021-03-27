@@ -252,3 +252,31 @@ fn range_exclusive_err_message_test() {
         .unwrap()
     );
 }
+
+#[test]
+fn range_custom_err_message_test() {
+    fn error_message(_params: &serde_valid::validation::error::RangeErrorParams) -> String {
+        "this is custom message.".to_string()
+    }
+    #[derive(Debug, Validate)]
+    struct TestStruct {
+        #[validate(range(
+            exclusive_minimum = 1,
+            exclusive_maximum = 10,
+            message_fn(error_message),
+        ))]
+        val: i32,
+    }
+
+    let s = TestStruct { val: 0 };
+
+    assert_eq!(
+        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
+        serde_json::to_string(&json!({
+            "val": [
+                "this is custom message."
+            ]
+        }))
+        .unwrap()
+    );
+}

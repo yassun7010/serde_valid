@@ -1,13 +1,13 @@
 use crate::validation::numeric::Limit;
 
 #[derive(Debug)]
-pub struct RangeErrorMessage {
+pub struct RangeErrorParams {
     value: String,
     maximum: Option<Limit<String>>,
     minimum: Option<Limit<String>>,
 }
 
-impl RangeErrorMessage {
+impl RangeErrorParams {
     pub fn new<T>(value: T, minimum: Option<Limit<T>>, maximum: Option<Limit<T>>) -> Self
     where
         T: PartialOrd + PartialEq + ToString,
@@ -33,10 +33,8 @@ impl RangeErrorMessage {
     pub fn maximum(&self) -> Option<&Limit<String>> {
         self.maximum.as_ref()
     }
-}
 
-impl std::fmt::Display for RangeErrorMessage {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    pub fn to_default_message(&self) -> String {
         let minimum = if let Some(limit) = &self.minimum {
             match limit {
                 Limit::Inclusive(inclusive) => format!("{} <= ", inclusive),
@@ -53,11 +51,16 @@ impl std::fmt::Display for RangeErrorMessage {
         } else {
             String::new()
         };
-        write!(
-            f,
+        format!(
             "`{}` must be in `{}value{}`, but not.",
             self.value, minimum, maximum
         )
+    }
+}
+
+impl std::fmt::Display for RangeErrorParams {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.to_default_message())
     }
 }
 

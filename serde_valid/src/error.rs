@@ -8,7 +8,7 @@ where
     #[error(transparent)]
     DeserializeError(#[from] E),
 
-    #[error("{0}")]
+    #[error(transparent)]
     ValidationError(validation::Errors),
 }
 

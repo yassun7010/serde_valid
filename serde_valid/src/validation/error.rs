@@ -2,6 +2,7 @@ mod array;
 mod errors;
 mod field_name;
 mod generic;
+mod message;
 mod numeric;
 mod object;
 mod string;
@@ -10,7 +11,8 @@ pub use array::{ItemsErrorMessage, UniqueItemsErrorMessage};
 pub use errors::{Errors, InnerErrors};
 pub use field_name::FieldName;
 pub use generic::EnumerateErrorMessage;
-pub use numeric::{MultiplesErrorMessage, RangeErrorMessage};
+pub use message::Message;
+pub use numeric::{MultiplesErrorMessage, RangeErrorParams};
 pub use object::PropertiesErrorMessage;
 pub use string::{LengthErrorMessage, RegularExpressionErrorMessage};
 
@@ -19,7 +21,7 @@ pub use string::{LengthErrorMessage, RegularExpressionErrorMessage};
 pub enum Error {
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    RangeError(RangeErrorMessage),
+    RangeError(Message<RangeErrorParams>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
