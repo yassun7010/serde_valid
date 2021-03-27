@@ -50,5 +50,4 @@ pub trait Validate {
     fn validate(&self) -> Result<(), self::validation::Errors>;
 }
 
-#[cfg(feature = "derive")]
 pub use serde_valid_derive::Validate;
