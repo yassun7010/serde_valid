@@ -1,5 +1,5 @@
 use crate::helper::{NamedField, SingleIdentPath};
-use crate::validator::numeric::extract_numeric_multiples_validator;
+use crate::validator::numeric::extract_numeric_multiples_validator_from_name_value;
 use crate::validator::string::extract_string_pattern_validator;
 use crate::validator::Validator;
 use proc_macro_error::abort;
@@ -12,7 +12,11 @@ pub fn extract_validator_from_nested_meta_name_value(
 ) -> Option<Validator> {
     let path_ident = SingleIdentPath::new(path).ident();
     match path_ident.to_string().as_ref() {
-        "multiple_of" => return Some(extract_numeric_multiples_validator(field, lit)),
+        "multiple_of" => {
+            return Some(extract_numeric_multiples_validator_from_name_value(
+                field, lit,
+            ))
+        }
         "pattern" => return Some(extract_string_pattern_validator(field, lit)),
         v => {
             abort!(path.span(), "Unexpected name value validator: {:?}", v)

@@ -258,6 +258,7 @@ fn range_custom_err_message_test() {
     fn error_message(_params: &serde_valid::validation::error::RangeErrorParams) -> String {
         "this is custom message.".to_string()
     }
+
     #[derive(Debug, Validate)]
     struct TestStruct {
         #[validate(range(
