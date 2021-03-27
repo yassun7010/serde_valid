@@ -7,7 +7,7 @@ use proc_macro2::TokenStream;
 use quote::quote;
 use syn::spanned::Spanned;
 
-const VALIDATION_NAME: &'static str = "multiple_of";
+const VALIDATION_LABEL: &'static str = "multiple_of";
 
 pub fn extract_numeric_multiples_validator_from_name_value(
     field: &NamedField,
@@ -61,7 +61,7 @@ fn inner_extract_numeric_multiple_of_validator_from_list(
     meta_items: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
 ) -> TokenStream {
     let multiple_of = get_multiple_of_from_list(field_ident, attribute, meta_items);
-    let message = extract_message_tokens(VALIDATION_NAME, field_ident, attribute, meta_items)
+    let message = extract_message_tokens(VALIDATION_LABEL, field_ident, attribute, meta_items)
         .unwrap_or(quote!(
             ::serde_valid::validation::error::MultiplesErrorParams::to_default_message
         ));
@@ -72,7 +72,7 @@ fn inner_extract_numeric_multiples_validator_from_name_value(
     field_ident: &syn::Ident,
     lit: &syn::Lit,
 ) -> TokenStream {
-    let multiple_of = get_numeric(VALIDATION_NAME, field_ident, lit);
+    let multiple_of = get_numeric(VALIDATION_LABEL, field_ident, lit);
     let message =
         quote!(::serde_valid::validation::error::MultiplesErrorParams::to_default_message);
     inner_extract_numeric_multiple_of_validator(field_ident, multiple_of, message)
@@ -115,12 +115,12 @@ fn get_multiple_of_from_list(
         match meta {
             syn::NestedMeta::Lit(lit) => {
                 if multiple_of.is_some() {
-                    abort_duplicated_lit_argument(VALIDATION_NAME, field_ident, lit.span());
+                    abort_duplicated_lit_argument(VALIDATION_LABEL, field_ident, lit.span());
                 }
-                multiple_of = Some(get_numeric(VALIDATION_NAME, field_ident, lit));
+                multiple_of = Some(get_numeric(VALIDATION_LABEL, field_ident, lit));
             }
             syn::NestedMeta::Meta(meta) => {
-                check_meta(VALIDATION_NAME, field_ident, meta.span(), meta, true)
+                check_meta(VALIDATION_LABEL, field_ident, meta.span(), meta, true)
             }
         }
     }

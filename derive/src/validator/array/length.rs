@@ -4,6 +4,10 @@ use crate::validator::Validator;
 use proc_macro2::TokenStream;
 use quote::quote;
 
+const VALIDATION_LABEL: &'static str = "items";
+const MIN_LABEL: &'static str = "min_items";
+const MAX_LABEL: &'static str = "max_items";
+
 pub fn extract_array_length_validator(
     field: &NamedField,
     attribute: &syn::Attribute,
@@ -34,9 +38,9 @@ fn inner_extract_array_length_validator(
         field_ident,
         attribute,
         meta_items,
-        "items",
-        "min_items",
-        "max_items",
+        VALIDATION_LABEL,
+        MIN_LABEL,
+        MAX_LABEL,
     );
     quote!(
         if !::serde_valid::validate_array_length(

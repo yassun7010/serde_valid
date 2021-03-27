@@ -4,6 +4,10 @@ use crate::validator::Validator;
 use proc_macro2::TokenStream;
 use quote::quote;
 
+const VALIDATION_LABEL: &'static str = "length";
+const MIN_LABEL: &'static str = "min_length";
+const MAX_LABEL: &'static str = "max_length";
+
 pub fn extract_string_length_validator(
     field: &NamedField,
     attribute: &syn::Attribute,
@@ -54,9 +58,9 @@ fn inner_extract_string_length_validator(
         field_ident,
         attribute,
         meta_items,
-        "length",
-        "min_length",
-        "max_length",
+        VALIDATION_LABEL,
+        MIN_LABEL,
+        MAX_LABEL,
     );
     quote!(
         if !::serde_valid::validate_string_length(

@@ -4,6 +4,10 @@ use crate::validator::Validator;
 use proc_macro2::TokenStream;
 use quote::quote;
 
+const VALIDATION_LABEL: &'static str = "properties";
+const MIN_LABEL: &'static str = "min_properties";
+const MAX_LABEL: &'static str = "max_properties";
+
 pub fn extract_object_size_validator(
     field: &NamedField,
     attribute: &syn::Attribute,
@@ -40,9 +44,9 @@ fn inner_extract_object_size_validator(
         field_ident,
         attribute,
         meta_items,
-        "properties",
-        "min_properties",
-        "max_properties",
+        VALIDATION_LABEL,
+        MIN_LABEL,
+        MAX_LABEL,
     );
     quote!(
         if !::serde_valid::validate_object_size(

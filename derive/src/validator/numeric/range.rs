@@ -11,7 +11,7 @@ use proc_macro2::TokenStream;
 use quote::quote;
 use syn::spanned::Spanned;
 
-const VALIDATION_NAME: &'static str = "range";
+const VALIDATION_LABEL: &'static str = "range";
 const EXPECTED_KEYS: [&str; 4] = [
     "minimum",
     "exclusive_minimum",
@@ -53,7 +53,7 @@ fn inner_extract_numeric_range_validator(
     let field_string = field_ident.to_string();
     let (minimum_tokens, maximum_tokens) =
         extract_numeric_range_validator_tokens(field_ident, attribute, meta_items);
-    let message = extract_message_tokens(VALIDATION_NAME, field_ident, attribute, meta_items)
+    let message = extract_message_tokens(VALIDATION_LABEL, field_ident, attribute, meta_items)
         .unwrap_or(quote!(
             ::serde_valid::validation::error::RangeErrorParams::to_default_message
         ));
@@ -103,7 +103,7 @@ fn extract_numeric_range_validator_tokens(
                 ),
                 syn::Meta::List(list) => {
                     abort_unexpected_list_argument(
-                        VALIDATION_NAME,
+                        VALIDATION_LABEL,
                         field_ident,
                         item.span(),
                         list,
@@ -111,7 +111,7 @@ fn extract_numeric_range_validator_tokens(
                     );
                 }
                 syn::Meta::Path(path) => {
-                    abort_unexpected_path_argument(VALIDATION_NAME, field_ident, item.span(), path)
+                    abort_unexpected_path_argument(VALIDATION_LABEL, field_ident, item.span(), path)
                 }
             }
         }
@@ -121,7 +121,7 @@ fn extract_numeric_range_validator_tokens(
 
     if minimum_tokens.to_string() == "None" && maximum_tokens.to_string() == "None" {
         abort_required_path_argument(
-            VALIDATION_NAME,
+            VALIDATION_LABEL,
             &EXPECTED_KEYS,
             field_ident,
             attribute.span(),
@@ -149,7 +149,7 @@ fn update_limit(
         "exclusive_maximum" => update_numeric(exclusive_maximum, field_ident, lit, path_ident),
         unknown_value => {
             abort_unknown_name_value_argument(
-                VALIDATION_NAME,
+                VALIDATION_LABEL,
                 unknown_value,
                 &EXPECTED_KEYS,
                 field_ident,
@@ -167,11 +167,11 @@ fn update_numeric(
     path_ident: &syn::Ident,
 ) {
     if target.is_some() {
-        abort_duplicated_argument(VALIDATION_NAME, field_ident, lit.span(), path_ident)
+        abort_duplicated_argument(VALIDATION_LABEL, field_ident, lit.span(), path_ident)
     }
 
     *target = Some(NumericInfo::new(
-        get_numeric(VALIDATION_NAME, field_ident, lit),
+        get_numeric(VALIDATION_LABEL, field_ident, lit),
         path_ident.to_owned(),
     ));
 }
