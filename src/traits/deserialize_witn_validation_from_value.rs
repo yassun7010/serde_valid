@@ -20,3 +20,19 @@ where
         Ok(model)
     }
 }
+
+#[cfg(feature = "yaml")]
+impl<T> DeserializeWithValidationFromValue<T> for serde_yaml::Value
+where
+    T: serde::de::DeserializeOwned + crate::Validate,
+{
+    type Error = serde_yaml::Error;
+
+    fn deserialize_with_validation_from_value(self) -> Result<T, crate::Error<Self::Error>> {
+        let model: T = serde_yaml::from_value(self)?;
+        model
+            .validate()
+            .map_err(|e| crate::Error::ValidationError(e))?;
+        Ok(model)
+    }
+}

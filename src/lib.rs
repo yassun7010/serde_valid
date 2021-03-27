@@ -29,11 +29,11 @@ where
 
 pub fn from_slice<'a, T, V>(v: &'a [u8]) -> Result<T, self::Error<V::Error>>
 where
-    T: serde::de::Deserialize<'a> + Validate,
-    V: DeserializeWithValidationFromSlice,
+    T: serde::de::DeserializeOwned + Validate,
+    V: DeserializeWithValidationFromSlice<T>,
     V::Error: std::error::Error,
 {
-    V::deserialize_with_validation_from_slice::<'a, T>(v)
+    V::deserialize_with_validation_from_slice(v)
 }
 
 pub fn from_reader<R, T, V>(rdr: R) -> Result<T, self::Error<V::Error>>
