@@ -1,6 +1,7 @@
 use crate::abort::{
-    abort_duplicated_argument, abort_invalid_attribute_on_field, abort_unexpected_list_argument,
-    abort_unexpected_path_argument,
+    abort_duplicated_argument, abort_invalid_attribute_on_field, abort_required_path_argument,
+    abort_unexpected_list_argument, abort_unexpected_path_argument,
+    abort_unknown_name_value_argument,
 };
 use crate::helper::{NamedField, SingleIdentPath};
 use crate::lit::NumericInfo;
@@ -11,6 +12,12 @@ use quote::quote;
 use syn::spanned::Spanned;
 
 const VALIDATION_NAME: &'static str = "range";
+const EXPECTED_KEYS: [&str; 4] = [
+    "minimum",
+    "exclusive_minimum",
+    "maximum",
+    "exclusive_maximum",
+];
 
 pub fn extract_numeric_range_validator(
     field: &NamedField,
@@ -113,10 +120,11 @@ fn extract_numeric_range_validator_tokens(
     let maximum_tokens = get_limit_tokens(field_ident, maximum, exclusive_maximum);
 
     if minimum_tokens.to_string() == "None" && maximum_tokens.to_string() == "None" {
-        abort_invalid_attribute_on_field(
+        abort_required_path_argument(
+            VALIDATION_NAME,
+            &EXPECTED_KEYS,
             field_ident,
             attribute.span(),
-            "Validator `range` requires at least 1 argument from `minimum` or `exclusive_minimum`, `maximum` or `exclusive_maximum`, `message_of`",
         );
     }
     (minimum_tokens, maximum_tokens)
@@ -124,12 +132,13 @@ fn extract_numeric_range_validator_tokens(
 
 fn update_limit(
     field_ident: &syn::Ident,
-    syn::MetaNameValue { path, lit, .. }: &syn::MetaNameValue,
+    name_value: &syn::MetaNameValue,
     minimum: &mut Option<NumericInfo>,
     exclusive_minimum: &mut Option<NumericInfo>,
     maximum: &mut Option<NumericInfo>,
     exclusive_maximum: &mut Option<NumericInfo>,
 ) {
+    let syn::MetaNameValue { path, lit, .. } = name_value;
     let path_ident = SingleIdentPath::new(path).ident();
     match path_ident.to_string().as_ref() {
         "minimum" => {
@@ -138,16 +147,16 @@ fn update_limit(
         "exclusive_minimum" => update_numeric(exclusive_minimum, field_ident, lit, path_ident),
         "maximum" => update_numeric(maximum, field_ident, lit, path_ident),
         "exclusive_maximum" => update_numeric(exclusive_maximum, field_ident, lit, path_ident),
-        v => abort_invalid_attribute_on_field(
-            field_ident,
-            path.span(),
-            &format!(
-                "Unknown argument `{}` for validator `range` \
-            (it only has [`minimum` or `exclusive_minimum`, \
-            `maximum` or `exclusive_maximum`, `message_fn`])",
-                v
-            ),
-        ),
+        unknown_value => {
+            abort_unknown_name_value_argument(
+                VALIDATION_NAME,
+                unknown_value,
+                &EXPECTED_KEYS,
+                field_ident,
+                path.span(),
+                name_value,
+            );
+        }
     }
 }
 

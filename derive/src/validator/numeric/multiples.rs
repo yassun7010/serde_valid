@@ -126,7 +126,7 @@ fn get_multiple_of_from_list(
         abort_invalid_attribute_on_field(
             field_ident,
             attribute.span(),
-            "Validator `multiple_of` requires at least 1 argument from literal or `message_fn`",
+            "Validator `multiple_of` requires at least 1 argument from numeric literal",
         )
     })
 }
