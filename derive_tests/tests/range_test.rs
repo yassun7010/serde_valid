@@ -261,11 +261,7 @@ fn range_custom_err_message_test() {
 
     #[derive(Debug, Validate)]
     struct TestStruct {
-        #[validate(range(
-            exclusive_minimum = 1,
-            exclusive_maximum = 10,
-            message_fn(error_message),
-        ))]
+        #[validate(range(minimum = 1, maximum = 10, message_fn(error_message),))]
         val: i32,
     }
 
