@@ -1,14 +1,15 @@
 use crate::traits::{Size, ToJsonString};
+use crate::validation::error::ToDefaultMessage;
 
 #[derive(Debug, serde::Serialize)]
-pub struct PropertiesErrorMessage {
+pub struct PropertiesErrorParams {
     properties: String,
     properties_size: usize,
     min_properties: Option<usize>,
     max_properties: Option<usize>,
 }
 
-impl PropertiesErrorMessage {
+impl PropertiesErrorParams {
     pub fn new<T>(
         properties: &T,
         min_properties: Option<usize>,
@@ -46,8 +47,8 @@ impl PropertiesErrorMessage {
     }
 }
 
-impl std::fmt::Display for PropertiesErrorMessage {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl ToDefaultMessage for PropertiesErrorParams {
+    fn to_default_message(&self) -> String {
         let min_properties = match &self.min_properties {
             Some(properties) => format!("{} <= ", properties),
             None => String::new(),
@@ -56,8 +57,7 @@ impl std::fmt::Display for PropertiesErrorMessage {
             Some(properties) => format!(" <= {}", properties),
             None => String::new(),
         };
-        write!(
-            f,
+        format!(
             "properties size of {} must be in `{}size{}`, but `{}`.",
             self.properties, min_properties, max_properties, self.properties_size
         )

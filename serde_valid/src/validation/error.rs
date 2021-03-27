@@ -13,7 +13,7 @@ pub use field_name::FieldName;
 pub use generic::EnumerateErrorMessage;
 pub use message::{Message, ToDefaultMessage};
 pub use numeric::{MultiplesErrorParams, RangeErrorParams};
-pub use object::PropertiesErrorMessage;
+pub use object::PropertiesErrorParams;
 pub use string::{LengthErrorParams, RegularExpressionErrorMessage};
 
 #[derive(Debug, serde::Serialize, thiserror::Error)]
@@ -45,7 +45,7 @@ pub enum Error {
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    PropertiesError(PropertiesErrorMessage),
+    PropertiesError(Message<PropertiesErrorParams>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]

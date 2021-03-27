@@ -147,3 +147,33 @@ fn properties_json_map_type_err_message_test() {
         .unwrap()
     );
 }
+
+#[test]
+fn range_custom_err_message_test() {
+    fn error_message(_params: &serde_valid::validation::error::PropertiesErrorParams) -> String {
+        "this is custom message.".to_string()
+    }
+
+    #[derive(Debug, Deserialize, Validate)]
+    struct TestStruct {
+        #[validate(properties(min_properties = 3, max_properties = 3, message_fn(error_message)))]
+        val: serde_json::Map<String, serde_json::Value>,
+    }
+
+    let s: TestStruct = serde_json::from_value(json!({
+        "val": {
+            "key1": "value1",
+        }
+    }))
+    .unwrap();
+
+    assert_eq!(
+        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
+        serde_json::to_string(&json!({
+            "val": [
+                "this is custom message."
+            ]
+        }))
+        .unwrap()
+    );
+}
