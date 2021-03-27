@@ -28,6 +28,17 @@ fn deserialize_with_validation_from_str_is_ok_test() {
 }
 
 #[test]
+fn deserialize_with_validation_from_slice_is_ok_test() {
+    #[derive(Debug, Validate, Deserialize)]
+    struct TestStruct {
+        #[validate(range(minimum = 0, maximum = 2000))]
+        val: i32,
+    }
+
+    serde_valid::from_slice::<TestStruct, serde_json::Value>(b"{ \"val\": 1234 }").unwrap();
+}
+
+#[test]
 fn deserialize_validation_err_to_string_test() {
     #[derive(Debug, Validate, Deserialize)]
     struct TestStruct {

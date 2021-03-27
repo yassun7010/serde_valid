@@ -27,6 +27,15 @@ where
     V::deserialize_with_validation_from_str(str)
 }
 
+pub fn from_slice<'a, T, V>(v: &'a [u8]) -> Result<T, self::Error<V::Error>>
+where
+    T: serde::de::Deserialize<'a> + Validate,
+    V: DeserializeWithValidationFromSlice,
+    V::Error: std::error::Error,
+{
+    V::deserialize_with_validation_from_slice::<'a, T>(v)
+}
+
 pub trait Validate {
     fn validate(&self) -> Result<(), self::validation::Errors>;
 }
