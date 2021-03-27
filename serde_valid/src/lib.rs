@@ -36,6 +36,16 @@ where
     V::deserialize_with_validation_from_slice::<'a, T>(v)
 }
 
+pub fn from_reader<R, T, V>(rdr: R) -> Result<T, self::Error<V::Error>>
+where
+    R: std::io::Read,
+    T: serde::de::DeserializeOwned,
+    V: DeserializeWithValidationFromReader<T>,
+    V::Error: std::error::Error,
+{
+    V::deserialize_with_validation_from_reader(rdr)
+}
+
 pub trait Validate {
     fn validate(&self) -> Result<(), self::validation::Errors>;
 }
