@@ -35,12 +35,12 @@ fn inner_extract_array_length_validator(
 ) -> TokenStream {
     let field_string = field_ident.to_string();
     let (min_items_tokens, max_items_tokens) = extract_length_validator_tokens(
-        field_ident,
-        attribute,
-        meta_items,
         VALIDATION_LABEL,
         MIN_LABEL,
         MAX_LABEL,
+        field_ident,
+        attribute,
+        meta_items,
     );
     quote!(
         if !::serde_valid::validate_array_length(

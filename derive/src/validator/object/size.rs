@@ -41,12 +41,12 @@ fn inner_extract_object_size_validator(
 ) -> TokenStream {
     let field_string = field_ident.to_string();
     let (min_properties_tokens, max_properties_tokens) = extract_length_validator_tokens(
-        field_ident,
-        attribute,
-        meta_items,
         VALIDATION_LABEL,
         MIN_LABEL,
         MAX_LABEL,
+        field_ident,
+        attribute,
+        meta_items,
     );
     quote!(
         if !::serde_valid::validate_object_size(

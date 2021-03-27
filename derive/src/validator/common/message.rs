@@ -2,6 +2,7 @@ use crate::abort::{
     abort_duplicated_argument, abort_unexpected_list_argument, abort_unexpected_name_value_argument,
 };
 use crate::helper::SingleIdentPath;
+use crate::validator::common::check_lit;
 use proc_macro2::TokenStream;
 use quote::quote;
 use syn::spanned::Spanned;
@@ -14,8 +15,8 @@ pub fn extract_message_tokens(
 ) -> Option<TokenStream> {
     let mut message_fmt = None;
     for meta_item in meta_items {
-        if let syn::NestedMeta::Meta(ref item) = *meta_item {
-            match item {
+        match meta_item {
+            syn::NestedMeta::Meta(ref item) => match item {
                 syn::Meta::List(meta_list) => update_message_fn_from_meta_list(
                     validation_label,
                     &mut message_fmt,
@@ -24,7 +25,8 @@ pub fn extract_message_tokens(
                 ),
                 syn::Meta::Path(_) => continue,
                 syn::Meta::NameValue(_) => continue,
-            }
+            },
+            syn::NestedMeta::Lit(_) => continue,
         }
     }
     message_fmt
@@ -77,8 +79,8 @@ fn update_message_fn_from_nested(
     path_ident: &syn::Ident,
 ) {
     for meta_item in nested {
-        if let syn::NestedMeta::Meta(ref item) = *meta_item {
-            match item {
+        match meta_item {
+            syn::NestedMeta::Meta(ref item) => match item {
                 syn::Meta::Path(path) => {
                     update_message_fn_from_path(
                         validation_label,
@@ -101,7 +103,8 @@ fn update_message_fn_from_nested(
                     item.span(),
                     name_value,
                 ),
-            }
+            },
+            syn::NestedMeta::Lit(lit) => check_lit(validation_label, field_ident, lit.span(), lit),
         }
     }
 }

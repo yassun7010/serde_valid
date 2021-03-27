@@ -5,7 +5,7 @@ use crate::abort::{
 };
 use crate::helper::{NamedField, SingleIdentPath};
 use crate::lit::NumericInfo;
-use crate::validator::common::{extract_message_tokens, get_numeric};
+use crate::validator::common::{check_lit, extract_message_tokens, get_numeric};
 use crate::validator::Validator;
 use proc_macro2::TokenStream;
 use quote::quote;
@@ -91,8 +91,8 @@ fn extract_numeric_range_validator_tokens(
     let mut maximum = None;
     let mut exclusive_maximum = None;
     for meta_item in meta_items {
-        if let syn::NestedMeta::Meta(ref item) = *meta_item {
-            match item {
+        match meta_item {
+            syn::NestedMeta::Meta(ref item) => match item {
                 syn::Meta::NameValue(name_value) => update_limit(
                     field_ident,
                     name_value,
@@ -113,7 +113,8 @@ fn extract_numeric_range_validator_tokens(
                 syn::Meta::Path(path) => {
                     abort_unexpected_path_argument(VALIDATION_LABEL, field_ident, item.span(), path)
                 }
-            }
+            },
+            syn::NestedMeta::Lit(lit) => check_lit(VALIDATION_LABEL, field_ident, lit.span(), lit),
         }
     }
     let minimum_tokens = get_limit_tokens(field_ident, minimum, exclusive_minimum);

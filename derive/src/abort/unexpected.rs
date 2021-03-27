@@ -1,6 +1,22 @@
 use super::abort_invalid_attribute_on_field;
 use crate::helper::SingleIdentPath;
 
+pub fn abort_unexpected_lit_argument(
+    validation_label: &str,
+    field_ident: &syn::Ident,
+    span: proc_macro2::Span,
+    _lit: &syn::Lit,
+) {
+    abort_invalid_attribute_on_field(
+        field_ident,
+        span,
+        &format!(
+            "Unexpected literal value while parsing `{}` validation of field `{}`",
+            validation_label, field_ident
+        ),
+    )
+}
+
 pub fn abort_unexpected_path_argument(
     validation_label: &str,
     field_ident: &syn::Ident,

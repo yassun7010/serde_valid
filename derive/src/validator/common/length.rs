@@ -3,24 +3,24 @@ use crate::abort::{
     abort_unexpected_path_argument, abort_unknown_name_value_argument,
 };
 use crate::helper::SingleIdentPath;
-use crate::validator::common::get_integer;
+use crate::validator::common::{check_lit, get_integer};
 use proc_macro2::TokenStream;
 use quote::quote;
 use syn::spanned::Spanned;
 
 pub fn extract_length_validator_tokens(
-    field_ident: &syn::Ident,
-    attribute: &syn::Attribute,
-    meta_items: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
     validation_label: &str,
     min_label: &str,
     max_label: &str,
+    field_ident: &syn::Ident,
+    attribute: &syn::Attribute,
+    meta_items: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
 ) -> (TokenStream, TokenStream) {
     let mut min_value = None;
     let mut max_value = None;
     for meta_item in meta_items {
-        if let syn::NestedMeta::Meta(ref item) = *meta_item {
-            match item {
+        match meta_item {
+            syn::NestedMeta::Meta(ref item) => match item {
                 syn::Meta::NameValue(name_value) => update_limit_value(
                     validation_label,
                     min_label,
@@ -42,7 +42,8 @@ pub fn extract_length_validator_tokens(
                 syn::Meta::Path(path) => {
                     abort_unexpected_path_argument(validation_label, field_ident, item.span(), path)
                 }
-            }
+            },
+            syn::NestedMeta::Lit(lit) => check_lit(validation_label, field_ident, lit.span(), lit),
         }
     }
     let min_tokens = get_limit_tokens(min_value);
