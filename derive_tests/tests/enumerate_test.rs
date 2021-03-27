@@ -119,3 +119,28 @@ fn enumerate_err_message_test() {
         .unwrap()
     );
 }
+
+#[test]
+fn enumerate_custom_err_message_test() {
+    fn error_message(_params: &serde_valid::validation::error::EnumerateErrorParams) -> String {
+        "this is custom message.".to_string()
+    }
+
+    #[derive(Debug, Validate)]
+    struct TestStruct {
+        #[validate(enumerate(1, 2, 3, message_fn(error_message)))]
+        val: i32,
+    }
+
+    let s = TestStruct { val: 4 };
+
+    assert_eq!(
+        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
+        serde_json::to_string(&json!({
+            "val": [
+                "this is custom message."
+            ]
+        }))
+        .unwrap()
+    );
+}
