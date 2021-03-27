@@ -1,5 +1,7 @@
 use crate::helper::{NamedField, SingleIdentPath};
-use crate::validator::array::extract_array_length_validator;
+use crate::validator::array::{
+    extract_array_length_validator, extract_array_length_validator_from_list,
+};
 use crate::validator::generic::extract_generic_enumerate_validator;
 use crate::validator::numeric::{
     extract_numeric_multiple_of_validator_from_list, extract_numeric_range_validator,
@@ -13,23 +15,29 @@ use syn::spanned::Spanned;
 pub fn extract_validator_from_nested_meta_list(
     field: &NamedField,
     attribute: &syn::Attribute,
-    syn::MetaList { path, nested, .. }: &syn::MetaList,
+    meta_list: &syn::MetaList,
 ) -> Option<Validator> {
+    let syn::MetaList { path, .. } = meta_list;
     let ident = SingleIdentPath::new(&path).ident();
 
     match ident.to_string().as_ref() {
-        "range" => return Some(extract_numeric_range_validator(field, attribute, nested)),
+        "range" => return Some(extract_numeric_range_validator(field, attribute, meta_list)),
         "multiple_of" => {
             return Some(extract_numeric_multiple_of_validator_from_list(
-                field, attribute, nested,
+                field, attribute, meta_list,
             ))
         }
-        "length" => return Some(extract_string_length_validator(field, attribute, nested)),
-        "items" => return Some(extract_array_length_validator(field, attribute, nested)),
-        "properties" => return Some(extract_object_size_validator(field, attribute, nested)),
+        "length" => return Some(extract_string_length_validator(field, attribute, meta_list)),
+        "items" => return Some(extract_array_length_validator(field, attribute, meta_list)),
+        "unique_items" => {
+            return Some(extract_array_length_validator_from_list(
+                field, attribute, meta_list,
+            ))
+        }
+        "properties" => return Some(extract_object_size_validator(field, attribute, meta_list)),
         "enumerate" => {
             return Some(extract_generic_enumerate_validator(
-                field, attribute, nested,
+                field, attribute, meta_list,
             ))
         }
         v => {

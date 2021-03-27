@@ -61,3 +61,30 @@ fn unique_items_err_message_test() {
         .unwrap()
     );
 }
+
+#[test]
+fn unique_items_custom_err_message_test() {
+    fn error_message(_params: &serde_valid::validation::error::UniqueItemsErrorParams) -> String {
+        "this is custom message.".to_string()
+    }
+
+    #[derive(Debug, Validate)]
+    struct TestStruct {
+        #[validate(unique_items(message_fn(error_message)))]
+        val: Vec<i32>,
+    }
+
+    let s = TestStruct {
+        val: vec![1, 2, 3, 2],
+    };
+
+    assert_eq!(
+        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
+        serde_json::to_string(&json!({
+            "val": [
+                "this is custom message."
+            ]
+        }))
+        .unwrap()
+    );
+}

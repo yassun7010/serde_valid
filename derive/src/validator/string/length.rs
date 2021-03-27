@@ -11,8 +11,10 @@ const MAX_LABEL: &'static str = "max_length";
 pub fn extract_string_length_validator(
     field: &NamedField,
     attribute: &syn::Attribute,
-    meta_items: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
+    meta_list: &syn::MetaList,
 ) -> Validator {
+    let syn::MetaList { nested, .. } = meta_list;
+
     if let Some(array_field) = field.array_field() {
         match array_field.ty() {
             syn::Type::Path(path) => {
@@ -21,7 +23,7 @@ pub fn extract_string_length_validator(
                         return Validator::Normal(inner_extract_string_length_validator(
                             field.ident(),
                             attribute,
-                            meta_items,
+                            nested,
                         ));
                     }
                 }
@@ -31,19 +33,19 @@ pub fn extract_string_length_validator(
         Validator::Array(Box::new(extract_string_length_validator(
             &array_field,
             attribute,
-            meta_items,
+            meta_list,
         )))
     } else if let Some(option_field) = field.option_field() {
         Validator::Option(Box::new(extract_string_length_validator(
             &option_field,
             attribute,
-            meta_items,
+            meta_list,
         )))
     } else {
         Validator::Normal(inner_extract_string_length_validator(
             field.ident(),
             attribute,
-            meta_items,
+            nested,
         ))
     }
 }

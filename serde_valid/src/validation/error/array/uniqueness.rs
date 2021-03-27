@@ -1,3 +1,5 @@
+use crate::validation::error::ToDefaultMessage;
+
 #[derive(Debug, serde::Serialize)]
 pub struct UniqueItemsErrorParams {
     items: Vec<String>,
@@ -19,10 +21,9 @@ impl UniqueItemsErrorParams {
     }
 }
 
-impl std::fmt::Display for UniqueItemsErrorParams {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
+impl ToDefaultMessage for UniqueItemsErrorParams {
+    fn to_default_message(&self) -> String {
+        format!(
             "item of [{}] must be unique, but not.",
             self.items.join(", ")
         )

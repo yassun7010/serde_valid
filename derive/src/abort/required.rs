@@ -17,7 +17,6 @@ pub fn abort_required_path_argument(
     );
 }
 
-#[allow(dead_code)]
 pub fn abort_required_list_argument(
     validation_label: &str,
     expected_values: &[&str],

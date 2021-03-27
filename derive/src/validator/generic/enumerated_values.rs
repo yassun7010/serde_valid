@@ -8,25 +8,27 @@ use syn::spanned::Spanned;
 pub fn extract_generic_enumerate_validator(
     field: &NamedField,
     attribute: &syn::Attribute,
-    meta_items: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
+    meta_list: &syn::MetaList,
 ) -> Validator {
+    let syn::MetaList { nested, .. } = meta_list;
+
     if let Some(array_field) = field.array_field() {
         Validator::Array(Box::new(extract_generic_enumerate_validator(
             &array_field,
             attribute,
-            meta_items,
+            meta_list,
         )))
     } else if let Some(option_field) = field.option_field() {
         Validator::Option(Box::new(extract_generic_enumerate_validator(
             &option_field,
             attribute,
-            meta_items,
+            meta_list,
         )))
     } else {
         Validator::Normal(inner_extract_generic_enumerate_validator(
             field.ident(),
             attribute,
-            meta_items,
+            nested,
         ))
     }
 }

@@ -41,7 +41,7 @@ pub enum Error {
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    UniqueItemsError(UniqueItemsErrorParams),
+    UniqueItemsError(Message<UniqueItemsErrorParams>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
