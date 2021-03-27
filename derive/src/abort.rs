@@ -1,4 +1,9 @@
+mod duplicated;
+mod unexpected;
+
+pub use duplicated::*;
 use proc_macro_error::abort;
+pub use unexpected::*;
 
 pub fn abort_invalid_attribute_on_field(
     field_ident: &syn::Ident,

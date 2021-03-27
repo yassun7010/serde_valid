@@ -1,5 +1,6 @@
+use crate::abort::abort_invalid_attribute_on_field;
 use crate::helper::NamedField;
-use crate::validator::{abort_invalid_attribute_on_field, Validator};
+use crate::validator::Validator;
 use proc_macro2::TokenStream;
 use quote::quote;
 

@@ -6,7 +6,6 @@ mod numeric;
 mod object;
 mod string;
 
-use crate::abort::abort_invalid_attribute_on_field;
 use crate::helper::NamedField;
 use meta::extract_meta_validator;
 use proc_macro2::TokenStream;
@@ -136,7 +135,7 @@ pub fn collect_validators(fields: &syn::Fields) -> Vec<FieldValidators> {
             let validator = extract_meta_validator(&named_field, attribute);
             match validator {
                 Some(validator) => field_validators.push(validator),
-                None => abort_invalid_attribute_on_field(
+                None => super::abort::abort_invalid_attribute_on_field(
                     &field_ident,
                     attribute.span(),
                     "it needs at least one validator",

@@ -1,6 +1,9 @@
+use crate::abort::{
+    abort_duplicated_argument, abort_invalid_attribute_on_field, abort_unexpected_list_argument,
+    abort_unexpected_path_argument,
+};
 use crate::helper::{NamedField, SingleIdentPath};
 use crate::lit::{LitNumeric, NumericInfo};
-use crate::validator::abort_invalid_attribute_on_field;
 use crate::validator::common::extract_message_tokens;
 use crate::validator::Validator;
 use proc_macro2::TokenStream;
@@ -41,9 +44,9 @@ fn inner_extract_numeric_range_validator(
     let field_string = field_ident.to_string();
     let (minimum_tokens, maximum_tokens) =
         extract_numeric_range_validator_tokens(field_ident, attribute, meta_items);
-    let message = extract_message_tokens(field_ident, attribute, meta_items).unwrap_or(quote!(
-        ::serde_valid::validation::error::RangeErrorParams::to_default_message
-    ));
+    let message = extract_message_tokens("range", field_ident, attribute, meta_items).unwrap_or(
+        quote!(::serde_valid::validation::error::RangeErrorParams::to_default_message),
+    );
 
     quote!(
         if !::serde_valid::validate_numeric_range(
@@ -89,27 +92,11 @@ fn extract_numeric_range_validator_tokens(
                     &mut exclusive_maximum,
                 ),
                 syn::Meta::List(list) => {
-                    let path_ident = SingleIdentPath::new(&list.path).ident();
-                    match path_ident.to_string().as_ref() {
-                        "message_fn" => (),
-                        _ => abort_invalid_attribute_on_field(
-                            field_ident,
-                            item.span(),
-                            &format!(
-                                "Unexpected item `{}` while parsing `range` validator of field {}",
-                                path_ident, field_ident
-                            ),
-                        ),
-                    }
+                    abort_unexpected_list_argument("range", field_ident, item.span(), list, true);
                 }
-                _ => abort_invalid_attribute_on_field(
-                    field_ident,
-                    item.span(),
-                    &format!(
-                        "Unexpected item {:?} while parsing `range` validator of field {}",
-                        item, field_ident
-                    ),
-                ),
+                syn::Meta::Path(path) => {
+                    abort_unexpected_path_argument("range", field_ident, item.span(), path)
+                }
             }
         }
     }
@@ -147,8 +134,8 @@ fn update_limit(
             path.span(),
             &format!(
                 "Unknown argument `{}` for validator `range` \
-            (it only has `minimum` or `exclusive_minimum`, \
-            `maximum` or `exclusive_maximum`)",
+            (it only has [`minimum` or `exclusive_minimum`, \
+            `maximum` or `exclusive_maximum`, `message_fn`])",
                 v
             ),
         ),
@@ -162,14 +149,7 @@ fn update_numeric(
     path_ident: &syn::Ident,
 ) {
     if target.is_some() {
-        abort_invalid_attribute_on_field(
-            field_ident,
-            lit.span(),
-            &format!(
-                "Duplicated `{}` argument of `range` validator: only unique argument is allowed",
-                path_ident.to_string()
-            ),
-        )
+        abort_duplicated_argument("range", field_ident, lit.span(), path_ident)
     }
 
     match lit {

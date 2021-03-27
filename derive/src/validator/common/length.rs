@@ -1,5 +1,5 @@
+use crate::abort::abort_invalid_attribute_on_field;
 use crate::helper::SingleIdentPath;
-use crate::validator::abort_invalid_attribute_on_field;
 use proc_macro2::TokenStream;
 use quote::quote;
 use syn::spanned::Spanned;

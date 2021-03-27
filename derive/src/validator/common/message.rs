@@ -1,10 +1,13 @@
+use crate::abort::{
+    abort_duplicated_argument, abort_unexpected_list_argument, abort_unexpected_name_value_argument,
+};
 use crate::helper::SingleIdentPath;
-use crate::validator::abort_invalid_attribute_on_field;
 use proc_macro2::TokenStream;
 use quote::quote;
 use syn::spanned::Spanned;
 
 pub fn extract_message_tokens(
+    validation_label: &str,
     field_ident: &syn::Ident,
     _attribute: &syn::Attribute,
     meta_items: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
@@ -13,17 +16,39 @@ pub fn extract_message_tokens(
     for meta_item in meta_items {
         if let syn::NestedMeta::Meta(ref item) = *meta_item {
             match item {
-                syn::Meta::List(meta_list) => {
-                    update_message_fn_from_meta_list(&mut message_fmt, field_ident, meta_list)
-                }
-                _ => continue,
+                syn::Meta::List(meta_list) => update_message_fn_from_meta_list(
+                    validation_label,
+                    &mut message_fmt,
+                    field_ident,
+                    meta_list,
+                ),
+                syn::Meta::Path(_) => continue,
+                syn::Meta::NameValue(_) => continue,
             }
         }
     }
     message_fmt
 }
 
+fn update_message_fn_from_path(
+    validation_label: &str,
+    message_fn: &mut Option<TokenStream>,
+    field_ident: &syn::Ident,
+    path: &syn::Path,
+    path_ident: &syn::Ident,
+) {
+    check_duplicated_message_fn_argument(
+        validation_label,
+        message_fn,
+        field_ident,
+        path.span(),
+        path_ident,
+    );
+    *message_fn = Some(quote!(#path));
+}
+
 fn update_message_fn_from_meta_list(
+    validation_label: &str,
     message_fn: &mut Option<TokenStream>,
     field_ident: &syn::Ident,
     syn::MetaList { path, nested, .. }: &syn::MetaList,
@@ -31,49 +56,64 @@ fn update_message_fn_from_meta_list(
     let ident = SingleIdentPath::new(&path).ident();
 
     match ident.to_string().as_ref() {
-        "message_fn" => return update_message_fn_from_nested(message_fn, field_ident, nested),
+        "message_fn" => {
+            return update_message_fn_from_nested(
+                validation_label,
+                message_fn,
+                field_ident,
+                nested,
+                ident,
+            )
+        }
         _ => {}
     }
 }
 
 fn update_message_fn_from_nested(
+    validation_label: &str,
     message_fn: &mut Option<TokenStream>,
     field_ident: &syn::Ident,
     nested: &syn::punctuated::Punctuated<syn::NestedMeta, syn::Token![,]>,
+    path_ident: &syn::Ident,
 ) {
     for meta_item in nested {
         if let syn::NestedMeta::Meta(ref item) = *meta_item {
             match item {
                 syn::Meta::Path(path) => {
-                    abort_duplicated_message_fn_argument(message_fn, field_ident, nested);
-                    *message_fn = Some(quote!(#path));
+                    update_message_fn_from_path(
+                        validation_label,
+                        message_fn,
+                        field_ident,
+                        path,
+                        path_ident,
+                    );
                 }
-                _ => abort_invalid_attribute_on_field(
+                syn::Meta::List(list) => abort_unexpected_list_argument(
+                    validation_label,
                     field_ident,
                     item.span(),
-                    &format!(
-                        "Unexpected item {:?} while parsing `message_fn` of field {}",
-                        item, field_ident
-                    ),
+                    list,
+                    false,
+                ),
+                syn::Meta::NameValue(name_value) => abort_unexpected_name_value_argument(
+                    validation_label,
+                    field_ident,
+                    item.span(),
+                    name_value,
                 ),
             }
         }
     }
 }
 
-fn abort_duplicated_message_fn_argument(
+fn check_duplicated_message_fn_argument(
+    validation_label: &str,
     message_fn: &mut Option<TokenStream>,
     field_ident: &syn::Ident,
-    nested: &syn::punctuated::Punctuated<syn::NestedMeta, syn::Token![,]>,
+    span: proc_macro2::Span,
+    path_ident: &syn::Ident,
 ) {
     if message_fn.is_some() {
-        abort_invalid_attribute_on_field(
-            field_ident,
-            nested.span(),
-            &format!(
-                "Duplicated `message_fn` argument of field {}: only unique argument is allowed",
-                field_ident,
-            ),
-        )
+        abort_duplicated_argument(validation_label, field_ident, span, path_ident)
     }
 }
