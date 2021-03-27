@@ -38,6 +38,8 @@ fn inner_extract_numeric_multiples_validator(
             "invalid argument type for `multiple_of` validator: only numeric literals are allowed",
         ),
     };
+    let message =
+        quote!(::serde_valid::validation::error::MultiplesErrorParams::to_default_message);
     let token = quote!(
         if !::serde_valid::validate_numeric_multiples(
             *#field_ident,
@@ -47,9 +49,12 @@ fn inner_extract_numeric_multiples_validator(
                 .entry(::serde_valid::FieldName::new(#field_string))
                 .or_default()
                 .push(::serde_valid::validation::Error::MultiplesError(
-                    ::serde_valid::validation::error::MultiplesErrorMessage::new(
-                        *#field_ident,
-                        #multiple_of,
+                    ::serde_valid::validation::error::Message::new(
+                        ::serde_valid::validation::error::MultiplesErrorParams::new(
+                            *#field_ident,
+                            #multiple_of,
+                        ),
+                        #message
                     )
                 ));
         }

@@ -19,6 +19,7 @@ pub fn expand_derive(input: &syn::DeriveInput) -> TokenStream {
             fn validate(
                 &self
             ) -> ::std::result::Result<(), ::serde_valid::validation::Errors> {
+                use ::serde_valid::validation::error::ToDefaultMessage;
                 let mut errors = ::serde_valid::validation::InnerErrors::new();
 
                 #validators

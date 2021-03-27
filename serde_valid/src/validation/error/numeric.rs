@@ -1,5 +1,5 @@
 mod multiples;
 mod range;
 
-pub use multiples::MultiplesErrorMessage;
+pub use multiples::MultiplesErrorParams;
 pub use range::RangeErrorParams;

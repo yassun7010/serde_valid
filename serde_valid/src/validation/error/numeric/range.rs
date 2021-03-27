@@ -1,3 +1,4 @@
+use crate::validation::error::ToDefaultMessage;
 use crate::validation::numeric::Limit;
 
 #[derive(Debug)]
@@ -33,8 +34,10 @@ impl RangeErrorParams {
     pub fn maximum(&self) -> Option<&Limit<String>> {
         self.maximum.as_ref()
     }
+}
 
-    pub fn to_default_message(&self) -> String {
+impl ToDefaultMessage for RangeErrorParams {
+    fn to_default_message(&self) -> String {
         let minimum = if let Some(limit) = &self.minimum {
             match limit {
                 Limit::Inclusive(inclusive) => format!("{} <= ", inclusive),
@@ -55,12 +58,6 @@ impl RangeErrorParams {
             "`{}` must be in `{}value{}`, but not.",
             self.value, minimum, maximum
         )
-    }
-}
-
-impl std::fmt::Display for RangeErrorParams {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.to_default_message())
     }
 }
 

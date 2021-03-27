@@ -11,8 +11,8 @@ pub use array::{ItemsErrorMessage, UniqueItemsErrorMessage};
 pub use errors::{Errors, InnerErrors};
 pub use field_name::FieldName;
 pub use generic::EnumerateErrorMessage;
-pub use message::Message;
-pub use numeric::{MultiplesErrorMessage, RangeErrorParams};
+pub use message::{Message, ToDefaultMessage};
+pub use numeric::{MultiplesErrorParams, RangeErrorParams};
 pub use object::PropertiesErrorMessage;
 pub use string::{LengthErrorMessage, RegularExpressionErrorMessage};
 
@@ -25,7 +25,7 @@ pub enum Error {
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    MultiplesError(MultiplesErrorMessage),
+    MultiplesError(Message<MultiplesErrorParams>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
