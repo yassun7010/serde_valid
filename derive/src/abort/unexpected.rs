@@ -12,7 +12,7 @@ pub fn abort_unexpected_path_argument(
         field_ident,
         span,
         &format!(
-            "Unexpected item `{}` while parsing `{}` validation of field {}",
+            "Unexpected item `{}` while parsing `{}` validation of field `{}`",
             path_ident, validation_label, field_ident
         ),
     )

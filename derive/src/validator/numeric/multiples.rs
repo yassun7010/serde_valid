@@ -1,7 +1,7 @@
 use crate::abort::{abort_duplicated_lit_argument, abort_invalid_attribute_on_field};
 use crate::helper::NamedField;
 use crate::lit::LitNumeric;
-use crate::validator::common::{extract_message_tokens, get_numeric};
+use crate::validator::common::{check_meta, extract_message_tokens, get_numeric};
 use crate::validator::Validator;
 use proc_macro2::TokenStream;
 use quote::quote;
@@ -119,7 +119,9 @@ fn get_multiple_of_from_list(
                 }
                 multiple_of = Some(get_numeric(VALIDATION_NAME, field_ident, lit));
             }
-            syn::NestedMeta::Meta(_) => (),
+            syn::NestedMeta::Meta(meta) => {
+                check_meta(VALIDATION_NAME, field_ident, meta.span(), meta, true)
+            }
         }
     }
     multiple_of.unwrap_or_else(|| {
