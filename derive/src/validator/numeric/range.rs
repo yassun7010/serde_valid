@@ -3,12 +3,14 @@ use crate::abort::{
     abort_unexpected_path_argument,
 };
 use crate::helper::{NamedField, SingleIdentPath};
-use crate::lit::{LitNumeric, NumericInfo};
-use crate::validator::common::extract_message_tokens;
+use crate::lit::NumericInfo;
+use crate::validator::common::{extract_message_tokens, get_numeric};
 use crate::validator::Validator;
 use proc_macro2::TokenStream;
 use quote::quote;
 use syn::spanned::Spanned;
+
+const VALIDATION_NAME: &'static str = "range";
 
 pub fn extract_numeric_range_validator(
     field: &NamedField,
@@ -44,9 +46,10 @@ fn inner_extract_numeric_range_validator(
     let field_string = field_ident.to_string();
     let (minimum_tokens, maximum_tokens) =
         extract_numeric_range_validator_tokens(field_ident, attribute, meta_items);
-    let message = extract_message_tokens("range", field_ident, attribute, meta_items).unwrap_or(
-        quote!(::serde_valid::validation::error::RangeErrorParams::to_default_message),
-    );
+    let message = extract_message_tokens(VALIDATION_NAME, field_ident, attribute, meta_items)
+        .unwrap_or(quote!(
+            ::serde_valid::validation::error::RangeErrorParams::to_default_message
+        ));
 
     quote!(
         if !::serde_valid::validate_numeric_range(
@@ -92,10 +95,16 @@ fn extract_numeric_range_validator_tokens(
                     &mut exclusive_maximum,
                 ),
                 syn::Meta::List(list) => {
-                    abort_unexpected_list_argument("range", field_ident, item.span(), list, true);
+                    abort_unexpected_list_argument(
+                        VALIDATION_NAME,
+                        field_ident,
+                        item.span(),
+                        list,
+                        true,
+                    );
                 }
                 syn::Meta::Path(path) => {
-                    abort_unexpected_path_argument("range", field_ident, item.span(), path)
+                    abort_unexpected_path_argument(VALIDATION_NAME, field_ident, item.span(), path)
                 }
             }
         }
@@ -107,7 +116,7 @@ fn extract_numeric_range_validator_tokens(
         abort_invalid_attribute_on_field(
             field_ident,
             attribute.span(),
-            "Validator `range` requires at least 1 argument from `minimum` or `exclusive_minimum`, `maximum` or `exclusive_maximum`",
+            "Validator `range` requires at least 1 argument from `minimum` or `exclusive_minimum`, `maximum` or `exclusive_maximum`, `message_of`",
         );
     }
     (minimum_tokens, maximum_tokens)
@@ -149,21 +158,13 @@ fn update_numeric(
     path_ident: &syn::Ident,
 ) {
     if target.is_some() {
-        abort_duplicated_argument("range", field_ident, lit.span(), path_ident)
+        abort_duplicated_argument(VALIDATION_NAME, field_ident, lit.span(), path_ident)
     }
 
-    match lit {
-        syn::Lit::Int(l) => {
-            *target = Some(NumericInfo::new(LitNumeric::Int(l.to_owned()), path_ident.to_owned()))
-        },
-        syn::Lit::Float(l) => {
-            *target = Some(NumericInfo::new(LitNumeric::Float(l.to_owned()), path_ident.to_owned()))
-        },
-        _ => abort_invalid_attribute_on_field(
-            field_ident,
-            lit.span(),
-             &format!("Invalid argument type for `{}` of `range` validator: only numeric literals are allowed", path_ident.to_string())),
-    }
+    *target = Some(NumericInfo::new(
+        get_numeric(VALIDATION_NAME, field_ident, lit),
+        path_ident.to_owned(),
+    ));
 }
 
 fn get_limit_tokens(
@@ -172,19 +173,22 @@ fn get_limit_tokens(
     exclusive_limit: Option<NumericInfo>,
 ) -> proc_macro2::TokenStream {
     match (inclusive_limit, exclusive_limit) {
-        (Some(inclusive), Some(exclusive)) => abort_invalid_attribute_on_field(
-            field_ident,
-            inclusive
+        (Some(inclusive), Some(exclusive)) => {
+            let span = inclusive
                 .path_ident()
                 .span()
                 .join(exclusive.path_ident().span())
-                .unwrap_or(inclusive.path_ident().span()),
-            &format!(
-                "Both `{}` and `{}` have been set in `range` validator: conflict",
-                inclusive.path_name(),
-                exclusive.path_name()
-            ),
-        ),
+                .unwrap_or(inclusive.path_ident().span());
+            abort_invalid_attribute_on_field(
+                field_ident,
+                span,
+                &format!(
+                    "Both `{}` and `{}` have been set in `range` validator: conflict",
+                    inclusive.path_name(),
+                    exclusive.path_name()
+                ),
+            )
+        }
         (Some(inclusive_limit), None) => {
             quote!(Some(::serde_valid::Limit::Inclusive(#inclusive_limit)))
         }

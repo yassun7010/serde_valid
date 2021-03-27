@@ -1,11 +1,13 @@
 use crate::abort::{abort_duplicated_lit_argument, abort_invalid_attribute_on_field};
 use crate::helper::NamedField;
 use crate::lit::LitNumeric;
-use crate::validator::common::extract_message_tokens;
+use crate::validator::common::{extract_message_tokens, get_numeric};
 use crate::validator::Validator;
 use proc_macro2::TokenStream;
 use quote::quote;
 use syn::spanned::Spanned;
+
+const VALIDATION_NAME: &'static str = "multiple_of";
 
 pub fn extract_numeric_multiples_validator_from_name_value(
     field: &NamedField,
@@ -59,9 +61,10 @@ fn inner_extract_numeric_multiple_of_validator_from_list(
     meta_items: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
 ) -> TokenStream {
     let multiple_of = get_multiple_of_from_list(field_ident, attribute, meta_items);
-    let message = extract_message_tokens("range", field_ident, attribute, meta_items).unwrap_or(
-        quote!(::serde_valid::validation::error::MultiplesErrorParams::to_default_message),
-    );
+    let message = extract_message_tokens(VALIDATION_NAME, field_ident, attribute, meta_items)
+        .unwrap_or(quote!(
+            ::serde_valid::validation::error::MultiplesErrorParams::to_default_message
+        ));
     inner_extract_numeric_multiple_of_validator(field_ident, multiple_of, message)
 }
 
@@ -69,7 +72,7 @@ fn inner_extract_numeric_multiples_validator_from_name_value(
     field_ident: &syn::Ident,
     lit: &syn::Lit,
 ) -> TokenStream {
-    let multiple_of = get_multiple_of(field_ident, lit);
+    let multiple_of = get_numeric(VALIDATION_NAME, field_ident, lit);
     let message =
         quote!(::serde_valid::validation::error::MultiplesErrorParams::to_default_message);
     inner_extract_numeric_multiple_of_validator(field_ident, multiple_of, message)
@@ -112,9 +115,9 @@ fn get_multiple_of_from_list(
         match meta {
             syn::NestedMeta::Lit(lit) => {
                 if multiple_of.is_some() {
-                    abort_duplicated_lit_argument("multiple_of", field_ident, lit.span());
+                    abort_duplicated_lit_argument(VALIDATION_NAME, field_ident, lit.span());
                 }
-                multiple_of = Some(get_multiple_of(field_ident, lit));
+                multiple_of = Some(get_numeric(VALIDATION_NAME, field_ident, lit));
             }
             syn::NestedMeta::Meta(_) => (),
         }
@@ -126,16 +129,4 @@ fn get_multiple_of_from_list(
             "Validator `multiple_of` requires at least 1 argument from literal or `message_fn`",
         )
     })
-}
-
-fn get_multiple_of(field_ident: &syn::Ident, lit: &syn::Lit) -> LitNumeric {
-    match lit {
-        syn::Lit::Int(l) => LitNumeric::Int(l.to_owned()),
-        syn::Lit::Float(l) => LitNumeric::Float(l.to_owned()),
-        _ => abort_invalid_attribute_on_field(
-            field_ident,
-            lit.span(),
-            "invalid argument type for `multiple_of` validator: only numeric literals are allowed",
-        ),
-    }
 }
