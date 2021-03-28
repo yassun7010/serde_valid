@@ -49,7 +49,7 @@ fn inner_extract_generic_enumerate_validator(
         ));
 
     quote!(
-        if !::serde_valid::validate_generic_enumerated_values(
+        if !::serde_valid::validate_generic_enumerate(
             #field_ident,
             &[#enumerate],
         ) {

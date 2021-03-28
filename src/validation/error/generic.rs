@@ -1,2 +1,2 @@
-mod enumerated_values;
-pub use enumerated_values::EnumerateErrorParams;
+mod enumerate;
+pub use enumerate::EnumerateErrorParams;

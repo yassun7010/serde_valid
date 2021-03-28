@@ -4,7 +4,7 @@ pub mod validation;
 pub use error::Error;
 pub use traits::*;
 pub use validation::{
-    validate_array_items, validate_array_unique_items, validate_generic_enumerated_values,
+    validate_array_items, validate_array_unique_items, validate_generic_enumerate,
     validate_numeric_multiples, validate_numeric_range, validate_object_size,
     validate_string_length, validate_string_regular_expressions, FieldName, Limit,
 };

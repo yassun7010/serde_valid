@@ -1,3 +1,3 @@
-mod enumerated_values;
+mod enumerate;
 
-pub use enumerated_values::extract_generic_enumerate_validator;
+pub use enumerate::extract_generic_enumerate_validator;
