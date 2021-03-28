@@ -8,7 +8,7 @@ const VALIDATION_LABEL: &'static str = "items";
 const MIN_LABEL: &'static str = "min_items";
 const MAX_LABEL: &'static str = "max_items";
 
-pub fn extract_array_length_validator(
+pub fn extract_array_items_validator(
     field: &NamedField,
     attribute: &syn::Attribute,
     meta_list: &syn::MetaList,
@@ -16,13 +16,13 @@ pub fn extract_array_length_validator(
     let syn::MetaList { nested, .. } = meta_list;
 
     if let Some(option_field) = field.option_field() {
-        Validator::Option(Box::new(extract_array_length_validator(
+        Validator::Option(Box::new(extract_array_items_validator(
             &option_field,
             attribute,
             meta_list,
         )))
     } else {
-        Validator::Normal(inner_extract_array_length_validator(
+        Validator::Normal(inner_extract_array_items_validator(
             field.ident(),
             attribute,
             nested,
@@ -30,7 +30,7 @@ pub fn extract_array_length_validator(
     }
 }
 
-fn inner_extract_array_length_validator(
+fn inner_extract_array_items_validator(
     field_ident: &syn::Ident,
     attribute: &syn::Attribute,
     meta_items: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
@@ -50,7 +50,7 @@ fn inner_extract_array_length_validator(
         ));
 
     quote!(
-        if !::serde_valid::validate_array_length(
+        if !::serde_valid::validate_array_items(
             #field_ident,
             #min_items_tokens,
             #max_items_tokens

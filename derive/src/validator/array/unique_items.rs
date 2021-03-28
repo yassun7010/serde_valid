@@ -3,7 +3,7 @@ mod unique_items_from_meta_path;
 
 use proc_macro2::TokenStream;
 use quote::quote;
-pub use unique_items_from_meta_list::extract_array_length_validator_from_meta_list;
+pub use unique_items_from_meta_list::extract_array_unique_items_validator_from_meta_list;
 pub use unique_items_from_meta_path::extract_array_unique_items_validator_from_meta_path;
 
 const VALIDATION_LABEL: &'static str = "unique_items";

@@ -1,6 +1,6 @@
 use crate::helper::{NamedField, SingleIdentPath};
 use crate::validator::array::{
-    extract_array_length_validator, extract_array_length_validator_from_meta_list,
+    extract_array_items_validator, extract_array_unique_items_validator_from_meta_list,
 };
 use crate::validator::generic::extract_generic_enumerate_validator;
 use crate::validator::numeric::{
@@ -35,9 +35,9 @@ pub fn extract_validator_from_nested_meta_list(
                 field, attribute, meta_list,
             ))
         }
-        "items" => return Some(extract_array_length_validator(field, attribute, meta_list)),
+        "items" => return Some(extract_array_items_validator(field, attribute, meta_list)),
         "unique_items" => {
-            return Some(extract_array_length_validator_from_meta_list(
+            return Some(extract_array_unique_items_validator_from_meta_list(
                 field, attribute, meta_list,
             ))
         }
