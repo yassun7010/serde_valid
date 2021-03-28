@@ -58,7 +58,7 @@ fn inner_extract_array_items_validator(
             errors
                 .entry(::serde_valid::FieldName::new(#field_string))
                 .or_default()
-                .push(::serde_valid::validation::Error::ItemsError(
+                .push(::serde_valid::validation::Error::Items(
                     ::serde_valid::validation::error::Message::new(
                         ::serde_valid::validation::error::ItemsParams::new(
                             #field_ident,

@@ -56,7 +56,7 @@ fn inner_extract_generic_enumerate_validator(
             errors
                 .entry(::serde_valid::FieldName::new(#field_string))
                 .or_default()
-                .push(::serde_valid::validation::Error::EnumerateValuesError(
+                .push(::serde_valid::validation::Error::Enumerate(
                     ::serde_valid::validation::error::Message::new(
                         ::serde_valid::validation::error::EnumerateParams::new(
                             #field_ident,

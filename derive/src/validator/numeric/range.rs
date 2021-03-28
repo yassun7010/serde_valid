@@ -68,7 +68,7 @@ fn inner_extract_numeric_range_validator(
             errors
                 .entry(::serde_valid::FieldName::new(#field_string))
                 .or_default()
-                .push(::serde_valid::validation::Error::RangeError(
+                .push(::serde_valid::validation::Error::Range(
                     ::serde_valid::validation::error::Message::new(
                         ::serde_valid::validation::error::RangeParams::new(
                             *#field_ident,

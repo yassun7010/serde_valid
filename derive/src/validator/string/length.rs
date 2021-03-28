@@ -78,7 +78,7 @@ fn inner_extract_string_length_validator(
             errors
                 .entry(::serde_valid::FieldName::new(#field_string))
                 .or_default()
-                .push(::serde_valid::validation::Error::LengthError(
+                .push(::serde_valid::validation::Error::Length(
                     ::serde_valid::validation::error::Message::new(
                         ::serde_valid::validation::error::LengthParams::new(
                             #field_ident,

@@ -22,7 +22,7 @@ fn inner_extract_numeric_multiple_of_validator(
             errors
                 .entry(::serde_valid::FieldName::new(#field_string))
                 .or_default()
-                .push(::serde_valid::validation::Error::MultipleOfError(
+                .push(::serde_valid::validation::Error::MultipleOf(
                     ::serde_valid::validation::error::Message::new(
                         ::serde_valid::validation::error::MultipleOfParams::new(
                             *#field_ident,

@@ -21,42 +21,42 @@ pub use string::{LengthParams, PatternParams};
 pub enum Error {
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    RangeError(Message<RangeParams>),
+    Range(Message<RangeParams>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    MultipleOfError(Message<MultipleOfParams>),
+    MultipleOf(Message<MultipleOfParams>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    LengthError(Message<LengthParams>),
+    Length(Message<LengthParams>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    PatternError(Message<PatternParams>),
+    Pattern(Message<PatternParams>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    ItemsError(Message<ItemsParams>),
+    Items(Message<ItemsParams>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    UniqueItemsError(Message<UniqueItemsParams>),
+    UniqueItems(Message<UniqueItemsParams>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    PropertiesError(Message<PropertiesParams>),
+    Properties(Message<PropertiesParams>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    EnumerateValuesError(Message<EnumerateParams>),
+    Enumerate(Message<EnumerateParams>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    CustomError(Message<String>),
+    Custom(Message<String>),
 
     #[error(transparent)]
-    NestedErrors(Errors),
+    Nested(Errors),
 }
 
 pub fn serialize_error_message<T, S>(message: &T, serializer: S) -> Result<S::Ok, S::Error>
