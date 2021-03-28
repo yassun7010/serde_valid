@@ -74,16 +74,6 @@ fn get_enumerate<'a>(
     attribute: &syn::Attribute,
     meta_items: &'a syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
 ) -> syn::punctuated::Punctuated<&'a syn::Lit, syn::token::Comma> {
-    if meta_items.len() == 0 {
-        abort!(
-            attribute.span(),
-            &format!(
-                "'{}' meta_items size must be greater than 0.",
-                VALIDATION_LABEL
-            )
-        )
-    }
-
     let mut enumerate = syn::punctuated::Punctuated::<&syn::Lit, syn::token::Comma>::new();
     for meta_item in meta_items {
         match meta_item {
@@ -92,6 +82,16 @@ fn get_enumerate<'a>(
                 check_meta(VALIDATION_LABEL, field_ident, meta.span(), meta, true)
             }
         }
+    }
+
+    if enumerate.len() == 0 {
+        abort!(
+            attribute.span(),
+            &format!(
+                "'{}' literal meta items size must be greater than 0.",
+                VALIDATION_LABEL
+            )
+        )
     }
     enumerate
 }
