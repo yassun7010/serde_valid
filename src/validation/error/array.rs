@@ -1,5 +1,5 @@
 mod length;
-mod uniqueness;
+mod unique_items;
 
 pub use length::ItemsErrorParams;
-pub use uniqueness::UniqueItemsErrorParams;
+pub use unique_items::UniqueItemsErrorParams;

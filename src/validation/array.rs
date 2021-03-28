@@ -1,4 +1,4 @@
 mod length;
-mod uniqueness;
+mod unique_items;
 pub use length::validate_array_length;
-pub use uniqueness::validate_array_uniqueness;
+pub use unique_items::validate_array_unique_items;

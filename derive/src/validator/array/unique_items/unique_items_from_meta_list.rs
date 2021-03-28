@@ -1,4 +1,4 @@
-use super::{inner_extract_array_uniqueness_validator, VALIDATION_LABEL};
+use super::{inner_extract_array_unique_items_validator, VALIDATION_LABEL};
 use crate::abort::abort_required_list_argument;
 use crate::helper::NamedField;
 use crate::validator::common::extract_message_tokens;
@@ -48,5 +48,5 @@ fn inner_extract_array_length_validator_from_meta_list(
             true,
         )
     }
-    inner_extract_array_uniqueness_validator(field_ident, message)
+    inner_extract_array_unique_items_validator(field_ident, message)
 }

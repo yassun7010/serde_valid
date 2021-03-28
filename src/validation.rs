@@ -5,7 +5,7 @@ mod numeric;
 mod object;
 mod string;
 
-pub use array::{validate_array_length, validate_array_uniqueness};
+pub use array::{validate_array_length, validate_array_unique_items};
 pub use error::{Error, Errors, FieldName, InnerErrors};
 pub use generic::validate_generic_enumerated_values;
 pub use numeric::{validate_numeric_multiples, validate_numeric_range, Limit};
