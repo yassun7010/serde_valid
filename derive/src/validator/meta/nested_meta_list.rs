@@ -1,14 +1,14 @@
 use crate::helper::{NamedField, SingleIdentPath};
 use crate::validator::array::{
-    extract_array_length_validator, extract_array_length_validator_from_list,
+    extract_array_length_validator, extract_array_length_validator_from_meta_list,
 };
 use crate::validator::generic::extract_generic_enumerate_validator;
 use crate::validator::numeric::{
-    extract_numeric_multiple_of_validator_from_list, extract_numeric_range_validator,
+    extract_numeric_multiple_of_validator_from_meta_list, extract_numeric_range_validator,
 };
 use crate::validator::object::extract_object_size_validator;
 use crate::validator::string::{
-    extract_string_length_validator, extract_string_pattern_of_validator_from_list,
+    extract_string_length_validator, extract_string_pattern_of_validator_from_meta_list,
 };
 use crate::validator::Validator;
 use proc_macro_error::abort;
@@ -25,19 +25,19 @@ pub fn extract_validator_from_nested_meta_list(
     match ident.to_string().as_ref() {
         "range" => return Some(extract_numeric_range_validator(field, attribute, meta_list)),
         "multiple_of" => {
-            return Some(extract_numeric_multiple_of_validator_from_list(
+            return Some(extract_numeric_multiple_of_validator_from_meta_list(
                 field, attribute, meta_list,
             ))
         }
         "length" => return Some(extract_string_length_validator(field, attribute, meta_list)),
         "pattern" => {
-            return Some(extract_string_pattern_of_validator_from_list(
+            return Some(extract_string_pattern_of_validator_from_meta_list(
                 field, attribute, meta_list,
             ))
         }
         "items" => return Some(extract_array_length_validator(field, attribute, meta_list)),
         "unique_items" => {
-            return Some(extract_array_length_validator_from_list(
+            return Some(extract_array_length_validator_from_meta_list(
                 field, attribute, meta_list,
             ))
         }

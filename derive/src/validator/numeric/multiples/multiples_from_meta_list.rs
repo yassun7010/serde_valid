@@ -9,26 +9,30 @@ use proc_macro2::TokenStream;
 use quote::quote;
 use syn::spanned::Spanned;
 
-pub fn extract_numeric_multiple_of_validator_from_list(
+pub fn extract_numeric_multiple_of_validator_from_meta_list(
     field: &NamedField,
     attribute: &syn::Attribute,
     meta_list: &syn::MetaList,
 ) -> Validator {
     let syn::MetaList { nested, .. } = meta_list;
     if let Some(array_field) = field.array_field() {
-        Validator::Array(Box::new(extract_numeric_multiple_of_validator_from_list(
-            &array_field,
-            attribute,
-            meta_list,
-        )))
+        Validator::Array(Box::new(
+            extract_numeric_multiple_of_validator_from_meta_list(
+                &array_field,
+                attribute,
+                meta_list,
+            ),
+        ))
     } else if let Some(option_field) = field.option_field() {
-        Validator::Option(Box::new(extract_numeric_multiple_of_validator_from_list(
-            &option_field,
-            attribute,
-            meta_list,
-        )))
+        Validator::Option(Box::new(
+            extract_numeric_multiple_of_validator_from_meta_list(
+                &option_field,
+                attribute,
+                meta_list,
+            ),
+        ))
     } else {
-        Validator::Normal(inner_extract_numeric_multiple_of_validator_from_list(
+        Validator::Normal(inner_extract_numeric_multiple_of_validator_from_meta_list(
             field.ident(),
             attribute,
             nested,
@@ -36,12 +40,12 @@ pub fn extract_numeric_multiple_of_validator_from_list(
     }
 }
 
-fn inner_extract_numeric_multiple_of_validator_from_list(
+fn inner_extract_numeric_multiple_of_validator_from_meta_list(
     field_ident: &syn::Ident,
     attribute: &syn::Attribute,
     meta_items: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
 ) -> TokenStream {
-    let multiple_of = get_multiple_of_from_list(field_ident, attribute, meta_items);
+    let multiple_of = get_multiple_of_from_meta_list(field_ident, attribute, meta_items);
     let message = extract_message_tokens(VALIDATION_LABEL, field_ident, attribute, meta_items)
         .unwrap_or(quote!(
             ::serde_valid::validation::error::MultiplesErrorParams::to_default_message
@@ -49,7 +53,7 @@ fn inner_extract_numeric_multiple_of_validator_from_list(
     inner_extract_numeric_multiple_of_validator(field_ident, multiple_of, message)
 }
 
-fn get_multiple_of_from_list(
+fn get_multiple_of_from_meta_list(
     field_ident: &syn::Ident,
     attribute: &syn::Attribute,
     meta_items: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,

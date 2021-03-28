@@ -8,25 +8,21 @@ use proc_macro2::TokenStream;
 use quote::quote;
 use syn::spanned::Spanned;
 
-pub fn extract_string_pattern_of_validator_from_list(
+pub fn extract_string_pattern_of_validator_from_meta_list(
     field: &NamedField,
     attribute: &syn::Attribute,
     meta_list: &syn::MetaList,
 ) -> Validator {
     if let Some(array_field) = field.array_field() {
-        Validator::Array(Box::new(extract_string_pattern_of_validator_from_list(
-            &array_field,
-            attribute,
-            meta_list,
-        )))
+        Validator::Array(Box::new(
+            extract_string_pattern_of_validator_from_meta_list(&array_field, attribute, meta_list),
+        ))
     } else if let Some(option_field) = field.option_field() {
-        Validator::Option(Box::new(extract_string_pattern_of_validator_from_list(
-            &option_field,
-            attribute,
-            meta_list,
-        )))
+        Validator::Option(Box::new(
+            extract_string_pattern_of_validator_from_meta_list(&option_field, attribute, meta_list),
+        ))
     } else {
-        Validator::Normal(inner_extract_string_pattern_of_validator_from_list(
+        Validator::Normal(inner_extract_string_pattern_of_validator_from_meta_list(
             field.ident(),
             attribute,
             meta_list,
@@ -34,14 +30,14 @@ pub fn extract_string_pattern_of_validator_from_list(
     }
 }
 
-fn inner_extract_string_pattern_of_validator_from_list(
+fn inner_extract_string_pattern_of_validator_from_meta_list(
     field_ident: &syn::Ident,
     attribute: &syn::Attribute,
     meta_list: &syn::MetaList,
 ) -> TokenStream {
     let syn::MetaList { nested, .. } = meta_list;
 
-    let pattern = get_pattern_from_list(field_ident, attribute, meta_list);
+    let pattern = get_pattern_from_meta_list(field_ident, attribute, meta_list);
     let message = extract_message_tokens(VALIDATION_LABEL, field_ident, attribute, nested)
         .unwrap_or(quote!(
             ::serde_valid::validation::error::RegularExpressionErrorParams::to_default_message
@@ -49,7 +45,7 @@ fn inner_extract_string_pattern_of_validator_from_list(
     inner_extract_string_pattern_validator(field_ident, &pattern, &message)
 }
 
-fn get_pattern_from_list(
+fn get_pattern_from_meta_list(
     field_ident: &syn::Ident,
     attribute: &syn::Attribute,
     meta_list: &syn::MetaList,

@@ -7,19 +7,19 @@ use proc_macro2::TokenStream;
 use quote::quote;
 use syn::spanned::Spanned;
 
-pub fn extract_array_length_validator_from_list(
+pub fn extract_array_length_validator_from_meta_list(
     field: &NamedField,
     attribute: &syn::Attribute,
     meta_list: &syn::MetaList,
 ) -> Validator {
     if let Some(option_field) = field.option_field() {
-        Validator::Option(Box::new(extract_array_length_validator_from_list(
+        Validator::Option(Box::new(extract_array_length_validator_from_meta_list(
             &option_field,
             attribute,
             meta_list,
         )))
     } else {
-        Validator::Normal(inner_extract_array_length_validator_from_list(
+        Validator::Normal(inner_extract_array_length_validator_from_meta_list(
             field.ident(),
             attribute,
             meta_list,
@@ -27,7 +27,7 @@ pub fn extract_array_length_validator_from_list(
     }
 }
 
-fn inner_extract_array_length_validator_from_list(
+fn inner_extract_array_length_validator_from_meta_list(
     field_ident: &syn::Ident,
     attribute: &syn::Attribute,
     meta_list: &syn::MetaList,
