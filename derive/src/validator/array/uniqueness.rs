@@ -1,71 +1,12 @@
-use crate::abort::abort_required_list_argument;
-use crate::helper::NamedField;
-use crate::validator::common::extract_message_tokens;
-use crate::validator::Validator;
+mod uniqueness_from_meta_list;
+mod uniqueness_from_meta_path;
+
 use proc_macro2::TokenStream;
 use quote::quote;
-use syn::spanned::Spanned;
+pub use uniqueness_from_meta_list::extract_array_length_validator_from_list;
+pub use uniqueness_from_meta_path::extract_array_uniqueness_validator_from_path;
 
 const VALIDATION_LABEL: &'static str = "unique_items";
-
-pub fn extract_array_length_validator_from_list(
-    field: &NamedField,
-    attribute: &syn::Attribute,
-    meta_list: &syn::MetaList,
-) -> Validator {
-    if let Some(option_field) = field.option_field() {
-        Validator::Option(Box::new(extract_array_length_validator_from_list(
-            &option_field,
-            attribute,
-            meta_list,
-        )))
-    } else {
-        Validator::Normal(inner_extract_array_length_validator_from_list(
-            field.ident(),
-            attribute,
-            meta_list,
-        ))
-    }
-}
-
-pub fn extract_array_uniqueness_validator_from_path(field: &NamedField) -> Validator {
-    if let Some(option_field) = field.option_field() {
-        Validator::Option(Box::new(extract_array_uniqueness_validator_from_path(
-            &option_field,
-        )))
-    } else {
-        let message =
-            quote!(::serde_valid::validation::error::UniqueItemsErrorParams::to_default_message);
-        Validator::Normal(inner_extract_array_uniqueness_validator(
-            field.ident(),
-            message,
-        ))
-    }
-}
-
-fn inner_extract_array_length_validator_from_list(
-    field_ident: &syn::Ident,
-    attribute: &syn::Attribute,
-    meta_list: &syn::MetaList,
-) -> TokenStream {
-    let syn::MetaList { nested, .. } = meta_list;
-
-    let message = extract_message_tokens(VALIDATION_LABEL, field_ident, attribute, nested)
-        .unwrap_or(quote!(
-            ::serde_valid::validation::error::ItemsErrorParams::to_default_message
-        ));
-    if nested.is_empty() {
-        abort_required_list_argument(
-            VALIDATION_LABEL,
-            &["message_fn"],
-            field_ident,
-            attribute.span(),
-            meta_list,
-            true,
-        )
-    }
-    inner_extract_array_uniqueness_validator(field_ident, message)
-}
 
 fn inner_extract_array_uniqueness_validator(
     field_ident: &syn::Ident,

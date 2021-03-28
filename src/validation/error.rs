@@ -51,6 +51,10 @@ pub enum Error {
     #[serde(serialize_with = "serialize_error_message")]
     EnumerateValuesError(Message<EnumerateErrorParams>),
 
+    #[error("{0}")]
+    #[serde(serialize_with = "serialize_error_message")]
+    CustomError(Message<String>),
+
     #[error(transparent)]
     NestedErrors(Errors),
 }

@@ -48,7 +48,7 @@ fn inner_extract_generic_enumerate_validator(
             ::serde_valid::validation::error::EnumerateErrorParams::to_default_message
         ));
 
-    let token = quote!(
+    quote!(
         if !::serde_valid::validate_generic_enumerated_values(
             #field_ident,
             &[#enumerate],
@@ -66,8 +66,7 @@ fn inner_extract_generic_enumerate_validator(
                 )
                 ));
         }
-    );
-    token
+    )
 }
 
 fn get_enumerate<'a>(
