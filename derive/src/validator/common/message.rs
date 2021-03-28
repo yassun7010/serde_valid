@@ -59,7 +59,7 @@ fn update_message_fn_from_meta_list(
 
     match ident.to_string().as_ref() {
         "message_fn" => {
-            return update_message_fn_from_nested(
+            return update_message_fn_from_nested_meta(
                 validation_label,
                 message_fn,
                 field_ident,
@@ -71,7 +71,7 @@ fn update_message_fn_from_meta_list(
     }
 }
 
-fn update_message_fn_from_nested(
+fn update_message_fn_from_nested_meta(
     validation_label: &str,
     message_fn: &mut Option<TokenStream>,
     field_ident: &syn::Ident,
