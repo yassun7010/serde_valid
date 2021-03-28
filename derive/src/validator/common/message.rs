@@ -32,7 +32,7 @@ pub fn extract_message_tokens(
     message_fmt
 }
 
-fn update_message_fn_from_path(
+fn update_message_fn_from_meta_path(
     validation_label: &str,
     message_fn: &mut Option<TokenStream>,
     field_ident: &syn::Ident,
@@ -82,7 +82,7 @@ fn update_message_fn_from_nested(
         match meta_item {
             syn::NestedMeta::Meta(ref item) => match item {
                 syn::Meta::Path(path) => {
-                    update_message_fn_from_path(
+                    update_message_fn_from_meta_path(
                         validation_label,
                         message_fn,
                         field_ident,
