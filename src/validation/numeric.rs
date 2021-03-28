@@ -1,4 +1,4 @@
-mod multiples;
+mod multiple_of;
 mod range;
-pub use multiples::validate_numeric_multiples;
+pub use multiple_of::validate_numeric_multiple_of;
 pub use range::{validate_numeric_range, Limit};

@@ -12,7 +12,7 @@ pub use errors::{Errors, InnerErrors};
 pub use field_name::FieldName;
 pub use generic::EnumerateErrorParams;
 pub use message::{Message, ToDefaultMessage};
-pub use numeric::{MultiplesErrorParams, RangeErrorParams};
+pub use numeric::{MultipleOfErrorParams, RangeErrorParams};
 pub use object::PropertiesErrorParams;
 pub use string::{LengthErrorParams, RegularExpressionErrorParams};
 
@@ -25,7 +25,7 @@ pub enum Error {
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    MultiplesError(Message<MultiplesErrorParams>),
+    MultipleOfError(Message<MultipleOfErrorParams>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]

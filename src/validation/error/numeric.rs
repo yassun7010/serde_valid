@@ -1,5 +1,5 @@
-mod multiples;
+mod multiple_of;
 mod range;
 
-pub use multiples::MultiplesErrorParams;
+pub use multiple_of::MultipleOfErrorParams;
 pub use range::RangeErrorParams;
