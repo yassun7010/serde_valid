@@ -3,7 +3,7 @@ use crate::traits::Size;
 /// Size validation.
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/object.html#size>
-pub fn validate_object_size<T>(
+pub fn validate_object_properties<T>(
     value: &T,
     min_properties: Option<usize>,
     max_properties: Option<usize>,
@@ -35,25 +35,25 @@ mod tests {
     use std::collections::HashMap;
 
     #[test]
-    fn test_validate_object_size_hash_map_type() {
+    fn test_validate_object_properties_hash_map_type() {
         let mut map = HashMap::new();
         map.insert("key1".to_string(), "value1".to_string());
         map.insert("key2".to_string(), "value2".to_string());
         map.insert("key3".to_string(), "value3".to_string());
-        assert!(validate_object_size(&map, Some(3), Some(3)));
+        assert!(validate_object_properties(&map, Some(3), Some(3)));
     }
 
     #[test]
-    fn test_validate_object_size_btree_map_type() {
+    fn test_validate_object_properties_btree_map_type() {
         let mut map = BTreeMap::new();
         map.insert("key1".to_string(), "value1".to_string());
         map.insert("key2".to_string(), "value2".to_string());
         map.insert("key3".to_string(), "value3".to_string());
-        assert!(validate_object_size(&map, Some(3), Some(3)));
+        assert!(validate_object_properties(&map, Some(3), Some(3)));
     }
 
     #[test]
-    fn test_validate_object_size_json_map_type() {
+    fn test_validate_object_properties_json_map_type() {
         let value = json!({
             "key1": "value1",
             "key2": "value2",
@@ -61,17 +61,17 @@ mod tests {
         });
         let map = value.as_object().unwrap();
 
-        assert!(validate_object_size(map, Some(3), Some(3)));
+        assert!(validate_object_properties(map, Some(3), Some(3)));
     }
 
     #[test]
-    fn test_validate_object_size_is_false() {
+    fn test_validate_object_properties_is_false() {
         let value = json!({
             "key1": "value1",
             "key2": "value2",
         });
         let map = value.as_object().unwrap();
 
-        assert!(!validate_object_size(map, Some(3), Some(3)));
+        assert!(!validate_object_properties(map, Some(3), Some(3)));
     }
 }

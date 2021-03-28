@@ -1,3 +1,3 @@
-mod size;
+mod properties;
 
-pub use size::validate_object_size;
+pub use properties::validate_object_properties;

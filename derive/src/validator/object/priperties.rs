@@ -8,7 +8,7 @@ const VALIDATION_LABEL: &'static str = "properties";
 const MIN_LABEL: &'static str = "min_properties";
 const MAX_LABEL: &'static str = "max_properties";
 
-pub fn extract_object_size_validator(
+pub fn extract_object_properties_validator(
     field: &NamedField,
     attribute: &syn::Attribute,
     meta_list: &syn::MetaList,
@@ -16,19 +16,19 @@ pub fn extract_object_size_validator(
     let syn::MetaList { nested, .. } = meta_list;
 
     if let Some(array_field) = field.array_field() {
-        Validator::Array(Box::new(extract_object_size_validator(
+        Validator::Array(Box::new(extract_object_properties_validator(
             &array_field,
             attribute,
             meta_list,
         )))
     } else if let Some(option_field) = field.option_field() {
-        Validator::Option(Box::new(extract_object_size_validator(
+        Validator::Option(Box::new(extract_object_properties_validator(
             &option_field,
             attribute,
             meta_list,
         )))
     } else {
-        Validator::Normal(inner_extract_object_size_validator(
+        Validator::Normal(inner_extract_object_properties_validator(
             field.ident(),
             attribute,
             nested,
@@ -36,7 +36,7 @@ pub fn extract_object_size_validator(
     }
 }
 
-fn inner_extract_object_size_validator(
+fn inner_extract_object_properties_validator(
     field_ident: &syn::Ident,
     attribute: &syn::Attribute,
     meta_items: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
@@ -56,7 +56,7 @@ fn inner_extract_object_size_validator(
         ));
 
     quote!(
-        if !::serde_valid::validate_object_size(
+        if !::serde_valid::validate_object_properties(
             #field_ident,
             #min_properties_tokens,
             #max_properties_tokens

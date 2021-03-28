@@ -6,7 +6,7 @@ use crate::validator::generic::extract_generic_enumerate_validator;
 use crate::validator::numeric::{
     extract_numeric_multiple_of_validator_from_meta_list, extract_numeric_range_validator,
 };
-use crate::validator::object::extract_object_size_validator;
+use crate::validator::object::extract_object_properties_validator;
 use crate::validator::string::{
     extract_string_length_validator, extract_string_pattern_of_validator_from_meta_list,
 };
@@ -41,7 +41,11 @@ pub fn extract_validator_from_nested_meta_list(
                 field, attribute, meta_list,
             ))
         }
-        "properties" => return Some(extract_object_size_validator(field, attribute, meta_list)),
+        "properties" => {
+            return Some(extract_object_properties_validator(
+                field, attribute, meta_list,
+            ))
+        }
         "enumerate" => {
             return Some(extract_generic_enumerate_validator(
                 field, attribute, meta_list,

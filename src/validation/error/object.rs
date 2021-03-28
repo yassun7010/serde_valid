@@ -1,3 +1,3 @@
-mod size;
+mod properties;
 
-pub use size::PropertiesErrorParams;
+pub use properties::PropertiesErrorParams;
