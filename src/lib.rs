@@ -6,7 +6,7 @@ pub use traits::*;
 pub use validation::{
     validate_array_items, validate_array_unique_items, validate_generic_enumerate,
     validate_numeric_multiple_of, validate_numeric_range, validate_object_properties,
-    validate_string_length, validate_string_regular_expressions, FieldName, Limit,
+    validate_string_length, validate_string_pattern, FieldName, Limit,
 };
 
 pub fn from_value<T, V>(value: V) -> Result<T, self::Error<V::Error>>

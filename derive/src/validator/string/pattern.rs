@@ -22,7 +22,7 @@ fn inner_extract_string_pattern_validator(
     quote!(
         static #pattern_ident : once_cell::sync::OnceCell<regex::Regex> = once_cell::sync::OnceCell::new();
         let pattern = #pattern_ident.get_or_init(|| regex::Regex::new(#pattern).unwrap());
-        if !::serde_valid::validate_string_regular_expressions(
+        if !::serde_valid::validate_string_pattern(
             #field_ident,
             pattern,
         ) {
@@ -31,7 +31,7 @@ fn inner_extract_string_pattern_validator(
                 .or_default()
                 .push(::serde_valid::validation::Error::PatternError(
                     ::serde_valid::validation::error::Message::new(
-                        ::serde_valid::validation::error::RegularExpressionErrorParams::new(
+                        ::serde_valid::validation::error::PatternErrorParams::new(
                             #field_ident,
                             pattern,
                         ),

@@ -3,12 +3,12 @@ use crate::validation::error::ToDefaultMessage;
 use regex::Regex;
 
 #[derive(Debug, serde::Serialize)]
-pub struct RegularExpressionErrorParams {
+pub struct PatternErrorParams {
     value: String,
     pattern: String,
 }
 
-impl RegularExpressionErrorParams {
+impl PatternErrorParams {
     pub fn new<T>(value: &T, pattern: &Regex) -> Self
     where
         T: IsMatch + ?Sized + std::fmt::Debug,
@@ -30,7 +30,7 @@ impl RegularExpressionErrorParams {
     }
 }
 
-impl ToDefaultMessage for RegularExpressionErrorParams {
+impl ToDefaultMessage for PatternErrorParams {
     fn to_default_message(&self) -> String {
         format!(
             "{} must match the pattern of \"{}\", but not.",

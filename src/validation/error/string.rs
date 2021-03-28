@@ -1,5 +1,5 @@
 mod length;
-mod regular_expressions;
+mod pattern;
 
 pub use length::LengthErrorParams;
-pub use regular_expressions::RegularExpressionErrorParams;
+pub use pattern::PatternErrorParams;

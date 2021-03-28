@@ -40,7 +40,7 @@ fn inner_extract_string_pattern_of_validator_from_meta_list(
     let pattern = get_pattern_from_meta_list(field_ident, attribute, meta_list);
     let message = extract_message_tokens(VALIDATION_LABEL, field_ident, attribute, nested)
         .unwrap_or(quote!(
-            ::serde_valid::validation::error::RegularExpressionErrorParams::to_default_message
+            ::serde_valid::validation::error::PatternErrorParams::to_default_message
         ));
     inner_extract_string_pattern_validator(field_ident, &pattern, &message)
 }

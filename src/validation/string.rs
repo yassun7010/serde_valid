@@ -1,4 +1,4 @@
 mod length;
-mod regular_expressions;
+mod pattern;
 pub use length::validate_string_length;
-pub use regular_expressions::validate_string_regular_expressions;
+pub use pattern::validate_string_pattern;
