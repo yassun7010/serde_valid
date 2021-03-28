@@ -6,14 +6,11 @@ mod numeric;
 mod object;
 mod string;
 
-use crate::helper::NamedField;
-use meta::extract_meta_validator;
+pub use crate::types::NamedField;
+pub use meta::extract_meta_validator;
 use proc_macro2::TokenStream;
 use quote::quote;
-use ref_cast::RefCast;
 use std::iter::FromIterator;
-use syn::parse_quote;
-use syn::spanned::Spanned;
 
 pub enum Validator {
     Normal(TokenStream),
@@ -120,30 +117,4 @@ impl FieldValidators {
             #validation
         )
     }
-}
-
-pub fn collect_validators(fields: &syn::FieldsNamed) -> Vec<FieldValidators> {
-    let mut struct_validators = vec![];
-    for field in fields.named.iter() {
-        let mut field_validators = FieldValidators::new(field.clone());
-        let named_field = NamedField::ref_cast(field);
-        let field_ident = named_field.ident();
-        for attribute in named_field.attrs() {
-            if attribute.path != parse_quote!(validate) {
-                continue;
-            }
-            let validator = extract_meta_validator(&named_field, attribute);
-            match validator {
-                Some(validator) => field_validators.push(validator),
-                None => super::abort::abort_invalid_attribute_on_field(
-                    &field_ident,
-                    attribute.span(),
-                    "it needs at least one validator",
-                ),
-            }
-        }
-        struct_validators.push(field_validators)
-    }
-
-    struct_validators
 }

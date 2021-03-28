@@ -1,6 +1,6 @@
 use super::{inner_extract_string_pattern_validator, VALIDATION_LABEL};
 use crate::abort::{abort_duplicated_lit_argument, abort_invalid_attribute_on_field};
-use crate::helper::NamedField;
+use crate::types::NamedField;
 use crate::validator::common::get_str;
 use crate::validator::common::{check_meta, extract_message_tokens};
 use crate::validator::Validator;

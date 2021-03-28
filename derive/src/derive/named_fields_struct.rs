@@ -1,39 +1,42 @@
-use crate::validator::collect_validators;
+use crate::abort::abort_invalid_attribute_on_field;
+use crate::types::NamedField;
+use crate::validator::{extract_meta_validator, FieldValidators};
 use proc_macro2::TokenStream;
-use quote::quote;
+use ref_cast::RefCast;
 use std::iter::FromIterator;
+use syn::parse_quote;
+use syn::spanned::Spanned;
 
-pub fn expand_derive_nameds_fields_struct(
-    input: &syn::DeriveInput,
-    fields: &syn::FieldsNamed,
-) -> TokenStream {
-    let ident = &input.ident;
-    let validators = TokenStream::from_iter(
+pub fn expand_named_fields_struct_validators(fields: &syn::FieldsNamed) -> TokenStream {
+    TokenStream::from_iter(
         collect_validators(fields)
             .iter()
             .map(|validator| validator.generate_token()),
-    );
-    let (impl_generics, type_generics, where_clause) = input.generics.split_for_impl();
+    )
+}
 
-    let impl_tokens = quote!(
-        impl #impl_generics ::serde_valid::Validate for #ident #type_generics #where_clause {
-            fn validate(
-                &self
-            ) -> ::std::result::Result<(), ::serde_valid::validation::Errors> {
-                use ::serde_valid::validation::error::ToDefaultMessage;
-                let mut errors = ::serde_valid::validation::InnerErrors::new();
-
-                #validators
-
-                if errors.is_empty() {
-                    ::std::result::Result::Ok(())
-                } else {
-                    ::std::result::Result::Err(
-                        ::serde_valid::validation::Errors::new(errors)
-                    )
-                }
+pub fn collect_validators(fields: &syn::FieldsNamed) -> Vec<FieldValidators> {
+    let mut struct_validators = vec![];
+    for field in fields.named.iter() {
+        let mut field_validators = FieldValidators::new(field.clone());
+        let named_field = NamedField::ref_cast(field);
+        let field_ident = named_field.ident();
+        for attribute in named_field.attrs() {
+            if attribute.path != parse_quote!(validate) {
+                continue;
+            }
+            let validator = extract_meta_validator(&named_field, attribute);
+            match validator {
+                Some(validator) => field_validators.push(validator),
+                None => abort_invalid_attribute_on_field(
+                    &field_ident,
+                    attribute.span(),
+                    "it needs at least one validator",
+                ),
             }
         }
-    );
-    impl_tokens
+        struct_validators.push(field_validators)
+    }
+
+    struct_validators
 }

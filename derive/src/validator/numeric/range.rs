@@ -3,8 +3,8 @@ use crate::abort::{
     abort_unexpected_list_argument, abort_unexpected_path_argument,
     abort_unknown_name_value_argument,
 };
-use crate::helper::{NamedField, SingleIdentPath};
 use crate::lit::NumericInfo;
+use crate::types::{NamedField, SingleIdentPath};
 use crate::validator::common::{check_lit, extract_message_tokens, get_numeric};
 use crate::validator::Validator;
 use proc_macro2::TokenStream;

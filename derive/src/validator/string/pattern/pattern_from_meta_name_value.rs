@@ -1,5 +1,5 @@
 use super::{inner_extract_string_pattern_validator, VALIDATION_LABEL};
-use crate::helper::NamedField;
+use crate::types::NamedField;
 use crate::validator::common::get_str;
 use crate::validator::Validator;
 use proc_macro2::TokenStream;

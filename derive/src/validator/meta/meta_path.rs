@@ -1,4 +1,4 @@
-use crate::helper::{NamedField, SingleIdentPath};
+use crate::types::{NamedField, SingleIdentPath};
 use crate::validator::Validator;
 use proc_macro2::TokenStream;
 use proc_macro_error::abort;

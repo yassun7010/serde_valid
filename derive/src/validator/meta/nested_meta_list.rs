@@ -1,4 +1,4 @@
-use crate::helper::{NamedField, SingleIdentPath};
+use crate::types::{NamedField, SingleIdentPath};
 use crate::validator::array::{
     extract_array_items_validator, extract_array_unique_items_validator_from_meta_list,
 };

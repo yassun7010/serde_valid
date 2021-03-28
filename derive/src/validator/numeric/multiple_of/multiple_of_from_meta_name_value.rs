@@ -1,5 +1,5 @@
 use super::{inner_extract_numeric_multiple_of_validator, VALIDATION_LABEL};
-use crate::helper::NamedField;
+use crate::types::NamedField;
 use crate::validator::common::get_numeric;
 use crate::validator::Validator;
 use proc_macro2::TokenStream;

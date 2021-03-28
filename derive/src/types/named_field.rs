@@ -1,5 +1,5 @@
-use super::extract_element_type_from_array;
-use super::extract_type_from_option;
+use crate::types::extract_element_type_from_array;
+use crate::types::extract_type_from_option;
 use proc_macro_error::abort;
 use ref_cast::RefCast;
 use std::convert::AsRef;

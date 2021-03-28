@@ -3,7 +3,7 @@ mod nested_meta_list;
 mod nested_meta_name_value;
 mod nested_meta_path;
 
-use crate::helper::NamedField;
+use crate::types::NamedField;
 use crate::validator::Validator;
 use meta_path::extract_validator_from_meta_path;
 use nested_meta_list::extract_validator_from_nested_meta_list;

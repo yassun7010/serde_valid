@@ -1,5 +1,5 @@
 use super::abort_invalid_attribute_on_field;
-use crate::helper::SingleIdentPath;
+use crate::types::SingleIdentPath;
 
 pub fn abort_unexpected_lit_argument(
     validation_label: &str,

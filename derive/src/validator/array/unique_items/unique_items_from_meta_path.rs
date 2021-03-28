@@ -1,5 +1,5 @@
 use super::inner_extract_array_unique_items_validator;
-use crate::helper::NamedField;
+use crate::types::NamedField;
 use crate::validator::Validator;
 use quote::quote;
 

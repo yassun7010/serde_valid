@@ -1,4 +1,4 @@
-use crate::helper::NamedField;
+use crate::types::NamedField;
 use crate::validator::common::{check_meta, extract_message_tokens};
 use crate::validator::Validator;
 use proc_macro2::TokenStream;

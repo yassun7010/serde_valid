@@ -1,6 +1,6 @@
 use super::{inner_extract_array_unique_items_validator, VALIDATION_LABEL};
 use crate::abort::abort_required_list_argument;
-use crate::helper::NamedField;
+use crate::types::NamedField;
 use crate::validator::common::extract_message_tokens;
 use crate::validator::Validator;
 use proc_macro2::TokenStream;

@@ -2,7 +2,7 @@ use crate::abort::{
     abort_duplicated_lit_argument, abort_required_path_argument, abort_unexpected_list_argument,
     abort_unexpected_path_argument, abort_unknown_name_value_argument,
 };
-use crate::helper::SingleIdentPath;
+use crate::types::SingleIdentPath;
 use crate::validator::common::{check_lit, get_integer};
 use proc_macro2::TokenStream;
 use quote::quote;
