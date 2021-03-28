@@ -31,7 +31,7 @@ fn inner_extract_string_pattern_validator(
                 .or_default()
                 .push(::serde_valid::validation::Error::PatternError(
                     ::serde_valid::validation::error::Message::new(
-                        ::serde_valid::validation::error::PatternErrorParams::new(
+                        ::serde_valid::validation::error::PatternParams::new(
                             #field_ident,
                             pattern,
                         ),

@@ -305,7 +305,7 @@ fn length_err_message_test() {
 
 #[test]
 fn length_custom_err_message_test() {
-    fn error_message(_params: &serde_valid::validation::error::LengthErrorParams) -> String {
+    fn error_message(_params: &serde_valid::validation::error::LengthParams) -> String {
         "this is custom message.".to_string()
     }
 

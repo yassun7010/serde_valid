@@ -122,7 +122,7 @@ fn enumerate_err_message_test() {
 
 #[test]
 fn enumerate_custom_err_message_test() {
-    fn error_message(_params: &serde_valid::validation::error::EnumerateErrorParams) -> String {
+    fn error_message(_params: &serde_valid::validation::error::EnumerateParams) -> String {
         "this is custom message.".to_string()
     }
 

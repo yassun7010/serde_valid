@@ -2,13 +2,13 @@ use crate::validation::error::ToDefaultMessage;
 use crate::validation::numeric::Limit;
 
 #[derive(Debug)]
-pub struct RangeErrorParams {
+pub struct RangeParams {
     value: String,
     maximum: Option<Limit<String>>,
     minimum: Option<Limit<String>>,
 }
 
-impl RangeErrorParams {
+impl RangeParams {
     pub fn new<T>(value: T, minimum: Option<Limit<T>>, maximum: Option<Limit<T>>) -> Self
     where
         T: PartialOrd + PartialEq + ToString,
@@ -36,7 +36,7 @@ impl RangeErrorParams {
     }
 }
 
-impl ToDefaultMessage for RangeErrorParams {
+impl ToDefaultMessage for RangeParams {
     fn to_default_message(&self) -> String {
         let minimum = if let Some(limit) = &self.minimum {
             match limit {

@@ -46,7 +46,7 @@ fn inner_extract_array_items_validator(
     );
     let message = extract_message_tokens(VALIDATION_LABEL, field_ident, attribute, meta_items)
         .unwrap_or(quote!(
-            ::serde_valid::validation::error::ItemsErrorParams::to_default_message
+            ::serde_valid::validation::error::ItemsParams::to_default_message
         ));
 
     quote!(
@@ -60,7 +60,7 @@ fn inner_extract_array_items_validator(
                 .or_default()
                 .push(::serde_valid::validation::Error::ItemsError(
                     ::serde_valid::validation::error::Message::new(
-                        ::serde_valid::validation::error::ItemsErrorParams::new(
+                        ::serde_valid::validation::error::ItemsParams::new(
                             #field_ident,
                             #min_items_tokens,
                             #max_items_tokens

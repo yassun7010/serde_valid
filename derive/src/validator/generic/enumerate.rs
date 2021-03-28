@@ -45,7 +45,7 @@ fn inner_extract_generic_enumerate_validator(
     let enumerate = get_enumerate(field_ident, attribute, nested);
     let message = extract_message_tokens(VALIDATION_LABEL, field_ident, attribute, nested)
         .unwrap_or(quote!(
-            ::serde_valid::validation::error::EnumerateErrorParams::to_default_message
+            ::serde_valid::validation::error::EnumerateParams::to_default_message
         ));
 
     quote!(
@@ -58,7 +58,7 @@ fn inner_extract_generic_enumerate_validator(
                 .or_default()
                 .push(::serde_valid::validation::Error::EnumerateValuesError(
                     ::serde_valid::validation::error::Message::new(
-                        ::serde_valid::validation::error::EnumerateErrorParams::new(
+                        ::serde_valid::validation::error::EnumerateParams::new(
                             #field_ident,
                             &[#enumerate],
                         ),

@@ -52,7 +52,7 @@ fn inner_extract_object_properties_validator(
     );
     let message = extract_message_tokens(VALIDATION_LABEL, field_ident, attribute, meta_items)
         .unwrap_or(quote!(
-            ::serde_valid::validation::error::PropertiesErrorParams::to_default_message
+            ::serde_valid::validation::error::PropertiesParams::to_default_message
         ));
 
     quote!(
@@ -66,7 +66,7 @@ fn inner_extract_object_properties_validator(
                 .or_default()
                 .push(::serde_valid::validation::Error::PropertiesError(
                     ::serde_valid::validation::error::Message::new(
-                        ::serde_valid::validation::error::PropertiesErrorParams::new(
+                        ::serde_valid::validation::error::PropertiesParams::new(
                             #field_ident,
                             #min_properties_tokens,
                             #max_properties_tokens

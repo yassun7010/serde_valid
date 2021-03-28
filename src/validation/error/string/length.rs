@@ -1,13 +1,13 @@
 use crate::validation::error::ToDefaultMessage;
 
 #[derive(Debug, serde::Serialize)]
-pub struct LengthErrorParams {
+pub struct LengthParams {
     length: String,
     min_length: Option<usize>,
     max_length: Option<usize>,
 }
 
-impl LengthErrorParams {
+impl LengthParams {
     pub fn new<T>(length: T, min_length: Option<usize>, max_length: Option<usize>) -> Self
     where
         T: PartialOrd + PartialEq + std::fmt::Debug,
@@ -35,7 +35,7 @@ impl LengthErrorParams {
     }
 }
 
-impl ToDefaultMessage for LengthErrorParams {
+impl ToDefaultMessage for LengthParams {
     fn to_default_message(&self) -> String {
         let min_length = match &self.min_length {
             Some(length) => format!("{} <= ", length),

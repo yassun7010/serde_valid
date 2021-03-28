@@ -38,7 +38,7 @@ fn inner_extract_array_unique_items_validator_from_meta_list(
 
     let message = extract_message_tokens(VALIDATION_LABEL, field_ident, attribute, nested)
         .unwrap_or(quote!(
-            ::serde_valid::validation::error::ItemsErrorParams::to_default_message
+            ::serde_valid::validation::error::ItemsParams::to_default_message
         ));
     if nested.is_empty() {
         abort_required_list_argument(

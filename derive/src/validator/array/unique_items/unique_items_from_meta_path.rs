@@ -10,7 +10,7 @@ pub fn extract_array_unique_items_validator_from_meta_path(field: &NamedField) -
         ))
     } else {
         let message =
-            quote!(::serde_valid::validation::error::UniqueItemsErrorParams::to_default_message);
+            quote!(::serde_valid::validation::error::UniqueItemsParams::to_default_message);
         Validator::Normal(inner_extract_array_unique_items_validator(
             field.ident(),
             message,

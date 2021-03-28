@@ -255,7 +255,7 @@ fn range_exclusive_err_message_test() {
 
 #[test]
 fn range_custom_err_message_test() {
-    fn error_message(_params: &serde_valid::validation::error::RangeErrorParams) -> String {
+    fn error_message(_params: &serde_valid::validation::error::RangeParams) -> String {
         "this is custom message.".to_string()
     }
 

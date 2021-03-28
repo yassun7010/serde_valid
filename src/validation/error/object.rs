@@ -1,3 +1,3 @@
 mod properties;
 
-pub use properties::PropertiesErrorParams;
+pub use properties::PropertiesParams;

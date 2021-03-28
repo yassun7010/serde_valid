@@ -7,49 +7,49 @@ mod numeric;
 mod object;
 mod string;
 
-pub use array::{ItemsErrorParams, UniqueItemsErrorParams};
+pub use array::{ItemsParams, UniqueItemsParams};
 pub use errors::{Errors, InnerErrors};
 pub use field_name::FieldName;
-pub use generic::EnumerateErrorParams;
+pub use generic::EnumerateParams;
 pub use message::{Message, ToDefaultMessage};
-pub use numeric::{MultipleOfErrorParams, RangeErrorParams};
-pub use object::PropertiesErrorParams;
-pub use string::{LengthErrorParams, PatternErrorParams};
+pub use numeric::{MultipleOfParams, RangeParams};
+pub use object::PropertiesParams;
+pub use string::{LengthParams, PatternParams};
 
 #[derive(Debug, serde::Serialize, thiserror::Error)]
 #[serde(untagged)]
 pub enum Error {
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    RangeError(Message<RangeErrorParams>),
+    RangeError(Message<RangeParams>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    MultipleOfError(Message<MultipleOfErrorParams>),
+    MultipleOfError(Message<MultipleOfParams>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    LengthError(Message<LengthErrorParams>),
+    LengthError(Message<LengthParams>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    PatternError(Message<PatternErrorParams>),
+    PatternError(Message<PatternParams>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    ItemsError(Message<ItemsErrorParams>),
+    ItemsError(Message<ItemsParams>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    UniqueItemsError(Message<UniqueItemsErrorParams>),
+    UniqueItemsError(Message<UniqueItemsParams>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    PropertiesError(Message<PropertiesErrorParams>),
+    PropertiesError(Message<PropertiesParams>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    EnumerateValuesError(Message<EnumerateErrorParams>),
+    EnumerateValuesError(Message<EnumerateParams>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]

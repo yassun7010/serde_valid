@@ -1,14 +1,14 @@
 use crate::validation::error::ToDefaultMessage;
 
 #[derive(Debug)]
-pub struct ItemsErrorParams {
+pub struct ItemsParams {
     items: Vec<String>,
     items_length: usize,
     min_items: Option<usize>,
     max_items: Option<usize>,
 }
 
-impl ItemsErrorParams {
+impl ItemsParams {
     pub fn new<T>(items: &[T], min_items: Option<usize>, max_items: Option<usize>) -> Self
     where
         T: std::fmt::Debug,
@@ -42,7 +42,7 @@ impl ItemsErrorParams {
     }
 }
 
-impl ToDefaultMessage for ItemsErrorParams {
+impl ToDefaultMessage for ItemsParams {
     fn to_default_message(&self) -> String {
         let min_items = match &self.min_items {
             Some(items) => format!("{} <= ", items),

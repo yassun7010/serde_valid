@@ -56,7 +56,7 @@ fn inner_extract_numeric_range_validator(
         extract_numeric_range_validator_tokens(field_ident, attribute, meta_items);
     let message = extract_message_tokens(VALIDATION_LABEL, field_ident, attribute, meta_items)
         .unwrap_or(quote!(
-            ::serde_valid::validation::error::RangeErrorParams::to_default_message
+            ::serde_valid::validation::error::RangeParams::to_default_message
         ));
 
     quote!(
@@ -70,7 +70,7 @@ fn inner_extract_numeric_range_validator(
                 .or_default()
                 .push(::serde_valid::validation::Error::RangeError(
                     ::serde_valid::validation::error::Message::new(
-                        ::serde_valid::validation::error::RangeErrorParams::new(
+                        ::serde_valid::validation::error::RangeParams::new(
                             *#field_ident,
                             #minimum_tokens,
                             #maximum_tokens
