@@ -122,9 +122,9 @@ impl FieldValidators {
     }
 }
 
-pub fn collect_validators(fields: &syn::Fields) -> Vec<FieldValidators> {
+pub fn collect_validators(fields: &syn::FieldsNamed) -> Vec<FieldValidators> {
     let mut struct_validators = vec![];
-    for field in fields {
+    for field in fields.named.iter() {
         let mut field_validators = FieldValidators::new(field.clone());
         let named_field = NamedField::ref_cast(field);
         let field_ident = named_field.ident();
