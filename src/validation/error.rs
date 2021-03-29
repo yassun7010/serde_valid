@@ -53,7 +53,7 @@ pub enum Error {
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    Custom(Message<String>),
+    Custom(String),
 
     #[error(transparent)]
     Nested(Errors),

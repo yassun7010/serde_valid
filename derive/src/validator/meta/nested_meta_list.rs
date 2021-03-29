@@ -2,7 +2,9 @@ use crate::types::{NamedField, SingleIdentPath};
 use crate::validator::array::{
     extract_array_items_validator, extract_array_unique_items_validator_from_meta_list,
 };
-use crate::validator::generic::extract_generic_enumerate_validator;
+use crate::validator::generic::{
+    extract_generic_custom_validator, extract_generic_enumerate_validator,
+};
 use crate::validator::numeric::{
     extract_numeric_multiple_of_validator_from_meta_list, extract_numeric_range_validator,
 };
@@ -48,6 +50,11 @@ pub fn extract_validator_from_nested_meta_list(
         }
         "enumerate" => {
             return Some(extract_generic_enumerate_validator(
+                field, attribute, meta_list,
+            ))
+        }
+        "custom" => {
+            return Some(extract_generic_custom_validator(
                 field, attribute, meta_list,
             ))
         }
