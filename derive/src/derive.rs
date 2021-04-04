@@ -1,11 +1,11 @@
 mod enum_variants;
-mod named_fields_struct;
+mod struct_named_fields;
 
 use enum_variants::expand_enum_variants_validators;
-use named_fields_struct::expand_named_fields_struct_validators_tokens;
 use proc_macro2::TokenStream;
 use proc_macro_error::abort;
 use quote::quote;
+use struct_named_fields::expand_struct_named_fields_validators_tokens;
 use syn::spanned::Spanned;
 
 pub fn expand_derive(input: &syn::DeriveInput) -> TokenStream {
@@ -13,7 +13,7 @@ pub fn expand_derive(input: &syn::DeriveInput) -> TokenStream {
     let (impl_generics, type_generics, where_clause) = input.generics.split_for_impl();
     let validators = match &input.data {
         syn::Data::Struct(syn::DataStruct { ref fields, .. }) => match fields {
-            syn::Fields::Named(named) => expand_named_fields_struct_validators_tokens(named),
+            syn::Fields::Named(named) => expand_struct_named_fields_validators_tokens(named),
             syn::Fields::Unnamed(_) => abort!(
                 input.span(),
                 "#[derive(Validate)] can only be used with named field structs"
