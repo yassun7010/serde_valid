@@ -20,7 +20,7 @@ pub fn expand_enum_variants_validators(
                 let fields_validators_tokens =
                     TokenStream::from_iter(fields_validators.iter().map(|validators| {
                         let field_ident = validators.ident();
-                        if let Some(token) = validators.get_token() {
+                        if let Some(token) = validators.get_tokens() {
                             fields_idents.push(quote!(#field_ident));
                             quote!(#token)
                         } else {

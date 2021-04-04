@@ -69,7 +69,7 @@ impl FieldValidators {
         }
     }
 
-    pub fn get_token(&self) -> Option<TokenStream> {
+    pub fn get_tokens(&self) -> Option<TokenStream> {
         let normal_tokens = self.normal_tokens();
         let optional_tokens = self.optional_tokens();
         let array_tokens = self.array_tokens();
@@ -85,7 +85,7 @@ impl FieldValidators {
         }
     }
 
-    pub fn to_token(&self) -> TokenStream {
+    pub fn to_tokens(&self) -> TokenStream {
         let normal_tokens = self.normal_tokens();
         let optional_tokens = self.optional_tokens();
         let array_tokens = self.array_tokens();
@@ -97,7 +97,7 @@ impl FieldValidators {
         )
     }
 
-    pub fn generate_token(&self) -> TokenStream {
+    pub fn generate_tokens(&self) -> TokenStream {
         let normal_tokens = self.normal_tokens();
         let optional_tokens = self.optional_tokens();
         let array_tokens = self.array_tokens();
@@ -128,7 +128,7 @@ impl FieldValidators {
         if let Some(optional_validators) = &self.optional_validators {
             let ident = self.field.ident();
             let option_ident = optional_validators.field.ident();
-            let option_validators = optional_validators.to_token();
+            let option_validators = optional_validators.to_tokens();
             Some(quote!(
                 if let Some(#option_ident) = #ident {
                     #option_validators
@@ -143,7 +143,7 @@ impl FieldValidators {
         if let Some(array_validators) = &self.array_validators {
             let ident = self.field.ident();
             let array_ident = array_validators.field.ident();
-            let array_validators = array_validators.to_token();
+            let array_validators = array_validators.to_tokens();
             Some(quote!(
                 for #array_ident in #ident {
                     #array_validators

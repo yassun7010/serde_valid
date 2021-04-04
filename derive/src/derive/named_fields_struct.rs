@@ -11,7 +11,7 @@ pub fn expand_named_fields_struct_validators_tokens(fields: &syn::FieldsNamed) -
     TokenStream::from_iter(
         collect_named_fields_struct_validators(fields)
             .iter()
-            .map(|validator| validator.generate_token()),
+            .map(|validator| validator.generate_tokens()),
     )
 }
 
