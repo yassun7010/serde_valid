@@ -1,6 +1,19 @@
 use serde_json::json;
 use serde_valid::Validate;
 
+mod parenthesized {
+    pub fn meta_path_validation(_val: &Vec<i32>) -> Result<(), serde_valid::validation::Error> {
+        Ok(())
+    }
+
+    pub fn meta_list_validation(
+        _val1: &Vec<i32>,
+        _val2: &i32,
+    ) -> Result<(), serde_valid::validation::Error> {
+        Ok(())
+    }
+}
+
 #[test]
 fn custom_meta_path_is_ok_test() {
     fn user_validation(_val: &Vec<i32>) -> Result<(), serde_valid::validation::Error> {
@@ -10,6 +23,20 @@ fn custom_meta_path_is_ok_test() {
     #[derive(Debug, Validate)]
     struct TestStruct {
         #[validate(custom(user_validation))]
+        val: Vec<i32>,
+    }
+
+    let s = TestStruct {
+        val: vec![1, 2, 3, 4],
+    };
+    assert!(s.validate().is_ok());
+}
+
+#[test]
+fn custom_meta_path_when_parenthesized_path_is_ok_test() {
+    #[derive(Debug, Validate)]
+    struct TestStruct {
+        #[validate(custom(parenthesized::meta_path_validation))]
         val: Vec<i32>,
     }
 
@@ -48,37 +75,10 @@ fn custom_meta_list_is_ok_test() {
 }
 
 #[test]
-fn custom_meta_list_when_meta_path_arg_is_ok_test() {
-    fn user_validation(
-        _val1: &Vec<i32>,
-        _val2: &i32,
-    ) -> Result<(), serde_valid::validation::Error> {
-        Ok(())
-    }
-
+fn custom_meta_list_when_parenthesized_path_is_ok_test() {
     #[derive(Debug, Validate)]
     struct TestStruct {
-        #[validate(custom(user_validation(val2)))]
-        val1: Vec<i32>,
-        val2: i32,
-    }
-
-    let s = TestStruct {
-        val1: vec![1, 2, 3, 4],
-        val2: 5,
-    };
-    assert!(s.validate().is_ok());
-}
-
-#[test]
-fn custom_meta_list_when_literal_arg_is_ok_test() {
-    fn user_validation(_val1: &Vec<i32>, _val2: i32) -> Result<(), serde_valid::validation::Error> {
-        Ok(())
-    }
-
-    #[derive(Debug, Validate)]
-    struct TestStruct {
-        #[validate(custom(user_validation(10)))]
+        #[validate(custom(parenthesized::meta_list_validation(val2)))]
         val1: Vec<i32>,
         val2: i32,
     }

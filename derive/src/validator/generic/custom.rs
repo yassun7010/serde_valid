@@ -2,7 +2,7 @@ use crate::abort::{
     abort_unexpected_list_argument, abort_unexpected_lit_argument,
     abort_unexpected_name_value_argument,
 };
-use crate::types::{NamedField, SingleIdentPath};
+use crate::types::NamedField;
 use crate::validator::Validator;
 use proc_macro2::TokenStream;
 use proc_macro_error::abort;
@@ -28,6 +28,7 @@ pub fn extract_generic_custom_validator(
                 syn::Meta::List(list) => update_custom_validator_from_meta_list(
                     &mut custom_validation_fn,
                     &mut custom_validation_args,
+                    field_ident,
                     list,
                 ),
                 syn::Meta::NameValue(name_value) => abort_unexpected_name_value_argument(
@@ -75,34 +76,45 @@ fn update_custom_validator_from_meta_path(
 fn update_custom_validator_from_meta_list(
     custom_validation_fn: &mut Option<TokenStream>,
     custom_validation_args: &mut Option<TokenStream>,
+    field_ident: &syn::Ident,
     meta_list: &syn::MetaList,
 ) {
-    let path = &meta_list.path;
-    let nested = &meta_list.nested;
-    let path_ident = SingleIdentPath::new(path).ident();
-    check_duplicated_custom_validation_fn(custom_validation_fn, path);
-    check_duplicated_custom_validation_args(custom_validation_args, path, nested);
+    let fn_name = &meta_list.path;
+    let args = extract_custom_validator_args(field_ident, &meta_list.nested);
+    check_duplicated_custom_validation_fn(custom_validation_fn, fn_name);
+    check_duplicated_custom_validation_args(custom_validation_args, fn_name, &args);
 
-    let args: syn::punctuated::Punctuated<TokenStream, syn::Token![,]> = nested
-        .iter()
-        .map(|nested_meta| extract_custom_validator_args(path_ident, nested_meta))
-        .collect();
-
-    *custom_validation_fn = Some(quote!(#path));
+    *custom_validation_fn = Some(quote!(#fn_name));
     *custom_validation_args = Some(quote!(#args));
 }
 
-fn extract_custom_validator_args(ident: &syn::Ident, nested_meta: &syn::NestedMeta) -> TokenStream {
+fn extract_custom_validator_args(
+    field_ident: &syn::Ident,
+    nested: &syn::punctuated::Punctuated<syn::NestedMeta, syn::Token![,]>,
+) -> syn::punctuated::Punctuated<TokenStream, syn::Token![,]> {
+    nested
+        .iter()
+        .map(|nested_meta| extract_custom_validator_arg(field_ident, nested_meta))
+        .collect()
+}
+
+fn extract_custom_validator_arg(
+    field_ident: &syn::Ident,
+    nested_meta: &syn::NestedMeta,
+) -> TokenStream {
     match nested_meta {
         syn::NestedMeta::Lit(lit) => quote!(#lit),
         syn::NestedMeta::Meta(meta) => match meta {
             syn::Meta::Path(path) => quote!(&self.#path),
-            syn::Meta::List(list) => {
-                abort_unexpected_list_argument(VALIDATION_LABEL, ident, nested_meta.span(), &list)
-            }
+            syn::Meta::List(list) => abort_unexpected_list_argument(
+                VALIDATION_LABEL,
+                field_ident,
+                nested_meta.span(),
+                &list,
+            ),
             syn::Meta::NameValue(name_value) => abort_unexpected_name_value_argument(
                 VALIDATION_LABEL,
-                ident,
+                field_ident,
                 nested_meta.span(),
                 &name_value,
             ),
@@ -125,7 +137,7 @@ fn check_duplicated_custom_validation_fn(
 fn check_duplicated_custom_validation_args(
     custom_validation_args: &Option<TokenStream>,
     path: &syn::Path,
-    nested: &syn::punctuated::Punctuated<syn::NestedMeta, syn::Token![,]>,
+    nested: &syn::punctuated::Punctuated<TokenStream, syn::Token![,]>,
 ) {
     if custom_validation_args.is_some() {
         abort!(
