@@ -1,6 +1,8 @@
+mod enum_variants;
 mod named_fields_struct;
 
-use named_fields_struct::expand_named_fields_struct_validators;
+use enum_variants::expand_enum_variants_validators;
+use named_fields_struct::expand_named_fields_struct_validators_tokens;
 use proc_macro2::TokenStream;
 use proc_macro_error::abort;
 use quote::quote;
@@ -9,9 +11,9 @@ use syn::spanned::Spanned;
 pub fn expand_derive(input: &syn::DeriveInput) -> TokenStream {
     let ident = &input.ident;
     let (impl_generics, type_generics, where_clause) = input.generics.split_for_impl();
-    let validators = match input.data {
+    let validators = match &input.data {
         syn::Data::Struct(syn::DataStruct { ref fields, .. }) => match fields {
-            syn::Fields::Named(named) => expand_named_fields_struct_validators(named),
+            syn::Fields::Named(named) => expand_named_fields_struct_validators_tokens(named),
             syn::Fields::Unnamed(_) => abort!(
                 input.span(),
                 "#[derive(Validate)] can only be used with named field structs"
@@ -21,10 +23,10 @@ pub fn expand_derive(input: &syn::DeriveInput) -> TokenStream {
                 "#[derive(Validate)] cannot be used with unit field structs"
             ),
         },
-        _ => abort!(
-            input.span(),
-            "#[derive(Validate)] can only be used with named field structs"
-        ),
+        syn::Data::Enum(syn::DataEnum { variants, .. }) => {
+            expand_enum_variants_validators(ident, variants)
+        }
+        syn::Data::Union(_) => abort!(input.span(), "#[derive(Validate)] not support union data"),
     };
 
     quote!(
@@ -32,7 +34,6 @@ pub fn expand_derive(input: &syn::DeriveInput) -> TokenStream {
             fn validate(
                 &self
             ) -> ::std::result::Result<(), ::serde_valid::validation::Errors> {
-                use ::serde_valid::validation::error::ToDefaultMessage;
                 let mut errors = ::serde_valid::validation::InnerErrors::new();
 
                 #validators

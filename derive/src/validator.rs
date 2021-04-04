@@ -39,6 +39,10 @@ impl FieldValidators {
         }
     }
 
+    pub fn ident(&self) -> &syn::Ident {
+        self.field.ident()
+    }
+
     pub fn push(&mut self, validator: Validator) {
         match validator {
             Validator::Normal(token) => self.validators.push(token),
@@ -62,6 +66,22 @@ impl FieldValidators {
                     }
                 }
             },
+        }
+    }
+
+    pub fn get_token(&self) -> Option<TokenStream> {
+        let normal_tokens = self.normal_tokens();
+        let optional_tokens = self.optional_tolens();
+        let array_tokens = self.array_tolens();
+
+        if normal_tokens.is_some() || optional_tokens.is_some() || array_tokens.is_some() {
+            Some(quote!(
+                #normal_tokens
+                #optional_tokens
+                #array_tokens
+            ))
+        } else {
+            None
         }
     }
 

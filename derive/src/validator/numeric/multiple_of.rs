@@ -19,6 +19,7 @@ fn inner_extract_numeric_multiple_of_validator(
             *#field_ident,
             #multiple_of,
         ) {
+            use ::serde_valid::validation::error::ToDefaultMessage;
             errors
                 .entry(::serde_valid::FieldName::new(#field_string))
                 .or_default()

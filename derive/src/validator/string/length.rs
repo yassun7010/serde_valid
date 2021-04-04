@@ -75,6 +75,7 @@ fn inner_extract_string_length_validator(
             #min_length_tokens,
             #max_length_tokens
         ) {
+            use ::serde_valid::validation::error::ToDefaultMessage;
             errors
                 .entry(::serde_valid::FieldName::new(#field_string))
                 .or_default()

@@ -26,6 +26,7 @@ fn inner_extract_string_pattern_validator(
             #field_ident,
             pattern,
         ) {
+            use ::serde_valid::validation::error::ToDefaultMessage;
             errors
                 .entry(::serde_valid::FieldName::new(#field_string))
                 .or_default()

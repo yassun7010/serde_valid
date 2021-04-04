@@ -55,6 +55,7 @@ fn inner_extract_array_items_validator(
             #min_items_tokens,
             #max_items_tokens
         ) {
+            use ::serde_valid::validation::error::ToDefaultMessage;
             errors
                 .entry(::serde_valid::FieldName::new(#field_string))
                 .or_default()

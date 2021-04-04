@@ -7,15 +7,15 @@ use std::iter::FromIterator;
 use syn::parse_quote;
 use syn::spanned::Spanned;
 
-pub fn expand_named_fields_struct_validators(fields: &syn::FieldsNamed) -> TokenStream {
+pub fn expand_named_fields_struct_validators_tokens(fields: &syn::FieldsNamed) -> TokenStream {
     TokenStream::from_iter(
-        collect_validators(fields)
+        collect_named_fields_struct_validators(fields)
             .iter()
             .map(|validator| validator.generate_token()),
     )
 }
 
-pub fn collect_validators(fields: &syn::FieldsNamed) -> Vec<FieldValidators> {
+pub fn collect_named_fields_struct_validators(fields: &syn::FieldsNamed) -> Vec<FieldValidators> {
     let mut struct_validators = vec![];
     for field in fields.named.iter() {
         let mut field_validators = FieldValidators::new(field.clone());

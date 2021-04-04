@@ -17,6 +17,7 @@ fn inner_extract_array_unique_items_validator(
         if !::serde_valid::validate_array_unique_items(
             #field_ident
         ) {
+            use ::serde_valid::validation::error::ToDefaultMessage;
             errors
                 .entry(::serde_valid::FieldName::new(#field_string))
                 .or_default()

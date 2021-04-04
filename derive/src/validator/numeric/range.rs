@@ -67,6 +67,7 @@ fn inner_extract_numeric_range_validator(
             #minimum_tokens,
             #maximum_tokens
         ) {
+            use ::serde_valid::validation::error::ToDefaultMessage;
             errors
                 .entry(::serde_valid::FieldName::new(#field_string))
                 .or_default()
