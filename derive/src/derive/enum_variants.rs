@@ -37,7 +37,6 @@ pub fn expand_enum_variants_validators(
             _ => quote!(),
         };
         enum_validator_tokens.push(variant_tokens);
-        // abort!(variant.span(), "Variant: {:?}", variant);
     }
     TokenStream::from_iter(enum_validator_tokens)
 }
