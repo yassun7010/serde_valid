@@ -8,8 +8,8 @@ impl<'a> SingleIdentPath<'a> {
         if path.get_ident().is_none() {
             abort!(
                 path.span(),
-                "Path(='{:?}') must be single ident path.",
-                path
+                "Path(='{}') must be single ident path.",
+                path_to_string(path)
             )
         }
         Self(path)
@@ -18,4 +18,17 @@ impl<'a> SingleIdentPath<'a> {
     pub fn ident(&self) -> &'a syn::Ident {
         self.0.get_ident().unwrap()
     }
+}
+
+fn path_to_string(path: &syn::Path) -> String {
+    path.segments
+        .pairs()
+        .map(|pair| match pair {
+            syn::punctuated::Pair::Punctuated(seg, ..) => {
+                format!("{}::", seg.ident)
+            }
+            syn::punctuated::Pair::End(seg) => seg.ident.to_string(),
+        })
+        .collect::<Vec<String>>()
+        .join("")
 }
