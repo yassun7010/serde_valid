@@ -71,8 +71,8 @@ impl FieldValidators {
 
     pub fn get_token(&self) -> Option<TokenStream> {
         let normal_tokens = self.normal_tokens();
-        let optional_tokens = self.optional_tolens();
-        let array_tokens = self.array_tolens();
+        let optional_tokens = self.optional_tokens();
+        let array_tokens = self.array_tokens();
 
         if normal_tokens.is_some() || optional_tokens.is_some() || array_tokens.is_some() {
             Some(quote!(
@@ -87,8 +87,8 @@ impl FieldValidators {
 
     pub fn to_token(&self) -> TokenStream {
         let normal_tokens = self.normal_tokens();
-        let optional_tokens = self.optional_tolens();
-        let array_tokens = self.array_tolens();
+        let optional_tokens = self.optional_tokens();
+        let array_tokens = self.array_tokens();
 
         quote!(
             #normal_tokens
@@ -99,8 +99,8 @@ impl FieldValidators {
 
     pub fn generate_token(&self) -> TokenStream {
         let normal_tokens = self.normal_tokens();
-        let optional_tokens = self.optional_tolens();
-        let array_tokens = self.array_tolens();
+        let optional_tokens = self.optional_tokens();
+        let array_tokens = self.array_tokens();
 
         if normal_tokens.is_some() || optional_tokens.is_some() || array_tokens.is_some() {
             let field_ident = self.field.ident();
@@ -124,7 +124,7 @@ impl FieldValidators {
         }
     }
 
-    fn optional_tolens(&self) -> Option<TokenStream> {
+    fn optional_tokens(&self) -> Option<TokenStream> {
         if let Some(optional_validators) = &self.optional_validators {
             let ident = self.field.ident();
             let option_ident = optional_validators.field.ident();
@@ -139,7 +139,7 @@ impl FieldValidators {
         }
     }
 
-    fn array_tolens(&self) -> Option<TokenStream> {
+    fn array_tokens(&self) -> Option<TokenStream> {
         if let Some(array_validators) = &self.array_validators {
             let ident = self.field.ident();
             let array_ident = array_validators.field.ident();
