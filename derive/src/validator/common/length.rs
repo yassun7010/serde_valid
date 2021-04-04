@@ -3,6 +3,7 @@ use crate::abort::{
     abort_unexpected_path_argument, abort_unknown_name_value_argument,
 };
 use crate::types::SingleIdentPath;
+use crate::validator::common::check::check_common_list_argument;
 use crate::validator::common::{check_lit, get_integer};
 use proc_macro2::TokenStream;
 use quote::quote;
@@ -31,13 +32,14 @@ pub fn extract_length_validator_tokens(
                     &mut max_value,
                 ),
                 syn::Meta::List(list) => {
-                    abort_unexpected_list_argument(
-                        validation_label,
-                        field_ident,
-                        item.span(),
-                        list,
-                        true,
-                    );
+                    if !check_common_list_argument(list) {
+                        abort_unexpected_list_argument(
+                            validation_label,
+                            field_ident,
+                            item.span(),
+                            list,
+                        );
+                    }
                 }
                 syn::Meta::Path(path) => {
                     abort_unexpected_path_argument(validation_label, field_ident, item.span(), path)

@@ -5,7 +5,9 @@ use crate::abort::{
 };
 use crate::lit::NumericInfo;
 use crate::types::{NamedField, SingleIdentPath};
-use crate::validator::common::{check_lit, extract_message_tokens, get_numeric};
+use crate::validator::common::{
+    check_common_list_argument, check_lit, extract_message_tokens, get_numeric,
+};
 use crate::validator::Validator;
 use proc_macro2::TokenStream;
 use quote::quote;
@@ -103,13 +105,14 @@ fn extract_numeric_range_validator_tokens(
                     &mut exclusive_maximum,
                 ),
                 syn::Meta::List(list) => {
-                    abort_unexpected_list_argument(
-                        VALIDATION_LABEL,
-                        field_ident,
-                        item.span(),
-                        list,
-                        true,
-                    );
+                    if !check_common_list_argument(list) {
+                        abort_unexpected_list_argument(
+                            VALIDATION_LABEL,
+                            field_ident,
+                            item.span(),
+                            list,
+                        );
+                    };
                 }
                 syn::Meta::Path(path) => {
                     abort_unexpected_path_argument(VALIDATION_LABEL, field_ident, item.span(), path)

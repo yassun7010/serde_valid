@@ -90,13 +90,9 @@ fn update_message_fn_from_nested_meta(
                         path_ident,
                     );
                 }
-                syn::Meta::List(list) => abort_unexpected_list_argument(
-                    validation_label,
-                    field_ident,
-                    item.span(),
-                    list,
-                    false,
-                ),
+                syn::Meta::List(list) => {
+                    abort_unexpected_list_argument(validation_label, field_ident, item.span(), list)
+                }
                 syn::Meta::NameValue(name_value) => abort_unexpected_name_value_argument(
                     validation_label,
                     field_ident,

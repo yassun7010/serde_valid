@@ -66,41 +66,9 @@ impl FieldValidators {
     }
 
     pub fn to_token(&self) -> TokenStream {
-        let ident = self.field.ident();
-
-        // Nomal Tokens
-        let normal_tokens = if !self.validators.is_empty() {
-            let validators = TokenStream::from_iter(self.validators.clone());
-            quote! (#validators)
-        } else {
-            quote! {}
-        };
-
-        // Optional Tokens
-        let optional_tokens = if let Some(optional_validators) = &self.optional_validators {
-            let option_ident = optional_validators.field.ident();
-            let option_validators = optional_validators.to_token();
-            quote!(
-                if let Some(#option_ident) = #ident {
-                    #option_validators
-                }
-            )
-        } else {
-            quote!()
-        };
-
-        // Array Tokens
-        let array_tokens = if let Some(array_validators) = &self.array_validators {
-            let array_ident = array_validators.field.ident();
-            let array_validators = array_validators.to_token();
-            quote!(
-                for #array_ident in #ident {
-                    #array_validators
-                }
-            )
-        } else {
-            quote!()
-        };
+        let normal_tokens = self.normal_tokens();
+        let optional_tokens = self.optional_tolens();
+        let array_tokens = self.array_tolens();
 
         quote!(
             #normal_tokens
@@ -110,11 +78,59 @@ impl FieldValidators {
     }
 
     pub fn generate_token(&self) -> TokenStream {
-        let field_ident = self.field.ident();
-        let validation = self.to_token();
-        quote!(
-            let #field_ident = &self.#field_ident;
-            #validation
-        )
+        let normal_tokens = self.normal_tokens();
+        let optional_tokens = self.optional_tolens();
+        let array_tokens = self.array_tolens();
+
+        if normal_tokens.is_some() || optional_tokens.is_some() || array_tokens.is_some() {
+            let field_ident = self.field.ident();
+            quote!(
+                let #field_ident = &self.#field_ident;
+                #normal_tokens
+                #optional_tokens
+                #array_tokens
+            )
+        } else {
+            quote!()
+        }
+    }
+
+    fn normal_tokens(&self) -> Option<TokenStream> {
+        if !self.validators.is_empty() {
+            let validators = TokenStream::from_iter(self.validators.clone());
+            Some(quote! (#validators))
+        } else {
+            None
+        }
+    }
+
+    fn optional_tolens(&self) -> Option<TokenStream> {
+        if let Some(optional_validators) = &self.optional_validators {
+            let ident = self.field.ident();
+            let option_ident = optional_validators.field.ident();
+            let option_validators = optional_validators.to_token();
+            Some(quote!(
+                if let Some(#option_ident) = #ident {
+                    #option_validators
+                }
+            ))
+        } else {
+            None
+        }
+    }
+
+    fn array_tolens(&self) -> Option<TokenStream> {
+        if let Some(array_validators) = &self.array_validators {
+            let ident = self.field.ident();
+            let array_ident = array_validators.field.ident();
+            let array_validators = array_validators.to_token();
+            Some(quote!(
+                for #array_ident in #ident {
+                    #array_validators
+                }
+            ))
+        } else {
+            None
+        }
     }
 }
