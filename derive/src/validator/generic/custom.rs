@@ -68,7 +68,7 @@ fn update_custom_validator_from_meta_path(
     custom_validation_fn: &mut Option<TokenStream>,
     path: &syn::Path,
 ) {
-    check_duplicated_custom_validation(custom_validation_fn, path);
+    check_duplicated_custom_validation_fn(custom_validation_fn, path);
     *custom_validation_fn = Some(quote!(#path));
 }
 
@@ -78,12 +78,12 @@ fn update_custom_validator_from_meta_list(
     meta_list: &syn::MetaList,
 ) {
     let path = &meta_list.path;
+    let nested = &meta_list.nested;
     let path_ident = SingleIdentPath::new(path).ident();
-    check_duplicated_custom_validation(custom_validation_fn, path);
-    check_duplicated_custom_validation(custom_validation_args, path);
+    check_duplicated_custom_validation_fn(custom_validation_fn, path);
+    check_duplicated_custom_validation_args(custom_validation_args, path, nested);
 
-    let args: syn::punctuated::Punctuated<TokenStream, syn::Token![,]> = meta_list
-        .nested
+    let args: syn::punctuated::Punctuated<TokenStream, syn::Token![,]> = nested
         .iter()
         .map(|nested_meta| extract_custom_validator_args(path_ident, nested_meta))
         .collect();
@@ -110,7 +110,7 @@ fn extract_custom_validator_args(ident: &syn::Ident, nested_meta: &syn::NestedMe
     }
 }
 
-fn check_duplicated_custom_validation(
+fn check_duplicated_custom_validation_fn(
     custom_validation_fn: &Option<TokenStream>,
     path: &syn::Path,
 ) {
@@ -118,6 +118,31 @@ fn check_duplicated_custom_validation(
         abort!(
             path.span(),
             &format!("'{}' validator allow 1 custom function.", VALIDATION_LABEL)
+        )
+    }
+}
+
+fn check_duplicated_custom_validation_args(
+    custom_validation_args: &Option<TokenStream>,
+    path: &syn::Path,
+    nested: &syn::punctuated::Punctuated<syn::NestedMeta, syn::Token![,]>,
+) {
+    if custom_validation_args.is_some() {
+        abort!(
+            path.span(),
+            &format!(
+                "'{}' validator allow to define custom function args only once.",
+                VALIDATION_LABEL
+            )
+        )
+    }
+    if nested.is_empty() {
+        abort!(
+            path.span(),
+            &format!(
+                "'{}' validator need 1 or more custom function args.",
+                VALIDATION_LABEL
+            )
         )
     }
 }
