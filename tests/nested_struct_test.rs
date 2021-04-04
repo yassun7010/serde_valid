@@ -3,13 +3,13 @@ use serde_valid::Validate;
 
 #[test]
 fn nested_validate_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate]
         val: TestInnerStruct,
     }
 
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestInnerStruct {
         #[validate(items(min_items = 4, max_items = 4))]
         inner_val: Vec<i32>,
@@ -53,13 +53,13 @@ fn nested_validate_vec_type_test() {
 
 #[test]
 fn nested_validate_option_type_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate]
         val: Option<TestInnerStruct>,
     }
 
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestInnerStruct {
         #[validate(items(min_items = 4, max_items = 4))]
         inner_val: Vec<i32>,
@@ -75,13 +75,13 @@ fn nested_validate_option_type_test() {
 
 #[test]
 fn nested_validate_err_message_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate]
         val: TestInnerStruct,
     }
 
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestInnerStruct {
         #[validate(items(min_items = 4, max_items = 4))]
         inner_val: Vec<i32>,

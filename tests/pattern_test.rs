@@ -5,7 +5,7 @@ use std::ffi::{OsStr, OsString};
 
 #[test]
 fn pattern_string_type_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(pattern = r"^\d{4}-\d{2}-\d{2}$")]
         val: String,
@@ -19,7 +19,7 @@ fn pattern_string_type_test() {
 
 #[test]
 fn pattern_str_type_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct<'a> {
         #[validate(pattern = r"^\d{4}-\d{2}-\d{2}$")]
         val: &'a str,
@@ -31,7 +31,7 @@ fn pattern_str_type_test() {
 
 #[test]
 fn pattern_cow_str_type_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct<'a> {
         #[validate(pattern = r"^\d{4}-\d{2}-\d{2}$")]
         val: Cow<'a, str>,
@@ -45,7 +45,7 @@ fn pattern_cow_str_type_test() {
 
 #[test]
 fn pattern_os_str_type_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct<'a> {
         #[validate(pattern = r"^\d{4}-\d{2}-\d{2}$")]
         val: &'a OsStr,
@@ -59,7 +59,7 @@ fn pattern_os_str_type_test() {
 
 #[test]
 fn pattern_os_string_type_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(pattern = r"^\d{4}-\d{2}-\d{2}$")]
         val: OsString,
@@ -73,7 +73,7 @@ fn pattern_os_string_type_test() {
 
 #[test]
 fn pattern_path_type_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct<'a> {
         #[validate(pattern = r"^\d{4}-\d{2}-\d{2}$")]
         val: &'a std::path::Path,
@@ -87,7 +87,7 @@ fn pattern_path_type_test() {
 
 #[test]
 fn pattern_path_buf_type_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(pattern = r"^\d{4}-\d{2}-\d{2}$")]
         val: std::path::PathBuf,
@@ -101,7 +101,7 @@ fn pattern_path_buf_type_test() {
 
 #[test]
 fn pattern_is_err_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(pattern = r"^\d{4}-\d{2}-\d{2}$")]
         val: String,
@@ -115,7 +115,7 @@ fn pattern_is_err_test() {
 
 #[test]
 fn pattern_vec_type_is_ok_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(pattern = r"^\d{4}-\d{2}-\d{2}$")]
         val: Vec<String>,
@@ -129,7 +129,7 @@ fn pattern_vec_type_is_ok_test() {
 
 #[test]
 fn pattern_nested_vec_type_is_ok_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(pattern = r"^\d{4}-\d{2}-\d{2}$")]
         val: Vec<Vec<String>>,
@@ -146,7 +146,7 @@ fn pattern_nested_vec_type_is_ok_test() {
 
 #[test]
 fn pattern_option_type_is_ok_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(pattern = r"^\d{4}-\d{2}-\d{2}$")]
         val: Option<String>,
@@ -160,7 +160,7 @@ fn pattern_option_type_is_ok_test() {
 
 #[test]
 fn pattern_nested_option_type_is_ok_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(pattern = r"^\d{4}-\d{2}-\d{2}$")]
         val: Option<Option<String>>,
@@ -174,7 +174,7 @@ fn pattern_nested_option_type_is_ok_test() {
 
 #[test]
 fn pattern_vec_optional_type_is_ok_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(pattern = r"^\d{4}-\d{2}-\d{2}$")]
         val: Vec<Option<String>>,
@@ -192,7 +192,7 @@ fn pattern_vec_optional_type_is_ok_test() {
 
 #[test]
 fn pattern_err_message_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(pattern = r"^\d{4}-\d{2}-\d{2}$")]
         val: String,
@@ -219,7 +219,7 @@ fn pattern_custom_err_message_test() {
         "this is custom message.".to_string()
     }
 
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(pattern(r"^\d{4}-\d{2}-\d{2}$", message_fn(error_message)))]
         val: String,

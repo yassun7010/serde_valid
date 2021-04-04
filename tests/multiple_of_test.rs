@@ -3,7 +3,7 @@ use serde_valid::Validate;
 
 #[test]
 fn multiple_of_integer_is_ok_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(multiple_of = 5)]
         val: i32,
@@ -15,7 +15,7 @@ fn multiple_of_integer_is_ok_test() {
 
 #[test]
 fn multiple_of_float_is_ok_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(multiple_of = 1.0)]
         val: f32,
@@ -27,7 +27,7 @@ fn multiple_of_float_is_ok_test() {
 
 #[test]
 fn multiple_of_integer_is_err_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(multiple_of = 3)]
         val: i32,
@@ -39,7 +39,7 @@ fn multiple_of_integer_is_err_test() {
 
 #[test]
 fn multiple_of_float_is_err_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(multiple_of = 0.5)]
         val: f32,
@@ -51,7 +51,7 @@ fn multiple_of_float_is_err_test() {
 
 #[test]
 fn multiple_of_vec_type_is_ok_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(multiple_of = 4)]
         val: Vec<i32>,
@@ -63,7 +63,7 @@ fn multiple_of_vec_type_is_ok_test() {
 
 #[test]
 fn multiple_of_nested_vec_type_is_ok_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(multiple_of = 4)]
         val: Vec<Vec<i32>>,
@@ -77,7 +77,7 @@ fn multiple_of_nested_vec_type_is_ok_test() {
 
 #[test]
 fn multiple_of_optional_type_is_ok_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(multiple_of = 4)]
         val: Option<i32>,
@@ -89,7 +89,7 @@ fn multiple_of_optional_type_is_ok_test() {
 
 #[test]
 fn multiple_of_nested_optional_type_is_ok_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(multiple_of = 4)]
         val: Option<Option<i32>>,
@@ -103,7 +103,7 @@ fn multiple_of_nested_optional_type_is_ok_test() {
 
 #[test]
 fn multiple_of_vec_optional_type_is_ok_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(multiple_of = 4)]
         val: Vec<Option<i32>>,
@@ -117,7 +117,7 @@ fn multiple_of_vec_optional_type_is_ok_test() {
 
 #[test]
 fn multiple_of_err_message_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(multiple_of = 5)]
         val: i32,
@@ -142,7 +142,7 @@ fn multiple_of_custom_err_message_test() {
         "this is custom message.".to_string()
     }
 
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(multiple_of(5, message_fn(error_message)))]
         val: i32,

@@ -20,7 +20,7 @@ fn custom_meta_path_is_ok_test() {
         Ok(())
     }
 
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(custom(user_validation))]
         val: Vec<i32>,
@@ -34,7 +34,7 @@ fn custom_meta_path_is_ok_test() {
 
 #[test]
 fn custom_meta_path_when_parenthesized_path_is_ok_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(custom(parenthesized::meta_path_validation))]
         val: Vec<i32>,
@@ -58,7 +58,7 @@ fn custom_meta_list_is_ok_test() {
         Ok(())
     }
 
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(custom(user_validation(val2, 1.234, val3, true)))]
         val1: Vec<i32>,
@@ -76,7 +76,7 @@ fn custom_meta_list_is_ok_test() {
 
 #[test]
 fn custom_meta_list_when_parenthesized_path_is_ok_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(custom(parenthesized::meta_list_validation(val2)))]
         val1: Vec<i32>,
@@ -98,7 +98,7 @@ fn custom_is_err_test() {
         ))
     }
 
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(custom(user_validation))]
         val: Vec<i32>,

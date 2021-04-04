@@ -7,7 +7,7 @@ use std::collections::HashMap;
 
 #[test]
 fn properties_hash_map_type_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(properties(min_properties = 3, max_properties = 3))]
         val: HashMap<String, String>,
@@ -24,7 +24,7 @@ fn properties_hash_map_type_test() {
 
 #[test]
 fn properties_btree_map_type_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(properties(min_properties = 3, max_properties = 3))]
         val: BTreeMap<String, String>,
@@ -41,7 +41,7 @@ fn properties_btree_map_type_test() {
 
 #[test]
 fn properties_json_map_type_test() {
-    #[derive(Debug, Deserialize, Validate)]
+    #[derive(Deserialize, Validate)]
     struct TestStruct {
         #[validate(properties(min_properties = 3, max_properties = 3))]
         val: serde_json::Map<String, serde_json::Value>,
@@ -60,7 +60,7 @@ fn properties_json_map_type_test() {
 
 #[test]
 fn properties_is_err_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(properties(min_properties = 3, max_properties = 3))]
         val: BTreeMap<String, String>,
@@ -76,7 +76,7 @@ fn properties_is_err_test() {
 
 #[test]
 fn properties_hash_map_type_err_message_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(properties(min_properties = 3, max_properties = 3))]
         val: HashMap<String, String>,
@@ -100,7 +100,7 @@ fn properties_hash_map_type_err_message_test() {
 
 #[test]
 fn properties_btree_map_type_err_message_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(properties(min_properties = 3, max_properties = 3))]
         val: BTreeMap<String, String>,
@@ -124,7 +124,7 @@ fn properties_btree_map_type_err_message_test() {
 
 #[test]
 fn properties_json_map_type_err_message_test() {
-    #[derive(Debug, Deserialize, Validate)]
+    #[derive(Deserialize, Validate)]
     struct TestStruct {
         #[validate(properties(min_properties = 3, max_properties = 3))]
         val: serde_json::Map<String, serde_json::Value>,
@@ -154,7 +154,7 @@ fn range_custom_err_message_test() {
         "this is custom message.".to_string()
     }
 
-    #[derive(Debug, Deserialize, Validate)]
+    #[derive(Deserialize, Validate)]
     struct TestStruct {
         #[validate(properties(min_properties = 3, max_properties = 3, message_fn(error_message)))]
         val: serde_json::Map<String, serde_json::Value>,

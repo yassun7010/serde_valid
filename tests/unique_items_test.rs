@@ -3,7 +3,7 @@ use serde_valid::Validate;
 
 #[test]
 fn unique_items_vec_type_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(unique_items)]
         val: Vec<i32>,
@@ -17,7 +17,7 @@ fn unique_items_vec_type_test() {
 
 #[test]
 fn unique_items_slice_type_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(unique_items)]
         val: [i32; 4],
@@ -29,7 +29,7 @@ fn unique_items_slice_type_test() {
 
 #[test]
 fn unique_items_is_err_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(unique_items)]
         val: Vec<i32>,
@@ -41,7 +41,7 @@ fn unique_items_is_err_test() {
 
 #[test]
 fn unique_items_err_message_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(unique_items)]
         val: Vec<i32>,
@@ -68,7 +68,7 @@ fn unique_items_custom_err_message_test() {
         "this is custom message.".to_string()
     }
 
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(unique_items(message_fn(error_message)))]
         val: Vec<i32>,
