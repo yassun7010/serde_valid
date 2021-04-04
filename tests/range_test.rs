@@ -3,7 +3,7 @@ use serde_valid::Validate;
 
 #[test]
 fn range_integer_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(range(minimum = 0, maximum = 2000))]
         val: i32,
@@ -15,7 +15,7 @@ fn range_integer_test() {
 
 #[test]
 fn range_float_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(range(minimum = 0.0, maximum = 2000.0))]
         val: f32,
@@ -27,7 +27,7 @@ fn range_float_test() {
 
 #[test]
 fn range_exclusive_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(range(exclusive_minimum = 0, exclusive_maximum = 10))]
         val: i32,
@@ -39,7 +39,7 @@ fn range_exclusive_test() {
 
 #[test]
 fn range_minimum_is_ok_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(range(minimum = 0, maximum = 10))]
         val: i32,
@@ -51,7 +51,7 @@ fn range_minimum_is_ok_test() {
 
 #[test]
 fn range_minimum_is_err_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(range(minimum = 1, maximum = 10))]
         val: i32,
@@ -63,7 +63,7 @@ fn range_minimum_is_err_test() {
 
 #[test]
 fn range_exclusive_minimum_is_ok_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(range(exclusive_minimum = 0, maximum = 10))]
         val: i32,
@@ -75,7 +75,7 @@ fn range_exclusive_minimum_is_ok_test() {
 
 #[test]
 fn range_exclusive_minimum_is_err_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(range(exclusive_minimum = 0, maximum = 10))]
         val: i32,
@@ -87,7 +87,7 @@ fn range_exclusive_minimum_is_err_test() {
 
 #[test]
 fn range_maximum_is_ok_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(range(minimum = 0, maximum = 10))]
         val: i32,
@@ -99,7 +99,7 @@ fn range_maximum_is_ok_test() {
 
 #[test]
 fn range_maximum_is_err_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(range(minimum = 1, maximum = 10))]
         val: i32,
@@ -111,7 +111,7 @@ fn range_maximum_is_err_test() {
 
 #[test]
 fn range_exclusive_maximum_is_ok_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(range(minimum = 0, exclusive_maximum = 10))]
         val: i32,
@@ -123,7 +123,7 @@ fn range_exclusive_maximum_is_ok_test() {
 
 #[test]
 fn range_exclusive_maximum_is_err_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(range(minimum = 0, exclusive_maximum = 10))]
         val: i32,
@@ -135,7 +135,7 @@ fn range_exclusive_maximum_is_err_test() {
 
 #[test]
 fn range_vec_type_is_ok_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(range(minimum = 0, maximum = 20))]
         val: Vec<i32>,
@@ -147,7 +147,7 @@ fn range_vec_type_is_ok_test() {
 
 #[test]
 fn range_nested_vec_type_is_ok_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(range(minimum = 0, maximum = 20))]
         val: Vec<Vec<i32>>,
@@ -161,7 +161,7 @@ fn range_nested_vec_type_is_ok_test() {
 
 #[test]
 fn range_option_type_is_ok_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(range(minimum = 0, maximum = 10))]
         val: Option<i32>,
@@ -173,7 +173,7 @@ fn range_option_type_is_ok_test() {
 
 #[test]
 fn range_nested_option_type_is_ok_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(range(minimum = 0, maximum = 10))]
         val: Option<Option<i32>>,
@@ -185,7 +185,7 @@ fn range_nested_option_type_is_ok_test() {
 
 #[test]
 fn range_vec_optional_type_is_ok_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(range(minimum = 0, maximum = 10))]
         val: Vec<Option<i32>>,
@@ -199,7 +199,7 @@ fn range_vec_optional_type_is_ok_test() {
 
 #[test]
 fn range_array_optional_type_is_ok_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(range(minimum = 0, maximum = 10))]
         val: [Option<i32>; 3],
@@ -213,7 +213,7 @@ fn range_array_optional_type_is_ok_test() {
 
 #[test]
 fn range_inclusive_err_message_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(range(minimum = 1, maximum = 10))]
         val: i32,
@@ -234,7 +234,7 @@ fn range_inclusive_err_message_test() {
 
 #[test]
 fn range_exclusive_err_message_test() {
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(range(exclusive_minimum = 1, exclusive_maximum = 10))]
         val: i32,
@@ -259,7 +259,7 @@ fn range_custom_err_message_test() {
         "this is custom message.".to_string()
     }
 
-    #[derive(Debug, Validate)]
+    #[derive(Validate)]
     struct TestStruct {
         #[validate(range(minimum = 1, maximum = 10, message_fn(error_message),))]
         val: i32,

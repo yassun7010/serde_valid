@@ -1,14 +1,14 @@
 use super::{inner_extract_array_unique_items_validator, VALIDATION_LABEL};
 use crate::abort::abort_required_list_argument;
-use crate::types::NamedField;
+use crate::types::Field;
 use crate::validator::common::{check_common_list_argument, extract_message_tokens};
 use crate::validator::Validator;
 use proc_macro2::TokenStream;
 use quote::quote;
 use syn::spanned::Spanned;
 
-pub fn extract_array_unique_items_validator_from_meta_list(
-    field: &NamedField,
+pub fn extract_array_unique_items_validator_from_meta_list<F: Field>(
+    field: &F,
     attribute: &syn::Attribute,
     meta_list: &syn::MetaList,
 ) -> Validator {

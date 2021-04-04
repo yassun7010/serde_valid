@@ -3,7 +3,7 @@ mod nested_meta_list;
 mod nested_meta_name_value;
 mod nested_meta_path;
 
-use crate::types::NamedField;
+use crate::types::Field;
 use crate::validator::Validator;
 use meta_path::extract_validator_from_meta_path;
 use nested_meta_list::extract_validator_from_nested_meta_list;
@@ -12,7 +12,10 @@ use nested_meta_path::extract_validator_from_nested_meta_path;
 use proc_macro_error::abort;
 use syn::spanned::Spanned;
 
-pub fn extract_meta_validator(field: &NamedField, attribute: &syn::Attribute) -> Option<Validator> {
+pub fn extract_meta_validator<F: Field>(
+    field: &F,
+    attribute: &syn::Attribute,
+) -> Option<Validator> {
     match attribute.parse_meta() {
         Ok(syn::Meta::List(syn::MetaList { ref nested, .. })) => {
             // only validation from there on

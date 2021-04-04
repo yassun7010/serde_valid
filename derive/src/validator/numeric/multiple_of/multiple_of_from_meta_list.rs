@@ -1,7 +1,7 @@
 use super::{inner_extract_numeric_multiple_of_validator, VALIDATION_LABEL};
 use crate::abort::{abort_duplicated_lit_argument, abort_invalid_attribute_on_field};
 use crate::lit::LitNumeric;
-use crate::types::NamedField;
+use crate::types::Field;
 use crate::validator::common::extract_message_tokens;
 use crate::validator::common::{check_meta, get_numeric};
 use crate::validator::Validator;
@@ -9,8 +9,8 @@ use proc_macro2::TokenStream;
 use quote::quote;
 use syn::spanned::Spanned;
 
-pub fn extract_numeric_multiple_of_validator_from_meta_list(
-    field: &NamedField,
+pub fn extract_numeric_multiple_of_validator_from_meta_list<F: Field>(
+    field: &F,
     attribute: &syn::Attribute,
     meta_list: &syn::MetaList,
 ) -> Validator {

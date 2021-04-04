@@ -1,4 +1,4 @@
-use crate::types::NamedField;
+use crate::types::Field;
 use crate::validator::common::{check_meta, extract_message_tokens};
 use crate::validator::Validator;
 use proc_macro2::TokenStream;
@@ -8,8 +8,8 @@ use syn::spanned::Spanned;
 
 const VALIDATION_LABEL: &'static str = "enumerate";
 
-pub fn extract_generic_enumerate_validator(
-    field: &NamedField,
+pub fn extract_generic_enumerate_validator<F: Field>(
+    field: &F,
     attribute: &syn::Attribute,
     meta_list: &syn::MetaList,
 ) -> Validator {

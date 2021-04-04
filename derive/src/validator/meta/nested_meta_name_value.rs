@@ -1,12 +1,12 @@
-use crate::types::{NamedField, SingleIdentPath};
+use crate::types::{Field, SingleIdentPath};
 use crate::validator::numeric::extract_numeric_multiple_of_validator_from_meta_name_value;
 use crate::validator::string::extract_string_pattern_validator_from_meta_name_value;
 use crate::validator::Validator;
 use proc_macro_error::abort;
 use syn::spanned::Spanned;
 
-pub fn extract_validator_from_nested_meta_name_value(
-    field: &NamedField,
+pub fn extract_validator_from_nested_meta_name_value<F: Field>(
+    field: &F,
     _attribute: &syn::Attribute,
     syn::MetaNameValue { path, lit, .. }: &syn::MetaNameValue,
 ) -> Option<Validator> {

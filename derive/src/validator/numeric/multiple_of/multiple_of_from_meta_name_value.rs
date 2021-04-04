@@ -1,12 +1,12 @@
 use super::{inner_extract_numeric_multiple_of_validator, VALIDATION_LABEL};
-use crate::types::NamedField;
+use crate::types::Field;
 use crate::validator::common::get_numeric;
 use crate::validator::Validator;
 use proc_macro2::TokenStream;
 use quote::quote;
 
-pub fn extract_numeric_multiple_of_validator_from_meta_name_value(
-    field: &NamedField,
+pub fn extract_numeric_multiple_of_validator_from_meta_name_value<F: Field>(
+    field: &F,
     lit: &syn::Lit,
 ) -> Validator {
     if let Some(array_field) = field.array_field() {

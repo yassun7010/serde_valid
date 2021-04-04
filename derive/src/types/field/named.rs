@@ -1,6 +1,6 @@
-use crate::types::extract_element_type_from_array;
-use crate::types::extract_type_from_option;
+use crate::types::{extract_element_type_from_array, extract_type_from_option, Field};
 use proc_macro_error::abort;
+use quote::quote;
 use ref_cast::RefCast;
 use std::convert::AsRef;
 use syn::spanned::Spanned;
@@ -12,43 +12,44 @@ pub struct NamedField(syn::Field);
 impl NamedField {
     pub fn new(field: syn::Field) -> Self {
         if field.ident.is_none() {
-            abort!(
-                field.span(),
-                "struct has unnamed fields";
-                help = "#[derive(Validate)] can only be used on structs with named fields";
-            )
+            abort!(field.span(), "struct must be named fields struct.")
         }
         Self(field)
     }
+}
 
-    #[allow(dead_code)]
-    pub fn ident(&self) -> &syn::Ident {
+impl Field for NamedField {
+    fn ident(&self) -> &syn::Ident {
         self.0.ident.as_ref().unwrap()
     }
 
-    #[allow(dead_code)]
-    pub fn attrs(&self) -> &Vec<syn::Attribute> {
+    fn ident_tokens(&self) -> proc_macro2::TokenStream {
+        let ident = self.ident();
+        quote!(#ident)
+    }
+
+    fn attrs(&self) -> &Vec<syn::Attribute> {
         self.0.attrs.as_ref()
     }
 
-    #[allow(dead_code)]
-    pub fn vis(&self) -> &syn::Visibility {
+    fn vis(&self) -> &syn::Visibility {
         &self.0.vis
     }
 
-    #[allow(dead_code)]
-    pub fn ty(&self) -> &syn::Type {
+    fn ty(&self) -> &syn::Type {
         &self.0.ty
     }
 
-    #[allow(dead_code)]
-    pub fn array_field(&self) -> Option<NamedField> {
+    fn array_field(&self) -> Option<NamedField> {
         if let Some(ty) = extract_element_type_from_array(&self.0.ty) {
             Some(NamedField::new(syn::Field {
                 attrs: vec![],
                 vis: self.vis().to_owned(),
                 ident: Some(syn::Ident::new(
-                    &format!("_{}", &self.ident()),
+                    &format!(
+                        "_elem_{}",
+                        &self.ident().to_string().trim_start_matches("_")
+                    ),
                     self.ident().span(),
                 )),
                 colon_token: None,
@@ -59,14 +60,16 @@ impl NamedField {
         }
     }
 
-    #[allow(dead_code)]
-    pub fn option_field(&self) -> Option<NamedField> {
+    fn option_field(&self) -> Option<NamedField> {
         if let Some(ty) = extract_type_from_option(&self.0.ty) {
             Some(NamedField::new(syn::Field {
                 attrs: vec![],
                 vis: self.vis().to_owned(),
                 ident: Some(syn::Ident::new(
-                    &format!("_{}", &self.ident()),
+                    &format!(
+                        "_some_{}",
+                        &self.ident().to_string().trim_start_matches("_")
+                    ),
                     self.ident().span(),
                 )),
                 colon_token: None,

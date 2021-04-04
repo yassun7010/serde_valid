@@ -1,4 +1,4 @@
-use crate::types::NamedField;
+use crate::types::Field;
 use crate::validator::common::{extract_length_validator_tokens, extract_message_tokens};
 use crate::validator::Validator;
 use proc_macro2::TokenStream;
@@ -8,8 +8,8 @@ const VALIDATION_LABEL: &'static str = "items";
 const MIN_LABEL: &'static str = "min_items";
 const MAX_LABEL: &'static str = "max_items";
 
-pub fn extract_array_items_validator(
-    field: &NamedField,
+pub fn extract_array_items_validator<F: Field>(
+    field: &F,
     attribute: &syn::Attribute,
     meta_list: &syn::MetaList,
 ) -> Validator {

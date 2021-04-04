@@ -1,12 +1,12 @@
-use crate::types::{NamedField, SingleIdentPath};
+use crate::types::{Field, SingleIdentPath};
 use crate::validator::Validator;
 use proc_macro2::TokenStream;
 use proc_macro_error::abort;
 use quote::quote;
 use syn::spanned::Spanned;
 
-pub fn extract_validator_from_meta_path(
-    field: &NamedField,
+pub fn extract_validator_from_meta_path<F: Field>(
+    field: &F,
     _attribute: &syn::Attribute,
     path: &syn::Path,
 ) -> Option<Validator> {
@@ -19,7 +19,7 @@ pub fn extract_validator_from_meta_path(
     }
 }
 
-fn extract_validate_validator(field: &NamedField) -> Validator {
+fn extract_validate_validator<F: Field>(field: &F) -> Validator {
     if let Some(array_field) = field.array_field() {
         Validator::Array(Box::new(extract_validate_validator(&array_field)))
     } else if let Some(option_field) = field.option_field() {
@@ -29,7 +29,7 @@ fn extract_validate_validator(field: &NamedField) -> Validator {
     }
 }
 
-fn extract_validate_validator_tokens(field: &NamedField) -> TokenStream {
+fn extract_validate_validator_tokens<F: Field>(field: &F) -> TokenStream {
     let field_ident = field.ident();
     let field_string = field_ident.to_string();
     quote!(

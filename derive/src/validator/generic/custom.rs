@@ -2,7 +2,7 @@ use crate::abort::{
     abort_unexpected_list_argument, abort_unexpected_lit_argument,
     abort_unexpected_name_value_argument,
 };
-use crate::types::NamedField;
+use crate::types::Field;
 use crate::validator::Validator;
 use proc_macro2::TokenStream;
 use proc_macro_error::abort;
@@ -11,8 +11,8 @@ use syn::spanned::Spanned;
 
 const VALIDATION_LABEL: &'static str = "custom";
 
-pub fn extract_generic_custom_validator(
-    field: &NamedField,
+pub fn extract_generic_custom_validator<F: Field>(
+    field: &F,
     attribute: &syn::Attribute,
     meta_list: &syn::MetaList,
 ) -> Validator {

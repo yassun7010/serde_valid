@@ -4,7 +4,7 @@ use crate::abort::{
     abort_unknown_name_value_argument,
 };
 use crate::lit::NumericInfo;
-use crate::types::{NamedField, SingleIdentPath};
+use crate::types::{Field, SingleIdentPath};
 use crate::validator::common::{
     check_common_list_argument, check_lit, extract_message_tokens, get_numeric,
 };
@@ -21,8 +21,8 @@ const EXPECTED_KEYS: [&str; 4] = [
     "exclusive_maximum",
 ];
 
-pub fn extract_numeric_range_validator(
-    field: &NamedField,
+pub fn extract_numeric_range_validator<F: Field>(
+    field: &F,
     attribute: &syn::Attribute,
     meta_list: &syn::MetaList,
 ) -> Validator {

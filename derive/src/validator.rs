@@ -6,7 +6,7 @@ mod numeric;
 mod object;
 mod string;
 
-pub use crate::types::NamedField;
+pub use crate::types::Field;
 pub use meta::extract_meta_validator;
 use proc_macro2::TokenStream;
 use quote::quote;
@@ -18,19 +18,19 @@ pub enum Validator {
     Array(Box<Validator>),
 }
 
-pub struct FieldValidators {
-    field: NamedField,
+pub struct FieldValidators<F: Field> {
+    field: F,
     validators: Vec<TokenStream>,
-    optional_validators: Option<Box<FieldValidators>>,
-    array_validators: Option<Box<FieldValidators>>,
+    optional_validators: Option<Box<FieldValidators<F>>>,
+    array_validators: Option<Box<FieldValidators<F>>>,
 }
 
-impl FieldValidators {
-    pub fn new(field: syn::Field) -> Self {
-        Self::inner_new(NamedField::new(field))
+impl<F: Field> FieldValidators<F> {
+    pub fn new(field: F) -> Self {
+        Self::inner_new(field)
     }
 
-    fn inner_new(field: NamedField) -> Self {
+    fn inner_new(field: F) -> Self {
         Self {
             field,
             validators: vec![],
@@ -104,8 +104,9 @@ impl FieldValidators {
 
         if normal_tokens.is_some() || optional_tokens.is_some() || array_tokens.is_some() {
             let field_ident = self.field.ident();
+            let field_tokens = self.field.ident_tokens();
             quote!(
-                let #field_ident = &self.#field_ident;
+                let #field_ident = &self.#field_tokens;
                 #normal_tokens
                 #optional_tokens
                 #array_tokens

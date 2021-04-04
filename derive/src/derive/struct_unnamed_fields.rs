@@ -1,33 +1,32 @@
 use crate::abort::abort_invalid_attribute_on_field;
-use crate::types::{Field, NamedField};
+use crate::types::{Field, UnnamedField};
 use crate::validator::{extract_meta_validator, FieldValidators};
 use proc_macro2::TokenStream;
-use ref_cast::RefCast;
 use std::iter::FromIterator;
 use syn::parse_quote;
 use syn::spanned::Spanned;
 
-pub fn expand_struct_named_fields_validators_tokens(fields: &syn::FieldsNamed) -> TokenStream {
+pub fn expand_struct_unnamed_fields_validators_tokens(fields: &syn::FieldsUnnamed) -> TokenStream {
     TokenStream::from_iter(
-        collect_struct_named_fields_validators(fields)
+        collect_struct_unnamed_fields_validators(fields)
             .iter()
             .map(|validator| validator.generate_tokens()),
     )
 }
 
-pub fn collect_struct_named_fields_validators(
-    fields: &syn::FieldsNamed,
-) -> Vec<FieldValidators<NamedField>> {
+pub fn collect_struct_unnamed_fields_validators(
+    fields: &syn::FieldsUnnamed,
+) -> Vec<FieldValidators<UnnamedField>> {
     let mut struct_validators = vec![];
-    for field in fields.named.iter() {
-        let mut field_validators = FieldValidators::new(NamedField::new(field.clone()));
-        let named_field = NamedField::ref_cast(field);
-        let field_ident = named_field.ident();
-        for attribute in named_field.attrs() {
+    for (index, field) in fields.unnamed.iter().enumerate() {
+        let unnamed_field = UnnamedField::new(index, field.to_owned());
+        let mut field_validators = FieldValidators::new(unnamed_field.clone());
+        let field_ident = unnamed_field.ident();
+        for attribute in unnamed_field.attrs() {
             if attribute.path != parse_quote!(validate) {
                 continue;
             }
-            let validator = extract_meta_validator(named_field, attribute);
+            let validator = extract_meta_validator(&unnamed_field, attribute);
             match validator {
                 Some(validator) => field_validators.push(validator),
                 None => abort_invalid_attribute_on_field(

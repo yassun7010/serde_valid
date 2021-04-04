@@ -1,4 +1,4 @@
-use crate::types::NamedField;
+use crate::types::Field;
 use crate::validator::common::{extract_length_validator_tokens, extract_message_tokens};
 use crate::validator::Validator;
 use proc_macro2::TokenStream;
@@ -8,8 +8,8 @@ const VALIDATION_LABEL: &'static str = "properties";
 const MIN_LABEL: &'static str = "min_properties";
 const MAX_LABEL: &'static str = "max_properties";
 
-pub fn extract_object_properties_validator(
-    field: &NamedField,
+pub fn extract_object_properties_validator<F: Field>(
+    field: &F,
     attribute: &syn::Attribute,
     meta_list: &syn::MetaList,
 ) -> Validator {

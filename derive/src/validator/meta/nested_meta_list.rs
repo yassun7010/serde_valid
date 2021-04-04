@@ -1,4 +1,4 @@
-use crate::types::{NamedField, SingleIdentPath};
+use crate::types::{Field, SingleIdentPath};
 use crate::validator::array::{
     extract_array_items_validator, extract_array_unique_items_validator_from_meta_list,
 };
@@ -16,8 +16,8 @@ use crate::validator::Validator;
 use proc_macro_error::abort;
 use syn::spanned::Spanned;
 
-pub fn extract_validator_from_nested_meta_list(
-    field: &NamedField,
+pub fn extract_validator_from_nested_meta_list<F: Field>(
+    field: &F,
     attribute: &syn::Attribute,
     meta_list: &syn::MetaList,
 ) -> Option<Validator> {

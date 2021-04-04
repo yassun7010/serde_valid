@@ -1,4 +1,5 @@
 use super::struct_named_fields::collect_struct_named_fields_validators;
+use super::struct_unnamed_fields::collect_struct_unnamed_fields_validators;
 use proc_macro2::TokenStream;
 use quote::quote;
 use std::iter::FromIterator;
@@ -34,7 +35,29 @@ pub fn expand_enum_variants_validators(
                     }
                 )
             }
-            _ => quote!(),
+            syn::Fields::Unnamed(fields_unnamed) => {
+                let variant_ident = &variant.ident;
+                let fields_validators = collect_struct_unnamed_fields_validators(fields_unnamed);
+                let mut fields_idents =
+                    syn::punctuated::Punctuated::<TokenStream, syn::Token!(,)>::new();
+                let fields_validators_tokens =
+                    TokenStream::from_iter(fields_validators.iter().map(|validators| {
+                        if let Some(token) = validators.get_tokens() {
+                            let ident = validators.ident();
+                            fields_idents.push(quote!(#ident));
+                            quote!(#token)
+                        } else {
+                            fields_idents.push(quote!(_));
+                            quote!()
+                        }
+                    }));
+                quote!(
+                    if let #enum_ident::#variant_ident(#fields_idents) = &self {
+                        #fields_validators_tokens
+                    }
+                )
+            }
+            syn::Fields::Unit => quote!(),
         };
         enum_validator_tokens.push(variant_tokens);
     }

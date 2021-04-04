@@ -1,9 +1,9 @@
 use super::inner_extract_array_unique_items_validator;
-use crate::types::NamedField;
+use crate::types::Field;
 use crate::validator::Validator;
 use quote::quote;
 
-pub fn extract_array_unique_items_validator_from_meta_path(field: &NamedField) -> Validator {
+pub fn extract_array_unique_items_validator_from_meta_path<F: Field>(field: &F) -> Validator {
     if let Some(option_field) = field.option_field() {
         Validator::Option(Box::new(
             extract_array_unique_items_validator_from_meta_path(&option_field),
