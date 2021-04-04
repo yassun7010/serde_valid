@@ -82,31 +82,32 @@ fn update_custom_validator_from_meta_list(
     check_duplicated_custom_validation(custom_validation_fn, path);
     check_duplicated_custom_validation(custom_validation_args, path);
 
-    let nested: syn::punctuated::Punctuated<TokenStream, syn::Token![,]> = meta_list
+    let args: syn::punctuated::Punctuated<TokenStream, syn::Token![,]> = meta_list
         .nested
         .iter()
-        .map(|nested_meta| match nested_meta {
-            syn::NestedMeta::Lit(lit) => quote!(#lit),
-            syn::NestedMeta::Meta(meta) => match meta {
-                syn::Meta::Path(path) => quote!(&self.#path),
-                syn::Meta::List(list) => abort_unexpected_list_argument(
-                    VALIDATION_LABEL,
-                    path_ident,
-                    meta_list.span(),
-                    &list,
-                ),
-                syn::Meta::NameValue(name_value) => abort_unexpected_name_value_argument(
-                    VALIDATION_LABEL,
-                    path_ident,
-                    meta_list.span(),
-                    &name_value,
-                ),
-            },
-        })
+        .map(|nested_meta| extract_custom_validator_args(path_ident, nested_meta))
         .collect();
 
     *custom_validation_fn = Some(quote!(#path));
-    *custom_validation_args = Some(quote!(#nested));
+    *custom_validation_args = Some(quote!(#args));
+}
+
+fn extract_custom_validator_args(ident: &syn::Ident, nested_meta: &syn::NestedMeta) -> TokenStream {
+    match nested_meta {
+        syn::NestedMeta::Lit(lit) => quote!(#lit),
+        syn::NestedMeta::Meta(meta) => match meta {
+            syn::Meta::Path(path) => quote!(&self.#path),
+            syn::Meta::List(list) => {
+                abort_unexpected_list_argument(VALIDATION_LABEL, ident, nested_meta.span(), &list)
+            }
+            syn::Meta::NameValue(name_value) => abort_unexpected_name_value_argument(
+                VALIDATION_LABEL,
+                ident,
+                nested_meta.span(),
+                &name_value,
+            ),
+        },
+    }
 }
 
 fn check_duplicated_custom_validation(
