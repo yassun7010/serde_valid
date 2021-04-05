@@ -1,3 +1,5 @@
+use crate::types::array::{make_element_field, make_element_ident};
+use crate::types::option::{make_some_field, make_some_ident};
 use crate::types::{extract_element_type_from_array, extract_type_from_option, Field};
 use proc_macro_error::abort;
 use quote::quote;
@@ -57,20 +59,8 @@ impl Field for UnnamedField {
             Some(UnnamedField {
                 index: self.index,
                 name: self.name.to_owned(),
-                ident: syn::Ident::new(
-                    &format!(
-                        "_elem_{}",
-                        &self.ident().to_string().trim_start_matches("_")
-                    ),
-                    self.field.span(),
-                ),
-                field: syn::Field {
-                    attrs: self.field.attrs.to_owned(),
-                    vis: self.vis().to_owned(),
-                    ident: None,
-                    colon_token: self.field.colon_token.to_owned(),
-                    ty: ty,
-                },
+                ident: make_element_ident(&self.ident, self.field.span()),
+                field: make_element_field(&self.field, self.field.span(), ty),
             })
         } else {
             None
@@ -82,20 +72,8 @@ impl Field for UnnamedField {
             Some(UnnamedField {
                 index: self.index,
                 name: self.name.to_owned(),
-                ident: syn::Ident::new(
-                    &format!(
-                        "_some_{}",
-                        &self.ident().to_string().trim_start_matches("_")
-                    ),
-                    self.field.span(),
-                ),
-                field: syn::Field {
-                    attrs: self.field.attrs.to_owned(),
-                    vis: self.vis().to_owned(),
-                    ident: None,
-                    colon_token: self.field.colon_token.to_owned(),
-                    ty: ty,
-                },
+                ident: make_some_ident(&self.ident, self.field.span()),
+                field: make_some_field(&self.field, self.field.span(), ty),
             })
         } else {
             None

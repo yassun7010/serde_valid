@@ -1,3 +1,5 @@
+use crate::types::array::make_element_field;
+use crate::types::option::make_some_field;
 use crate::types::{extract_element_type_from_array, extract_type_from_option, Field};
 use proc_macro_error::abort;
 use quote::quote;
@@ -51,19 +53,7 @@ impl Field for NamedField {
         if let Some(ty) = extract_element_type_from_array(&self.field.ty) {
             Some(NamedField {
                 name: self.name.to_owned(),
-                field: syn::Field {
-                    attrs: self.field.attrs.to_owned(),
-                    vis: self.vis().to_owned(),
-                    ident: Some(syn::Ident::new(
-                        &format!(
-                            "_elem_{}",
-                            &self.ident().to_string().trim_start_matches("_")
-                        ),
-                        self.ident().span(),
-                    )),
-                    colon_token: self.field.colon_token,
-                    ty: ty,
-                },
+                field: make_element_field(&self.field, self.field.span(), ty),
             })
         } else {
             None
@@ -74,19 +64,7 @@ impl Field for NamedField {
         if let Some(ty) = extract_type_from_option(&self.field.ty) {
             Some(NamedField {
                 name: self.name.to_owned(),
-                field: syn::Field {
-                    attrs: self.field.attrs.to_owned(),
-                    vis: self.vis().to_owned(),
-                    ident: Some(syn::Ident::new(
-                        &format!(
-                            "_some_{}",
-                            &self.ident().to_string().trim_start_matches("_")
-                        ),
-                        self.ident().span(),
-                    )),
-                    colon_token: self.field.colon_token,
-                    ty: ty,
-                },
+                field: make_some_field(&self.field, self.field.span(), ty),
             })
         } else {
             None

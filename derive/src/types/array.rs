@@ -38,3 +38,28 @@ fn extract_element_type_from_vec(path: &Path, ty: &syn::Type) -> Option<syn::Typ
         None
     }
 }
+
+pub fn make_element_ident(ident: &syn::Ident, span: proc_macro2::Span) -> syn::Ident {
+    syn::Ident::new(
+        &format!("_elem_{}", &ident.to_string().trim_start_matches("_")),
+        span,
+    )
+}
+
+pub fn make_element_field(
+    field: &syn::Field,
+    span: proc_macro2::Span,
+    inner_ty: syn::Type,
+) -> syn::Field {
+    let inner_ident = field
+        .ident
+        .as_ref()
+        .map(|ident| make_element_ident(ident, span));
+    syn::Field {
+        attrs: field.attrs.to_owned(),
+        vis: field.vis.to_owned(),
+        ident: inner_ident,
+        colon_token: field.colon_token,
+        ty: inner_ty,
+    }
+}

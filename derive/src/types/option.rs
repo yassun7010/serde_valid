@@ -46,3 +46,28 @@ fn extract_option_segment(path: &Path) -> Option<&PathSegment> {
         None
     }
 }
+
+pub fn make_some_ident(ident: &syn::Ident, span: proc_macro2::Span) -> syn::Ident {
+    syn::Ident::new(
+        &format!("_some_{}", &ident.to_string().trim_start_matches("_")),
+        span,
+    )
+}
+
+pub fn make_some_field(
+    field: &syn::Field,
+    span: proc_macro2::Span,
+    inner_ty: syn::Type,
+) -> syn::Field {
+    let inner_ident = field
+        .ident
+        .as_ref()
+        .map(|ident| make_some_ident(ident, span));
+    syn::Field {
+        attrs: field.attrs.to_owned(),
+        vis: field.vis.to_owned(),
+        ident: inner_ident,
+        colon_token: field.colon_token,
+        ty: inner_ty,
+    }
+}
