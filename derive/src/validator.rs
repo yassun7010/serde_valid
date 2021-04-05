@@ -118,7 +118,7 @@ impl<F: Field> FieldValidators<F> {
 
     fn normal_tokens(&self) -> Option<TokenStream> {
         if !self.validators.is_empty() {
-            let validators = TokenStream::from_iter(self.validators.clone());
+            let validators = TokenStream::from_iter(self.validators.to_owned());
             Some(quote! (#validators))
         } else {
             None

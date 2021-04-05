@@ -19,7 +19,7 @@ pub fn collect_struct_named_fields_validators(
 ) -> Vec<FieldValidators<NamedField>> {
     let mut struct_validators = vec![];
     for field in fields.named.iter() {
-        let mut field_validators = FieldValidators::new(NamedField::new(field.clone()));
+        let mut field_validators = FieldValidators::new(NamedField::new(field.to_owned()));
         let named_field = &NamedField::new(field.to_owned());
         let field_ident = named_field.ident();
         for attribute in named_field.attrs() {

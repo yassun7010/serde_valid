@@ -56,7 +56,7 @@ impl Field for UnnamedField {
         if let Some(ty) = extract_element_type_from_array(&self.ty()) {
             Some(UnnamedField {
                 index: self.index,
-                name: self.name.clone(),
+                name: self.name.to_owned(),
                 ident: syn::Ident::new(
                     &format!(
                         "_elem_{}",
@@ -65,10 +65,10 @@ impl Field for UnnamedField {
                     self.field.span(),
                 ),
                 field: syn::Field {
-                    attrs: vec![],
+                    attrs: self.field.attrs.to_owned(),
                     vis: self.vis().to_owned(),
                     ident: None,
-                    colon_token: None,
+                    colon_token: self.field.colon_token.to_owned(),
                     ty: ty,
                 },
             })
@@ -81,7 +81,7 @@ impl Field for UnnamedField {
         if let Some(ty) = extract_type_from_option(&self.ty()) {
             Some(UnnamedField {
                 index: self.index,
-                name: self.name.clone(),
+                name: self.name.to_owned(),
                 ident: syn::Ident::new(
                     &format!(
                         "_some_{}",
@@ -90,10 +90,10 @@ impl Field for UnnamedField {
                     self.field.span(),
                 ),
                 field: syn::Field {
-                    attrs: vec![],
+                    attrs: self.field.attrs.to_owned(),
                     vis: self.vis().to_owned(),
                     ident: None,
-                    colon_token: None,
+                    colon_token: self.field.colon_token.to_owned(),
                     ty: ty,
                 },
             })

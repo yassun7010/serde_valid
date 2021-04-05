@@ -50,9 +50,9 @@ impl Field for NamedField {
     fn array_field(&self) -> Option<NamedField> {
         if let Some(ty) = extract_element_type_from_array(&self.field.ty) {
             Some(NamedField {
-                name: self.name.clone(),
+                name: self.name.to_owned(),
                 field: syn::Field {
-                    attrs: vec![],
+                    attrs: self.field.attrs.to_owned(),
                     vis: self.vis().to_owned(),
                     ident: Some(syn::Ident::new(
                         &format!(
@@ -61,7 +61,7 @@ impl Field for NamedField {
                         ),
                         self.ident().span(),
                     )),
-                    colon_token: None,
+                    colon_token: self.field.colon_token,
                     ty: ty,
                 },
             })
@@ -73,9 +73,9 @@ impl Field for NamedField {
     fn option_field(&self) -> Option<NamedField> {
         if let Some(ty) = extract_type_from_option(&self.field.ty) {
             Some(NamedField {
-                name: self.name.clone(),
+                name: self.name.to_owned(),
                 field: syn::Field {
-                    attrs: vec![],
+                    attrs: self.field.attrs.to_owned(),
                     vis: self.vis().to_owned(),
                     ident: Some(syn::Ident::new(
                         &format!(
@@ -84,7 +84,7 @@ impl Field for NamedField {
                         ),
                         self.ident().span(),
                     )),
-                    colon_token: None,
+                    colon_token: self.field.colon_token,
                     ty: ty,
                 },
             })
