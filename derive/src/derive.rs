@@ -19,7 +19,10 @@ pub fn expand_derive(input: &syn::DeriveInput) -> TokenStream {
             syn::Fields::Unnamed(unnamed) => {
                 expand_struct_unnamed_fields_validators_tokens(unnamed)
             }
-            syn::Fields::Unit => quote!(),
+            syn::Fields::Unit => abort!(
+                input.span(),
+                "#[derive(Validate)] not support unit field struct"
+            ),
         },
         syn::Data::Enum(syn::DataEnum { variants, .. }) => {
             expand_enum_variants_validators(ident, variants)
