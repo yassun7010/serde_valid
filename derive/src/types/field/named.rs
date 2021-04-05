@@ -1,6 +1,6 @@
-use crate::types::array::make_element_field;
-use crate::types::option::make_some_field;
-use crate::types::{extract_element_type_from_array, extract_type_from_option, Field};
+use super::array::{extract_element_type_from_array, make_element_field};
+use super::option::{extract_type_from_option, make_some_field};
+use super::Field;
 use proc_macro_error::abort;
 use quote::quote;
 use syn::spanned::Spanned;

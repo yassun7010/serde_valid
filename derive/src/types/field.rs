@@ -1,4 +1,6 @@
+mod array;
 mod named;
+mod option;
 mod unnamed;
 
 pub use named::NamedField;
