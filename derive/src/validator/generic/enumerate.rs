@@ -27,6 +27,7 @@ pub fn extract_generic_enumerate_validator<F: Field>(
         )))
     } else {
         Validator::Normal(inner_extract_generic_enumerate_validator(
+            field.name(),
             field.ident(),
             attribute,
             meta_list,
@@ -35,11 +36,11 @@ pub fn extract_generic_enumerate_validator<F: Field>(
 }
 
 fn inner_extract_generic_enumerate_validator(
+    field_name: &str,
     field_ident: &syn::Ident,
     attribute: &syn::Attribute,
     meta_list: &syn::MetaList,
 ) -> TokenStream {
-    let field_string = field_ident.to_string();
     let syn::MetaList { nested, .. } = meta_list;
 
     let enumerate = get_enumerate(field_ident, attribute, nested);
@@ -55,7 +56,7 @@ fn inner_extract_generic_enumerate_validator(
         ) {
             use ::serde_valid::validation::error::ToDefaultMessage;
             errors
-                .entry(::serde_valid::FieldName::new(#field_string))
+                .entry(::serde_valid::FieldName::new(#field_name))
                 .or_default()
                 .push(::serde_valid::validation::Error::Enumerate(
                     ::serde_valid::validation::error::Message::new(

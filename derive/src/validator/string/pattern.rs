@@ -9,11 +9,11 @@ use quote::quote;
 const VALIDATION_LABEL: &'static str = "pattern";
 
 fn inner_extract_string_pattern_validator(
+    field_name: &str,
     field_ident: &syn::Ident,
     pattern: &syn::LitStr,
     message: &TokenStream,
 ) -> TokenStream {
-    let field_string = field_ident.to_string();
     let pattern_ident = syn::Ident::new(
         &format!("{}_PATTERN", &field_ident).to_uppercase(),
         field_ident.span(),
@@ -28,7 +28,7 @@ fn inner_extract_string_pattern_validator(
         ) {
             use ::serde_valid::validation::error::ToDefaultMessage;
             errors
-                .entry(::serde_valid::FieldName::new(#field_string))
+                .entry(::serde_valid::FieldName::new(#field_name))
                 .or_default()
                 .push(::serde_valid::validation::Error::Pattern(
                     ::serde_valid::validation::error::Message::new(

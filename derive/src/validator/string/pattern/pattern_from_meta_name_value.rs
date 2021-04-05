@@ -19,6 +19,7 @@ pub fn extract_string_pattern_validator_from_meta_name_value<F: Field>(
         ))
     } else {
         Validator::Normal(inner_extract_string_pattern_validator_from_meta_name_value(
+            field.name(),
             field.ident(),
             lit,
         ))
@@ -26,10 +27,11 @@ pub fn extract_string_pattern_validator_from_meta_name_value<F: Field>(
 }
 
 fn inner_extract_string_pattern_validator_from_meta_name_value(
+    field_name: &str,
     field_ident: &syn::Ident,
     lit: &syn::Lit,
 ) -> TokenStream {
     let pattern = get_str(VALIDATION_LABEL, field_ident, lit);
     let message = quote!(::serde_valid::validation::error::PatternParams::to_default_message);
-    inner_extract_string_pattern_validator(field_ident, &pattern, &message)
+    inner_extract_string_pattern_validator(field_name, field_ident, &pattern, &message)
 }

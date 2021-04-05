@@ -41,6 +41,7 @@ pub fn extract_numeric_range_validator<F: Field>(
         )))
     } else {
         Validator::Normal(inner_extract_numeric_range_validator(
+            field.name(),
             field.ident(),
             attribute,
             nested,
@@ -49,11 +50,11 @@ pub fn extract_numeric_range_validator<F: Field>(
 }
 
 fn inner_extract_numeric_range_validator(
+    field_name: &str,
     field_ident: &syn::Ident,
     attribute: &syn::Attribute,
     meta_items: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
 ) -> TokenStream {
-    let field_string = field_ident.to_string();
     let (minimum_tokens, maximum_tokens) =
         extract_numeric_range_validator_tokens(field_ident, attribute, meta_items);
     let message = extract_message_tokens(VALIDATION_LABEL, field_ident, attribute, meta_items)
@@ -69,7 +70,7 @@ fn inner_extract_numeric_range_validator(
         ) {
             use ::serde_valid::validation::error::ToDefaultMessage;
             errors
-                .entry(::serde_valid::FieldName::new(#field_string))
+                .entry(::serde_valid::FieldName::new(#field_name))
                 .or_default()
                 .push(::serde_valid::validation::Error::Range(
                     ::serde_valid::validation::error::Message::new(

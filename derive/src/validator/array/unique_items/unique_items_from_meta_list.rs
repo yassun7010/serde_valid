@@ -22,6 +22,7 @@ pub fn extract_array_unique_items_validator_from_meta_list<F: Field>(
         ))
     } else {
         Validator::Normal(inner_extract_array_unique_items_validator_from_meta_list(
+            field.name(),
             field.ident(),
             attribute,
             meta_list,
@@ -30,6 +31,7 @@ pub fn extract_array_unique_items_validator_from_meta_list<F: Field>(
 }
 
 fn inner_extract_array_unique_items_validator_from_meta_list(
+    field_name: &str,
     field_ident: &syn::Ident,
     attribute: &syn::Attribute,
     meta_list: &syn::MetaList,
@@ -49,5 +51,5 @@ fn inner_extract_array_unique_items_validator_from_meta_list(
             meta_list,
         )
     }
-    inner_extract_array_unique_items_validator(field_ident, message)
+    inner_extract_array_unique_items_validator(field_name, field_ident, message)
 }

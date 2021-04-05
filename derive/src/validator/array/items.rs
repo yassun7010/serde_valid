@@ -23,6 +23,7 @@ pub fn extract_array_items_validator<F: Field>(
         )))
     } else {
         Validator::Normal(inner_extract_array_items_validator(
+            field.name(),
             field.ident(),
             attribute,
             nested,
@@ -31,11 +32,11 @@ pub fn extract_array_items_validator<F: Field>(
 }
 
 fn inner_extract_array_items_validator(
+    field_name: &str,
     field_ident: &syn::Ident,
     attribute: &syn::Attribute,
     meta_items: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
 ) -> TokenStream {
-    let field_string = field_ident.to_string();
     let (min_items_tokens, max_items_tokens) = extract_length_validator_tokens(
         VALIDATION_LABEL,
         MIN_LABEL,
@@ -57,7 +58,7 @@ fn inner_extract_array_items_validator(
         ) {
             use ::serde_valid::validation::error::ToDefaultMessage;
             errors
-                .entry(::serde_valid::FieldName::new(#field_string))
+                .entry(::serde_valid::FieldName::new(#field_name))
                 .or_default()
                 .push(::serde_valid::validation::Error::Items(
                     ::serde_valid::validation::error::Message::new(

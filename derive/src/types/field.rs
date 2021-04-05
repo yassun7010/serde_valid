@@ -5,6 +5,8 @@ pub use named::NamedField;
 pub use unnamed::UnnamedField;
 
 pub trait Field {
+    fn name(&self) -> &String;
+
     fn ident(&self) -> &syn::Ident;
 
     fn ident_tokens(&self) -> proc_macro2::TokenStream;

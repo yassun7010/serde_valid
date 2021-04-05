@@ -9,11 +9,11 @@ use quote::quote;
 const VALIDATION_LABEL: &'static str = "multiple_of";
 
 fn inner_extract_numeric_multiple_of_validator(
+    field_name: &str,
     field_ident: &syn::Ident,
     multiple_of: crate::lit::LitNumeric,
     message: TokenStream,
 ) -> TokenStream {
-    let field_string = field_ident.to_string();
     quote!(
         if !::serde_valid::validate_numeric_multiple_of(
             *#field_ident,
@@ -21,7 +21,7 @@ fn inner_extract_numeric_multiple_of_validator(
         ) {
             use ::serde_valid::validation::error::ToDefaultMessage;
             errors
-                .entry(::serde_valid::FieldName::new(#field_string))
+                .entry(::serde_valid::FieldName::new(#field_name))
                 .or_default()
                 .push(::serde_valid::validation::Error::MultipleOf(
                     ::serde_valid::validation::error::Message::new(

@@ -6,6 +6,7 @@ use syn::spanned::Spanned;
 
 #[derive(Debug, Clone)]
 pub struct UnnamedField {
+    name: String,
     index: usize,
     ident: syn::Ident,
     field: syn::Field,
@@ -17,6 +18,7 @@ impl UnnamedField {
             abort!(field.span(), "struct must be unnamed fields struct.")
         }
         Self {
+            name: index.to_string(),
             index,
             ident: syn::Ident::new(&format!("_{}", index), field.span()),
             field,
@@ -25,6 +27,10 @@ impl UnnamedField {
 }
 
 impl Field for UnnamedField {
+    fn name(&self) -> &String {
+        &self.name
+    }
+
     fn ident(&self) -> &syn::Ident {
         &self.ident
     }
@@ -48,22 +54,24 @@ impl Field for UnnamedField {
 
     fn array_field(&self) -> Option<UnnamedField> {
         if let Some(ty) = extract_element_type_from_array(&self.ty()) {
-            Some(UnnamedField::new(
-                self.index,
-                syn::Field {
+            Some(UnnamedField {
+                index: self.index,
+                name: self.name.clone(),
+                ident: syn::Ident::new(
+                    &format!(
+                        "_elem_{}",
+                        &self.ident().to_string().trim_start_matches("_")
+                    ),
+                    self.field.span(),
+                ),
+                field: syn::Field {
                     attrs: vec![],
                     vis: self.vis().to_owned(),
-                    ident: Some(syn::Ident::new(
-                        &format!(
-                            "_elem_{}",
-                            &self.ident().to_string().trim_start_matches("_")
-                        ),
-                        self.ident().span(),
-                    )),
+                    ident: None,
                     colon_token: None,
                     ty: ty,
                 },
-            ))
+            })
         } else {
             None
         }
@@ -71,22 +79,24 @@ impl Field for UnnamedField {
 
     fn option_field(&self) -> Option<UnnamedField> {
         if let Some(ty) = extract_type_from_option(&self.ty()) {
-            Some(UnnamedField::new(
-                self.index,
-                syn::Field {
+            Some(UnnamedField {
+                index: self.index,
+                name: self.name.clone(),
+                ident: syn::Ident::new(
+                    &format!(
+                        "_some_{}",
+                        &self.ident().to_string().trim_start_matches("_")
+                    ),
+                    self.field.span(),
+                ),
+                field: syn::Field {
                     attrs: vec![],
                     vis: self.vis().to_owned(),
-                    ident: Some(syn::Ident::new(
-                        &format!(
-                            "_some_{}",
-                            &self.ident().to_string().trim_start_matches("_")
-                        ),
-                        self.ident().span(),
-                    )),
+                    ident: None,
                     colon_token: None,
                     ty: ty,
                 },
-            ))
+            })
         } else {
             None
         }

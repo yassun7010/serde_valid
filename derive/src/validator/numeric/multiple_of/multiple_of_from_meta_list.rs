@@ -33,6 +33,7 @@ pub fn extract_numeric_multiple_of_validator_from_meta_list<F: Field>(
         ))
     } else {
         Validator::Normal(inner_extract_numeric_multiple_of_validator_from_meta_list(
+            field.name(),
             field.ident(),
             attribute,
             nested,
@@ -41,6 +42,7 @@ pub fn extract_numeric_multiple_of_validator_from_meta_list<F: Field>(
 }
 
 fn inner_extract_numeric_multiple_of_validator_from_meta_list(
+    field_name: &str,
     field_ident: &syn::Ident,
     attribute: &syn::Attribute,
     meta_items: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
@@ -50,7 +52,7 @@ fn inner_extract_numeric_multiple_of_validator_from_meta_list(
         .unwrap_or(quote!(
             ::serde_valid::validation::error::MultipleOfParams::to_default_message
         ));
-    inner_extract_numeric_multiple_of_validator(field_ident, multiple_of, message)
+    inner_extract_numeric_multiple_of_validator(field_name, field_ident, multiple_of, message)
 }
 
 fn get_multiple_of_from_meta_list(

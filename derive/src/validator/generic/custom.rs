@@ -54,11 +54,11 @@ pub fn extract_generic_custom_validator<F: Field>(
         )
     });
 
-    let field_string = field_ident.to_string();
+    let field_name = field.name();
     return Validator::Normal(quote!(
         if let Err(error) = #custom_validation_fn(#field_ident, #custom_validation_args) {
             errors
-                .entry(::serde_valid::FieldName::new(#field_string))
+                .entry(::serde_valid::FieldName::new(#field_name))
                 .or_default()
                 .push(error);
         };

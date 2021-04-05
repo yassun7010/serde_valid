@@ -31,11 +31,11 @@ fn extract_validate_validator<F: Field>(field: &F) -> Validator {
 
 fn extract_validate_validator_tokens<F: Field>(field: &F) -> TokenStream {
     let field_ident = field.ident();
-    let field_string = field_ident.to_string();
+    let field_name = field.name();
     quote!(
         if let Err(errs) = #field_ident.validate() {
             errors
-                .entry(::serde_valid::FieldName::new(#field_string))
+                .entry(::serde_valid::FieldName::new(#field_name))
                 .or_default()
                 .push(::serde_valid::validation::Error::Nested(errs));
         }

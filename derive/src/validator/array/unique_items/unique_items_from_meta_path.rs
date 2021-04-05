@@ -12,6 +12,7 @@ pub fn extract_array_unique_items_validator_from_meta_path<F: Field>(field: &F) 
         let message =
             quote!(::serde_valid::validation::error::UniqueItemsParams::to_default_message);
         Validator::Normal(inner_extract_array_unique_items_validator(
+            field.name(),
             field.ident(),
             message,
         ))

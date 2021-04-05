@@ -2,7 +2,6 @@ use crate::abort::abort_invalid_attribute_on_field;
 use crate::types::{Field, NamedField};
 use crate::validator::{extract_meta_validator, FieldValidators};
 use proc_macro2::TokenStream;
-use ref_cast::RefCast;
 use std::iter::FromIterator;
 use syn::parse_quote;
 use syn::spanned::Spanned;
@@ -21,7 +20,7 @@ pub fn collect_struct_named_fields_validators(
     let mut struct_validators = vec![];
     for field in fields.named.iter() {
         let mut field_validators = FieldValidators::new(NamedField::new(field.clone()));
-        let named_field = NamedField::ref_cast(field);
+        let named_field = &NamedField::new(field.to_owned());
         let field_ident = named_field.ident();
         for attribute in named_field.attrs() {
             if attribute.path != parse_quote!(validate) {
