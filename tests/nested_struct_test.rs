@@ -78,39 +78,49 @@ fn nested_validate_err_message_test() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate]
-        val1: TestInnerStructNamedFields,
+        named_fields_struct: StructNamedFields,
         #[validate]
-        val2: TestInnerStructSingleUnnamedFields,
+        unnamed_fields_struct: StructUnnamedFields,
         #[validate]
-        val3: TestInnerStructUnnamedFields,
+        single_unnamed_fields_struct: StructSingleUnnamedFields,
         #[validate]
-        val4: TestInnerEnumSingleUnnamedFields,
+        named_fields_enum: EnumNamedFields,
         #[validate]
-        val5: TestInnerEnumUnnamedFields,
+        unnamed_fields_enum: EnumUnnamedFields,
+        #[validate]
+        single_unnamed_fields_enum: EnumSingleUnnamedFields,
     }
 
     #[derive(Validate)]
-    struct TestInnerStructNamedFields {
-        #[validate(items(min_items = 4, max_items = 4))]
-        inner_val: Vec<i32>,
+    struct StructNamedFields {
+        #[validate(range(maximum = 0))]
+        val: i32,
     }
 
     #[derive(Validate)]
-    struct TestInnerStructSingleUnnamedFields(#[validate(range(maximum = 0))] i32);
+    struct StructSingleUnnamedFields(#[validate(range(maximum = 0))] i32);
 
     #[derive(Validate)]
-    struct TestInnerStructUnnamedFields(
+    struct StructUnnamedFields(
         #[validate(range(maximum = 0))] i32,
         #[validate(range(maximum = 0))] i32,
     );
 
     #[derive(Validate)]
-    enum TestInnerEnumSingleUnnamedFields {
+    enum EnumNamedFields {
+        Value {
+            #[validate(range(maximum = 0))]
+            val: i32,
+        },
+    }
+
+    #[derive(Validate)]
+    enum EnumSingleUnnamedFields {
         Value(#[validate(range(maximum = 0))] i32),
     }
 
     #[derive(Validate)]
-    enum TestInnerEnumUnnamedFields {
+    enum EnumUnnamedFields {
         Value(
             #[validate(range(maximum = 0))] i32,
             #[validate(range(maximum = 0))] i32,
@@ -118,41 +128,45 @@ fn nested_validate_err_message_test() {
     }
 
     let s = TestStruct {
-        val1: TestInnerStructNamedFields {
-            inner_val: vec![1, 2, 3],
-        },
-        val2: TestInnerStructSingleUnnamedFields(5),
-        val3: TestInnerStructUnnamedFields(5, 5),
-        val4: TestInnerEnumSingleUnnamedFields::Value(5),
-        val5: TestInnerEnumUnnamedFields::Value(5, 5),
+        named_fields_struct: StructNamedFields { val: 5 },
+        unnamed_fields_struct: StructUnnamedFields(5, 5),
+        single_unnamed_fields_struct: StructSingleUnnamedFields(5),
+        named_fields_enum: EnumNamedFields::Value { val: 5 },
+        single_unnamed_fields_enum: EnumSingleUnnamedFields::Value(5),
+        unnamed_fields_enum: EnumUnnamedFields::Value(5, 5),
     };
 
     assert_eq!(
         serde_json::to_value(&s.validate().unwrap_err()).unwrap(),
         json!({
-            "val1": [{
-                "inner_val": [
-                    "items length of [1, 2, 3] must be in `4 <= length <= 4`, but `3`."
+            "named_fields_struct": [{
+                "val": [
+                    "`5` must be in `value <= 0`, but not."
                 ]
             }],
-            "val2":["`5` must be in `value <= 0`, but not."],
-            "val3":[{
-                "0":[
+            "unnamed_fields_struct": [{
+                "0": [
                     "`5` must be in `value <= 0`, but not."
                 ],
-                "1":[
+                "1": [
                     "`5` must be in `value <= 0`, but not."
                 ]
             }],
-            "val4":["`5` must be in `value <= 0`, but not."],
-            "val5":[{
-                "0":[
+            "single_unnamed_fields_struct": ["`5` must be in `value <= 0`, but not."],
+            "named_fields_enum": [{
+                "val": [
+                    "`5` must be in `value <= 0`, but not."
+                ]
+            }],
+            "unnamed_fields_enum": [{
+                "0": [
                     "`5` must be in `value <= 0`, but not."
                 ],
-                "1":[
+                "1": [
                     "`5` must be in `value <= 0`, but not."
                 ]
             }],
+            "single_unnamed_fields_enum": ["`5` must be in `value <= 0`, but not."],
         })
     );
 }
