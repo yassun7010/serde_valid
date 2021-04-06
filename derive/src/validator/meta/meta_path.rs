@@ -36,18 +36,13 @@ fn extract_validate_validator_tokens<F: Field>(field: &F) -> TokenStream {
         if let Err(inner_errors) = #field_ident.validate() {
             match inner_errors {
                 fields_errors @ ::serde_valid::validation::Errors::Fields(_) => {
-                    errors
-                        .entry(::serde_valid::FieldName::new(#field_name))
-                        .or_default()
-                        .push(::serde_valid::validation::Error::Nested(
-                            fields_errors
-                        ));
+                    errors.insert(
+                        ::serde_valid::FieldName::new(#field_name),
+                        vec![::serde_valid::validation::Error::Nested(fields_errors)]
+                    );
                 }
                 ::serde_valid::validation::Errors::NewType(new_type_errors) => {
-                    errors
-                        .entry(::serde_valid::FieldName::new(#field_name))
-                        .or_default()
-                        .extend(new_type_errors);
+                    errors.insert(::serde_valid::FieldName::new(#field_name), new_type_errors);
                 }
             }
         }

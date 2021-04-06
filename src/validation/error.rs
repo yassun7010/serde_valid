@@ -8,7 +8,7 @@ mod object;
 mod string;
 
 pub use array::{ItemsParams, UniqueItemsParams};
-pub use errors::{Errors, FieldsErrors, MapErrors, NewTypeErrors, VecErrors};
+pub use errors::{Errors, MapErrors, VecErrors};
 pub use field_name::FieldName;
 pub use generic::EnumerateParams;
 pub use message::{Message, ToDefaultMessage};
