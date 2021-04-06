@@ -1,5 +1,5 @@
 use crate::abort::abort_invalid_attribute_on_field;
-use crate::errors::{fields_errors_tokens, single_errors_tokens};
+use crate::errors::{fields_errors_tokens, new_type_errors_tokens};
 use crate::types::{Field, UnnamedField};
 use crate::validator::{extract_meta_validator, FieldValidators};
 use proc_macro2::TokenStream;
@@ -18,7 +18,7 @@ pub fn expand_struct_unnamed_fields_validators_tokens(
     let errors = if fields.unnamed.len() != 1 {
         fields_errors_tokens()
     } else {
-        single_errors_tokens()
+        new_type_errors_tokens()
     };
     (validators, errors)
 }

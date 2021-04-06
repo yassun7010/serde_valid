@@ -7,7 +7,7 @@ mod string;
 
 pub use array::{validate_array_items, validate_array_unique_items};
 pub use error::{
-    Error, Errors, FieldName, FieldsErrors, MapErrors, Message, SingleErrors, ToDefaultMessage,
+    Error, Errors, FieldName, FieldsErrors, MapErrors, Message, NewTypeErrors, ToDefaultMessage,
     VecErrors,
 };
 pub use generic::validate_generic_enumerate;

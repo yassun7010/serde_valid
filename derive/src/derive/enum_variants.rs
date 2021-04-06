@@ -1,6 +1,6 @@
 use super::struct_named_fields::collect_struct_named_fields_validators;
 use super::struct_unnamed_fields::collect_struct_unnamed_fields_validators;
-use crate::errors::{fields_errors_tokens, single_errors_tokens};
+use crate::errors::{fields_errors_tokens, new_type_errors_tokens};
 use proc_macro2::TokenStream;
 use quote::quote;
 use std::iter::FromIterator;
@@ -68,7 +68,7 @@ pub fn expand_enum_variants_validators(
     let errors = if is_fields_errors {
         fields_errors_tokens()
     } else {
-        single_errors_tokens()
+        new_type_errors_tokens()
     };
     (validators, errors)
 }

@@ -43,11 +43,11 @@ fn extract_validate_validator_tokens<F: Field>(field: &F) -> TokenStream {
                             fields_errors
                         ));
                 }
-                ::serde_valid::validation::Errors::Single(single_errors) => {
+                ::serde_valid::validation::Errors::NewType(new_type_errors) => {
                     errors
                         .entry(::serde_valid::FieldName::new(#field_name))
                         .or_default()
-                        .extend(single_errors);
+                        .extend(new_type_errors);
                 }
             }
         }
