@@ -1,6 +1,5 @@
 use super::VecErrors;
 use crate::validation;
-use core::slice::Iter;
 
 #[derive(Debug, serde::Serialize, thiserror::Error)]
 pub struct SingleErrors(VecErrors);
@@ -9,9 +8,14 @@ impl SingleErrors {
     pub fn new(errors: VecErrors) -> Self {
         Self(errors)
     }
+}
 
-    pub fn iter(&self) -> Iter<'_, validation::Error> {
-        self.0.iter()
+impl IntoIterator for SingleErrors {
+    type Item = validation::Error;
+    type IntoIter = std::vec::IntoIter<Self::Item>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.0.into_iter()
     }
 }
 

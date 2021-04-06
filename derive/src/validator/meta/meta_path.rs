@@ -33,11 +33,23 @@ fn extract_validate_validator_tokens<F: Field>(field: &F) -> TokenStream {
     let field_ident = field.ident();
     let field_name = field.name();
     quote!(
-        if let Err(errs) = #field_ident.validate() {
-            errors
-                .entry(::serde_valid::FieldName::new(#field_name))
-                .or_default()
-                .push(::serde_valid::validation::Error::Nested(errs));
+        if let Err(inner_errors) = #field_ident.validate() {
+            match inner_errors {
+                fields_errors @ ::serde_valid::validation::Errors::Fields(_) => {
+                    errors
+                        .entry(::serde_valid::FieldName::new(#field_name))
+                        .or_default()
+                        .push(::serde_valid::validation::Error::Nested(
+                            fields_errors
+                        ));
+                }
+                ::serde_valid::validation::Errors::Single(single_errors) => {
+                    errors
+                        .entry(::serde_valid::FieldName::new(#field_name))
+                        .or_default()
+                        .extend(single_errors);
+                }
+            }
         }
     )
 }

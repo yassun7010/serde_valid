@@ -1,8 +1,6 @@
 use super::{MapErrors, VecErrors};
 use crate::validation;
-use std::collections::{hash_map, HashMap};
-
-pub type MapErrorsIter<'a> = hash_map::Iter<'a, validation::FieldName, VecErrors>;
+use std::collections::HashMap;
 
 #[derive(Debug, serde::Serialize)]
 pub struct FieldsErrors(MapErrors);
@@ -11,9 +9,14 @@ impl FieldsErrors {
     pub fn new(errors: MapErrors) -> Self {
         Self(errors)
     }
+}
 
-    pub fn iter(&self) -> MapErrorsIter<'_> {
-        self.0.iter()
+impl IntoIterator for FieldsErrors {
+    type Item = (validation::FieldName, VecErrors);
+    type IntoIter = std::collections::hash_map::IntoIter<validation::FieldName, VecErrors>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.0.into_iter()
     }
 }
 

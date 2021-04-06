@@ -78,30 +78,81 @@ fn nested_validate_err_message_test() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate]
-        val: TestInnerStruct,
+        val1: TestInnerStructNamedFields,
+        #[validate]
+        val2: TestInnerStructSingleUnnamedFields,
+        #[validate]
+        val3: TestInnerStructUnnamedFields,
+        #[validate]
+        val4: TestInnerEnumSingleUnnamedFields,
+        #[validate]
+        val5: TestInnerEnumUnnamedFields,
     }
 
     #[derive(Validate)]
-    struct TestInnerStruct {
+    struct TestInnerStructNamedFields {
         #[validate(items(min_items = 4, max_items = 4))]
         inner_val: Vec<i32>,
     }
 
+    #[derive(Validate)]
+    struct TestInnerStructSingleUnnamedFields(#[validate(range(maximum = 0))] i32);
+
+    #[derive(Validate)]
+    struct TestInnerStructUnnamedFields(
+        #[validate(range(maximum = 0))] i32,
+        #[validate(range(maximum = 0))] i32,
+    );
+
+    #[derive(Validate)]
+    enum TestInnerEnumSingleUnnamedFields {
+        Value(#[validate(range(maximum = 0))] i32),
+    }
+
+    #[derive(Validate)]
+    enum TestInnerEnumUnnamedFields {
+        Value(
+            #[validate(range(maximum = 0))] i32,
+            #[validate(range(maximum = 0))] i32,
+        ),
+    }
+
     let s = TestStruct {
-        val: TestInnerStruct {
+        val1: TestInnerStructNamedFields {
             inner_val: vec![1, 2, 3],
         },
+        val2: TestInnerStructSingleUnnamedFields(5),
+        val3: TestInnerStructUnnamedFields(5, 5),
+        val4: TestInnerEnumSingleUnnamedFields::Value(5),
+        val5: TestInnerEnumUnnamedFields::Value(5, 5),
     };
 
     assert_eq!(
-        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
-        serde_json::to_string(&json!({
-            "val": [{
+        serde_json::to_value(&s.validate().unwrap_err()).unwrap(),
+        json!({
+            "val1": [{
                 "inner_val": [
                     "items length of [1, 2, 3] must be in `4 <= length <= 4`, but `3`."
                 ]
-            }]
-        }))
-        .unwrap()
+            }],
+            "val2":["`5` must be in `value <= 0`, but not."],
+            "val3":[{
+                "0":[
+                    "`5` must be in `value <= 0`, but not."
+                ],
+                "1":[
+                    "`5` must be in `value <= 0`, but not."
+                ]
+            }],
+            "val4":["`5` must be in `value <= 0`, but not."],
+            "val5":[{
+                "0":[
+                    "`5` must be in `value <= 0`, but not."
+                ],
+                "1":[
+                    "`5` must be in `value <= 0`, but not."
+                ]
+            }],
+        })
     );
 }
