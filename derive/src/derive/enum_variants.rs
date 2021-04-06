@@ -1,5 +1,6 @@
 use super::struct_named_fields::collect_struct_named_fields_validators;
 use super::struct_unnamed_fields::collect_struct_unnamed_fields_validators;
+use crate::errors::{fields_errors_tokens, single_errors_tokens};
 use proc_macro2::TokenStream;
 use quote::quote;
 use std::iter::FromIterator;
@@ -9,8 +10,9 @@ type Variants = syn::punctuated::Punctuated<syn::Variant, syn::Token![,]>;
 pub fn expand_enum_variants_validators(
     enum_ident: &syn::Ident,
     variants: &Variants,
-) -> TokenStream {
+) -> (TokenStream, TokenStream) {
     let mut enum_validator_tokens = vec![];
+    let mut is_fields_errors = true;
     for variant in variants.iter() {
         let variant_tokens = match &variant.fields {
             syn::Fields::Named(fields_named) => {
@@ -51,6 +53,7 @@ pub fn expand_enum_variants_validators(
                             quote!()
                         }
                     }));
+                is_fields_errors = fields_validators.len() != 1;
                 quote!(
                     if let #enum_ident::#variant_ident(#fields_idents) = &self {
                         #fields_validators_tokens
@@ -61,5 +64,11 @@ pub fn expand_enum_variants_validators(
         };
         enum_validator_tokens.push(variant_tokens);
     }
-    TokenStream::from_iter(enum_validator_tokens)
+    let validators = TokenStream::from_iter(enum_validator_tokens);
+    let errors = if is_fields_errors {
+        fields_errors_tokens()
+    } else {
+        single_errors_tokens()
+    };
+    (validators, errors)
 }

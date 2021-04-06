@@ -1,32 +1,26 @@
-use crate::validation;
-use std::collections::{hash_map, HashMap};
+mod fields;
+mod single;
 
-pub type InnerErrors = HashMap<validation::FieldName, Vec<validation::Error>>;
-pub type InnerErrorsIter<'a> = hash_map::Iter<'a, validation::FieldName, Vec<validation::Error>>;
+use crate::validation;
+pub use fields::FieldsErrors;
+pub use single::SingleErrors;
+use std::{collections::HashMap, fmt::Debug};
+
+pub type VecErrors = Vec<validation::Error>;
+pub type MapErrors = HashMap<validation::FieldName, VecErrors>;
 
 #[derive(Debug, serde::Serialize, thiserror::Error)]
-pub struct Errors(InnerErrors);
-
-impl Errors {
-    pub fn new(errors: InnerErrors) -> Self {
-        Self(errors)
-    }
-
-    pub fn iter(&self) -> InnerErrorsIter<'_> {
-        self.0.iter()
-    }
+#[serde(untagged)]
+pub enum Errors {
+    Fields(FieldsErrors),
+    Single(SingleErrors),
 }
 
 impl std::fmt::Display for Errors {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let mut new_errors = HashMap::new();
-        for (key, errors) in &self.0 {
-            let errors: Vec<String> = errors.iter().map(|e| format!("{}", e)).collect();
-            new_errors.insert(key, errors);
-        }
-        match serde_json::to_string(&new_errors) {
-            Ok(json_string) => write!(f, "{}", json_string),
-            Err(_) => Err(std::fmt::Error),
+        match self {
+            Self::Fields(map_errors) => std::fmt::Display::fmt(map_errors, f),
+            Self::Single(vec_errors) => std::fmt::Display::fmt(vec_errors, f),
         }
     }
 }

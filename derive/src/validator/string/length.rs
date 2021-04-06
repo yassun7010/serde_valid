@@ -19,7 +19,7 @@ pub fn extract_string_length_validator<F: Field>(
         match array_field.ty() {
             syn::Type::Path(path) => {
                 if let Some(ident) = path.path.get_ident() {
-                    if ["u8", "char"].contains(&format!("{}", ident).as_str()) {
+                    if ["u8", "char"].contains(&ident.to_string().as_str()) {
                         return Validator::Normal(inner_extract_string_length_validator(
                             field.name(),
                             field.ident(),

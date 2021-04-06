@@ -8,7 +8,7 @@ mod object;
 mod string;
 
 pub use array::{ItemsParams, UniqueItemsParams};
-pub use errors::{Errors, InnerErrors};
+pub use errors::{Errors, FieldsErrors, MapErrors, SingleErrors, VecErrors};
 pub use field_name::FieldName;
 pub use generic::EnumerateParams;
 pub use message::{Message, ToDefaultMessage};
@@ -64,6 +64,5 @@ where
     T: std::fmt::Display,
     S: serde::Serializer,
 {
-    let s = format!("{}", message);
-    serializer.serialize_str(&s)
+    serializer.serialize_str(&message.to_string())
 }

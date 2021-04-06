@@ -1,4 +1,5 @@
 use crate::abort::abort_invalid_attribute_on_field;
+use crate::errors::{fields_errors_tokens, single_errors_tokens};
 use crate::types::{Field, UnnamedField};
 use crate::validator::{extract_meta_validator, FieldValidators};
 use proc_macro2::TokenStream;
@@ -6,12 +7,20 @@ use std::iter::FromIterator;
 use syn::parse_quote;
 use syn::spanned::Spanned;
 
-pub fn expand_struct_unnamed_fields_validators_tokens(fields: &syn::FieldsUnnamed) -> TokenStream {
-    TokenStream::from_iter(
+pub fn expand_struct_unnamed_fields_validators_tokens(
+    fields: &syn::FieldsUnnamed,
+) -> (TokenStream, TokenStream) {
+    let validators = TokenStream::from_iter(
         collect_struct_unnamed_fields_validators(fields)
             .iter()
             .map(|validator| validator.generate_tokens()),
-    )
+    );
+    let errors = if fields.unnamed.len() != 1 {
+        fields_errors_tokens()
+    } else {
+        single_errors_tokens()
+    };
+    (validators, errors)
 }
 
 pub fn collect_struct_unnamed_fields_validators(

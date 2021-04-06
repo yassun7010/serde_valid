@@ -49,7 +49,7 @@ fn deserialize_validation_err_to_string_test() {
     let err = serde_valid::from_value::<TestStruct, _>(json!({ "val": 1234 })).unwrap_err();
 
     assert_eq!(
-        serde_json::from_str::<serde_json::Value>(&format!("{}", err)).unwrap(),
+        serde_json::from_str::<serde_json::Value>(&err.to_string()).unwrap(),
         json!({"val": ["`1234` must be in `0 <= value <= 1000`, but not."]})
     );
 }
