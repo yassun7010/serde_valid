@@ -3,25 +3,28 @@ use crate::abort::{
     abort_unexpected_name_value_argument, abort_unexpected_path_argument,
 };
 use crate::types::SingleIdentPath;
+use syn::spanned::Spanned;
 
-pub fn check_meta(
+pub fn check_validation_arg_meta(
     validation_label: &str,
     field_ident: &syn::Ident,
-    span: proc_macro2::Span,
-    meta: &syn::Meta,
+    arg: &syn::Meta,
     allow_common_validation_args: bool,
 ) {
-    match meta {
+    match arg {
         syn::Meta::List(list) => {
             if !(allow_common_validation_args && check_common_list_argument(list)) {
-                abort_unexpected_list_argument(validation_label, field_ident, span, list)
+                abort_unexpected_list_argument(validation_label, field_ident, arg.span(), list)
             }
         }
-        syn::Meta::NameValue(name_value) => {
-            abort_unexpected_name_value_argument(validation_label, field_ident, span, name_value)
-        }
+        syn::Meta::NameValue(name_value) => abort_unexpected_name_value_argument(
+            validation_label,
+            field_ident,
+            arg.span(),
+            name_value,
+        ),
         syn::Meta::Path(path) => {
-            abort_unexpected_path_argument(validation_label, field_ident, span, path)
+            abort_unexpected_path_argument(validation_label, field_ident, arg.span(), path)
         }
     }
 }

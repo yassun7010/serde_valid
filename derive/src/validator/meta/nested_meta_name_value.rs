@@ -8,22 +8,32 @@ use syn::spanned::Spanned;
 pub fn extract_validator_from_nested_meta_name_value<F: Field>(
     field: &F,
     _attribute: &syn::Attribute,
-    syn::MetaNameValue { path, lit, .. }: &syn::MetaNameValue,
+    syn::MetaNameValue {
+        path: validation_name,
+        lit: validation_value,
+        ..
+    }: &syn::MetaNameValue,
 ) -> Option<Validator> {
-    let path_ident = SingleIdentPath::new(path).ident();
-    match path_ident.to_string().as_ref() {
+    let validation_name_ident = SingleIdentPath::new(validation_name).ident();
+    match validation_name_ident.to_string().as_ref() {
         "multiple_of" => {
             return Some(extract_numeric_multiple_of_validator_from_meta_name_value(
-                field, lit,
+                field,
+                validation_value,
             ))
         }
         "pattern" => {
             return Some(extract_string_pattern_validator_from_meta_name_value(
-                field, lit,
+                field,
+                validation_value,
             ))
         }
         v => {
-            abort!(path.span(), "Unexpected name value validator: {:?}", v)
+            abort!(
+                validation_name.span(),
+                "Unexpected name value validator: {:?}",
+                v
+            )
         }
     }
 }

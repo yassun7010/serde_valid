@@ -7,13 +7,17 @@ use syn::spanned::Spanned;
 pub fn extract_validator_from_nested_meta_path<F: Field>(
     field: &F,
     _attribute: &syn::Attribute,
-    path: &syn::Path,
+    validation: &syn::Path,
 ) -> Option<Validator> {
-    let path_ident = SingleIdentPath::new(path).ident();
-    match path_ident.to_string().as_ref() {
+    let validation_ident = SingleIdentPath::new(validation).ident();
+    match validation_ident.to_string().as_ref() {
         "unique_items" => return Some(extract_array_unique_items_validator_from_meta_path(field)),
         v => {
-            abort!(path.span(), "Unexpected name value validator: {:?}", v)
+            abort!(
+                validation.span(),
+                "Unexpected name value validator: {:?}",
+                v
+            )
         }
     }
 }

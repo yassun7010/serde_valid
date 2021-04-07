@@ -22,17 +22,23 @@ pub fn extract_meta_validator<F: Field>(
             for meta_item in nested {
                 match meta_item {
                     syn::NestedMeta::Meta(item) => match item {
-                        syn::Meta::Path(path) => {
-                            return extract_validator_from_nested_meta_path(field, attribute, path)
-                        }
-                        syn::Meta::List(meta_list) => {
-                            return extract_validator_from_nested_meta_list(
-                                field, attribute, meta_list,
+                        syn::Meta::Path(validation) => {
+                            return extract_validator_from_nested_meta_path(
+                                field, attribute, validation,
                             )
                         }
-                        syn::Meta::NameValue(name_value) => {
+                        syn::Meta::List(validation_list) => {
+                            return extract_validator_from_nested_meta_list(
+                                field,
+                                attribute,
+                                validation_list,
+                            )
+                        }
+                        syn::Meta::NameValue(validation_name_value) => {
                             return extract_validator_from_nested_meta_name_value(
-                                field, attribute, name_value,
+                                field,
+                                attribute,
+                                validation_name_value,
                             )
                         }
                     },
@@ -43,8 +49,8 @@ pub fn extract_meta_validator<F: Field>(
                 };
             }
         }
-        Ok(syn::Meta::Path(path)) => {
-            return extract_validator_from_meta_path(field, attribute, &path)
+        Ok(syn::Meta::Path(validation)) => {
+            return extract_validator_from_meta_path(field, attribute, &validation)
         }
         Ok(syn::Meta::NameValue(_)) => {
             abort!(attribute.span(), "Unexpected name=value argument")

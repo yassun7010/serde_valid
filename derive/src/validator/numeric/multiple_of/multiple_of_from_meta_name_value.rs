@@ -7,22 +7,28 @@ use quote::quote;
 
 pub fn extract_numeric_multiple_of_validator_from_meta_name_value<F: Field>(
     field: &F,
-    lit: &syn::Lit,
+    validation_value: &syn::Lit,
 ) -> Validator {
     if let Some(array_field) = field.array_field() {
         Validator::Array(Box::new(
-            extract_numeric_multiple_of_validator_from_meta_name_value(&array_field, lit),
+            extract_numeric_multiple_of_validator_from_meta_name_value(
+                &array_field,
+                validation_value,
+            ),
         ))
     } else if let Some(option_field) = field.option_field() {
         Validator::Option(Box::new(
-            extract_numeric_multiple_of_validator_from_meta_name_value(&option_field, lit),
+            extract_numeric_multiple_of_validator_from_meta_name_value(
+                &option_field,
+                validation_value,
+            ),
         ))
     } else {
         Validator::Normal(
             inner_extract_numeric_multiple_of_validator_from_meta_name_value(
                 field.name(),
                 field.ident(),
-                lit,
+                validation_value,
             ),
         )
     }
@@ -31,9 +37,9 @@ pub fn extract_numeric_multiple_of_validator_from_meta_name_value<F: Field>(
 fn inner_extract_numeric_multiple_of_validator_from_meta_name_value(
     field_name: &str,
     field_ident: &syn::Ident,
-    lit: &syn::Lit,
+    validation_value: &syn::Lit,
 ) -> TokenStream {
-    let multiple_of = get_numeric(VALIDATION_LABEL, field_ident, lit);
+    let multiple_of = get_numeric(VALIDATION_LABEL, field_ident, validation_value);
     let message = quote!(::serde_valid::validation::error::MultipleOfParams::to_default_message);
     inner_extract_numeric_multiple_of_validator(field_name, field_ident, multiple_of, message)
 }

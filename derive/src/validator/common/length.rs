@@ -15,19 +15,19 @@ pub fn extract_length_validator_tokens(
     max_label: &str,
     field_ident: &syn::Ident,
     attribute: &syn::Attribute,
-    meta_items: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
+    validation_args: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
 ) -> (TokenStream, TokenStream) {
     let mut min_value = None;
     let mut max_value = None;
-    for meta_item in meta_items {
-        match meta_item {
-            syn::NestedMeta::Meta(ref item) => match item {
-                syn::Meta::NameValue(name_value) => update_limit_value(
+    for validation_arg in validation_args {
+        match validation_arg {
+            syn::NestedMeta::Meta(ref arg) => match arg {
+                syn::Meta::NameValue(limit_name_value) => update_limit_value(
                     validation_label,
                     min_label,
                     max_label,
                     field_ident,
-                    name_value,
+                    limit_name_value,
                     &mut min_value,
                     &mut max_value,
                 ),
@@ -36,13 +36,13 @@ pub fn extract_length_validator_tokens(
                         abort_unexpected_list_argument(
                             validation_label,
                             field_ident,
-                            item.span(),
+                            arg.span(),
                             list,
                         );
                     }
                 }
                 syn::Meta::Path(path) => {
-                    abort_unexpected_path_argument(validation_label, field_ident, item.span(), path)
+                    abort_unexpected_path_argument(validation_label, field_ident, arg.span(), path)
                 }
             },
             syn::NestedMeta::Lit(lit) => check_lit(validation_label, field_ident, lit.span(), lit),
@@ -67,25 +67,29 @@ fn update_limit_value(
     min_label: &str,
     max_label: &str,
     field_ident: &syn::Ident,
-    name_value: &syn::MetaNameValue,
+    limit_name_value: &syn::MetaNameValue,
     min_value: &mut Option<syn::LitInt>,
     max_value: &mut Option<syn::LitInt>,
 ) {
-    let syn::MetaNameValue { path, lit, .. } = name_value;
-    let path_ident = SingleIdentPath::new(path).ident();
-    let path_str = path_ident.to_string();
-    if path_str == min_label {
-        update_limit_int(validation_label, min_value, field_ident, lit);
-    } else if path_str == max_label {
-        update_limit_int(validation_label, max_value, field_ident, lit);
+    let syn::MetaNameValue {
+        path: limit_name,
+        lit: limit_value,
+        ..
+    } = limit_name_value;
+    let limit_name_ident = SingleIdentPath::new(limit_name).ident();
+    let limit_name_label = limit_name_ident.to_string();
+    if limit_name_label == min_label {
+        update_limit_int(validation_label, min_value, field_ident, limit_value);
+    } else if limit_name_label == max_label {
+        update_limit_int(validation_label, max_value, field_ident, limit_value);
     } else {
         abort_unknown_name_value_argument(
             validation_label,
-            &path_str,
+            &limit_name_label,
             &[min_label, max_label],
             field_ident,
-            path.span(),
-            name_value,
+            limit_name.span(),
+            limit_name_value,
         );
     }
 }

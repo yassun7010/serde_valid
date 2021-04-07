@@ -1,5 +1,5 @@
 use crate::types::Field;
-use crate::validator::common::{check_meta, extract_message_tokens};
+use crate::validator::common::{check_validation_arg_meta, extract_message_tokens};
 use crate::validator::Validator;
 use proc_macro2::TokenStream;
 use proc_macro_error::abort;
@@ -11,26 +11,26 @@ const VALIDATION_LABEL: &'static str = "enumerate";
 pub fn extract_generic_enumerate_validator<F: Field>(
     field: &F,
     attribute: &syn::Attribute,
-    meta_list: &syn::MetaList,
+    validation_list: &syn::MetaList,
 ) -> Validator {
     if let Some(array_field) = field.array_field() {
         Validator::Array(Box::new(extract_generic_enumerate_validator(
             &array_field,
             attribute,
-            meta_list,
+            validation_list,
         )))
     } else if let Some(option_field) = field.option_field() {
         Validator::Option(Box::new(extract_generic_enumerate_validator(
             &option_field,
             attribute,
-            meta_list,
+            validation_list,
         )))
     } else {
         Validator::Normal(inner_extract_generic_enumerate_validator(
             field.name(),
             field.ident(),
             attribute,
-            meta_list,
+            validation_list,
         ))
     }
 }
@@ -39,12 +39,15 @@ fn inner_extract_generic_enumerate_validator(
     field_name: &str,
     field_ident: &syn::Ident,
     attribute: &syn::Attribute,
-    meta_list: &syn::MetaList,
+    validation_list: &syn::MetaList,
 ) -> TokenStream {
-    let syn::MetaList { nested, .. } = meta_list;
+    let syn::MetaList {
+        nested: validation_args,
+        ..
+    } = validation_list;
 
-    let enumerate = get_enumerate(field_ident, attribute, nested);
-    let message = extract_message_tokens(VALIDATION_LABEL, field_ident, attribute, nested)
+    let enumerate = get_enumerate(field_ident, attribute, validation_args);
+    let message = extract_message_tokens(VALIDATION_LABEL, field_ident, attribute, validation_args)
         .unwrap_or(quote!(
             ::serde_valid::validation::error::EnumerateParams::to_default_message
         ));
@@ -74,14 +77,14 @@ fn inner_extract_generic_enumerate_validator(
 fn get_enumerate<'a>(
     field_ident: &syn::Ident,
     attribute: &syn::Attribute,
-    meta_items: &'a syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
+    validation_args: &'a syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
 ) -> syn::punctuated::Punctuated<&'a syn::Lit, syn::token::Comma> {
     let mut enumerate = syn::punctuated::Punctuated::<&syn::Lit, syn::token::Comma>::new();
-    for meta_item in meta_items {
-        match meta_item {
+    for validation_arg in validation_args {
+        match validation_arg {
             syn::NestedMeta::Lit(lit) => enumerate.push(lit),
-            syn::NestedMeta::Meta(meta) => {
-                check_meta(VALIDATION_LABEL, field_ident, meta.span(), meta, true)
+            syn::NestedMeta::Meta(arg_meta) => {
+                check_validation_arg_meta(VALIDATION_LABEL, field_ident, arg_meta, true)
             }
         }
     }

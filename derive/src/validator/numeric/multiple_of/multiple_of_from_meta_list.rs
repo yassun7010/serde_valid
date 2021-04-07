@@ -3,7 +3,7 @@ use crate::abort::{abort_duplicated_lit_argument, abort_invalid_attribute_on_fie
 use crate::lit::LitNumeric;
 use crate::types::Field;
 use crate::validator::common::extract_message_tokens;
-use crate::validator::common::{check_meta, get_numeric};
+use crate::validator::common::{check_validation_arg_meta, get_numeric};
 use crate::validator::Validator;
 use proc_macro2::TokenStream;
 use quote::quote;
@@ -12,15 +12,18 @@ use syn::spanned::Spanned;
 pub fn extract_numeric_multiple_of_validator_from_meta_list<F: Field>(
     field: &F,
     attribute: &syn::Attribute,
-    meta_list: &syn::MetaList,
+    validation_list: &syn::MetaList,
 ) -> Validator {
-    let syn::MetaList { nested, .. } = meta_list;
+    let syn::MetaList {
+        nested: validation_args,
+        ..
+    } = validation_list;
     if let Some(array_field) = field.array_field() {
         Validator::Array(Box::new(
             extract_numeric_multiple_of_validator_from_meta_list(
                 &array_field,
                 attribute,
-                meta_list,
+                validation_list,
             ),
         ))
     } else if let Some(option_field) = field.option_field() {
@@ -28,7 +31,7 @@ pub fn extract_numeric_multiple_of_validator_from_meta_list<F: Field>(
             extract_numeric_multiple_of_validator_from_meta_list(
                 &option_field,
                 attribute,
-                meta_list,
+                validation_list,
             ),
         ))
     } else {
@@ -36,7 +39,7 @@ pub fn extract_numeric_multiple_of_validator_from_meta_list<F: Field>(
             field.name(),
             field.ident(),
             attribute,
-            nested,
+            validation_args,
         ))
     }
 }
@@ -45,10 +48,10 @@ fn inner_extract_numeric_multiple_of_validator_from_meta_list(
     field_name: &str,
     field_ident: &syn::Ident,
     attribute: &syn::Attribute,
-    meta_items: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
+    validation_args: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
 ) -> TokenStream {
-    let multiple_of = get_multiple_of_from_meta_list(field_ident, attribute, meta_items);
-    let message = extract_message_tokens(VALIDATION_LABEL, field_ident, attribute, meta_items)
+    let multiple_of = get_multiple_of_from_meta_list(field_ident, attribute, validation_args);
+    let message = extract_message_tokens(VALIDATION_LABEL, field_ident, attribute, validation_args)
         .unwrap_or(quote!(
             ::serde_valid::validation::error::MultipleOfParams::to_default_message
         ));
@@ -58,19 +61,23 @@ fn inner_extract_numeric_multiple_of_validator_from_meta_list(
 fn get_multiple_of_from_meta_list(
     field_ident: &syn::Ident,
     attribute: &syn::Attribute,
-    meta_items: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
+    validation_args: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
 ) -> LitNumeric {
     let mut multiple_of = None;
-    for meta in meta_items {
-        match meta {
-            syn::NestedMeta::Lit(lit) => {
+    for validation_arg in validation_args {
+        match validation_arg {
+            syn::NestedMeta::Lit(multiple_of_lit) => {
                 if multiple_of.is_some() {
-                    abort_duplicated_lit_argument(VALIDATION_LABEL, field_ident, lit.span());
+                    abort_duplicated_lit_argument(
+                        VALIDATION_LABEL,
+                        field_ident,
+                        multiple_of_lit.span(),
+                    );
                 }
-                multiple_of = Some(get_numeric(VALIDATION_LABEL, field_ident, lit));
+                multiple_of = Some(get_numeric(VALIDATION_LABEL, field_ident, multiple_of_lit));
             }
-            syn::NestedMeta::Meta(meta) => {
-                check_meta(VALIDATION_LABEL, field_ident, meta.span(), meta, true)
+            syn::NestedMeta::Meta(arg_meta) => {
+                check_validation_arg_meta(VALIDATION_LABEL, field_ident, arg_meta, true)
             }
         }
     }

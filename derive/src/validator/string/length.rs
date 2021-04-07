@@ -11,20 +11,23 @@ const MAX_LABEL: &'static str = "max_length";
 pub fn extract_string_length_validator<F: Field>(
     field: &F,
     attribute: &syn::Attribute,
-    meta_list: &syn::MetaList,
+    validation_list: &syn::MetaList,
 ) -> Validator {
-    let syn::MetaList { nested, .. } = meta_list;
+    let syn::MetaList {
+        nested: validation_args,
+        ..
+    } = validation_list;
 
     if let Some(array_field) = field.array_field() {
         match array_field.ty() {
-            syn::Type::Path(path) => {
-                if let Some(ident) = path.path.get_ident() {
-                    if ["u8", "char"].contains(&ident.to_string().as_str()) {
+            syn::Type::Path(element_type) => {
+                if let Some(element_type_ident) = element_type.path.get_ident() {
+                    if ["u8", "char"].contains(&element_type_ident.to_string().as_str()) {
                         return Validator::Normal(inner_extract_string_length_validator(
                             field.name(),
                             field.ident(),
                             attribute,
-                            nested,
+                            validation_args,
                         ));
                     }
                 }
@@ -34,20 +37,20 @@ pub fn extract_string_length_validator<F: Field>(
         Validator::Array(Box::new(extract_string_length_validator(
             &array_field,
             attribute,
-            meta_list,
+            validation_list,
         )))
     } else if let Some(option_field) = field.option_field() {
         Validator::Option(Box::new(extract_string_length_validator(
             &option_field,
             attribute,
-            meta_list,
+            validation_list,
         )))
     } else {
         Validator::Normal(inner_extract_string_length_validator(
             field.name(),
             field.ident(),
             attribute,
-            nested,
+            validation_args,
         ))
     }
 }
@@ -56,7 +59,7 @@ fn inner_extract_string_length_validator(
     field_name: &str,
     field_ident: &syn::Ident,
     attribute: &syn::Attribute,
-    meta_items: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
+    validation_args: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
 ) -> TokenStream {
     let (min_length_tokens, max_length_tokens) = extract_length_validator_tokens(
         VALIDATION_LABEL,
@@ -64,9 +67,9 @@ fn inner_extract_string_length_validator(
         MAX_LABEL,
         field_ident,
         attribute,
-        meta_items,
+        validation_args,
     );
-    let message = extract_message_tokens(VALIDATION_LABEL, field_ident, attribute, meta_items)
+    let message = extract_message_tokens(VALIDATION_LABEL, field_ident, attribute, validation_args)
         .unwrap_or(quote!(
             ::serde_valid::validation::error::LengthParams::to_default_message
         ));

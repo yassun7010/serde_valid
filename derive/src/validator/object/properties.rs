@@ -11,28 +11,31 @@ const MAX_LABEL: &'static str = "max_properties";
 pub fn extract_object_properties_validator<F: Field>(
     field: &F,
     attribute: &syn::Attribute,
-    meta_list: &syn::MetaList,
+    validation_list: &syn::MetaList,
 ) -> Validator {
-    let syn::MetaList { nested, .. } = meta_list;
+    let syn::MetaList {
+        nested: validation_args,
+        ..
+    } = validation_list;
 
     if let Some(array_field) = field.array_field() {
         Validator::Array(Box::new(extract_object_properties_validator(
             &array_field,
             attribute,
-            meta_list,
+            validation_list,
         )))
     } else if let Some(option_field) = field.option_field() {
         Validator::Option(Box::new(extract_object_properties_validator(
             &option_field,
             attribute,
-            meta_list,
+            validation_list,
         )))
     } else {
         Validator::Normal(inner_extract_object_properties_validator(
             field.name(),
             field.ident(),
             attribute,
-            nested,
+            validation_args,
         ))
     }
 }
@@ -41,7 +44,7 @@ fn inner_extract_object_properties_validator(
     field_name: &str,
     field_ident: &syn::Ident,
     attribute: &syn::Attribute,
-    meta_items: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
+    validation_args: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
 ) -> TokenStream {
     let (min_properties_tokens, max_properties_tokens) = extract_length_validator_tokens(
         VALIDATION_LABEL,
@@ -49,9 +52,9 @@ fn inner_extract_object_properties_validator(
         MAX_LABEL,
         field_ident,
         attribute,
-        meta_items,
+        validation_args,
     );
-    let message = extract_message_tokens(VALIDATION_LABEL, field_ident, attribute, meta_items)
+    let message = extract_message_tokens(VALIDATION_LABEL, field_ident, attribute, validation_args)
         .unwrap_or(quote!(
             ::serde_valid::validation::error::PropertiesParams::to_default_message
         ));

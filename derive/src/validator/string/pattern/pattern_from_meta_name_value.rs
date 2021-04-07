@@ -7,21 +7,21 @@ use quote::quote;
 
 pub fn extract_string_pattern_validator_from_meta_name_value<F: Field>(
     field: &F,
-    lit: &syn::Lit,
+    validation_value: &syn::Lit,
 ) -> Validator {
     if let Some(array_field) = field.array_field() {
         Validator::Array(Box::new(
-            extract_string_pattern_validator_from_meta_name_value(&array_field, lit),
+            extract_string_pattern_validator_from_meta_name_value(&array_field, validation_value),
         ))
     } else if let Some(option_field) = field.option_field() {
         Validator::Option(Box::new(
-            extract_string_pattern_validator_from_meta_name_value(&option_field, lit),
+            extract_string_pattern_validator_from_meta_name_value(&option_field, validation_value),
         ))
     } else {
         Validator::Normal(inner_extract_string_pattern_validator_from_meta_name_value(
             field.name(),
             field.ident(),
-            lit,
+            validation_value,
         ))
     }
 }
@@ -29,9 +29,9 @@ pub fn extract_string_pattern_validator_from_meta_name_value<F: Field>(
 fn inner_extract_string_pattern_validator_from_meta_name_value(
     field_name: &str,
     field_ident: &syn::Ident,
-    lit: &syn::Lit,
+    validation_value: &syn::Lit,
 ) -> TokenStream {
-    let pattern = get_str(VALIDATION_LABEL, field_ident, lit);
+    let pattern = get_str(VALIDATION_LABEL, field_ident, validation_value);
     let message = quote!(::serde_valid::validation::error::PatternParams::to_default_message);
     inner_extract_string_pattern_validator(field_name, field_ident, &pattern, &message)
 }

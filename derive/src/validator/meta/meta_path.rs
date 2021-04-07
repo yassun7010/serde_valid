@@ -8,13 +8,13 @@ use syn::spanned::Spanned;
 pub fn extract_validator_from_meta_path<F: Field>(
     field: &F,
     _attribute: &syn::Attribute,
-    path: &syn::Path,
+    validation: &syn::Path,
 ) -> Option<Validator> {
-    let path_ident = SingleIdentPath::new(path).ident();
-    match path_ident.to_string().as_ref() {
+    let validation_ident = SingleIdentPath::new(validation).ident();
+    match validation_ident.to_string().as_ref() {
         "validate" => return Some(extract_validate_validator(field)),
         v => {
-            abort!(path.span(), "Unexpected path validator: {:?}", v)
+            abort!(validation.span(), "Unexpected path validator: {:?}", v)
         }
     }
 }

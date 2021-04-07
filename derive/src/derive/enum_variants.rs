@@ -5,7 +5,7 @@ use proc_macro2::TokenStream;
 use quote::quote;
 use std::iter::FromIterator;
 
-type Variants = syn::punctuated::Punctuated<syn::Variant, syn::Token![,]>;
+type Variants = syn::punctuated::Punctuated<syn::Variant, syn::token::Comma>;
 
 pub fn expand_enum_variants_validators(
     enum_ident: &syn::Ident,
@@ -19,7 +19,7 @@ pub fn expand_enum_variants_validators(
                 let variant_ident = &variant.ident;
                 let fields_validators = collect_struct_named_fields_validators(fields_named);
                 let mut fields_idents =
-                    syn::punctuated::Punctuated::<TokenStream, syn::Token!(,)>::new();
+                    syn::punctuated::Punctuated::<TokenStream, syn::token::Comma>::new();
                 let fields_validators_tokens =
                     TokenStream::from_iter(fields_validators.iter().map(|validators| {
                         let field_ident = validators.ident();
@@ -41,7 +41,7 @@ pub fn expand_enum_variants_validators(
                 let variant_ident = &variant.ident;
                 let fields_validators = collect_struct_unnamed_fields_validators(fields_unnamed);
                 let mut fields_idents =
-                    syn::punctuated::Punctuated::<TokenStream, syn::Token!(,)>::new();
+                    syn::punctuated::Punctuated::<TokenStream, syn::token::Comma>::new();
                 let fields_validators_tokens =
                     TokenStream::from_iter(fields_validators.iter().map(|validators| {
                         if let Some(token) = validators.get_tokens() {
