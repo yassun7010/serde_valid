@@ -1,15 +1,15 @@
 use crate::abort::{
     abort_duplicated_argument, abort_unknown_list_argument, abort_unknown_name_value_argument,
 };
-use crate::types::SingleIdentPath;
+use crate::types::{Field, SingleIdentPath};
 use crate::validator::common::check_lit;
 use proc_macro2::TokenStream;
 use quote::quote;
 use syn::spanned::Spanned;
 
-pub fn extract_message_tokens(
+pub fn extract_message_tokens<F: Field>(
     validation_label: &str,
-    field_ident: &syn::Ident,
+    field: &F,
     _attribute: &syn::Attribute,
     validation_args: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
 ) -> Option<TokenStream> {
@@ -20,7 +20,7 @@ pub fn extract_message_tokens(
                 syn::Meta::List(message_fn_list) => update_message_fn_from_meta_list(
                     validation_label,
                     &mut message_fmt,
-                    field_ident,
+                    field,
                     message_fn_list,
                 ),
                 syn::Meta::Path(_) => continue,
@@ -28,7 +28,7 @@ pub fn extract_message_tokens(
                     update_message_fn_from_meta_name_value(
                         validation_label,
                         &mut message_fmt,
-                        field_ident,
+                        field,
                         message_fn_key_value,
                     )
                 }
@@ -39,27 +39,27 @@ pub fn extract_message_tokens(
     message_fmt
 }
 
-fn update_message_fn_from_meta_path(
+fn update_message_fn_from_meta_path<F: Field>(
     validation_label: &str,
     message_fn: &mut Option<TokenStream>,
-    field_ident: &syn::Ident,
+    field: &F,
     fn_name: &syn::Path,
     message_fn_ident: &syn::Ident,
 ) {
     check_duplicated_message_fn_argument(
         validation_label,
         message_fn,
-        field_ident,
+        field,
         fn_name,
         message_fn_ident,
     );
     *message_fn = Some(quote!(#fn_name));
 }
 
-fn update_message_fn_from_meta_list(
+fn update_message_fn_from_meta_list<F: Field>(
     validation_label: &str,
     message_fn: &mut Option<TokenStream>,
-    field_ident: &syn::Ident,
+    field: &F,
     syn::MetaList {
         path: name,
         nested: message_fn_defines,
@@ -73,7 +73,7 @@ fn update_message_fn_from_meta_list(
         "message_fn" => update_message_fn_from_nested_meta(
             validation_label,
             message_fn,
-            field_ident,
+            field,
             message_fn_defines,
             message_ident,
         ),
@@ -81,10 +81,10 @@ fn update_message_fn_from_meta_list(
     }
 }
 
-fn update_message_fn_from_meta_name_value(
+fn update_message_fn_from_meta_name_value<F: Field>(
     validation_label: &str,
     message_fn: &mut Option<TokenStream>,
-    field_ident: &syn::Ident,
+    field: &F,
     syn::MetaNameValue {
         path: name,
         lit: message,
@@ -96,16 +96,16 @@ fn update_message_fn_from_meta_name_value(
 
     match message_label.as_ref() {
         "message" => {
-            return update_message_fn_from_lit(validation_label, message_fn, field_ident, message)
+            return update_message_fn_from_lit(validation_label, message_fn, field, message)
         }
         _ => {}
     }
 }
 
-fn update_message_fn_from_nested_meta(
+fn update_message_fn_from_nested_meta<F: Field>(
     validation_label: &str,
     message_fn: &mut Option<TokenStream>,
-    field_ident: &syn::Ident,
+    field: &F,
     message_fn_defines: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
     message_fn_ident: &syn::Ident,
 ) {
@@ -116,54 +116,46 @@ fn update_message_fn_from_nested_meta(
                     update_message_fn_from_meta_path(
                         validation_label,
                         message_fn,
-                        field_ident,
+                        field,
                         fn_name,
                         message_fn_ident,
                     );
                 }
-                syn::Meta::List(fn_define) => abort_unknown_list_argument(
-                    validation_label,
-                    field_ident,
-                    meta.span(),
-                    fn_define,
-                ),
+                syn::Meta::List(fn_define) => {
+                    abort_unknown_list_argument(validation_label, field, meta.span(), fn_define)
+                }
                 syn::Meta::NameValue(name_value) => abort_unknown_name_value_argument(
                     validation_label,
-                    field_ident,
+                    field,
                     meta.span(),
                     name_value,
                 ),
             },
-            syn::NestedMeta::Lit(lit) => check_lit(validation_label, field_ident, lit.span(), lit),
+            syn::NestedMeta::Lit(lit) => check_lit(validation_label, field, lit.span(), lit),
         }
     }
 }
 
-fn update_message_fn_from_lit(
+fn update_message_fn_from_lit<F: Field>(
     validation_label: &str,
     message_fn: &mut Option<TokenStream>,
-    field_ident: &syn::Ident,
+    field: &F,
     lit: &syn::Lit,
 ) {
     match lit {
         syn::Lit::Str(message) => *message_fn = Some(quote!(|_| { #message.to_string() })),
-        _ => check_lit(validation_label, field_ident, lit.span(), lit),
+        _ => check_lit(validation_label, field, lit.span(), lit),
     }
 }
 
-fn check_duplicated_message_fn_argument(
+fn check_duplicated_message_fn_argument<F: Field>(
     validation_label: &str,
     message_fn: &mut Option<TokenStream>,
-    field_ident: &syn::Ident,
+    field: &F,
     fn_name: &syn::Path,
     message_fn_ident: &syn::Ident,
 ) {
     if message_fn.is_some() {
-        abort_duplicated_argument(
-            validation_label,
-            field_ident,
-            fn_name.span(),
-            message_fn_ident,
-        )
+        abort_duplicated_argument(validation_label, field, fn_name.span(), message_fn_ident)
     }
 }

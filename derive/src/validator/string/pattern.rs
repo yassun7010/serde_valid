@@ -1,6 +1,7 @@
 mod pattern_from_meta_list;
 mod pattern_from_meta_name_value;
 
+use crate::types::Field;
 pub use pattern_from_meta_list::extract_string_pattern_of_validator_from_meta_list;
 pub use pattern_from_meta_name_value::extract_string_pattern_validator_from_meta_name_value;
 use proc_macro2::TokenStream;
@@ -8,12 +9,13 @@ use quote::quote;
 
 const VALIDATION_LABEL: &'static str = "pattern";
 
-fn inner_extract_string_pattern_validator(
-    field_name: &str,
-    field_ident: &syn::Ident,
+fn inner_extract_string_pattern_validator<F: Field>(
+    field: &F,
     pattern: &syn::LitStr,
     message: &TokenStream,
 ) -> TokenStream {
+    let field_name = field.name();
+    let field_ident = field.ident();
     let pattern_ident = syn::Ident::new(
         &format!("{}_PATTERN", &field_ident).to_uppercase(),
         field_ident.span(),

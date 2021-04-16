@@ -24,8 +24,7 @@ pub fn extract_string_length_validator<F: Field>(
                 if let Some(element_type_ident) = element_type.path.get_ident() {
                     if ["u8", "char"].contains(&element_type_ident.to_string().as_str()) {
                         return Validator::Normal(inner_extract_string_length_validator(
-                            field.name(),
-                            field.ident(),
+                            field,
                             attribute,
                             validation_args,
                         ));
@@ -47,29 +46,29 @@ pub fn extract_string_length_validator<F: Field>(
         )))
     } else {
         Validator::Normal(inner_extract_string_length_validator(
-            field.name(),
-            field.ident(),
+            field,
             attribute,
             validation_args,
         ))
     }
 }
 
-fn inner_extract_string_length_validator(
-    field_name: &str,
-    field_ident: &syn::Ident,
+fn inner_extract_string_length_validator<F: Field>(
+    field: &F,
     attribute: &syn::Attribute,
     validation_args: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
 ) -> TokenStream {
+    let field_name = field.name();
+    let field_ident = field.ident();
     let (min_length_tokens, max_length_tokens) = extract_length_validator_tokens(
         VALIDATION_LABEL,
         MIN_LABEL,
         MAX_LABEL,
-        field_ident,
+        field,
         attribute,
         validation_args,
     );
-    let message = extract_message_tokens(VALIDATION_LABEL, field_ident, attribute, validation_args)
+    let message = extract_message_tokens(VALIDATION_LABEL, field, attribute, validation_args)
         .unwrap_or(quote!(
             ::serde_valid::validation::error::LengthParams::to_default_message
         ));

@@ -26,20 +26,18 @@ pub fn extract_numeric_multiple_of_validator_from_meta_name_value<F: Field>(
     } else {
         Validator::Normal(
             inner_extract_numeric_multiple_of_validator_from_meta_name_value(
-                field.name(),
-                field.ident(),
+                field,
                 validation_value,
             ),
         )
     }
 }
 
-fn inner_extract_numeric_multiple_of_validator_from_meta_name_value(
-    field_name: &str,
-    field_ident: &syn::Ident,
+fn inner_extract_numeric_multiple_of_validator_from_meta_name_value<F: Field>(
+    field: &F,
     validation_value: &syn::Lit,
 ) -> TokenStream {
-    let multiple_of = get_numeric(VALIDATION_LABEL, field_ident, validation_value);
+    let multiple_of = get_numeric(VALIDATION_LABEL, field, validation_value);
     let message = quote!(::serde_valid::validation::error::MultipleOfParams::to_default_message);
-    inner_extract_numeric_multiple_of_validator(field_name, field_ident, multiple_of, message)
+    inner_extract_numeric_multiple_of_validator(field, multiple_of, message)
 }

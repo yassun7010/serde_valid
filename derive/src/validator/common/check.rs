@@ -2,19 +2,19 @@ use crate::abort::{
     abort_unknown_list_argument, abort_unknown_lit_argument, abort_unknown_name_value_argument,
     abort_unknown_path_argument,
 };
-use crate::types::SingleIdentPath;
+use crate::types::{Field, SingleIdentPath};
 use syn::spanned::Spanned;
 
-pub fn check_validation_arg_meta(
+pub fn check_validation_arg_meta<F: Field>(
     validation_label: &str,
-    field_ident: &syn::Ident,
+    field: &F,
     arg: &syn::Meta,
     allow_common_validation_args: bool,
 ) {
     match arg {
         syn::Meta::List(list) => {
             if !(allow_common_validation_args && check_common_meta_list_argument(list)) {
-                abort_unknown_list_argument(validation_label, field_ident, list.span(), list)
+                abort_unknown_list_argument(validation_label, field, list.span(), list)
             }
         }
         syn::Meta::NameValue(name_value) => {
@@ -22,25 +22,25 @@ pub fn check_validation_arg_meta(
             {
                 abort_unknown_name_value_argument(
                     validation_label,
-                    field_ident,
+                    field,
                     name_value.span(),
                     name_value,
                 )
             }
         }
         syn::Meta::Path(path) => {
-            abort_unknown_path_argument(validation_label, field_ident, arg.span(), path)
+            abort_unknown_path_argument(validation_label, field, arg.span(), path)
         }
     }
 }
 
-pub fn check_lit(
+pub fn check_lit<F: Field>(
     validation_label: &str,
-    field_ident: &syn::Ident,
+    field: &F,
     span: proc_macro2::Span,
     lit: &syn::Lit,
 ) {
-    abort_unknown_lit_argument(validation_label, field_ident, span, lit)
+    abort_unknown_lit_argument(validation_label, field, span, lit)
 }
 
 pub fn check_common_meta_list_argument(list: &syn::MetaList) -> bool {

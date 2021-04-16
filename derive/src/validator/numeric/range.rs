@@ -44,23 +44,23 @@ pub fn extract_numeric_range_validator<F: Field>(
         )))
     } else {
         Validator::Normal(inner_extract_numeric_range_validator(
-            field.name(),
-            field.ident(),
+            field,
             attribute,
             validation_args,
         ))
     }
 }
 
-fn inner_extract_numeric_range_validator(
-    field_name: &str,
-    field_ident: &syn::Ident,
+fn inner_extract_numeric_range_validator<F: Field>(
+    field: &F,
     attribute: &syn::Attribute,
     validation_args: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
 ) -> TokenStream {
+    let field_name = field.name();
+    let field_ident = field.ident();
     let (minimum_tokens, maximum_tokens) =
-        extract_numeric_range_validator_tokens(field_ident, attribute, validation_args);
-    let message = extract_message_tokens(VALIDATION_LABEL, field_ident, attribute, validation_args)
+        extract_numeric_range_validator_tokens(field, attribute, validation_args);
+    let message = extract_message_tokens(VALIDATION_LABEL, field, attribute, validation_args)
         .unwrap_or(quote!(
             ::serde_valid::validation::error::RangeParams::to_default_message
         ));
@@ -89,8 +89,8 @@ fn inner_extract_numeric_range_validator(
     )
 }
 
-fn extract_numeric_range_validator_tokens(
-    field_ident: &syn::Ident,
+fn extract_numeric_range_validator_tokens<F: Field>(
+    field: &F,
     attribute: &syn::Attribute,
     validation_args: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
 ) -> (TokenStream, TokenStream) {
@@ -102,7 +102,7 @@ fn extract_numeric_range_validator_tokens(
         match validation_arg {
             syn::NestedMeta::Meta(ref item) => match item {
                 syn::Meta::NameValue(limit_name_value) => update_limit(
-                    field_ident,
+                    field,
                     limit_name_value,
                     &mut minimum,
                     &mut exclusive_minimum,
@@ -111,37 +111,27 @@ fn extract_numeric_range_validator_tokens(
                 ),
                 syn::Meta::List(list) => {
                     if !check_common_meta_list_argument(list) {
-                        abort_unknown_list_argument(
-                            VALIDATION_LABEL,
-                            field_ident,
-                            item.span(),
-                            list,
-                        );
+                        abort_unknown_list_argument(VALIDATION_LABEL, field, item.span(), list);
                     };
                 }
                 syn::Meta::Path(path) => {
-                    abort_unknown_path_argument(VALIDATION_LABEL, field_ident, item.span(), path)
+                    abort_unknown_path_argument(VALIDATION_LABEL, field, item.span(), path)
                 }
             },
-            syn::NestedMeta::Lit(lit) => check_lit(VALIDATION_LABEL, field_ident, lit.span(), lit),
+            syn::NestedMeta::Lit(lit) => check_lit(VALIDATION_LABEL, field, lit.span(), lit),
         }
     }
-    let minimum_tokens = get_limit_tokens(field_ident, minimum, exclusive_minimum);
-    let maximum_tokens = get_limit_tokens(field_ident, maximum, exclusive_maximum);
+    let minimum_tokens = get_limit_tokens(field, minimum, exclusive_minimum);
+    let maximum_tokens = get_limit_tokens(field, maximum, exclusive_maximum);
 
     if minimum_tokens.to_string() == "None" && maximum_tokens.to_string() == "None" {
-        abort_required_path_argument(
-            VALIDATION_LABEL,
-            &EXPECTED_KEYS,
-            field_ident,
-            attribute.span(),
-        );
+        abort_required_path_argument(VALIDATION_LABEL, &EXPECTED_KEYS, field, attribute.span());
     }
     (minimum_tokens, maximum_tokens)
 }
 
-fn update_limit(
-    field_ident: &syn::Ident,
+fn update_limit<F: Field>(
+    field: &F,
     limit_name_value: &syn::MetaNameValue,
     minimum: &mut Option<NumericInfo>,
     exclusive_minimum: &mut Option<NumericInfo>,
@@ -156,28 +146,22 @@ fn update_limit(
     let limit_name_ident = SingleIdentPath::new(limit_name).ident();
     match limit_name_ident.to_string().as_ref() {
         "minimum" => {
-            update_numeric(minimum, field_ident, limit_value, limit_name_ident);
+            update_numeric(minimum, field, limit_value, limit_name_ident);
         }
-        "exclusive_minimum" => update_numeric(
-            exclusive_minimum,
-            field_ident,
-            limit_value,
-            limit_name_ident,
-        ),
-        "maximum" => update_numeric(maximum, field_ident, limit_value, limit_name_ident),
-        "exclusive_maximum" => update_numeric(
-            exclusive_maximum,
-            field_ident,
-            limit_value,
-            limit_name_ident,
-        ),
+        "exclusive_minimum" => {
+            update_numeric(exclusive_minimum, field, limit_value, limit_name_ident)
+        }
+        "maximum" => update_numeric(maximum, field, limit_value, limit_name_ident),
+        "exclusive_maximum" => {
+            update_numeric(exclusive_maximum, field, limit_value, limit_name_ident)
+        }
         unknown_value => {
             if !check_common_meta_name_value_argument(limit_name_value) {
                 abort_unexpected_name_value_argument(
                     VALIDATION_LABEL,
                     unknown_value,
                     &EXPECTED_KEYS,
-                    field_ident,
+                    field,
                     limit_name.span(),
                     limit_name_value,
                 );
@@ -186,29 +170,29 @@ fn update_limit(
     }
 }
 
-fn update_numeric(
+fn update_numeric<F: Field>(
     target: &mut Option<NumericInfo>,
-    field_ident: &syn::Ident,
+    field: &F,
     limit_value: &syn::Lit,
     limit_name_ident: &syn::Ident,
 ) {
     if target.is_some() {
         abort_duplicated_argument(
             VALIDATION_LABEL,
-            field_ident,
+            field,
             limit_value.span(),
             limit_name_ident,
         )
     }
 
     *target = Some(NumericInfo::new(
-        get_numeric(VALIDATION_LABEL, field_ident, limit_value),
+        get_numeric(VALIDATION_LABEL, field, limit_value),
         limit_name_ident.to_owned(),
     ));
 }
 
-fn get_limit_tokens(
-    field_ident: &syn::Ident,
+fn get_limit_tokens<F: Field>(
+    field: &F,
     inclusive_limit: Option<NumericInfo>,
     exclusive_limit: Option<NumericInfo>,
 ) -> proc_macro2::TokenStream {
@@ -220,7 +204,7 @@ fn get_limit_tokens(
                 .join(exclusive.path_ident().span())
                 .unwrap_or(inclusive.path_ident().span());
             abort_invalid_attribute_on_field(
-                field_ident,
+                field,
                 span,
                 &format!(
                     "Both `{}` and `{}` have been set in `range` validator: conflict",

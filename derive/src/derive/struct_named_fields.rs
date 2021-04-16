@@ -25,7 +25,6 @@ pub fn collect_struct_named_fields_validators(
     for field in fields.named.iter() {
         let mut field_validators = FieldValidators::new(NamedField::new(field.to_owned()));
         let named_field = &NamedField::new(field.to_owned());
-        let field_ident = named_field.ident();
         for attribute in named_field.attrs() {
             if attribute.path != parse_quote!(validate) {
                 continue;
@@ -34,7 +33,7 @@ pub fn collect_struct_named_fields_validators(
             match validator {
                 Some(validator) => field_validators.push(validator),
                 None => abort_invalid_attribute_on_field(
-                    &field_ident,
+                    named_field,
                     attribute.span(),
                     "it needs at least one validator",
                 ),

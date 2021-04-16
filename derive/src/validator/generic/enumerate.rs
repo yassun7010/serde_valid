@@ -27,17 +27,15 @@ pub fn extract_generic_enumerate_validator<F: Field>(
         )))
     } else {
         Validator::Normal(inner_extract_generic_enumerate_validator(
-            field.name(),
-            field.ident(),
+            field,
             attribute,
             validation_list,
         ))
     }
 }
 
-fn inner_extract_generic_enumerate_validator(
-    field_name: &str,
-    field_ident: &syn::Ident,
+fn inner_extract_generic_enumerate_validator<F: Field>(
+    field: &F,
     attribute: &syn::Attribute,
     validation_list: &syn::MetaList,
 ) -> TokenStream {
@@ -45,9 +43,11 @@ fn inner_extract_generic_enumerate_validator(
         nested: validation_args,
         ..
     } = validation_list;
+    let field_name = field.name();
+    let field_ident = field.ident();
 
-    let enumerate = get_enumerate(field_ident, attribute, validation_args);
-    let message = extract_message_tokens(VALIDATION_LABEL, field_ident, attribute, validation_args)
+    let enumerate = get_enumerate(field, attribute, validation_args);
+    let message = extract_message_tokens(VALIDATION_LABEL, field, attribute, validation_args)
         .unwrap_or(quote!(
             ::serde_valid::validation::error::EnumerateParams::to_default_message
         ));
@@ -74,8 +74,8 @@ fn inner_extract_generic_enumerate_validator(
     )
 }
 
-fn get_enumerate<'a>(
-    field_ident: &syn::Ident,
+fn get_enumerate<'a, F: Field>(
+    field: &F,
     attribute: &syn::Attribute,
     validation_args: &'a syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
 ) -> syn::punctuated::Punctuated<&'a syn::Lit, syn::token::Comma> {
@@ -84,7 +84,7 @@ fn get_enumerate<'a>(
         match validation_arg {
             syn::NestedMeta::Lit(lit) => enumerate.push(lit),
             syn::NestedMeta::Meta(arg_meta) => {
-                check_validation_arg_meta(VALIDATION_LABEL, field_ident, arg_meta, true)
+                check_validation_arg_meta(VALIDATION_LABEL, field, arg_meta, true)
             }
         }
     }
