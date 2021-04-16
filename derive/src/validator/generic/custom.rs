@@ -1,6 +1,5 @@
 use crate::abort::{
-    abort_unexpected_list_argument, abort_unexpected_lit_argument,
-    abort_unexpected_name_value_argument,
+    abort_unknown_list_argument, abort_unknown_lit_argument, abort_unknown_name_value_argument,
 };
 use crate::types::Field;
 use crate::validator::Validator;
@@ -35,7 +34,7 @@ pub fn extract_generic_custom_validator<F: Field>(
                     field_ident,
                     fn_define,
                 ),
-                syn::Meta::NameValue(name_value) => abort_unexpected_name_value_argument(
+                syn::Meta::NameValue(name_value) => abort_unknown_name_value_argument(
                     VALIDATION_LABEL,
                     field_ident,
                     attribute.span(),
@@ -43,7 +42,7 @@ pub fn extract_generic_custom_validator<F: Field>(
                 ),
             },
             syn::NestedMeta::Lit(lit) => {
-                abort_unexpected_lit_argument(VALIDATION_LABEL, field_ident, attribute.span(), &lit)
+                abort_unknown_lit_argument(VALIDATION_LABEL, field_ident, attribute.span(), &lit)
             }
         }
     }
@@ -108,9 +107,9 @@ fn extract_custom_validator_arg(field_ident: &syn::Ident, fn_arg: &syn::NestedMe
         syn::NestedMeta::Meta(meta) => match meta {
             syn::Meta::Path(field) => quote!(&self.#field),
             syn::Meta::List(list) => {
-                abort_unexpected_list_argument(VALIDATION_LABEL, field_ident, fn_arg.span(), &list)
+                abort_unknown_list_argument(VALIDATION_LABEL, field_ident, fn_arg.span(), &list)
             }
-            syn::Meta::NameValue(name_value) => abort_unexpected_name_value_argument(
+            syn::Meta::NameValue(name_value) => abort_unknown_name_value_argument(
                 VALIDATION_LABEL,
                 field_ident,
                 fn_arg.span(),

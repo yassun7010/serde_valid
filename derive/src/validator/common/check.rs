@@ -1,6 +1,6 @@
 use crate::abort::{
-    abort_unexpected_list_argument, abort_unexpected_lit_argument,
-    abort_unexpected_name_value_argument, abort_unexpected_path_argument,
+    abort_unknown_list_argument, abort_unknown_lit_argument, abort_unknown_name_value_argument,
+    abort_unknown_path_argument,
 };
 use crate::types::SingleIdentPath;
 use syn::spanned::Spanned;
@@ -14,13 +14,13 @@ pub fn check_validation_arg_meta(
     match arg {
         syn::Meta::List(list) => {
             if !(allow_common_validation_args && check_common_meta_list_argument(list)) {
-                abort_unexpected_list_argument(validation_label, field_ident, list.span(), list)
+                abort_unknown_list_argument(validation_label, field_ident, list.span(), list)
             }
         }
         syn::Meta::NameValue(name_value) => {
             if !(allow_common_validation_args && check_common_meta_name_value_argument(name_value))
             {
-                abort_unexpected_name_value_argument(
+                abort_unknown_name_value_argument(
                     validation_label,
                     field_ident,
                     name_value.span(),
@@ -29,7 +29,7 @@ pub fn check_validation_arg_meta(
             }
         }
         syn::Meta::Path(path) => {
-            abort_unexpected_path_argument(validation_label, field_ident, arg.span(), path)
+            abort_unknown_path_argument(validation_label, field_ident, arg.span(), path)
         }
     }
 }
@@ -40,7 +40,7 @@ pub fn check_lit(
     span: proc_macro2::Span,
     lit: &syn::Lit,
 ) {
-    abort_unexpected_lit_argument(validation_label, field_ident, span, lit)
+    abort_unknown_lit_argument(validation_label, field_ident, span, lit)
 }
 
 pub fn check_common_meta_list_argument(list: &syn::MetaList) -> bool {

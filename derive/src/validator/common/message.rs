@@ -1,5 +1,5 @@
 use crate::abort::{
-    abort_duplicated_argument, abort_unexpected_list_argument, abort_unexpected_name_value_argument,
+    abort_duplicated_argument, abort_unknown_list_argument, abort_unknown_name_value_argument,
 };
 use crate::types::SingleIdentPath;
 use crate::validator::common::check_lit;
@@ -121,13 +121,13 @@ fn update_message_fn_from_nested_meta(
                         message_fn_ident,
                     );
                 }
-                syn::Meta::List(fn_define) => abort_unexpected_list_argument(
+                syn::Meta::List(fn_define) => abort_unknown_list_argument(
                     validation_label,
                     field_ident,
                     meta.span(),
                     fn_define,
                 ),
-                syn::Meta::NameValue(name_value) => abort_unexpected_name_value_argument(
+                syn::Meta::NameValue(name_value) => abort_unknown_name_value_argument(
                     validation_label,
                     field_ident,
                     meta.span(),

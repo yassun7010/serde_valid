@@ -1,5 +1,5 @@
 use super::{inner_extract_array_unique_items_validator, VALIDATION_LABEL};
-use crate::abort::abort_unexpected_list_argument;
+use crate::abort::abort_unknown_list_argument;
 use crate::types::Field;
 use crate::validator::common::extract_message_tokens;
 use crate::validator::Validator;
@@ -44,7 +44,7 @@ fn inner_extract_array_unique_items_validator_from_meta_list(
     let message = extract_message_tokens(VALIDATION_LABEL, field_ident, attribute, validation_args);
 
     if !validation_args.is_empty() && message.is_none() {
-        abort_unexpected_list_argument(
+        abort_unknown_list_argument(
             VALIDATION_LABEL,
             field_ident,
             attribute.span(),

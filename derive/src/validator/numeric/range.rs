@@ -1,7 +1,6 @@
 use crate::abort::{
     abort_duplicated_argument, abort_invalid_attribute_on_field, abort_required_path_argument,
-    abort_unexpected_list_argument, abort_unexpected_path_argument,
-    abort_unknown_name_value_argument,
+    abort_unexpected_name_value_argument, abort_unknown_list_argument, abort_unknown_path_argument,
 };
 use crate::lit::NumericInfo;
 use crate::types::{Field, SingleIdentPath};
@@ -112,7 +111,7 @@ fn extract_numeric_range_validator_tokens(
                 ),
                 syn::Meta::List(list) => {
                     if !check_common_meta_list_argument(list) {
-                        abort_unexpected_list_argument(
+                        abort_unknown_list_argument(
                             VALIDATION_LABEL,
                             field_ident,
                             item.span(),
@@ -121,7 +120,7 @@ fn extract_numeric_range_validator_tokens(
                     };
                 }
                 syn::Meta::Path(path) => {
-                    abort_unexpected_path_argument(VALIDATION_LABEL, field_ident, item.span(), path)
+                    abort_unknown_path_argument(VALIDATION_LABEL, field_ident, item.span(), path)
                 }
             },
             syn::NestedMeta::Lit(lit) => check_lit(VALIDATION_LABEL, field_ident, lit.span(), lit),
@@ -174,7 +173,7 @@ fn update_limit(
         ),
         unknown_value => {
             if !check_common_meta_name_value_argument(limit_name_value) {
-                abort_unknown_name_value_argument(
+                abort_unexpected_name_value_argument(
                     VALIDATION_LABEL,
                     unknown_value,
                     &EXPECTED_KEYS,

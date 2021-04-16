@@ -1,6 +1,6 @@
 use crate::abort::{
-    abort_duplicated_lit_argument, abort_required_path_argument, abort_unexpected_list_argument,
-    abort_unexpected_path_argument, abort_unknown_name_value_argument,
+    abort_duplicated_lit_argument, abort_required_path_argument,
+    abort_unexpected_name_value_argument, abort_unknown_list_argument, abort_unknown_path_argument,
 };
 use crate::types::SingleIdentPath;
 use crate::validator::common::check::{
@@ -35,7 +35,7 @@ pub fn extract_length_validator_tokens(
                 ),
                 syn::Meta::List(list) => {
                     if !check_common_meta_list_argument(list) {
-                        abort_unexpected_list_argument(
+                        abort_unknown_list_argument(
                             validation_label,
                             field_ident,
                             arg.span(),
@@ -44,7 +44,7 @@ pub fn extract_length_validator_tokens(
                     }
                 }
                 syn::Meta::Path(path) => {
-                    abort_unexpected_path_argument(validation_label, field_ident, arg.span(), path)
+                    abort_unknown_path_argument(validation_label, field_ident, arg.span(), path)
                 }
             },
             syn::NestedMeta::Lit(lit) => check_lit(validation_label, field_ident, lit.span(), lit),
@@ -86,7 +86,7 @@ fn update_limit_value(
         update_limit_int(validation_label, max_value, field_ident, limit_value);
     } else {
         if !check_common_meta_name_value_argument(limit_name_value) {
-            abort_unknown_name_value_argument(
+            abort_unexpected_name_value_argument(
                 validation_label,
                 &limit_name_label,
                 &[min_label, max_label],

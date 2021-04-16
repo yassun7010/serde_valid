@@ -1,53 +1,60 @@
 use super::abort_invalid_attribute_on_field;
+use crate::types::SingleIdentPath;
 
-pub fn abort_unknown_path_argument(
+pub fn abort_unknown_lit_argument(
     validation_label: &str,
-    unkown_value: &str,
-    expected_values: &[&str],
     field_ident: &syn::Ident,
     span: proc_macro2::Span,
+    _lit: &syn::Lit,
 ) -> ! {
     abort_invalid_attribute_on_field(
         field_ident,
         span,
         &format!(
-            "Unknown argument `{}` for validator `{}` (it only has {:?})",
-            unkown_value, validation_label, expected_values
+            "Unknown literal value while parsing `{}` validation of field `{}`",
+            validation_label, field_ident
         ),
     )
 }
 
-#[allow(dead_code)]
+pub fn abort_unknown_path_argument(
+    validation_label: &str,
+    field_ident: &syn::Ident,
+    span: proc_macro2::Span,
+    path: &syn::Path,
+) -> ! {
+    let path_ident = SingleIdentPath::new(&path).ident();
+    abort_invalid_attribute_on_field(
+        field_ident,
+        span,
+        &format!(
+            "Unknown item `{}` while parsing `{}` validation of field `{}`",
+            path_ident, validation_label, field_ident
+        ),
+    )
+}
+
 pub fn abort_unknown_list_argument(
     validation_label: &str,
-    unkown_value: &str,
-    expected_values: &[&str],
     field_ident: &syn::Ident,
     span: proc_macro2::Span,
     _list: &syn::MetaList,
 ) -> ! {
-    abort_unknown_path_argument(
-        validation_label,
-        unkown_value,
-        expected_values,
+    abort_invalid_attribute_on_field(
         field_ident,
         span,
+        &format!(
+            "Unknown item while parsing `{}` validation of field `{}`",
+            validation_label, field_ident
+        ),
     )
 }
 
 pub fn abort_unknown_name_value_argument(
     validation_label: &str,
-    unkown_value: &str,
-    expected_values: &[&str],
     field_ident: &syn::Ident,
     span: proc_macro2::Span,
-    _name_value: &syn::MetaNameValue,
+    name_value: &syn::MetaNameValue,
 ) -> ! {
-    abort_unknown_path_argument(
-        validation_label,
-        unkown_value,
-        expected_values,
-        field_ident,
-        span,
-    )
+    abort_unknown_path_argument(validation_label, field_ident, span, &name_value.path)
 }

@@ -1,12 +1,12 @@
 mod duplicated;
+mod expected;
 mod required;
-mod unexpected;
 mod unknown;
 
 pub use duplicated::*;
+pub use expected::*;
 use proc_macro_error::abort;
 pub use required::*;
-pub use unexpected::*;
 pub use unknown::*;
 
 pub fn abort_invalid_attribute_on_field(
