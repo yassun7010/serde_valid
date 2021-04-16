@@ -61,7 +61,7 @@ pub fn extract_generic_custom_validator<F: Field>(
     return Validator::Normal(quote!(
         if let Err(error) = #custom_validation_fn(#field_ident, #custom_validation_args) {
             errors
-                .entry(::serde_valid::FieldName::new(#field_name))
+                .entry(#field_name)
                 .or_default()
                 .push(error);
         };

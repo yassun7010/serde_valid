@@ -2,7 +2,7 @@ use crate::validation;
 use std::{collections::HashMap, fmt::Debug};
 
 pub type VecErrors = Vec<validation::Error>;
-pub type MapErrors = HashMap<validation::FieldName, VecErrors>;
+pub type MapErrors = HashMap<&'static str, VecErrors>;
 
 #[derive(Debug, serde::Serialize, thiserror::Error)]
 #[serde(untagged)]

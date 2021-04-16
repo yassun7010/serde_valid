@@ -30,7 +30,7 @@ fn inner_extract_string_pattern_validator<F: Field>(
         ) {
             use ::serde_valid::validation::error::ToDefaultMessage;
             errors
-                .entry(::serde_valid::FieldName::new(#field_name))
+                .entry(#field_name)
                 .or_default()
                 .push(::serde_valid::validation::Error::Pattern(
                     ::serde_valid::validation::error::Message::new(

@@ -1,6 +1,5 @@
 mod array;
 mod errors;
-mod field_name;
 mod generic;
 mod message;
 mod numeric;
@@ -9,7 +8,6 @@ mod string;
 
 pub use array::{ItemsParams, UniqueItemsParams};
 pub use errors::{Errors, MapErrors, VecErrors};
-pub use field_name::FieldName;
 pub use generic::EnumerateParams;
 pub use message::{Message, ToDefaultMessage};
 pub use numeric::{MultipleOfParams, RangeParams};

@@ -37,12 +37,12 @@ fn extract_validate_validator_tokens<F: Field>(field: &F) -> TokenStream {
             match inner_errors {
                 fields_errors @ ::serde_valid::validation::Errors::Fields(_) => {
                     errors.insert(
-                        ::serde_valid::FieldName::new(#field_name),
+                        #field_name,
                         vec![::serde_valid::validation::Error::Nested(fields_errors)]
                     );
                 }
                 ::serde_valid::validation::Errors::NewType(new_type_errors) => {
-                    errors.insert(::serde_valid::FieldName::new(#field_name), new_type_errors);
+                    errors.insert(#field_name, new_type_errors);
                 }
             }
         }

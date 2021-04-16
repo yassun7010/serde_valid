@@ -21,7 +21,7 @@ fn inner_extract_array_unique_items_validator<F: Field>(
         ) {
             use ::serde_valid::validation::error::ToDefaultMessage;
             errors
-                .entry(::serde_valid::FieldName::new(#field_name))
+                .entry(#field_name)
                 .or_default()
                 .push(::serde_valid::validation::Error::UniqueItems(
                     ::serde_valid::validation::error::Message::new(

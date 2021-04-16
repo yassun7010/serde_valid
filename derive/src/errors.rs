@@ -7,6 +7,6 @@ pub fn fields_errors_tokens() -> TokenStream {
 
 pub fn new_type_errors_tokens() -> TokenStream {
     quote!(::serde_valid::validation::Errors::NewType(
-        errors.remove(&::serde_valid::FieldName::new("0")).unwrap()
+        errors.remove("0").unwrap()
     ))
 }
