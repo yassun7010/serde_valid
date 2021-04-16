@@ -51,3 +51,25 @@ pub trait Validate {
 }
 
 pub use serde_valid_derive::Validate;
+
+pub mod json {
+    pub use serde_json::{
+        json, Deserializer, Error, Map, Number, Serializer, StreamDeserializer, Value,
+    };
+}
+
+#[cfg(feature = "yaml")]
+pub mod yaml {
+    pub use serde_yaml::{mapping, Error, Index, Location, Mapping, Number, Sequence, Value};
+}
+
+#[cfg(feature = "toml")]
+pub mod toml {
+    pub use serde_toml::{map, toml, value, Deserializer, Serializer, Value};
+    mod ser {
+        pub use serde_toml::ser::{Error, Serializer};
+    }
+    mod de {
+        pub use serde_toml::de::{Deserializer, Error};
+    }
+}
