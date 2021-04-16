@@ -24,7 +24,14 @@ pub fn extract_message_tokens(
                     message_fn_list,
                 ),
                 syn::Meta::Path(_) => continue,
-                syn::Meta::NameValue(_) => continue,
+                syn::Meta::NameValue(message_fn_key_value) => {
+                    update_message_fn_from_meta_name_value(
+                        validation_label,
+                        &mut message_fmt,
+                        field_ident,
+                        message_fn_key_value,
+                    )
+                }
             },
             syn::NestedMeta::Lit(_) => continue,
         }
@@ -54,23 +61,42 @@ fn update_message_fn_from_meta_list(
     message_fn: &mut Option<TokenStream>,
     field_ident: &syn::Ident,
     syn::MetaList {
-        path: message,
+        path: name,
         nested: message_fn_defines,
         ..
     }: &syn::MetaList,
 ) {
-    let message_ident = SingleIdentPath::new(&message).ident();
+    let message_ident = SingleIdentPath::new(&name).ident();
     let message_label = message_ident.to_string();
 
     match message_label.as_ref() {
-        "message_fn" => {
-            return update_message_fn_from_nested_meta(
-                validation_label,
-                message_fn,
-                field_ident,
-                message_fn_defines,
-                message_ident,
-            )
+        "message_fn" => update_message_fn_from_nested_meta(
+            validation_label,
+            message_fn,
+            field_ident,
+            message_fn_defines,
+            message_ident,
+        ),
+        _ => {}
+    }
+}
+
+fn update_message_fn_from_meta_name_value(
+    validation_label: &str,
+    message_fn: &mut Option<TokenStream>,
+    field_ident: &syn::Ident,
+    syn::MetaNameValue {
+        path: name,
+        lit: message,
+        ..
+    }: &syn::MetaNameValue,
+) {
+    let message_ident = SingleIdentPath::new(&name).ident();
+    let message_label = message_ident.to_string();
+
+    match message_label.as_ref() {
+        "message" => {
+            return update_message_fn_from_lit(validation_label, message_fn, field_ident, message)
         }
         _ => {}
     }
@@ -110,6 +136,18 @@ fn update_message_fn_from_nested_meta(
             },
             syn::NestedMeta::Lit(lit) => check_lit(validation_label, field_ident, lit.span(), lit),
         }
+    }
+}
+
+fn update_message_fn_from_lit(
+    validation_label: &str,
+    message_fn: &mut Option<TokenStream>,
+    field_ident: &syn::Ident,
+    lit: &syn::Lit,
+) {
+    match lit {
+        syn::Lit::Str(message) => *message_fn = Some(quote!(|_| { #message.to_string() })),
+        _ => check_lit(validation_label, field_ident, lit.span(), lit),
     }
 }
 

@@ -304,7 +304,7 @@ fn length_err_message_test() {
 }
 
 #[test]
-fn length_custom_err_message_test() {
+fn length_custom_err_message_fn_test() {
     fn error_message(_params: &serde_valid::validation::error::LengthParams) -> String {
         "this is custom message.".to_string()
     }
@@ -312,6 +312,29 @@ fn length_custom_err_message_test() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(length(min_length = 1, max_length = 3, message_fn(error_message)))]
+        val: String,
+    }
+
+    let s = TestStruct {
+        val: String::from("test"),
+    };
+
+    assert_eq!(
+        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
+        serde_json::to_string(&json!({
+            "val": [
+                "this is custom message."
+            ]
+        }))
+        .unwrap()
+    );
+}
+
+#[test]
+fn length_custom_err_message_test() {
+    #[derive(Validate)]
+    struct TestStruct {
+        #[validate(length(min_length = 1, max_length = 3, message = "this is custom message."))]
         val: String,
     }
 

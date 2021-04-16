@@ -6,7 +6,8 @@ use crate::abort::{
 use crate::lit::NumericInfo;
 use crate::types::{Field, SingleIdentPath};
 use crate::validator::common::{
-    check_common_list_argument, check_lit, extract_message_tokens, get_numeric,
+    check_common_meta_list_argument, check_common_meta_name_value_argument, check_lit,
+    extract_message_tokens, get_numeric,
 };
 use crate::validator::Validator;
 use proc_macro2::TokenStream;
@@ -110,7 +111,7 @@ fn extract_numeric_range_validator_tokens(
                     &mut exclusive_maximum,
                 ),
                 syn::Meta::List(list) => {
-                    if !check_common_list_argument(list) {
+                    if !check_common_meta_list_argument(list) {
                         abort_unexpected_list_argument(
                             VALIDATION_LABEL,
                             field_ident,
@@ -172,14 +173,16 @@ fn update_limit(
             limit_name_ident,
         ),
         unknown_value => {
-            abort_unknown_name_value_argument(
-                VALIDATION_LABEL,
-                unknown_value,
-                &EXPECTED_KEYS,
-                field_ident,
-                limit_name.span(),
-                limit_name_value,
-            );
+            if !check_common_meta_name_value_argument(limit_name_value) {
+                abort_unknown_name_value_argument(
+                    VALIDATION_LABEL,
+                    unknown_value,
+                    &EXPECTED_KEYS,
+                    field_ident,
+                    limit_name.span(),
+                    limit_name_value,
+                );
+            }
         }
     }
 }

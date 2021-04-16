@@ -38,9 +38,16 @@ pub fn abort_unexpected_list_argument(
     validation_label: &str,
     field_ident: &syn::Ident,
     span: proc_macro2::Span,
-    list: &syn::MetaList,
+    _list: &syn::MetaList,
 ) -> ! {
-    abort_unexpected_path_argument(validation_label, field_ident, span, &list.path)
+    abort_invalid_attribute_on_field(
+        field_ident,
+        span,
+        &format!(
+            "Unexpected item while parsing `{}` validation of field `{}`",
+            validation_label, field_ident
+        ),
+    )
 }
 
 pub fn abort_unexpected_name_value_argument(

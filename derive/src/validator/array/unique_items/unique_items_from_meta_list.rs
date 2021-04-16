@@ -1,7 +1,7 @@
 use super::{inner_extract_array_unique_items_validator, VALIDATION_LABEL};
-use crate::abort::abort_required_list_argument;
+use crate::abort::abort_unexpected_list_argument;
 use crate::types::Field;
-use crate::validator::common::{check_common_list_argument, extract_message_tokens};
+use crate::validator::common::extract_message_tokens;
 use crate::validator::Validator;
 use proc_macro2::TokenStream;
 use quote::quote;
@@ -41,18 +41,22 @@ fn inner_extract_array_unique_items_validator_from_meta_list(
         ..
     } = validation_list;
 
-    let message = extract_message_tokens(VALIDATION_LABEL, field_ident, attribute, validation_args)
-        .unwrap_or(quote!(
-            ::serde_valid::validation::error::ItemsParams::to_default_message
-        ));
-    if validation_args.is_empty() && !check_common_list_argument(validation_list) {
-        abort_required_list_argument(
+    let message = extract_message_tokens(VALIDATION_LABEL, field_ident, attribute, validation_args);
+
+    if !validation_args.is_empty() && message.is_none() {
+        abort_unexpected_list_argument(
             VALIDATION_LABEL,
-            &["message_fn"],
             field_ident,
             attribute.span(),
             validation_list,
         )
     }
-    inner_extract_array_unique_items_validator(field_name, field_ident, message)
+
+    inner_extract_array_unique_items_validator(
+        field_name,
+        field_ident,
+        message.unwrap_or(quote!(
+            ::serde_valid::validation::error::ItemsParams::to_default_message
+        )),
+    )
 }

@@ -137,7 +137,7 @@ fn multiple_of_err_message_test() {
 }
 
 #[test]
-fn multiple_of_custom_err_message_test() {
+fn multiple_of_custom_err_message_fn_test() {
     fn error_message(_params: &serde_valid::validation::error::MultipleOfParams) -> String {
         "this is custom message.".to_string()
     }
@@ -145,6 +145,27 @@ fn multiple_of_custom_err_message_test() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(multiple_of(5, message_fn(error_message)))]
+        val: i32,
+    }
+
+    let s = TestStruct { val: 14 };
+
+    assert_eq!(
+        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
+        serde_json::to_string(&json!({
+            "val": [
+                "this is custom message."
+            ]
+        }))
+        .unwrap()
+    );
+}
+
+#[test]
+fn multiple_of_custom_err_message_test() {
+    #[derive(Validate)]
+    struct TestStruct {
+        #[validate(multiple_of(5, message = "this is custom message."))]
         val: i32,
     }
 

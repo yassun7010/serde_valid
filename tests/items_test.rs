@@ -153,7 +153,7 @@ fn items_err_message_test() {
 }
 
 #[test]
-fn items_custom_err_message_test() {
+fn items_custom_err_message_fn_test() {
     fn error_message(_params: &serde_valid::validation::error::ItemsParams) -> String {
         "this is custom message.".to_string()
     }
@@ -161,6 +161,27 @@ fn items_custom_err_message_test() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(items(min_items = 4, max_items = 4, message_fn(error_message)))]
+        val: Vec<i32>,
+    }
+
+    let s = TestStruct { val: vec![1, 2, 3] };
+
+    assert_eq!(
+        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
+        serde_json::to_string(&json!({
+            "val": [
+                "this is custom message."
+            ]
+        }))
+        .unwrap()
+    );
+}
+
+#[test]
+fn items_custom_err_message_test() {
+    #[derive(Validate)]
+    struct TestStruct {
+        #[validate(items(min_items = 4, max_items = 4, message = "this is custom message."))]
         val: Vec<i32>,
     }
 
