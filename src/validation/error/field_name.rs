@@ -1,9 +1,9 @@
 #[derive(Debug, serde::Serialize, PartialEq, Eq, Hash)]
-pub struct FieldName(String);
+pub struct FieldName(&'static str);
 
 impl FieldName {
-    pub fn new<T: Into<String>>(name: T) -> Self {
-        Self(name.into())
+    pub const fn new(name: &'static str) -> Self {
+        Self(name)
     }
 }
 
