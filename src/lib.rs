@@ -58,10 +58,15 @@ pub mod json {
     };
 }
 
+pub type JsonError = Error<serde_json::Value>;
+
 #[cfg(feature = "yaml")]
 pub mod yaml {
     pub use serde_yaml::{mapping, Error, Index, Location, Mapping, Number, Sequence, Value};
 }
+
+#[cfg(feature = "yaml")]
+pub type YamlError = Error<serde_yaml::Value>;
 
 #[cfg(feature = "toml")]
 pub mod toml {
@@ -73,3 +78,6 @@ pub mod toml {
         pub use serde_toml::de::{Deserializer, Error};
     }
 }
+
+#[cfg(feature = "toml")]
+pub type TomlError = Error<serde_toml::Value>;
