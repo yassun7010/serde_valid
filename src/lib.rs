@@ -33,7 +33,7 @@ pub mod yaml {
     pub use serde_yaml::{mapping, Error, Index, Location, Mapping, Number, Sequence, Value};
 }
 
-#[cfg(feature = "yaml")]
+#[cfg(all(feature = "yaml", not(feature = "serde_error")))]
 pub type YamlError = Error<serde_yaml::Value>;
 
 #[cfg(feature = "toml")]
@@ -47,5 +47,5 @@ pub mod toml {
     }
 }
 
-#[cfg(feature = "toml")]
+#[cfg(all(feature = "toml", not(feature = "serde_error")))]
 pub type TomlError = Error<serde_toml::Value>;
