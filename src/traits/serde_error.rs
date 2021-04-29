@@ -1,0 +1,9 @@
+mod deserialize_with_validation_from_str;
+mod deserialize_witn_validation_from_reader;
+mod deserialize_witn_validation_from_slice;
+mod deserialize_witn_validation_from_value;
+
+pub use deserialize_with_validation_from_str::DeserializeWithValidationFromStr;
+pub use deserialize_witn_validation_from_reader::DeserializeWithValidationFromReader;
+pub use deserialize_witn_validation_from_slice::DeserializeWithValidationFromSlice;
+pub use deserialize_witn_validation_from_value::DeserializeWithValidationFromValue;

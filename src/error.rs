@@ -16,14 +16,14 @@ impl<E> Error<E>
 where
     E: 'static + std::error::Error,
 {
-    pub fn is_deserialize_error(&self) -> bool {
+    pub fn is_serde_error(&self) -> bool {
         match self {
             Self::DeserializeError(_) => true,
             Self::ValidationError(_) => false,
         }
     }
 
-    pub fn as_deserialize_error(&self) -> Option<&E> {
+    pub fn as_serde_error(&self) -> Option<&E> {
         match self {
             Self::DeserializeError(error) => Some(error),
             Self::ValidationError(_) => None,
