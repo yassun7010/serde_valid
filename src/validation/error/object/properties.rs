@@ -1,4 +1,4 @@
-use crate::traits::{Size, ToJsonString};
+use crate::traits::{Size, ToJson};
 use crate::validation::error::ToDefaultMessage;
 
 #[derive(Debug, serde::Serialize)]
@@ -16,10 +16,10 @@ impl PropertiesParams {
         max_properties: Option<usize>,
     ) -> Self
     where
-        T: Size + ToJsonString,
+        T: Size + ToJson,
     {
         Self {
-            properties: properties.to_json_string(),
+            properties: properties.to_json(),
             properties_size: properties.size(),
             min_properties,
             max_properties,
