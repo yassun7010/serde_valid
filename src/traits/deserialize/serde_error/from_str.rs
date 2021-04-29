@@ -3,6 +3,7 @@ where
     Self::Error: std::error::Error,
 {
     type Error;
+
     fn deserialize_with_validation_from_str(str: &str) -> Result<T, Self::Error>;
 }
 

@@ -4,6 +4,7 @@ where
     Self::Error: std::error::Error,
 {
     type Error;
+
     fn deserialize_with_validation_from_slice(v: &[u8]) -> Result<T, Self::Error>;
 }
 
