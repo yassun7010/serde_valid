@@ -32,7 +32,7 @@ impl IsMatch for std::ffi::OsStr {
     }
 }
 
-impl IsMatch for &'_ std::ffi::OsStr {
+impl IsMatch for &std::ffi::OsStr {
     fn is_match(&self, pattern: &regex::Regex) -> bool {
         pattern.is_match(&self.to_string_lossy())
     }
