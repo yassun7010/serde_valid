@@ -8,7 +8,13 @@ use std::iter::FromIterator;
 use syn::parse_quote;
 use syn::spanned::Spanned;
 
-pub fn expand_struct_unnamed_fields_validate(fields: &syn::FieldsUnnamed) -> TokenStream {
+pub fn expand_struct_unnamed_fields_validate(
+    input: &syn::DeriveInput,
+    fields: &syn::FieldsUnnamed,
+) -> TokenStream {
+    let ident = &input.ident;
+    let (impl_generics, type_generics, where_clause) = input.generics.split_for_impl();
+
     let validators = TokenStream::from_iter(
         collect_struct_unnamed_fields_validators(fields)
             .iter()
@@ -19,15 +25,22 @@ pub fn expand_struct_unnamed_fields_validate(fields: &syn::FieldsUnnamed) -> Tok
     } else {
         new_type_errors_tokens()
     };
+
     quote!(
-        let mut errors = ::serde_valid::validation::MapErrors::new();
+        impl #impl_generics ::serde_valid::Validate for #ident #type_generics #where_clause {
+            fn validate(
+                &self
+            ) -> ::std::result::Result<(), ::serde_valid::validation::Errors> {
+                let mut errors = ::serde_valid::validation::MapErrors::new();
 
-        #validators
+                #validators
 
-        if errors.is_empty() {
-            ::std::result::Result::Ok(())
-        } else {
-            ::std::result::Result::Err(#errors)
+                if errors.is_empty() {
+                    ::std::result::Result::Ok(())
+                } else {
+                    ::std::result::Result::Err(#errors)
+                }
+            }
         }
     )
 }
