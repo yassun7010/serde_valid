@@ -10,9 +10,8 @@ type Variants = syn::punctuated::Punctuated<syn::Variant, syn::token::Comma>;
 pub fn expand_enum_variants_validators(
     enum_ident: &syn::Ident,
     variants: &Variants,
-) -> (TokenStream, TokenStream) {
+) -> TokenStream {
     let mut enum_validator_tokens = vec![];
-    let mut is_fields_errors = true;
     for variant in variants.iter() {
         let variant_tokens = match &variant.fields {
             syn::Fields::Named(fields_named) => {
@@ -31,9 +30,16 @@ pub fn expand_enum_variants_validators(
                             quote!()
                         }
                     }));
+                let errors = fields_errors_tokens();
                 quote!(
                     if let #enum_ident::#variant_ident{#fields_idents} = &self {
+                        let mut errors = ::serde_valid::validation::MapErrors::new();
+
                         #fields_validators_tokens
+
+                        if !errors.is_empty() {
+                            ::std::result::Result::Err(#errors)?
+                        }
                     }
                 )
             }
@@ -53,10 +59,20 @@ pub fn expand_enum_variants_validators(
                             quote!()
                         }
                     }));
-                is_fields_errors = fields_validators.len() != 1;
+                let errors = if fields_validators.len() != 1 {
+                    fields_errors_tokens()
+                } else {
+                    new_type_errors_tokens()
+                };
                 quote!(
                     if let #enum_ident::#variant_ident(#fields_idents) = &self {
+                        let mut errors = ::serde_valid::validation::MapErrors::new();
+
                         #fields_validators_tokens
+
+                        if !errors.is_empty() {
+                            ::std::result::Result::Err(#errors)?
+                        }
                     }
                 )
             }
@@ -64,11 +80,7 @@ pub fn expand_enum_variants_validators(
         };
         enum_validator_tokens.push(variant_tokens);
     }
+    enum_validator_tokens.push(quote!(::std::result::Result::Ok(())));
     let validators = TokenStream::from_iter(enum_validator_tokens);
-    let errors = if is_fields_errors {
-        fields_errors_tokens()
-    } else {
-        new_type_errors_tokens()
-    };
-    (validators, errors)
+    validators
 }

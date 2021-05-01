@@ -13,7 +13,7 @@ use syn::spanned::Spanned;
 pub fn expand_derive(input: &syn::DeriveInput) -> TokenStream {
     let ident = &input.ident;
     let (impl_generics, type_generics, where_clause) = input.generics.split_for_impl();
-    let (validators, errors) = match &input.data {
+    let validators = match &input.data {
         syn::Data::Struct(syn::DataStruct { ref fields, .. }) => match fields {
             syn::Fields::Named(named) => expand_struct_named_fields_validators_tokens(named),
             syn::Fields::Unnamed(unnamed) => {
@@ -35,15 +35,7 @@ pub fn expand_derive(input: &syn::DeriveInput) -> TokenStream {
             fn validate(
                 &self
             ) -> ::std::result::Result<(), ::serde_valid::validation::Errors> {
-                let mut errors = ::serde_valid::validation::MapErrors::new();
-
                 #validators
-
-                if errors.is_empty() {
-                    ::std::result::Result::Ok(())
-                } else {
-                    ::std::result::Result::Err(#errors)
-                }
             }
         }
     )

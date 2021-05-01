@@ -3,13 +3,12 @@ use crate::errors::{fields_errors_tokens, new_type_errors_tokens};
 use crate::types::{Field, UnnamedField};
 use crate::validator::{extract_meta_validator, FieldValidators};
 use proc_macro2::TokenStream;
+use quote::quote;
 use std::iter::FromIterator;
 use syn::parse_quote;
 use syn::spanned::Spanned;
 
-pub fn expand_struct_unnamed_fields_validators_tokens(
-    fields: &syn::FieldsUnnamed,
-) -> (TokenStream, TokenStream) {
+pub fn expand_struct_unnamed_fields_validators_tokens(fields: &syn::FieldsUnnamed) -> TokenStream {
     let validators = TokenStream::from_iter(
         collect_struct_unnamed_fields_validators(fields)
             .iter()
@@ -20,7 +19,17 @@ pub fn expand_struct_unnamed_fields_validators_tokens(
     } else {
         new_type_errors_tokens()
     };
-    (validators, errors)
+    quote!(
+        let mut errors = ::serde_valid::validation::MapErrors::new();
+
+        #validators
+
+        if errors.is_empty() {
+            ::std::result::Result::Ok(())
+        } else {
+            ::std::result::Result::Err(#errors)
+        }
+    )
 }
 
 pub fn collect_struct_unnamed_fields_validators(

@@ -3,19 +3,29 @@ use crate::errors::fields_errors_tokens;
 use crate::types::{Field, NamedField};
 use crate::validator::{extract_meta_validator, FieldValidators};
 use proc_macro2::TokenStream;
+use quote::quote;
 use std::iter::FromIterator;
 use syn::parse_quote;
 use syn::spanned::Spanned;
 
-pub fn expand_struct_named_fields_validators_tokens(
-    fields: &syn::FieldsNamed,
-) -> (TokenStream, TokenStream) {
+pub fn expand_struct_named_fields_validators_tokens(fields: &syn::FieldsNamed) -> TokenStream {
     let validators = TokenStream::from_iter(
         collect_struct_named_fields_validators(fields)
             .iter()
             .map(|validator| validator.generate_tokens()),
     );
-    (validators, fields_errors_tokens())
+    let errors = fields_errors_tokens();
+    quote!(
+        let mut errors = ::serde_valid::validation::MapErrors::new();
+
+        #validators
+
+        if errors.is_empty() {
+            ::std::result::Result::Ok(())
+        } else {
+            ::std::result::Result::Err(#errors)
+        }
+    )
 }
 
 pub fn collect_struct_named_fields_validators(
