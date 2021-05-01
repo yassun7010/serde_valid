@@ -55,11 +55,11 @@ pub fn extract_meta_validator<F: Field>(
         Ok(syn::Meta::NameValue(_)) => {
             abort!(attribute.span(), "Unexpected name=value argument")
         }
-        Err(e) => abort!(
+        Err(err) => abort!(
             attribute.span(),
             "Got something other than a list of attributes while checking field `{}`: {:?}",
             field.ident(),
-            e
+            err
         ),
     };
     None

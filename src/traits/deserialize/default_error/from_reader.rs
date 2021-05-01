@@ -22,7 +22,7 @@ where
         let model: T = serde_json::from_reader(rdr)?;
         model
             .validate()
-            .map_err(|e| crate::Error::ValidationError(e))?;
+            .map_err(|err| crate::Error::ValidationError(err))?;
         Ok(model)
     }
 }
@@ -41,7 +41,7 @@ where
         let model: T = serde_yaml::from_reader(rdr)?;
         model
             .validate()
-            .map_err(|e| crate::Error::ValidationError(e))?;
+            .map_err(|err| crate::Error::ValidationError(err))?;
         Ok(model)
     }
 }

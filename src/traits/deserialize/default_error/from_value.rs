@@ -17,7 +17,7 @@ where
         let model: T = serde_json::from_value(self)?;
         model
             .validate()
-            .map_err(|e| crate::Error::ValidationError(e))?;
+            .map_err(|err| crate::Error::ValidationError(err))?;
         Ok(model)
     }
 }
@@ -33,7 +33,7 @@ where
         let model: T = serde_yaml::from_value(self)?;
         model
             .validate()
-            .map_err(|e| crate::Error::ValidationError(e))?;
+            .map_err(|err| crate::Error::ValidationError(err))?;
         Ok(model)
     }
 }

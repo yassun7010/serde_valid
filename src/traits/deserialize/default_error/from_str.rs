@@ -17,7 +17,7 @@ where
         let model: T = serde_json::from_str(str)?;
         model
             .validate()
-            .map_err(|e| crate::Error::ValidationError(e))?;
+            .map_err(|err| crate::Error::ValidationError(err))?;
         Ok(model)
     }
 }
@@ -33,7 +33,7 @@ where
         let model: T = serde_yaml::from_str(str)?;
         model
             .validate()
-            .map_err(|e| crate::Error::ValidationError(e))?;
+            .map_err(|err| crate::Error::ValidationError(err))?;
         Ok(model)
     }
 }
@@ -49,7 +49,7 @@ where
         let model: T = serde_toml::from_str(str)?;
         model
             .validate()
-            .map_err(|e| crate::Error::ValidationError(e))?;
+            .map_err(|err| crate::Error::ValidationError(err))?;
         Ok(model)
     }
 }
