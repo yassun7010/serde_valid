@@ -1,5 +1,5 @@
-use super::struct_named_fields::collect_struct_named_fields_validators;
-use super::struct_unnamed_fields::collect_struct_unnamed_fields_validators;
+use super::named_struct_derive::collect_struct_named_fields_validators;
+use super::unnamed_struct_derive::collect_struct_unnamed_fields_validators;
 use crate::errors::{fields_errors_tokens, new_type_errors_tokens};
 use proc_macro2::TokenStream;
 use quote::quote;
@@ -7,7 +7,7 @@ use std::iter::FromIterator;
 
 type Variants = syn::punctuated::Punctuated<syn::Variant, syn::token::Comma>;
 
-pub fn expand_enum_variants_validate(input: &syn::DeriveInput, variants: &Variants) -> TokenStream {
+pub fn expand_enum_validate_derive(input: &syn::DeriveInput, variants: &Variants) -> TokenStream {
     let ident = &input.ident;
     let (impl_generics, type_generics, where_clause) = input.generics.split_for_impl();
 
