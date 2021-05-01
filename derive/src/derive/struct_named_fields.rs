@@ -8,7 +8,7 @@ use std::iter::FromIterator;
 use syn::parse_quote;
 use syn::spanned::Spanned;
 
-pub fn expand_struct_named_fields_validators_tokens(fields: &syn::FieldsNamed) -> TokenStream {
+pub fn expand_struct_named_fields_validate(fields: &syn::FieldsNamed) -> TokenStream {
     let validators = TokenStream::from_iter(
         collect_struct_named_fields_validators(fields)
             .iter()

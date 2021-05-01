@@ -7,10 +7,7 @@ use std::iter::FromIterator;
 
 type Variants = syn::punctuated::Punctuated<syn::Variant, syn::token::Comma>;
 
-pub fn expand_enum_variants_validators(
-    enum_ident: &syn::Ident,
-    variants: &Variants,
-) -> TokenStream {
+pub fn expand_enum_variants_validate(enum_ident: &syn::Ident, variants: &Variants) -> TokenStream {
     let mut enum_validator_tokens = vec![];
     for variant in variants.iter() {
         let variant_tokens = match &variant.fields {
