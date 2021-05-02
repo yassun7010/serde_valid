@@ -27,8 +27,11 @@ fn enum_unnamed_variant_validation_is_ok_test() {
     #[derive(Validate)]
     enum TestEnum {
         #[allow(dead_code)]
-        NewType(i32),
-        UnNamed(i32, #[validate] TestStruct),
+        NewType(#[validate(range(minimum = 0, maximum = 10))] i32),
+        UnNamed(
+            #[validate(range(minimum = 0, maximum = 10))] i32,
+            #[validate] TestStruct,
+        ),
     }
 
     #[derive(Validate)]
@@ -37,7 +40,7 @@ fn enum_unnamed_variant_validation_is_ok_test() {
         val: i32,
     }
 
-    let s = TestEnum::UnNamed(12, TestStruct { val: 5 });
+    let s = TestEnum::UnNamed(5, TestStruct { val: 5 });
     assert!(s.validate().is_ok());
 }
 
@@ -45,9 +48,12 @@ fn enum_unnamed_variant_validation_is_ok_test() {
 fn enum_newtype_variant_validation_is_ok_test() {
     #[derive(Validate)]
     enum TestEnum {
-        NewType(i32),
+        NewType(#[validate(range(minimum = 0, maximum = 10))] i32),
         #[allow(dead_code)]
-        UnNamed(i32, #[validate] TestStruct),
+        UnNamed(
+            #[validate(range(minimum = 0, maximum = 10))] i32,
+            #[validate] TestStruct,
+        ),
     }
 
     #[derive(Validate)]
