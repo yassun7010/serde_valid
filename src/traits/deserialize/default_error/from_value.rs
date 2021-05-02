@@ -37,3 +37,19 @@ where
         Ok(model)
     }
 }
+
+#[cfg(feature = "toml")]
+impl<T> DeserializeWithValidationFromValue<T> for serde_toml::Value
+where
+    T: serde::de::DeserializeOwned + crate::Validate,
+{
+    type Error = serde_toml::de::Error;
+
+    fn deserialize_with_validation_from_value(self) -> Result<T, crate::Error<Self::Error>> {
+        let model: T = serde::Deserialize::deserialize(self)?;
+        model
+            .validate()
+            .map_err(|err| crate::Error::ValidationError(err))?;
+        Ok(model)
+    }
+}

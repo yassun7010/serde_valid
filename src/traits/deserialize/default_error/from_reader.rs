@@ -45,3 +45,30 @@ where
         Ok(model)
     }
 }
+
+#[cfg(feature = "toml")]
+impl<T> DeserializeWithValidationFromReader<T> for serde_toml::Value
+where
+    T: serde::de::DeserializeOwned + crate::Validate,
+{
+    type Error = serde_toml::de::Error;
+
+    fn deserialize_with_validation_from_reader<R>(rdr: R) -> Result<T, crate::Error<Self::Error>>
+    where
+        R: std::io::Read,
+    {
+        use serde::de::Error;
+
+        let mut buffer = String::new();
+        let mut reader = rdr;
+        reader
+            .read_to_string(&mut buffer)
+            .map_err(|err| serde_toml::de::Error::custom(err))?;
+
+        let model: T = serde_toml::from_str(&buffer)?;
+        model
+            .validate()
+            .map_err(|err| crate::Error::ValidationError(err))?;
+        Ok(model)
+    }
+}
