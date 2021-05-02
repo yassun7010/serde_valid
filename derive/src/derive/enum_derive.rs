@@ -30,10 +30,10 @@ pub fn expand_enum_validate_derive(input: &syn::DeriveInput, variants: &Variants
         impl #impl_generics ::serde_valid::Validate for #ident #type_generics #where_clause {
             fn validate(
                 &self
-            ) -> ::std::result::Result<(), ::serde_valid::validation::Errors> {
+            ) -> Result<(), ::serde_valid::validation::Errors> {
                 #validations
 
-                ::std::result::Result::Ok(())
+                Result::Ok(())
             }
         }
     )
@@ -66,7 +66,7 @@ fn expand_enum_variant_named_fields_validation(
             #fields_validators_tokens
 
             if !errors.is_empty() {
-                ::std::result::Result::Err(#errors)?
+                Result::Err(#errors)?
             }
         }
     )
@@ -103,7 +103,7 @@ fn expand_enum_variant_unnamed_fields_varidation(
             #fields_validators_tokens
 
             if !errors.is_empty() {
-                ::std::result::Result::Err(#errors)?
+                Result::Err(#errors)?
             }
         }
     )
