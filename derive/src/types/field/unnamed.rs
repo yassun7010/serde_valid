@@ -22,7 +22,7 @@ impl UnnamedField {
         Self {
             name: index.to_string(),
             index,
-            ident: syn::Ident::new(&format!("_{}", index), field.span()),
+            ident: syn::Ident::new(&format!("__{}", index), field.span()),
             field,
         }
     }

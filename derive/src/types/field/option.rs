@@ -49,7 +49,7 @@ fn extract_option_segment(path: &Path) -> Option<&PathSegment> {
 
 pub fn make_some_ident(ident: &syn::Ident, span: proc_macro2::Span) -> syn::Ident {
     syn::Ident::new(
-        &format!("_some_{}", &ident.to_string().trim_start_matches("_")),
+        &format!("__some_{}", &ident.to_string().trim_start_matches("__")),
         span,
     )
 }

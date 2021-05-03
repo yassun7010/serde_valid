@@ -41,7 +41,7 @@ fn extract_element_type_from_vec(path: &Path, ty: &syn::Type) -> Option<syn::Typ
 
 pub fn make_element_ident(ident: &syn::Ident, span: proc_macro2::Span) -> syn::Ident {
     syn::Ident::new(
-        &format!("_elem_{}", &ident.to_string().trim_start_matches("_")),
+        &format!("__elem_{}", &ident.to_string().trim_start_matches("__")),
         span,
     )
 }
