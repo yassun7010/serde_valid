@@ -20,7 +20,7 @@ fn inner_extract_array_unique_items_validator<F: Field>(
             #field_ident
         ) {
             use ::serde_valid::validation::error::ToDefaultMessage;
-            errors
+            __errors
                 .entry(#field_name)
                 .or_default()
                 .push(::serde_valid::validation::Error::UniqueItems(

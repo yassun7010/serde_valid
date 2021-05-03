@@ -23,7 +23,7 @@ fn inner_extract_numeric_multiple_of_validator<F: Field>(
             #multiple_of,
         ) {
             use ::serde_valid::validation::error::ToDefaultMessage;
-            errors
+            __errors
                 .entry(#field_name)
                 .or_default()
                 .push(::serde_valid::validation::Error::MultipleOf(

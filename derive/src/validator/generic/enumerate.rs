@@ -58,7 +58,7 @@ fn inner_extract_generic_enumerate_validator<F: Field>(
             &[#enumerate],
         ) {
             use ::serde_valid::validation::error::ToDefaultMessage;
-            errors
+            __errors
                 .entry(#field_name)
                 .or_default()
                 .push(::serde_valid::validation::Error::Enumerate(

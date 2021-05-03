@@ -60,7 +60,7 @@ fn inner_extract_array_items_validator<F: Field>(
             #max_items_tokens
         ) {
             use ::serde_valid::validation::error::ToDefaultMessage;
-            errors
+            __errors
                 .entry(#field_name)
                 .or_default()
                 .push(::serde_valid::validation::Error::Items(

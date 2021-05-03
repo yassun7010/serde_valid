@@ -27,11 +27,11 @@ pub fn expand_named_struct_derive(
             fn validate(
                 &self
             ) -> Result<(), ::serde_valid::validation::Errors> {
-                let mut errors = ::serde_valid::validation::MapErrors::new();
+                let mut __errors = ::serde_valid::validation::MapErrors::new();
 
                 #validators
 
-                if errors.is_empty() {
+                if __errors.is_empty() {
                     Result::Ok(())
                 } else {
                     Result::Err(#errors)

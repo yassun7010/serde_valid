@@ -80,7 +80,7 @@ fn inner_extract_string_length_validator<F: Field>(
             #max_length_tokens
         ) {
             use ::serde_valid::validation::error::ToDefaultMessage;
-            errors
+            __errors
                 .entry(#field_name)
                 .or_default()
                 .push(::serde_valid::validation::Error::Length(

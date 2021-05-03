@@ -59,11 +59,11 @@ pub fn extract_generic_custom_validator<F: Field>(
 
     let field_name = field.name();
     return Validator::Normal(quote!(
-        if let Err(error) = #custom_validation_fn(#field_ident, #custom_validation_args) {
-            errors
+        if let Err(__error) = #custom_validation_fn(#field_ident, #custom_validation_args) {
+            __errors
                 .entry(#field_name)
                 .or_default()
-                .push(error);
+                .push(__error);
         };
     ));
 }

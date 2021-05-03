@@ -66,7 +66,7 @@ fn inner_extract_object_properties_validator<F: Field>(
             #max_properties_tokens
         ) {
             use ::serde_valid::validation::error::ToDefaultMessage;
-            errors
+            __errors
                 .entry(#field_name)
                 .or_default()
                 .push(::serde_valid::validation::Error::Properties(

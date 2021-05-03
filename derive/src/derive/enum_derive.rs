@@ -61,11 +61,11 @@ fn expand_enum_variant_named_fields_validation(
     let errors = fields_errors_tokens();
     quote!(
         if let #ident::#variant_ident{#fields_idents} = &self {
-            let mut errors = ::serde_valid::validation::MapErrors::new();
+            let mut __errors = ::serde_valid::validation::MapErrors::new();
 
             #fields_validators_tokens
 
-            if !errors.is_empty() {
+            if !__errors.is_empty() {
                 Result::Err(#errors)?
             }
         }
@@ -98,11 +98,11 @@ fn expand_enum_variant_unnamed_fields_varidation(
     };
     quote!(
         if let #ident::#variant_ident(#fields_idents) = &self {
-            let mut errors = ::serde_valid::validation::MapErrors::new();
+            let mut __errors = ::serde_valid::validation::MapErrors::new();
 
             #fields_validators_tokens
 
-            if !errors.is_empty() {
+            if !__errors.is_empty() {
                 Result::Err(#errors)?
             }
         }

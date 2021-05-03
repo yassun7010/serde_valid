@@ -23,20 +23,20 @@ fn inner_extract_string_pattern_validator<F: Field>(
 
     quote!(
         static #pattern_ident : once_cell::sync::OnceCell<regex::Regex> = once_cell::sync::OnceCell::new();
-        let pattern = #pattern_ident.get_or_init(|| regex::Regex::new(#pattern).unwrap());
+        let __pattern = #pattern_ident.get_or_init(|| regex::Regex::new(#pattern).unwrap());
         if !::serde_valid::validate_string_pattern(
             #field_ident,
-            pattern,
+            __pattern,
         ) {
             use ::serde_valid::validation::error::ToDefaultMessage;
-            errors
+            __errors
                 .entry(#field_name)
                 .or_default()
                 .push(::serde_valid::validation::Error::Pattern(
                     ::serde_valid::validation::error::Message::new(
                         ::serde_valid::validation::error::PatternParams::new(
                             #field_ident,
-                            pattern,
+                            __pattern,
                         ),
                         #message
                     )
