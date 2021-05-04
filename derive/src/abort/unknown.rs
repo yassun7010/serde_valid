@@ -1,9 +1,9 @@
 use super::abort_invalid_attribute_on_field;
 use crate::types::{Field, SingleIdentPath};
 
-pub fn abort_unknown_lit_argument<F: Field>(
+pub fn abort_unknown_lit_argument(
     validation_label: &str,
-    field: &F,
+    field: &impl Field,
     span: proc_macro2::Span,
     _lit: &syn::Lit,
 ) -> ! {
@@ -18,9 +18,9 @@ pub fn abort_unknown_lit_argument<F: Field>(
     )
 }
 
-pub fn abort_unknown_path_argument<F: Field>(
+pub fn abort_unknown_path_argument(
     validation_label: &str,
-    field: &F,
+    field: &impl Field,
     span: proc_macro2::Span,
     path: &syn::Path,
 ) -> ! {
@@ -37,9 +37,9 @@ pub fn abort_unknown_path_argument<F: Field>(
     )
 }
 
-pub fn abort_unknown_list_argument<F: Field>(
+pub fn abort_unknown_list_argument(
     validation_label: &str,
-    field: &F,
+    field: &impl Field,
     span: proc_macro2::Span,
     _list: &syn::MetaList,
 ) -> ! {
@@ -54,9 +54,9 @@ pub fn abort_unknown_list_argument<F: Field>(
     )
 }
 
-pub fn abort_unknown_name_value_argument<F: Field>(
+pub fn abort_unknown_name_value_argument(
     validation_label: &str,
-    field: &F,
+    field: &impl Field,
     span: proc_macro2::Span,
     name_value: &syn::MetaNameValue,
 ) -> ! {

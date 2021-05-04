@@ -9,8 +9,8 @@ use quote::quote;
 
 const VALIDATION_LABEL: &'static str = "pattern";
 
-fn inner_extract_string_pattern_validator<F: Field>(
-    field: &F,
+fn inner_extract_string_pattern_validator(
+    field: &impl Field,
     pattern: &syn::LitStr,
     message: &TokenStream,
 ) -> TokenStream {

@@ -4,8 +4,8 @@ use crate::validator::Validator;
 use proc_macro_error::abort;
 use syn::spanned::Spanned;
 
-pub fn extract_validator_from_nested_meta_path<F: Field>(
-    field: &F,
+pub fn extract_validator_from_nested_meta_path(
+    field: &impl Field,
     _attribute: &syn::Attribute,
     validation: &syn::Path,
 ) -> Option<Validator> {

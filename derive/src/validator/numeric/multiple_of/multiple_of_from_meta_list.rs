@@ -9,8 +9,8 @@ use proc_macro2::TokenStream;
 use quote::quote;
 use syn::spanned::Spanned;
 
-pub fn extract_numeric_multiple_of_validator_from_meta_list<F: Field>(
-    field: &F,
+pub fn extract_numeric_multiple_of_validator_from_meta_list(
+    field: &impl Field,
     attribute: &syn::Attribute,
     validation_list: &syn::MetaList,
 ) -> Validator {
@@ -43,8 +43,8 @@ pub fn extract_numeric_multiple_of_validator_from_meta_list<F: Field>(
     }
 }
 
-fn inner_extract_numeric_multiple_of_validator_from_meta_list<F: Field>(
-    field: &F,
+fn inner_extract_numeric_multiple_of_validator_from_meta_list(
+    field: &impl Field,
     attribute: &syn::Attribute,
     validation_args: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
 ) -> TokenStream {
@@ -56,8 +56,8 @@ fn inner_extract_numeric_multiple_of_validator_from_meta_list<F: Field>(
     inner_extract_numeric_multiple_of_validator(field, multiple_of, message)
 }
 
-fn get_multiple_of_from_meta_list<F: Field>(
-    field: &F,
+fn get_multiple_of_from_meta_list(
+    field: &impl Field,
     attribute: &syn::Attribute,
     validation_args: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
 ) -> LitNumeric {

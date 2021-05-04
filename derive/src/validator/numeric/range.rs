@@ -21,8 +21,8 @@ const EXPECTED_KEYS: [&str; 4] = [
     "exclusive_maximum",
 ];
 
-pub fn extract_numeric_range_validator<F: Field>(
-    field: &F,
+pub fn extract_numeric_range_validator(
+    field: &impl Field,
     attribute: &syn::Attribute,
     validation_list: &syn::MetaList,
 ) -> Validator {
@@ -51,8 +51,8 @@ pub fn extract_numeric_range_validator<F: Field>(
     }
 }
 
-fn inner_extract_numeric_range_validator<F: Field>(
-    field: &F,
+fn inner_extract_numeric_range_validator(
+    field: &impl Field,
     attribute: &syn::Attribute,
     validation_args: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
 ) -> TokenStream {
@@ -89,8 +89,8 @@ fn inner_extract_numeric_range_validator<F: Field>(
     )
 }
 
-fn extract_numeric_range_validator_tokens<F: Field>(
-    field: &F,
+fn extract_numeric_range_validator_tokens(
+    field: &impl Field,
     attribute: &syn::Attribute,
     validation_args: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
 ) -> (TokenStream, TokenStream) {
@@ -130,8 +130,8 @@ fn extract_numeric_range_validator_tokens<F: Field>(
     (minimum_tokens, maximum_tokens)
 }
 
-fn update_limit<F: Field>(
-    field: &F,
+fn update_limit(
+    field: &impl Field,
     limit_name_value: &syn::MetaNameValue,
     minimum: &mut Option<NumericInfo>,
     exclusive_minimum: &mut Option<NumericInfo>,
@@ -170,9 +170,9 @@ fn update_limit<F: Field>(
     }
 }
 
-fn update_numeric<F: Field>(
+fn update_numeric(
     target: &mut Option<NumericInfo>,
-    field: &F,
+    field: &impl Field,
     limit_value: &syn::Lit,
     limit_name_ident: &syn::Ident,
 ) {
@@ -191,8 +191,8 @@ fn update_numeric<F: Field>(
     ));
 }
 
-fn get_limit_tokens<F: Field>(
-    field: &F,
+fn get_limit_tokens(
+    field: &impl Field,
     inclusive_limit: Option<NumericInfo>,
     exclusive_limit: Option<NumericInfo>,
 ) -> proc_macro2::TokenStream {

@@ -16,8 +16,8 @@ use crate::validator::Validator;
 use proc_macro_error::abort;
 use syn::spanned::Spanned;
 
-pub fn extract_validator_from_nested_meta_list<F: Field>(
-    field: &F,
+pub fn extract_validator_from_nested_meta_list(
+    field: &impl Field,
     attribute: &syn::Attribute,
     validation_list: &syn::MetaList,
 ) -> Option<Validator> {

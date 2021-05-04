@@ -9,8 +9,8 @@ pub use unique_items_from_meta_path::extract_array_unique_items_validator_from_m
 
 const VALIDATION_LABEL: &'static str = "unique_items";
 
-fn inner_extract_array_unique_items_validator<F: Field>(
-    field: &F,
+fn inner_extract_array_unique_items_validator(
+    field: &impl Field,
     message: TokenStream,
 ) -> TokenStream {
     let field_name = field.name();

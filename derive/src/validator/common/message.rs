@@ -7,9 +7,9 @@ use proc_macro2::TokenStream;
 use quote::quote;
 use syn::spanned::Spanned;
 
-pub fn extract_message_tokens<F: Field>(
+pub fn extract_message_tokens(
     validation_label: &str,
-    field: &F,
+    field: &impl Field,
     _attribute: &syn::Attribute,
     validation_args: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
 ) -> Option<TokenStream> {
@@ -39,10 +39,10 @@ pub fn extract_message_tokens<F: Field>(
     message_fmt
 }
 
-fn update_message_fn_from_meta_path<F: Field>(
+fn update_message_fn_from_meta_path(
     validation_label: &str,
     message_fn: &mut Option<TokenStream>,
-    field: &F,
+    field: &impl Field,
     fn_name: &syn::Path,
     message_fn_ident: &syn::Ident,
 ) {
@@ -56,10 +56,10 @@ fn update_message_fn_from_meta_path<F: Field>(
     *message_fn = Some(quote!(#fn_name));
 }
 
-fn update_message_fn_from_meta_list<F: Field>(
+fn update_message_fn_from_meta_list(
     validation_label: &str,
     message_fn: &mut Option<TokenStream>,
-    field: &F,
+    field: &impl Field,
     syn::MetaList {
         path: name,
         nested: message_fn_defines,
@@ -81,10 +81,10 @@ fn update_message_fn_from_meta_list<F: Field>(
     }
 }
 
-fn update_message_fn_from_meta_name_value<F: Field>(
+fn update_message_fn_from_meta_name_value(
     validation_label: &str,
     message_fn: &mut Option<TokenStream>,
-    field: &F,
+    field: &impl Field,
     syn::MetaNameValue {
         path: name,
         lit: message,
@@ -102,10 +102,10 @@ fn update_message_fn_from_meta_name_value<F: Field>(
     }
 }
 
-fn update_message_fn_from_nested_meta<F: Field>(
+fn update_message_fn_from_nested_meta(
     validation_label: &str,
     message_fn: &mut Option<TokenStream>,
-    field: &F,
+    field: &impl Field,
     message_fn_defines: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
     message_fn_ident: &syn::Ident,
 ) {
@@ -136,10 +136,10 @@ fn update_message_fn_from_nested_meta<F: Field>(
     }
 }
 
-fn update_message_fn_from_lit<F: Field>(
+fn update_message_fn_from_lit(
     validation_label: &str,
     message_fn: &mut Option<TokenStream>,
-    field: &F,
+    field: &impl Field,
     lit: &syn::Lit,
 ) {
     match lit {
@@ -148,10 +148,10 @@ fn update_message_fn_from_lit<F: Field>(
     }
 }
 
-fn check_duplicated_message_fn_argument<F: Field>(
+fn check_duplicated_message_fn_argument(
     validation_label: &str,
     message_fn: &mut Option<TokenStream>,
-    field: &F,
+    field: &impl Field,
     fn_name: &syn::Path,
     message_fn_ident: &syn::Ident,
 ) {

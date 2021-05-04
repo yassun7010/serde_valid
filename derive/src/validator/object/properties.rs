@@ -8,8 +8,8 @@ const VALIDATION_LABEL: &'static str = "properties";
 const MIN_LABEL: &'static str = "min_properties";
 const MAX_LABEL: &'static str = "max_properties";
 
-pub fn extract_object_properties_validator<F: Field>(
-    field: &F,
+pub fn extract_object_properties_validator(
+    field: &impl Field,
     attribute: &syn::Attribute,
     validation_list: &syn::MetaList,
 ) -> Validator {
@@ -39,8 +39,8 @@ pub fn extract_object_properties_validator<F: Field>(
     }
 }
 
-fn inner_extract_object_properties_validator<F: Field>(
-    field: &F,
+fn inner_extract_object_properties_validator(
+    field: &impl Field,
     attribute: &syn::Attribute,
     validation_args: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
 ) -> TokenStream {

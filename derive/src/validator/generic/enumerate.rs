@@ -8,8 +8,8 @@ use syn::spanned::Spanned;
 
 const VALIDATION_LABEL: &'static str = "enumerate";
 
-pub fn extract_generic_enumerate_validator<F: Field>(
-    field: &F,
+pub fn extract_generic_enumerate_validator(
+    field: &impl Field,
     attribute: &syn::Attribute,
     validation_list: &syn::MetaList,
 ) -> Validator {
@@ -34,8 +34,8 @@ pub fn extract_generic_enumerate_validator<F: Field>(
     }
 }
 
-fn inner_extract_generic_enumerate_validator<F: Field>(
-    field: &F,
+fn inner_extract_generic_enumerate_validator(
+    field: &impl Field,
     attribute: &syn::Attribute,
     validation_list: &syn::MetaList,
 ) -> TokenStream {
@@ -74,8 +74,8 @@ fn inner_extract_generic_enumerate_validator<F: Field>(
     )
 }
 
-fn get_enumerate<'a, F: Field>(
-    field: &F,
+fn get_enumerate<'a>(
+    field: &impl Field,
     attribute: &syn::Attribute,
     validation_args: &'a syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
 ) -> syn::punctuated::Punctuated<&'a syn::Lit, syn::token::Comma> {

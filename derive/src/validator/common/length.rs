@@ -12,11 +12,11 @@ use proc_macro2::TokenStream;
 use quote::quote;
 use syn::spanned::Spanned;
 
-pub fn extract_length_validator_tokens<F: Field>(
+pub fn extract_length_validator_tokens(
     validation_label: &str,
     min_label: &str,
     max_label: &str,
-    field: &F,
+    field: &impl Field,
     attribute: &syn::Attribute,
     validation_args: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
 ) -> (TokenStream, TokenStream) {
@@ -60,11 +60,11 @@ pub fn extract_length_validator_tokens<F: Field>(
     (min_tokens, max_tokens)
 }
 
-fn update_limit_value<F: Field>(
+fn update_limit_value(
     validation_label: &str,
     min_label: &str,
     max_label: &str,
-    field: &F,
+    field: &impl Field,
     limit_name_value: &syn::MetaNameValue,
     min_value: &mut Option<syn::LitInt>,
     max_value: &mut Option<syn::LitInt>,
@@ -94,10 +94,10 @@ fn update_limit_value<F: Field>(
     }
 }
 
-fn update_limit_int<F: Field>(
+fn update_limit_int(
     validation_label: &str,
     target: &mut Option<syn::LitInt>,
-    field: &F,
+    field: &impl Field,
     lit: &syn::Lit,
 ) {
     if target.is_some() {

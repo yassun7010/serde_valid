@@ -5,9 +5,9 @@ use crate::abort::{
 use crate::types::{Field, SingleIdentPath};
 use syn::spanned::Spanned;
 
-pub fn check_validation_arg_meta<F: Field>(
+pub fn check_validation_arg_meta(
     validation_label: &str,
-    field: &F,
+    field: &impl Field,
     arg: &syn::Meta,
     allow_common_validation_args: bool,
 ) {
@@ -34,9 +34,9 @@ pub fn check_validation_arg_meta<F: Field>(
     }
 }
 
-pub fn check_lit<F: Field>(
+pub fn check_lit(
     validation_label: &str,
-    field: &F,
+    field: &impl Field,
     span: proc_macro2::Span,
     lit: &syn::Lit,
 ) {

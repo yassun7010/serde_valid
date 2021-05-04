@@ -10,8 +10,8 @@ use syn::spanned::Spanned;
 
 const VALIDATION_LABEL: &'static str = "custom";
 
-pub fn extract_generic_custom_validator<F: Field>(
-    field: &F,
+pub fn extract_generic_custom_validator(
+    field: &impl Field,
     attribute: &syn::Attribute,
     syn::MetaList {
         nested: validation_args,
@@ -76,10 +76,10 @@ fn update_custom_validator_from_meta_path(
     *custom_validation_fn = Some(quote!(#fn_name));
 }
 
-fn update_custom_validator_from_meta_list<F: Field>(
+fn update_custom_validator_from_meta_list(
     custom_validation_fn: &mut Option<TokenStream>,
     custom_validation_args: &mut Option<TokenStream>,
-    field: &F,
+    field: &impl Field,
     fn_define: &syn::MetaList,
 ) {
     let fn_name = &fn_define.path;
@@ -91,8 +91,8 @@ fn update_custom_validator_from_meta_list<F: Field>(
     *custom_validation_args = Some(quote!(#fn_args));
 }
 
-fn extract_custom_validator_args<F: Field>(
-    field: &F,
+fn extract_custom_validator_args(
+    field: &impl Field,
     fn_args: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
 ) -> syn::punctuated::Punctuated<TokenStream, syn::token::Comma> {
     fn_args
@@ -101,7 +101,7 @@ fn extract_custom_validator_args<F: Field>(
         .collect()
 }
 
-fn extract_custom_validator_arg<F: Field>(field: &F, fn_arg: &syn::NestedMeta) -> TokenStream {
+fn extract_custom_validator_arg(field: &impl Field, fn_arg: &syn::NestedMeta) -> TokenStream {
     match fn_arg {
         syn::NestedMeta::Lit(lit) => quote!(#lit),
         syn::NestedMeta::Meta(meta) => match meta {

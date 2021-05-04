@@ -1,9 +1,9 @@
 use super::abort_invalid_attribute_on_field;
 use crate::types::{Field, SingleIdentPath};
 
-pub fn abort_duplicated_argument<F: Field>(
+pub fn abort_duplicated_argument(
     validation_label: &str,
-    field: &F,
+    field: &impl Field,
     span: proc_macro2::Span,
     path_ident: &syn::Ident,
 ) -> ! {
@@ -17,9 +17,9 @@ pub fn abort_duplicated_argument<F: Field>(
     );
 }
 
-pub fn abort_duplicated_lit_argument<F: Field>(
+pub fn abort_duplicated_lit_argument(
     validation_label: &str,
-    field: &F,
+    field: &impl Field,
     span: proc_macro2::Span,
 ) -> ! {
     abort_invalid_attribute_on_field(
@@ -32,9 +32,9 @@ pub fn abort_duplicated_lit_argument<F: Field>(
     );
 }
 
-pub fn abort_duplicated_path_argument<F: Field>(
+pub fn abort_duplicated_path_argument(
     validation_label: &str,
-    field: &F,
+    field: &impl Field,
     span: proc_macro2::Span,
     path: &syn::Path,
 ) -> ! {
@@ -43,9 +43,9 @@ pub fn abort_duplicated_path_argument<F: Field>(
 }
 
 #[allow(dead_code)]
-pub fn abort_duplicated_list_argument<F: Field>(
+pub fn abort_duplicated_list_argument(
     validation_label: &str,
-    field: &F,
+    field: &impl Field,
     span: proc_macro2::Span,
     list: &syn::MetaList,
 ) -> ! {
@@ -53,9 +53,9 @@ pub fn abort_duplicated_list_argument<F: Field>(
 }
 
 #[allow(dead_code)]
-pub fn abort_duplicated_name_value_argument<F: Field>(
+pub fn abort_duplicated_name_value_argument(
     validation_label: &str,
-    field: &F,
+    field: &impl Field,
     span: proc_macro2::Span,
     name_value: &syn::MetaNameValue,
 ) -> ! {

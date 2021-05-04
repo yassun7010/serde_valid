@@ -12,8 +12,8 @@ use nested_meta_path::extract_validator_from_nested_meta_path;
 use proc_macro_error::abort;
 use syn::spanned::Spanned;
 
-pub fn extract_meta_validator<F: Field>(
-    field: &F,
+pub fn extract_meta_validator(
+    field: &impl Field,
     attribute: &syn::Attribute,
 ) -> Option<Validator> {
     match attribute.parse_meta() {

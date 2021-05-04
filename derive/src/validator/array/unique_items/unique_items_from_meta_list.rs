@@ -7,8 +7,8 @@ use proc_macro2::TokenStream;
 use quote::quote;
 use syn::spanned::Spanned;
 
-pub fn extract_array_unique_items_validator_from_meta_list<F: Field>(
-    field: &F,
+pub fn extract_array_unique_items_validator_from_meta_list(
+    field: &impl Field,
     attribute: &syn::Attribute,
     validation_list: &syn::MetaList,
 ) -> Validator {
@@ -29,8 +29,8 @@ pub fn extract_array_unique_items_validator_from_meta_list<F: Field>(
     }
 }
 
-fn inner_extract_array_unique_items_validator_from_meta_list<F: Field>(
-    field: &F,
+fn inner_extract_array_unique_items_validator_from_meta_list(
+    field: &impl Field,
     attribute: &syn::Attribute,
     validation_list: &syn::MetaList,
 ) -> TokenStream {

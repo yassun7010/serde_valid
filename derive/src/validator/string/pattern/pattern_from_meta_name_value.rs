@@ -5,8 +5,8 @@ use crate::validator::Validator;
 use proc_macro2::TokenStream;
 use quote::quote;
 
-pub fn extract_string_pattern_validator_from_meta_name_value<F: Field>(
-    field: &F,
+pub fn extract_string_pattern_validator_from_meta_name_value(
+    field: &impl Field,
     validation_value: &syn::Lit,
 ) -> Validator {
     if let Some(array_field) = field.array_field() {
@@ -25,8 +25,8 @@ pub fn extract_string_pattern_validator_from_meta_name_value<F: Field>(
     }
 }
 
-fn inner_extract_string_pattern_validator_from_meta_name_value<F: Field>(
-    field: &F,
+fn inner_extract_string_pattern_validator_from_meta_name_value(
+    field: &impl Field,
     validation_value: &syn::Lit,
 ) -> TokenStream {
     let pattern = get_str(VALIDATION_LABEL, field, validation_value);

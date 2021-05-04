@@ -9,8 +9,8 @@ use quote::quote;
 
 const VALIDATION_LABEL: &'static str = "multiple_of";
 
-fn inner_extract_numeric_multiple_of_validator<F: Field>(
-    field: &F,
+fn inner_extract_numeric_multiple_of_validator(
+    field: &impl Field,
     multiple_of: crate::lit::LitNumeric,
     message: TokenStream,
 ) -> TokenStream {

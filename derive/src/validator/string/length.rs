@@ -8,8 +8,8 @@ const VALIDATION_LABEL: &'static str = "length";
 const MIN_LABEL: &'static str = "min_length";
 const MAX_LABEL: &'static str = "max_length";
 
-pub fn extract_string_length_validator<F: Field>(
-    field: &F,
+pub fn extract_string_length_validator(
+    field: &impl Field,
     attribute: &syn::Attribute,
     validation_list: &syn::MetaList,
 ) -> Validator {
@@ -53,8 +53,8 @@ pub fn extract_string_length_validator<F: Field>(
     }
 }
 
-fn inner_extract_string_length_validator<F: Field>(
-    field: &F,
+fn inner_extract_string_length_validator(
+    field: &impl Field,
     attribute: &syn::Attribute,
     validation_args: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
 ) -> TokenStream {
