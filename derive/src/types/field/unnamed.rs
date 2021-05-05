@@ -58,7 +58,7 @@ impl Field for UnnamedField {
         if let Some(ty) = extract_element_type_from_array(&self.ty()) {
             Some(UnnamedField {
                 index: self.index,
-                name: self.name.to_owned(),
+                name: self.name.clone(),
                 ident: make_element_ident(&self.ident, self.field.span()),
                 field: make_element_field(&self.field, self.field.span(), ty),
             })
@@ -71,7 +71,7 @@ impl Field for UnnamedField {
         if let Some(ty) = extract_type_from_option(&self.ty()) {
             Some(UnnamedField {
                 index: self.index,
-                name: self.name.to_owned(),
+                name: self.name.clone(),
                 ident: make_some_ident(&self.ident, self.field.span()),
                 field: make_some_field(&self.field, self.field.span(), ty),
             })

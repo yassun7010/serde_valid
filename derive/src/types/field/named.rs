@@ -52,7 +52,7 @@ impl Field for NamedField {
     fn array_field(&self) -> Option<NamedField> {
         if let Some(ty) = extract_element_type_from_array(&self.field.ty) {
             Some(NamedField {
-                name: self.name.to_owned(),
+                name: self.name.clone(),
                 field: make_element_field(&self.field, self.field.span(), ty),
             })
         } else {
@@ -63,7 +63,7 @@ impl Field for NamedField {
     fn option_field(&self) -> Option<NamedField> {
         if let Some(ty) = extract_type_from_option(&self.field.ty) {
             Some(NamedField {
-                name: self.name.to_owned(),
+                name: self.name.clone(),
                 field: make_some_field(&self.field, self.field.span(), ty),
             })
         } else {

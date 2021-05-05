@@ -187,7 +187,7 @@ fn update_numeric(
 
     *target = Some(NumericInfo::new(
         get_numeric(VALIDATION_LABEL, field, limit_value),
-        limit_name_ident.to_owned(),
+        limit_name_ident.clone(),
     ));
 }
 

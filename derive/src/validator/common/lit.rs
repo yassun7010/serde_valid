@@ -4,8 +4,8 @@ use crate::types::Field;
 
 pub fn get_numeric(validation_label: &str, field: &impl Field, lit: &syn::Lit) -> LitNumeric {
     match lit {
-        syn::Lit::Int(l) => LitNumeric::Int(l.to_owned()),
-        syn::Lit::Float(l) => LitNumeric::Float(l.to_owned()),
+        syn::Lit::Int(l) => LitNumeric::Int(l.clone()),
+        syn::Lit::Float(l) => LitNumeric::Float(l.clone()),
         _ => abort_invalid_attribute_on_field(
             field,
             lit.span(),
@@ -19,7 +19,7 @@ pub fn get_numeric(validation_label: &str, field: &impl Field, lit: &syn::Lit) -
 
 pub fn get_integer(validation_label: &str, field: &impl Field, lit: &syn::Lit) -> syn::LitInt {
     match lit {
-        syn::Lit::Int(lit_int) => lit_int.to_owned(),
+        syn::Lit::Int(lit_int) => lit_int.clone(),
         _ => abort_invalid_attribute_on_field(
             field,
             lit.span(),
@@ -33,7 +33,7 @@ pub fn get_integer(validation_label: &str, field: &impl Field, lit: &syn::Lit) -
 
 pub fn get_str(validation_label: &str, field: &impl Field, lit: &syn::Lit) -> syn::LitStr {
     match lit {
-        syn::Lit::Str(l) => l.to_owned(),
+        syn::Lit::Str(l) => l.clone(),
         _ => abort_invalid_attribute_on_field(
             field,
             lit.span(),

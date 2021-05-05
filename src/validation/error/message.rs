@@ -4,7 +4,7 @@ pub trait ToDefaultMessage {
 
 impl ToDefaultMessage for String {
     fn to_default_message(&self) -> String {
-        self.to_owned()
+        self.clone()
     }
 }
 

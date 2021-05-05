@@ -27,7 +27,7 @@ where
 
 impl ToJson for serde_json::Map<String, serde_json::Value> {
     fn to_json(&self) -> String {
-        let value = serde_json::Value::Object(self.to_owned());
+        let value = serde_json::Value::Object(self.clone());
         format!("{}", value)
     }
 }

@@ -50,8 +50,8 @@ pub fn collect_struct_unnamed_fields_validators(
 ) -> Vec<FieldValidators<UnnamedField>> {
     let mut struct_validators = vec![];
     for (index, field) in fields.unnamed.iter().enumerate() {
-        let unnamed_field = UnnamedField::new(index, field.to_owned());
-        let mut field_validators = FieldValidators::new(unnamed_field.to_owned());
+        let unnamed_field = UnnamedField::new(index, field.clone());
+        let mut field_validators = FieldValidators::new(unnamed_field.clone());
         for attribute in unnamed_field.attrs() {
             if attribute.path != parse_quote!(validate) {
                 continue;

@@ -20,7 +20,7 @@ pub fn extract_type_from_option(ty: &syn::Type) -> Option<syn::Type> {
         }
     })
     .and_then(|generic_arg| match *generic_arg {
-        GenericArgument::Type(ref ty) => Some(ty.to_owned()),
+        GenericArgument::Type(ref ty) => Some(ty.clone()),
         _ => None,
     })
 }
@@ -64,8 +64,8 @@ pub fn make_some_field(
         .as_ref()
         .map(|ident| make_some_ident(ident, span));
     syn::Field {
-        attrs: field.attrs.to_owned(),
-        vis: field.vis.to_owned(),
+        attrs: field.attrs.clone(),
+        vis: field.vis.clone(),
         ident: inner_ident,
         colon_token: field.colon_token,
         ty: inner_ty,

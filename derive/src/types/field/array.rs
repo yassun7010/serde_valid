@@ -7,7 +7,7 @@ pub fn extract_element_type_from_array(ty: &syn::Type) -> Option<syn::Type> {
         syn::Type::Path(ref typepath) if typepath.qself.is_none() => {
             extract_element_type_from_vec(&typepath.path, ty)
         }
-        syn::Type::Array(ref array) => Some(*array.elem.to_owned()),
+        syn::Type::Array(ref array) => Some(*array.elem.clone()),
         _ => None,
     }
 }
@@ -31,7 +31,7 @@ fn extract_element_type_from_vec(path: &Path, ty: &syn::Type) -> Option<syn::Typ
                 }
             })
             .and_then(|generic_arg| match *generic_arg {
-                GenericArgument::Type(ref ty) => Some(ty.to_owned()),
+                GenericArgument::Type(ref ty) => Some(ty.clone()),
                 _ => None,
             })
     } else {
@@ -56,8 +56,8 @@ pub fn make_element_field(
         .as_ref()
         .map(|ident| make_element_ident(ident, span));
     syn::Field {
-        attrs: field.attrs.to_owned(),
-        vis: field.vis.to_owned(),
+        attrs: field.attrs.clone(),
+        vis: field.vis.clone(),
         ident: inner_ident,
         colon_token: field.colon_token,
         ty: inner_ty,
