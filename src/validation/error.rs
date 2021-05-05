@@ -57,7 +57,7 @@ pub enum Error {
     Nested(Errors),
 }
 
-pub fn serialize_error_message<T, S>(message: &T, serializer: S) -> Result<S::Ok, S::Error>
+fn serialize_error_message<T, S>(message: &T, serializer: S) -> Result<S::Ok, S::Error>
 where
     T: std::fmt::Display,
     S: serde::Serializer,
