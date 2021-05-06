@@ -2,7 +2,7 @@ use proc_macro_error::abort;
 use syn::spanned::Spanned;
 use syn::{GenericArgument, Path, PathArguments, PathSegment};
 
-pub fn extract_type_from_option(ty: &syn::Type) -> Option<syn::Type> {
+pub fn extract_type_from_option(ty: &syn::Type) -> Option<&syn::Type> {
     match *ty {
         syn::Type::Path(ref typepath) if typepath.qself.is_none() => Some(&typepath.path),
         _ => None,
@@ -19,8 +19,8 @@ pub fn extract_type_from_option(ty: &syn::Type) -> Option<syn::Type> {
             ),
         }
     })
-    .and_then(|generic_arg| match *generic_arg {
-        GenericArgument::Type(ref ty) => Some(ty.clone()),
+    .and_then(|generic_arg| match generic_arg {
+        GenericArgument::Type(ty) => Some(ty),
         _ => None,
     })
 }
@@ -57,7 +57,7 @@ pub fn make_some_ident(ident: &syn::Ident, span: proc_macro2::Span) -> syn::Iden
 pub fn make_some_field(
     field: &syn::Field,
     span: proc_macro2::Span,
-    inner_ty: syn::Type,
+    inner_ty: &syn::Type,
 ) -> syn::Field {
     let inner_ident = field
         .ident
@@ -68,6 +68,6 @@ pub fn make_some_field(
         vis: field.vis.clone(),
         ident: inner_ident,
         colon_token: field.colon_token,
-        ty: inner_ty,
+        ty: inner_ty.clone(),
     }
 }
