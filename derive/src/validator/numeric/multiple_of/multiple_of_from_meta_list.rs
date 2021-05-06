@@ -56,11 +56,11 @@ fn inner_extract_numeric_multiple_of_validator_from_meta_list(
     inner_extract_numeric_multiple_of_validator(field, multiple_of, message)
 }
 
-fn get_multiple_of_from_meta_list(
+fn get_multiple_of_from_meta_list<'a>(
     field: &impl Field,
     attribute: &syn::Attribute,
-    validation_args: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
-) -> LitNumeric {
+    validation_args: &'a syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
+) -> LitNumeric<'a> {
     let mut multiple_of = None;
     for validation_arg in validation_args {
         match validation_arg {

@@ -60,14 +60,14 @@ pub fn extract_length_validator_tokens(
     (min_tokens, max_tokens)
 }
 
-fn update_limit_value(
+fn update_limit_value<'a>(
     validation_label: &str,
     min_label: &str,
     max_label: &str,
     field: &impl Field,
-    limit_name_value: &syn::MetaNameValue,
-    min_value: &mut Option<syn::LitInt>,
-    max_value: &mut Option<syn::LitInt>,
+    limit_name_value: &'a syn::MetaNameValue,
+    min_value: &mut Option<&'a syn::LitInt>,
+    max_value: &mut Option<&'a syn::LitInt>,
 ) {
     let syn::MetaNameValue {
         path: limit_name,
@@ -94,11 +94,11 @@ fn update_limit_value(
     }
 }
 
-fn update_limit_int(
+fn update_limit_int<'a>(
     validation_label: &str,
-    target: &mut Option<syn::LitInt>,
+    target: &mut Option<&'a syn::LitInt>,
     field: &impl Field,
-    lit: &syn::Lit,
+    lit: &'a syn::Lit,
 ) {
     if target.is_some() {
         abort_duplicated_lit_argument(validation_label, field, lit.span());
@@ -106,7 +106,7 @@ fn update_limit_int(
     *target = Some(get_integer(validation_label, field, lit));
 }
 
-fn get_limit_tokens(limit: Option<syn::LitInt>) -> proc_macro2::TokenStream {
+fn get_limit_tokens(limit: Option<&syn::LitInt>) -> proc_macro2::TokenStream {
     match limit {
         Some(value) => quote!(Some(#value)),
         None => quote!(None),

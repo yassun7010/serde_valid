@@ -130,13 +130,13 @@ fn extract_numeric_range_validator_tokens(
     (minimum_tokens, maximum_tokens)
 }
 
-fn update_limit(
+fn update_limit<'a>(
     field: &impl Field,
-    limit_name_value: &syn::MetaNameValue,
-    minimum: &mut Option<NumericInfo>,
-    exclusive_minimum: &mut Option<NumericInfo>,
-    maximum: &mut Option<NumericInfo>,
-    exclusive_maximum: &mut Option<NumericInfo>,
+    limit_name_value: &'a syn::MetaNameValue,
+    minimum: &mut Option<NumericInfo<'a>>,
+    exclusive_minimum: &mut Option<NumericInfo<'a>>,
+    maximum: &mut Option<NumericInfo<'a>>,
+    exclusive_maximum: &mut Option<NumericInfo<'a>>,
 ) {
     let syn::MetaNameValue {
         path: limit_name,
@@ -170,10 +170,10 @@ fn update_limit(
     }
 }
 
-fn update_numeric(
-    target: &mut Option<NumericInfo>,
+fn update_numeric<'a>(
+    target: &mut Option<NumericInfo<'a>>,
     field: &impl Field,
-    limit_value: &syn::Lit,
+    limit_value: &'a syn::Lit,
     limit_name_ident: &syn::Ident,
 ) {
     if target.is_some() {

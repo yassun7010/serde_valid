@@ -2,10 +2,14 @@ use crate::abort::abort_invalid_attribute_on_field;
 use crate::lit::LitNumeric;
 use crate::types::Field;
 
-pub fn get_numeric(validation_label: &str, field: &impl Field, lit: &syn::Lit) -> LitNumeric {
+pub fn get_numeric<'a>(
+    validation_label: &str,
+    field: &impl Field,
+    lit: &'a syn::Lit,
+) -> LitNumeric<'a> {
     match lit {
-        syn::Lit::Int(l) => LitNumeric::Int(l.clone()),
-        syn::Lit::Float(l) => LitNumeric::Float(l.clone()),
+        syn::Lit::Int(l) => LitNumeric::Int(l),
+        syn::Lit::Float(l) => LitNumeric::Float(l),
         _ => abort_invalid_attribute_on_field(
             field,
             lit.span(),
@@ -17,9 +21,13 @@ pub fn get_numeric(validation_label: &str, field: &impl Field, lit: &syn::Lit) -
     }
 }
 
-pub fn get_integer(validation_label: &str, field: &impl Field, lit: &syn::Lit) -> syn::LitInt {
+pub fn get_integer<'a>(
+    validation_label: &str,
+    field: &impl Field,
+    lit: &'a syn::Lit,
+) -> &'a syn::LitInt {
     match lit {
-        syn::Lit::Int(lit_int) => lit_int.clone(),
+        syn::Lit::Int(lit_int) => lit_int,
         _ => abort_invalid_attribute_on_field(
             field,
             lit.span(),
