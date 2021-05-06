@@ -4,6 +4,7 @@ use crate::types::{Field, NamedField};
 use crate::validator::{extract_meta_validator, FieldValidators};
 use proc_macro2::TokenStream;
 use quote::quote;
+use std::borrow::Cow;
 use std::iter::FromIterator;
 use syn::parse_quote;
 use syn::spanned::Spanned;
@@ -41,22 +42,22 @@ pub fn expand_named_struct_derive(
     )
 }
 
-pub fn collect_struct_named_fields_validators(
-    fields: &syn::FieldsNamed,
-) -> Vec<FieldValidators<NamedField>> {
+pub fn collect_struct_named_fields_validators<'a>(
+    fields: &'a syn::FieldsNamed,
+) -> Vec<FieldValidators<'a, NamedField<'a>>> {
     let mut struct_validators = vec![];
     for field in fields.named.iter() {
-        let mut field_validators = FieldValidators::new(NamedField::new(field));
-        let named_field = &NamedField::new(field);
+        let named_field = NamedField::new(field);
+        let mut field_validators = FieldValidators::new(Cow::Owned(NamedField::new(field)));
         for attribute in named_field.attrs() {
             if attribute.path != parse_quote!(validate) {
                 continue;
             }
-            let validator = extract_meta_validator(named_field, attribute);
+            let validator = extract_meta_validator(&named_field, attribute);
             match validator {
                 Some(validator) => field_validators.push(validator),
                 None => abort_invalid_attribute_on_field(
-                    named_field,
+                    &named_field,
                     attribute.span(),
                     "it needs at least one validator",
                 ),

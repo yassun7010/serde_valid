@@ -10,6 +10,7 @@ pub use crate::types::Field;
 pub use meta::extract_meta_validator;
 use proc_macro2::TokenStream;
 use quote::quote;
+use std::borrow::Cow;
 use std::iter::FromIterator;
 
 pub enum Validator {
@@ -18,19 +19,15 @@ pub enum Validator {
     Array(Box<Validator>),
 }
 
-pub struct FieldValidators<F: Field> {
-    field: F,
+pub struct FieldValidators<'a, F: Field + Clone + 'a> {
+    field: Cow<'a, F>,
     validators: Vec<TokenStream>,
-    optional_validators: Option<Box<FieldValidators<F>>>,
-    array_validators: Option<Box<FieldValidators<F>>>,
+    optional_validators: Option<Box<FieldValidators<'a, F>>>,
+    array_validators: Option<Box<FieldValidators<'a, F>>>,
 }
 
-impl<F: Field> FieldValidators<F> {
-    pub fn new(field: F) -> Self {
-        Self::inner_new(field)
-    }
-
-    fn inner_new(field: F) -> Self {
+impl<'a, F: Field + Clone> FieldValidators<'a, F> {
+    pub fn new(field: Cow<'a, F>) -> Self {
         Self {
             field,
             validators: vec![],
@@ -50,7 +47,7 @@ impl<F: Field> FieldValidators<F> {
                 Some(optional_validator) => optional_validator.push(*ty),
                 None => {
                     if let Some(field) = self.field.option_field() {
-                        let mut option_validators = Box::new(Self::inner_new(field));
+                        let mut option_validators = Box::new(Self::new(Cow::Owned(field)));
                         option_validators.push(*ty);
                         self.optional_validators = Some(option_validators);
                     }
@@ -60,7 +57,7 @@ impl<F: Field> FieldValidators<F> {
                 Some(array_validator) => array_validator.push(*ty),
                 None => {
                     if let Some(field) = self.field.array_field() {
-                        let mut array_validators = Box::new(Self::inner_new(field));
+                        let mut array_validators = Box::new(Self::new(Cow::Owned(field)));
                         array_validators.push(*ty);
                         self.array_validators = Some(array_validators);
                     }
