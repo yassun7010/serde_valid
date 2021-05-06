@@ -174,7 +174,7 @@ fn update_numeric<'a>(
     target: &mut Option<NumericInfo<'a>>,
     field: &impl Field,
     limit_value: &'a syn::Lit,
-    limit_name_ident: &syn::Ident,
+    limit_name_ident: &'a syn::Ident,
 ) {
     if target.is_some() {
         abort_duplicated_argument(
@@ -187,7 +187,7 @@ fn update_numeric<'a>(
 
     *target = Some(NumericInfo::new(
         get_numeric(VALIDATION_LABEL, field, limit_value),
-        limit_name_ident.clone(),
+        limit_name_ident,
     ));
 }
 

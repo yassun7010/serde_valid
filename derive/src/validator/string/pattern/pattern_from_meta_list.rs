@@ -56,11 +56,11 @@ fn inner_extract_string_pattern_of_validator_from_meta_list(
     inner_extract_string_pattern_validator(field, &pattern, &message)
 }
 
-fn get_pattern_from_meta_list(
+fn get_pattern_from_meta_list<'a>(
     field: &impl Field,
     attribute: &syn::Attribute,
-    validation_args: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
-) -> syn::LitStr {
+    validation_args: &'a syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
+) -> &'a syn::LitStr {
     let mut pattern = None;
 
     for validation_arg in validation_args {

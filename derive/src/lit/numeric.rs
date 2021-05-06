@@ -8,11 +8,11 @@ pub enum LitNumeric<'a> {
 
 pub struct NumericInfo<'a> {
     lit: LitNumeric<'a>,
-    path_ident: syn::Ident,
+    path_ident: &'a syn::Ident,
 }
 
 impl<'a> NumericInfo<'a> {
-    pub fn new(lit: LitNumeric<'a>, path_ident: syn::Ident) -> Self {
+    pub fn new(lit: LitNumeric<'a>, path_ident: &'a syn::Ident) -> Self {
         Self { lit, path_ident }
     }
     pub fn path_ident(&self) -> &syn::Ident {
