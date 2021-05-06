@@ -46,8 +46,8 @@ pub fn collect_struct_named_fields_validators(
 ) -> Vec<FieldValidators<NamedField>> {
     let mut struct_validators = vec![];
     for field in fields.named.iter() {
-        let mut field_validators = FieldValidators::new(NamedField::new(field.clone()));
-        let named_field = &NamedField::new(field.clone());
+        let mut field_validators = FieldValidators::new(NamedField::new(field));
+        let named_field = &NamedField::new(field);
         for attribute in named_field.attrs() {
             if attribute.path != parse_quote!(validate) {
                 continue;
