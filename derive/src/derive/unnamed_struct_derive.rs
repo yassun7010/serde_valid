@@ -52,23 +52,27 @@ pub fn collect_struct_unnamed_fields_validators<'a>(
     let mut struct_validators = vec![];
     for (index, field) in fields.unnamed.iter().enumerate() {
         let unnamed_field = UnnamedField::new(index, field);
-        let mut field_validators =
-            FieldValidators::new(Cow::Owned(UnnamedField::new(index, field)));
 
-        for attribute in unnamed_field.attrs() {
-            if attribute.path != parse_quote!(validate) {
-                continue;
-            }
-            let validator = extract_meta_validator(&unnamed_field, attribute);
-            match validator {
-                Some(validator) => field_validators.push(validator),
-                None => abort_invalid_attribute_on_field(
-                    &unnamed_field,
-                    attribute.span(),
-                    "it needs at least one validator",
-                ),
-            }
-        }
+        let validators = unnamed_field
+            .attrs()
+            .iter()
+            .filter(|attribute| attribute.path == parse_quote!(validate))
+            .map(|attribute| {
+                extract_meta_validator(&unnamed_field, attribute).unwrap_or_else(|| {
+                    abort_invalid_attribute_on_field(
+                        &unnamed_field,
+                        attribute.span(),
+                        "it needs at least one validator",
+                    )
+                })
+            })
+            .collect::<Vec<_>>();
+
+        let mut field_validators = FieldValidators::new(Cow::Owned(unnamed_field));
+        validators
+            .into_iter()
+            .for_each(|validator| field_validators.push(validator));
+
         struct_validators.push(field_validators)
     }
 
