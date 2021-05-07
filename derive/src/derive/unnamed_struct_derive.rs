@@ -17,7 +17,7 @@ pub fn expand_unnamed_struct_derive(
     let (impl_generics, type_generics, where_clause) = input.generics.split_for_impl();
 
     let validators = TokenStream::from_iter(
-        collect_struct_unnamed_fields_validators(fields)
+        collect_unnamed_fields_validators(fields)
             .iter()
             .map(|validator| validator.generate_tokens()),
     );
@@ -46,7 +46,7 @@ pub fn expand_unnamed_struct_derive(
     )
 }
 
-pub fn collect_struct_unnamed_fields_validators<'a>(
+pub fn collect_unnamed_fields_validators<'a>(
     fields: &'a syn::FieldsUnnamed,
 ) -> Vec<FieldValidators<'a, UnnamedField<'a>>> {
     let mut struct_validators = vec![];
