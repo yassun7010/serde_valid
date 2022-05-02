@@ -1,9 +1,9 @@
-#[cfg(not(feature = "serde_error"))]
-mod default_error;
-#[cfg(not(feature = "serde_error"))]
-pub use default_error::*;
+mod from_reader;
+mod from_slice;
+mod from_str;
+mod from_value;
 
-#[cfg(feature = "serde_error")]
-mod serde_error;
-#[cfg(feature = "serde_error")]
-pub use serde_error::*;
+pub use from_reader::DeserializeWithValidationFromReader;
+pub use from_slice::DeserializeWithValidationFromSlice;
+pub use from_str::DeserializeWithValidationFromStr;
+pub use from_value::DeserializeWithValidationFromValue;

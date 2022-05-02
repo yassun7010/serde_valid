@@ -10,9 +10,7 @@ pub use validation::{
     validate_string_length, validate_string_pattern, Limit,
 };
 
-#[cfg(not(serde_error))]
 mod error;
-#[cfg(not(serde_error))]
 pub use error::Error;
 
 pub trait Validate {
