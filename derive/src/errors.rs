@@ -35,6 +35,14 @@ impl Error {
         )
     }
 
+    pub fn new_literal_meta_item_error(span: proc_macro2::Span) -> Self {
+        Self::new(span, "literal meta item does not support.")
+    }
+
+    pub fn new_attribute_parse_error(span: proc_macro2::Span, error: &syn::Error) -> Self {
+        Self::new(span, format!("attribute parse error: {error}"))
+    }
+
     pub fn to_compile_error(&self) -> TokenStream {
         self.0.to_compile_error()
     }

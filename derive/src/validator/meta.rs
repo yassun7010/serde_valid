@@ -23,9 +23,11 @@ pub fn extract_meta_validator(
             for meta_item in nested {
                 match meta_item {
                     syn::NestedMeta::Meta(item) => match item {
-                        syn::Meta::Path(validation) => {
+                        syn::Meta::Path(validation_path) => {
                             return extract_validator_from_nested_meta_path(
-                                field, attribute, validation,
+                                field,
+                                attribute,
+                                validation_path,
                             )
                         }
                         syn::Meta::List(validation_list) => {
@@ -43,10 +45,9 @@ pub fn extract_meta_validator(
                             )
                         }
                     },
-                    _ => abort!(
-                        meta_item.span(),
-                        "Found a non Meta while looking for validators"
-                    ),
+                    syn::NestedMeta::Lit(_) => {
+                        return Err(vec![Error::new_literal_meta_item_error(meta_item.span())])
+                    }
                 };
             }
         }
@@ -56,12 +57,12 @@ pub fn extract_meta_validator(
         Ok(syn::Meta::NameValue(_)) => {
             abort!(attribute.span(), "Unexpected name=value argument")
         }
-        Err(err) => abort!(
-            attribute.span(),
-            "Got something other than a list of attributes while checking field `{}`: {:?}",
-            field.ident(),
-            err
-        ),
+        Err(error) => {
+            return Err(vec![Error::new_attribute_parse_error(
+                attribute.span(),
+                &error,
+            )])
+        }
     };
 
     Err(vec![Error::new_invalid_field_attribute_error(
