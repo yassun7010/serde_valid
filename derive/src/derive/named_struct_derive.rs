@@ -1,4 +1,4 @@
-use crate::errors::fields_errors_tokens;
+use crate::errors::{fields_errors_tokens, Errors};
 use crate::types::{Field, NamedField};
 use crate::validator::{extract_meta_validator, FieldValidators};
 use proc_macro2::TokenStream;
@@ -10,7 +10,7 @@ use syn::parse_quote;
 pub fn expand_named_struct_derive(
     input: &syn::DeriveInput,
     fields: &syn::FieldsNamed,
-) -> Result<TokenStream, Vec<syn::Error>> {
+) -> Result<TokenStream, Errors> {
     let ident = &input.ident;
     let (impl_generics, type_generics, where_clause) = input.generics.split_for_impl();
 
@@ -40,7 +40,7 @@ pub fn expand_named_struct_derive(
 
 pub fn collect_named_fields_validators<'a>(
     fields: &'a syn::FieldsNamed,
-) -> Result<Vec<FieldValidators<'a, NamedField<'a>>>, Vec<syn::Error>> {
+) -> Result<Vec<FieldValidators<'a, NamedField<'a>>>, Errors> {
     let mut struct_validators = vec![];
     for field in fields.named.iter() {
         let named_field = NamedField::new(field);

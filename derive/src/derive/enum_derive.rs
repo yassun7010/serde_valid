@@ -1,6 +1,6 @@
 use super::named_struct_derive::collect_named_fields_validators;
 use super::unnamed_struct_derive::collect_unnamed_fields_validators;
-use crate::errors::{fields_errors_tokens, new_type_errors_tokens};
+use crate::errors::{fields_errors_tokens, new_type_errors_tokens, Errors};
 use proc_macro2::TokenStream;
 use quote::quote;
 use std::iter::FromIterator;
@@ -10,7 +10,7 @@ type Variants = syn::punctuated::Punctuated<syn::Variant, syn::token::Comma>;
 pub fn expand_enum_validate_derive(
     input: &syn::DeriveInput,
     variants: &Variants,
-) -> Result<TokenStream, Vec<syn::Error>> {
+) -> Result<TokenStream, Errors> {
     let ident = &input.ident;
     let (impl_generics, type_generics, where_clause) = input.generics.split_for_impl();
     let validations = TokenStream::from_iter(
@@ -43,7 +43,7 @@ fn expand_enum_variant_named_fields_validation(
     ident: &syn::Ident,
     variant: &syn::Variant,
     named_fields: &syn::FieldsNamed,
-) -> Result<TokenStream, Vec<syn::Error>> {
+) -> Result<TokenStream, Errors> {
     let variant_ident = &variant.ident;
     let fields_validators = collect_named_fields_validators(named_fields)?;
     let mut fields_idents = syn::punctuated::Punctuated::<TokenStream, syn::token::Comma>::new();
@@ -78,7 +78,7 @@ fn expand_enum_variant_unnamed_fields_varidation(
     ident: &syn::Ident,
     variant: &syn::Variant,
     unnamed_fields: &syn::FieldsUnnamed,
-) -> Result<TokenStream, Vec<syn::Error>> {
+) -> Result<TokenStream, Errors> {
     let variant_ident = &variant.ident;
     let fields_validators = collect_unnamed_fields_validators(unnamed_fields)?;
     let mut fields_idents = syn::punctuated::Punctuated::<TokenStream, syn::token::Comma>::new();

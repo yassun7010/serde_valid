@@ -8,12 +8,14 @@ use proc_macro2::TokenStream;
 use syn::spanned::Spanned;
 use unnamed_struct_derive::expand_unnamed_struct_derive;
 
-pub fn expand_derive(input: &syn::DeriveInput) -> Result<TokenStream, Vec<syn::Error>> {
+use crate::errors::{Error, Errors};
+
+pub fn expand_derive(input: &syn::DeriveInput) -> Result<TokenStream, Errors> {
     match &input.data {
         syn::Data::Struct(syn::DataStruct { ref fields, .. }) => match fields {
             syn::Fields::Named(named) => expand_named_struct_derive(input, named),
             syn::Fields::Unnamed(unnamed) => expand_unnamed_struct_derive(input, unnamed),
-            syn::Fields::Unit => Err(vec![syn::Error::new(
+            syn::Fields::Unit => Err(vec![Error::new(
                 input.span(),
                 "#[derive(Validate)] does not support Unit Struct.",
             )]),
@@ -21,7 +23,7 @@ pub fn expand_derive(input: &syn::DeriveInput) -> Result<TokenStream, Vec<syn::E
         syn::Data::Enum(syn::DataEnum { variants, .. }) => {
             expand_enum_validate_derive(input, variants)
         }
-        syn::Data::Union(_) => Err(vec![syn::Error::new(
+        syn::Data::Union(_) => Err(vec![Error::new(
             input.span(),
             "#[derive(Validate)] does not support Union.",
         )]),

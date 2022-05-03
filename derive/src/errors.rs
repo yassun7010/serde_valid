@@ -13,21 +13,36 @@ pub fn new_type_errors_tokens() -> TokenStream {
     ))
 }
 
-pub fn invalid_field_attribute_error(
-    field: &impl Field,
-    span: proc_macro2::Span,
-    message: &str,
-) -> syn::Error {
-    syn::Error::new(
-        span,
-        format!(
-            "Invalid attribute #[validate] on field `{indent}`: {message}",
-            indent = field.ident()
-        ),
-    )
+#[derive(Debug)]
+pub struct Error(syn::Error);
+
+impl Error {
+    pub fn new<Message: Into<String>>(span: proc_macro2::Span, message: Message) -> Self {
+        Self(syn::Error::new(span, message.into()))
+    }
+
+    pub fn new_invalid_field_attribute_error(
+        field: &impl Field,
+        span: proc_macro2::Span,
+        message: &str,
+    ) -> Self {
+        Self::new(
+            span,
+            format!(
+                "Invalid attribute #[validate] on field `{indent}`: {message}",
+                indent = field.ident()
+            ),
+        )
+    }
+
+    pub fn to_compile_error(&self) -> TokenStream {
+        self.0.to_compile_error()
+    }
 }
 
-pub fn to_compile_errors(errors: Vec<syn::Error>) -> proc_macro2::TokenStream {
-    let compile_errors = errors.iter().map(syn::Error::to_compile_error);
+pub type Errors = Vec<Error>;
+
+pub fn to_compile_errors(errors: Errors) -> TokenStream {
+    let compile_errors = errors.iter().map(Error::to_compile_error);
     quote!(#(#compile_errors)*)
 }
