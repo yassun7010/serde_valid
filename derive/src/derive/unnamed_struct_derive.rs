@@ -12,7 +12,7 @@ use syn::spanned::Spanned;
 pub fn expand_unnamed_struct_derive(
     input: &syn::DeriveInput,
     fields: &syn::FieldsUnnamed,
-) -> TokenStream {
+) -> Result<TokenStream, Vec<syn::Error>> {
     let ident = &input.ident;
     let (impl_generics, type_generics, where_clause) = input.generics.split_for_impl();
 
@@ -27,7 +27,7 @@ pub fn expand_unnamed_struct_derive(
         new_type_errors_tokens()
     };
 
-    quote!(
+    Ok(quote!(
         impl #impl_generics ::serde_valid::Validate for #ident #type_generics #where_clause {
             fn validate(&self) -> Result<(), ::serde_valid::validation::Errors> {
                 let mut __errors = ::serde_valid::validation::MapErrors::new();
@@ -41,7 +41,7 @@ pub fn expand_unnamed_struct_derive(
                 }
             }
         }
-    )
+    ))
 }
 
 pub fn collect_unnamed_fields_validators<'a>(

@@ -7,7 +7,10 @@ use std::iter::FromIterator;
 
 type Variants = syn::punctuated::Punctuated<syn::Variant, syn::token::Comma>;
 
-pub fn expand_enum_validate_derive(input: &syn::DeriveInput, variants: &Variants) -> TokenStream {
+pub fn expand_enum_validate_derive(
+    input: &syn::DeriveInput,
+    variants: &Variants,
+) -> Result<TokenStream, Vec<syn::Error>> {
     let ident = &input.ident;
     let (impl_generics, type_generics, where_clause) = input.generics.split_for_impl();
 
@@ -26,7 +29,7 @@ pub fn expand_enum_validate_derive(input: &syn::DeriveInput, variants: &Variants
             .collect::<Vec<_>>(),
     );
 
-    quote!(
+    Ok(quote!(
         impl #impl_generics ::serde_valid::Validate for #ident #type_generics #where_clause {
             fn validate(&self) -> Result<(), ::serde_valid::validation::Errors> {
                 #validations
@@ -34,7 +37,7 @@ pub fn expand_enum_validate_derive(input: &syn::DeriveInput, variants: &Variants
                 Result::Ok(())
             }
         }
-    )
+    ))
 }
 
 fn expand_enum_variant_named_fields_validation(
