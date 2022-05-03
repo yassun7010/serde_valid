@@ -41,23 +41,28 @@ pub fn expand_named_struct_derive(
 pub fn collect_named_fields_validators<'a>(
     fields: &'a syn::FieldsNamed,
 ) -> Result<Vec<FieldValidators<'a, NamedField<'a>>>, Errors> {
-    let mut struct_validators = vec![];
-    for field in fields.named.iter() {
-        let named_field = NamedField::new(field);
-        let validators = named_field
-            .attrs()
-            .iter()
-            .filter(|attribute| attribute.path == parse_quote!(validate))
-            .map(|attribute| extract_meta_validator(&named_field, attribute))
-            .collect::<Result<Vec<_>, _>>()?;
+    fields
+        .named
+        .iter()
+        .map(collect_named_field_validators)
+        .collect()
+}
 
-        let mut field_validators = FieldValidators::new(Cow::Owned(named_field));
-        validators
-            .into_iter()
-            .for_each(|validator| field_validators.push(validator));
+fn collect_named_field_validators<'a>(
+    field: &'a syn::Field,
+) -> Result<FieldValidators<'a, NamedField<'a>>, Errors> {
+    let named_field = NamedField::new(field);
+    let validators = named_field
+        .attrs()
+        .iter()
+        .filter(|attribute| attribute.path == parse_quote!(validate))
+        .map(|attribute| extract_meta_validator(&named_field, attribute))
+        .collect::<Result<Vec<_>, Errors>>()?;
 
-        struct_validators.push(field_validators)
-    }
+    let mut field_validators = FieldValidators::new(Cow::Owned(named_field));
+    validators
+        .into_iter()
+        .for_each(|validator| field_validators.push(validator));
 
-    Ok(struct_validators)
+    Ok(field_validators)
 }
