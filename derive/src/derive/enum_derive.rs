@@ -28,9 +28,7 @@ pub fn expand_enum_validate_derive(input: &syn::DeriveInput, variants: &Variants
 
     quote!(
         impl #impl_generics ::serde_valid::Validate for #ident #type_generics #where_clause {
-            fn validate(
-                &self
-            ) -> Result<(), ::serde_valid::validation::Errors> {
+            fn validate(&self) -> Result<(), ::serde_valid::validation::Errors> {
                 #validations
 
                 Result::Ok(())
