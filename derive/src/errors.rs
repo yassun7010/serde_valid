@@ -10,3 +10,8 @@ pub fn new_type_errors_tokens() -> TokenStream {
         __errors.remove("0").unwrap()
     ))
 }
+
+pub fn to_compile_errors(errors: Vec<syn::Error>) -> proc_macro2::TokenStream {
+    let compile_errors = errors.iter().map(syn::Error::to_compile_error);
+    quote!(#(#compile_errors)*)
+}
