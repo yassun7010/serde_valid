@@ -43,7 +43,8 @@ struct TestStruct<'a> {
     #[validate(enumerate(5, 10, 15))]
     // Array validator
     #[validate(unique_items)]
-    #[validate(items(min_items = 3, max_items = 3))]
+    #[validate(min_items = 3)]
+    #[validate(max_items = 3)]
     // Numeric validator
     #[validate(multiple_of = 5)]
     #[validate(range(minimum = 5, maximum = 15))]
@@ -56,7 +57,8 @@ struct TestStruct<'a> {
     // Nested vec validator
     #[validate]
     // Array validator
-    #[validate(items(min_items = 1, max_items = 1))]
+    #[validate(min_items = 1)]
+    #[validate(max_items = 1)]
     nested_vec_struct: Vec<TestInnerStruct<'a>>,
 }
 
@@ -103,7 +105,8 @@ struct TestInnerStruct<'a> {
     #[validate(enumerate(5, 10, 15))]
     // Array validator
     #[validate(unique_items)]
-    #[validate(items(min_items = 3, max_items = 3))]
+    #[validate(min_items = 3)]
+    #[validate(max_items = 3)]
     // Numeric validator
     #[validate(multiple_of = 5)]
     #[validate(range(minimum = 5, maximum = 15))]

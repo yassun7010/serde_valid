@@ -11,7 +11,8 @@ fn nested_validate_test() {
 
     #[derive(Validate)]
     struct TestInnerStruct {
-        #[validate(items(min_items = 4, max_items = 4))]
+        #[validate(min_items = 4)]
+        #[validate(max_items = 4)]
         inner_val: Vec<i32>,
     }
 
@@ -28,13 +29,15 @@ fn nested_validate_vec_type_test() {
     #[derive(Debug, Validate)]
     struct TestStruct {
         #[validate]
-        #[validate(items(min_items = 2, max_items = 2))]
+        #[validate(min_items = 2)]
+        #[validate(max_items = 2)]
         val: Vec<TestInnerStruct>,
     }
 
     #[derive(Debug, Validate)]
     struct TestInnerStruct {
-        #[validate(items(min_items = 4, max_items = 4))]
+        #[validate(min_items = 4)]
+        #[validate(max_items = 4)]
         inner_val: Vec<i32>,
     }
 
@@ -61,7 +64,8 @@ fn nested_validate_option_type_test() {
 
     #[derive(Validate)]
     struct TestInnerStruct {
-        #[validate(items(min_items = 4, max_items = 4))]
+        #[validate(min_items = 4)]
+        #[validate(max_items = 4)]
         inner_val: Vec<i32>,
     }
 

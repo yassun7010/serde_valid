@@ -1,8 +1,6 @@
 use crate::errors::Error;
 use crate::types::{Field, SingleIdentPath};
-use crate::validator::array::{
-    extract_array_items_validator, extract_array_unique_items_validator_from_meta_list,
-};
+use crate::validator::array::extract_array_unique_items_validator_from_meta_list;
 use crate::validator::generic::{
     extract_generic_custom_validator, extract_generic_enumerate_validator,
 };
@@ -51,13 +49,6 @@ pub fn extract_validator_from_nested_meta_list(
         }
         "pattern" => {
             return Ok(extract_string_pattern_of_validator_from_meta_list(
-                field,
-                attribute,
-                validation_list,
-            ))
-        }
-        "items" => {
-            return Ok(extract_array_items_validator(
                 field,
                 attribute,
                 validation_list,

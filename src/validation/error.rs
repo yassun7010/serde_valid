@@ -6,7 +6,7 @@ mod numeric;
 mod object;
 mod string;
 
-pub use array::{ItemsParams, UniqueItemsParams};
+pub use array::{MaxItemsParams, MinItemsParams, UniqueItemsParams};
 pub use errors::{Errors, MapErrors, VecErrors};
 pub use generic::EnumerateParams;
 pub use message::{Message, ToDefaultMessage};
@@ -35,7 +35,11 @@ pub enum Error {
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    Items(Message<ItemsParams>),
+    MinItems(Message<MinItemsParams>),
+
+    #[error("{0}")]
+    #[serde(serialize_with = "serialize_error_message")]
+    MaxItems(Message<MaxItemsParams>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
