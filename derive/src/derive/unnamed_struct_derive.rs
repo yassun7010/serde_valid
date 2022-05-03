@@ -45,25 +45,52 @@ pub fn expand_unnamed_struct_derive(
 pub fn collect_unnamed_fields_validators<'a>(
     fields: &'a syn::FieldsUnnamed,
 ) -> Result<Vec<FieldValidators<'a, UnnamedField<'a>>>, Errors> {
-    fields
+    let mut errors = vec![];
+
+    let validators = fields
         .unnamed
         .iter()
         .enumerate()
-        .map(collect_unnamed_field_validators)
-        .collect()
+        .filter_map(|field| match collect_unnamed_field_validators(field) {
+            Ok(validators) => Some(validators),
+            Err(ref mut error) => {
+                errors.append(error);
+                None
+            }
+        })
+        .collect();
+
+    if !errors.is_empty() {
+        return Err(errors);
+    }
+
+    Ok(validators)
 }
 
 fn collect_unnamed_field_validators<'a>(
     (index, field): (usize, &'a syn::Field),
 ) -> Result<FieldValidators<'a, UnnamedField<'a>>, Errors> {
-    let unnamed_field = UnnamedField::new(index, field);
+    let mut errors: Errors = vec![];
 
+    let unnamed_field = UnnamedField::new(index, field);
     let validators = unnamed_field
         .attrs()
         .iter()
         .filter(|attribute| attribute.path == parse_quote!(validate))
-        .map(|attribute| extract_meta_validator(&unnamed_field, attribute))
-        .collect::<Result<Vec<_>, _>>()?;
+        .filter_map(
+            |attribute| match extract_meta_validator(&unnamed_field, attribute) {
+                Ok(validator) => Some(validator),
+                Err(error) => {
+                    errors.push(error);
+                    None
+                }
+            },
+        )
+        .collect::<Vec<_>>();
+
+    if !errors.is_empty() {
+        return Err(errors);
+    }
 
     let mut field_validators = FieldValidators::new(Cow::Owned(unnamed_field));
     validators

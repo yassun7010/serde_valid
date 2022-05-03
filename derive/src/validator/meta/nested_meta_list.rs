@@ -1,4 +1,4 @@
-use crate::errors::{Error, Errors};
+use crate::errors::Error;
 use crate::types::{Field, SingleIdentPath};
 use crate::validator::array::{
     extract_array_items_validator, extract_array_unique_items_validator_from_meta_list,
@@ -20,7 +20,7 @@ pub fn extract_validator_from_nested_meta_list(
     field: &impl Field,
     attribute: &syn::Attribute,
     validation_list: &syn::MetaList,
-) -> Result<Validator, Errors> {
+) -> Result<Validator, Error> {
     let syn::MetaList {
         path: validation_name,
         ..
@@ -91,9 +91,9 @@ pub fn extract_validator_from_nested_meta_list(
                 validation_list,
             ))
         }
-        v => Err(vec![Error::new(
+        v => Err(Error::new(
             validation_name.span(),
             format!("Unexpected list validator: {v:?}"),
-        )]),
+        )),
     }
 }

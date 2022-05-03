@@ -3,7 +3,7 @@ mod nested_meta_list;
 mod nested_meta_name_value;
 mod nested_meta_path;
 
-use crate::errors::{Error, Errors};
+use crate::errors::Error;
 use crate::types::Field;
 use crate::validator::Validator;
 use meta_path::extract_validator_from_meta_path;
@@ -16,7 +16,7 @@ use syn::spanned::Spanned;
 pub fn extract_meta_validator(
     field: &impl Field,
     attribute: &syn::Attribute,
-) -> Result<Validator, Errors> {
+) -> Result<Validator, Error> {
     match attribute.parse_meta() {
         Ok(syn::Meta::List(syn::MetaList { ref nested, .. })) => {
             // only validation from there on
@@ -46,7 +46,7 @@ pub fn extract_meta_validator(
                         }
                     },
                     syn::NestedMeta::Lit(_) => {
-                        return Err(vec![Error::new_literal_meta_item_error(meta_item.span())])
+                        return Err(Error::new_literal_meta_item_error(meta_item.span()))
                     }
                 };
             }
@@ -57,17 +57,12 @@ pub fn extract_meta_validator(
         Ok(syn::Meta::NameValue(_)) => {
             abort!(attribute.span(), "Unexpected name=value argument")
         }
-        Err(error) => {
-            return Err(vec![Error::new_attribute_parse_error(
-                attribute.span(),
-                &error,
-            )])
-        }
+        Err(error) => return Err(Error::new_attribute_parse_error(attribute.span(), &error)),
     };
 
-    Err(vec![Error::new_invalid_field_attribute_error(
+    Err(Error::new_invalid_field_attribute_error(
         field,
         attribute.span(),
         "it needs at least one validator",
-    )])
+    ))
 }
