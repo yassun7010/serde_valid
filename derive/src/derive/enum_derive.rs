@@ -13,7 +13,6 @@ pub fn expand_enum_validate_derive(
 ) -> Result<TokenStream, Vec<syn::Error>> {
     let ident = &input.ident;
     let (impl_generics, type_generics, where_clause) = input.generics.split_for_impl();
-
     let validations = TokenStream::from_iter(
         variants
             .iter()
@@ -24,9 +23,9 @@ pub fn expand_enum_validate_derive(
                 syn::Fields::Unnamed(unnamed_fields) => {
                     expand_enum_variant_unnamed_fields_varidation(ident, variant, unnamed_fields)
                 }
-                syn::Fields::Unit => quote!(),
+                syn::Fields::Unit => Ok(quote!()),
             })
-            .collect::<Vec<_>>(),
+            .collect::<Result<TokenStream, _>>(),
     );
 
     Ok(quote!(
@@ -44,9 +43,9 @@ fn expand_enum_variant_named_fields_validation(
     ident: &syn::Ident,
     variant: &syn::Variant,
     named_fields: &syn::FieldsNamed,
-) -> TokenStream {
+) -> Result<TokenStream, Vec<syn::Error>> {
     let variant_ident = &variant.ident;
-    let fields_validators = collect_named_fields_validators(named_fields);
+    let fields_validators = collect_named_fields_validators(named_fields)?;
     let mut fields_idents = syn::punctuated::Punctuated::<TokenStream, syn::token::Comma>::new();
     let fields_validators_tokens =
         TokenStream::from_iter(fields_validators.iter().map(|validators| {
@@ -59,8 +58,10 @@ fn expand_enum_variant_named_fields_validation(
                 quote!()
             }
         }));
+
     let errors = fields_errors_tokens();
-    quote!(
+
+    Ok(quote!(
         if let #ident::#variant_ident{#fields_idents} = &self {
             let mut __errors = ::serde_valid::validation::MapErrors::new();
 
@@ -70,16 +71,16 @@ fn expand_enum_variant_named_fields_validation(
                 Result::Err(#errors)?
             }
         }
-    )
+    ))
 }
 
 fn expand_enum_variant_unnamed_fields_varidation(
     ident: &syn::Ident,
     variant: &syn::Variant,
     unnamed_fields: &syn::FieldsUnnamed,
-) -> TokenStream {
+) -> Result<TokenStream, Vec<syn::Error>> {
     let variant_ident = &variant.ident;
-    let fields_validators = collect_unnamed_fields_validators(unnamed_fields);
+    let fields_validators = collect_unnamed_fields_validators(unnamed_fields)?;
     let mut fields_idents = syn::punctuated::Punctuated::<TokenStream, syn::token::Comma>::new();
     let fields_validators_tokens =
         TokenStream::from_iter(fields_validators.iter().map(|validators| {
@@ -97,7 +98,7 @@ fn expand_enum_variant_unnamed_fields_varidation(
     } else {
         new_type_errors_tokens()
     };
-    quote!(
+    Ok(quote!(
         if let #ident::#variant_ident(#fields_idents) = &self {
             let mut __errors = ::serde_valid::validation::MapErrors::new();
 
@@ -107,5 +108,5 @@ fn expand_enum_variant_unnamed_fields_varidation(
                 Result::Err(#errors)?
             }
         }
-    )
+    ))
 }

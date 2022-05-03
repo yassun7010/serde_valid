@@ -3,6 +3,7 @@ mod nested_meta_list;
 mod nested_meta_name_value;
 mod nested_meta_path;
 
+use crate::errors::invalid_field_attribute_error;
 use crate::types::Field;
 use crate::validator::Validator;
 use meta_path::extract_validator_from_meta_path;
@@ -15,7 +16,7 @@ use syn::spanned::Spanned;
 pub fn extract_meta_validator(
     field: &impl Field,
     attribute: &syn::Attribute,
-) -> Option<Validator> {
+) -> Result<Validator, Vec<syn::Error>> {
     match attribute.parse_meta() {
         Ok(syn::Meta::List(syn::MetaList { ref nested, .. })) => {
             // only validation from there on
@@ -62,5 +63,10 @@ pub fn extract_meta_validator(
             err
         ),
     };
-    None
+
+    Err(vec![invalid_field_attribute_error(
+        field,
+        attribute.span(),
+        "it needs at least one validator",
+    )])
 }

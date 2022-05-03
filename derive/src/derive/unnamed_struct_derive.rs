@@ -1,4 +1,3 @@
-use crate::abort::abort_invalid_attribute_on_field;
 use crate::errors::{fields_errors_tokens, new_type_errors_tokens};
 use crate::types::{Field, UnnamedField};
 use crate::validator::{extract_meta_validator, FieldValidators};
@@ -7,7 +6,6 @@ use quote::quote;
 use std::borrow::Cow;
 use std::iter::FromIterator;
 use syn::parse_quote;
-use syn::spanned::Spanned;
 
 pub fn expand_unnamed_struct_derive(
     input: &syn::DeriveInput,
@@ -17,7 +15,7 @@ pub fn expand_unnamed_struct_derive(
     let (impl_generics, type_generics, where_clause) = input.generics.split_for_impl();
 
     let validators = TokenStream::from_iter(
-        collect_unnamed_fields_validators(fields)
+        collect_unnamed_fields_validators(fields)?
             .iter()
             .map(|validator| validator.generate_tokens()),
     );
@@ -46,7 +44,7 @@ pub fn expand_unnamed_struct_derive(
 
 pub fn collect_unnamed_fields_validators<'a>(
     fields: &'a syn::FieldsUnnamed,
-) -> Vec<FieldValidators<'a, UnnamedField<'a>>> {
+) -> Result<Vec<FieldValidators<'a, UnnamedField<'a>>>, Vec<syn::Error>> {
     let mut struct_validators = vec![];
     for (index, field) in fields.unnamed.iter().enumerate() {
         let unnamed_field = UnnamedField::new(index, field);
@@ -55,16 +53,8 @@ pub fn collect_unnamed_fields_validators<'a>(
             .attrs()
             .iter()
             .filter(|attribute| attribute.path == parse_quote!(validate))
-            .map(|attribute| {
-                extract_meta_validator(&unnamed_field, attribute).unwrap_or_else(|| {
-                    abort_invalid_attribute_on_field(
-                        &unnamed_field,
-                        attribute.span(),
-                        "it needs at least one validator",
-                    )
-                })
-            })
-            .collect::<Vec<_>>();
+            .map(|attribute| extract_meta_validator(&unnamed_field, attribute))
+            .collect::<Result<Vec<_>, _>>()?;
 
         let mut field_validators = FieldValidators::new(Cow::Owned(unnamed_field));
         validators
@@ -74,5 +64,5 @@ pub fn collect_unnamed_fields_validators<'a>(
         struct_validators.push(field_validators)
     }
 
-    struct_validators
+    Ok(struct_validators)
 }

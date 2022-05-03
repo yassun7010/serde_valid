@@ -1,4 +1,3 @@
-use crate::abort::abort_invalid_attribute_on_field;
 use crate::errors::fields_errors_tokens;
 use crate::types::{Field, NamedField};
 use crate::validator::{extract_meta_validator, FieldValidators};
@@ -7,7 +6,6 @@ use quote::quote;
 use std::borrow::Cow;
 use std::iter::FromIterator;
 use syn::parse_quote;
-use syn::spanned::Spanned;
 
 pub fn expand_named_struct_derive(
     input: &syn::DeriveInput,
@@ -17,7 +15,7 @@ pub fn expand_named_struct_derive(
     let (impl_generics, type_generics, where_clause) = input.generics.split_for_impl();
 
     let validators = TokenStream::from_iter(
-        collect_named_fields_validators(fields)
+        collect_named_fields_validators(fields)?
             .iter()
             .map(|validator| validator.generate_tokens()),
     );
@@ -42,7 +40,7 @@ pub fn expand_named_struct_derive(
 
 pub fn collect_named_fields_validators<'a>(
     fields: &'a syn::FieldsNamed,
-) -> Vec<FieldValidators<'a, NamedField<'a>>> {
+) -> Result<Vec<FieldValidators<'a, NamedField<'a>>>, Vec<syn::Error>> {
     let mut struct_validators = vec![];
     for field in fields.named.iter() {
         let named_field = NamedField::new(field);
@@ -50,16 +48,8 @@ pub fn collect_named_fields_validators<'a>(
             .attrs()
             .iter()
             .filter(|attribute| attribute.path == parse_quote!(validate))
-            .map(|attribute| {
-                extract_meta_validator(&named_field, attribute).unwrap_or_else(|| {
-                    abort_invalid_attribute_on_field(
-                        &named_field,
-                        attribute.span(),
-                        "it needs at least one validator",
-                    )
-                })
-            })
-            .collect::<Vec<_>>();
+            .map(|attribute| extract_meta_validator(&named_field, attribute))
+            .collect::<Result<Vec<_>, _>>()?;
 
         let mut field_validators = FieldValidators::new(Cow::Owned(named_field));
         validators
@@ -69,5 +59,5 @@ pub fn collect_named_fields_validators<'a>(
         struct_validators.push(field_validators)
     }
 
-    struct_validators
+    Ok(struct_validators)
 }

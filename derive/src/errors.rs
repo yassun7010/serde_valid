@@ -1,6 +1,8 @@
 use proc_macro2::TokenStream;
 use quote::quote;
 
+use crate::types::Field;
+
 pub fn fields_errors_tokens() -> TokenStream {
     quote!(::serde_valid::validation::Errors::Fields(__errors))
 }
@@ -9,6 +11,20 @@ pub fn new_type_errors_tokens() -> TokenStream {
     quote!(::serde_valid::validation::Errors::NewType(
         __errors.remove("0").unwrap()
     ))
+}
+
+pub fn invalid_field_attribute_error(
+    field: &impl Field,
+    span: proc_macro2::Span,
+    message: &str,
+) -> syn::Error {
+    syn::Error::new(
+        span,
+        format!(
+            "Invalid attribute #[validate] on field `{indent}`: {message}",
+            indent = field.ident()
+        ),
+    )
 }
 
 pub fn to_compile_errors(errors: Vec<syn::Error>) -> proc_macro2::TokenStream {
