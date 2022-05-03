@@ -2,7 +2,6 @@ use crate::errors::Error;
 use crate::types::{Field, SingleIdentPath};
 use crate::validator::array::extract_array_unique_items_validator_from_meta_path;
 use crate::validator::Validator;
-use syn::spanned::Spanned;
 
 pub fn extract_validator_from_nested_meta_path(
     field: &impl Field,
@@ -12,9 +11,10 @@ pub fn extract_validator_from_nested_meta_path(
     let validation_ident = SingleIdentPath::new(validation).ident();
     match validation_ident.to_string().as_ref() {
         "unique_items" => return Ok(extract_array_unique_items_validator_from_meta_path(field)),
-        v => Err(Error::new(
-            validation.span(),
-            format!("Unexpected name value validator: {v:?}"),
+        target => Err(Error::new_path_meta_name_error(
+            validation_ident.span(),
+            target,
+            &["unique_items"],
         )),
     }
 }

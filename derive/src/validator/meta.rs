@@ -10,7 +10,6 @@ use meta_path::extract_validator_from_meta_path;
 use nested_meta_list::extract_validator_from_nested_meta_list;
 use nested_meta_name_value::extract_validator_from_nested_meta_name_value;
 use nested_meta_path::extract_validator_from_nested_meta_path;
-use proc_macro_error::abort;
 use syn::spanned::Spanned;
 
 pub fn extract_meta_validator(
@@ -55,14 +54,10 @@ pub fn extract_meta_validator(
             return extract_validator_from_meta_path(field, attribute, &validation)
         }
         Ok(syn::Meta::NameValue(_)) => {
-            abort!(attribute.span(), "Unexpected name=value argument")
+            return Err(Error::new_name_value_meta_item_error(attribute.span()))
         }
         Err(error) => return Err(Error::new_attribute_parse_error(attribute.span(), &error)),
     };
 
-    Err(Error::new_invalid_field_attribute_error(
-        field,
-        attribute.span(),
-        "it needs at least one validator",
-    ))
+    Err(Error::new_attribute_required_error(attribute.span()))
 }
