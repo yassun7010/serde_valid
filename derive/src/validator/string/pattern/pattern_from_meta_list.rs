@@ -51,7 +51,7 @@ fn inner_extract_string_pattern_of_validator_from_meta_list(
     let pattern = get_pattern_from_meta_list(field, attribute, validation_args);
     let message = extract_message_tokens(VALIDATION_LABEL, field, attribute, validation_args)
         .unwrap_or(quote!(
-            ::serde_valid::validation::PatternParams::to_default_message
+            ::serde_valid::PatternParams::to_default_message
         ));
     inner_extract_string_pattern_validator(field, &pattern, &message)
 }

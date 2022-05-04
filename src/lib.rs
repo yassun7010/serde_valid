@@ -4,7 +4,11 @@ mod traits;
 pub mod validation;
 
 pub use deserialize::*;
-pub use error::Error;
+pub use error::{
+    EnumerateParams, Error, ExclusiveMaximumParams, ExclusiveMinimumParams, LengthParams,
+    MaxItemsParams, MaxPropertiesParams, MaximumParams, MinItemsParams, MinPropertiesParams,
+    MinimumParams, MultipleOfParams, PatternParams, UniqueItemsParams,
+};
 pub use traits::*;
 pub use validation::{
     validate_array_max_items, validate_array_min_items, validate_array_unique_items,

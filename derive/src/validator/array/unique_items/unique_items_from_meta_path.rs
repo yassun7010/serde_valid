@@ -9,7 +9,7 @@ pub fn extract_array_unique_items_validator_from_meta_path(field: &impl Field) -
             extract_array_unique_items_validator_from_meta_path(&option_field),
         ))
     } else {
-        let message = quote!(::serde_valid::validation::UniqueItemsParams::to_default_message);
+        let message = quote!(::serde_valid::UniqueItemsParams::to_default_message);
         Validator::Normal(inner_extract_array_unique_items_validator(field, message))
     }
 }

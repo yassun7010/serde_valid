@@ -69,9 +69,7 @@ fn inner_extract_string_length_validator(
         validation_args,
     );
     let message = extract_message_tokens(VALIDATION_LABEL, field, attribute, validation_args)
-        .unwrap_or(quote!(
-            ::serde_valid::validation::LengthParams::to_default_message
-        ));
+        .unwrap_or(quote!(::serde_valid::LengthParams::to_default_message));
 
     quote!(
         if !::serde_valid::validate_string_length(
@@ -85,7 +83,7 @@ fn inner_extract_string_length_validator(
                 .or_default()
                 .push(::serde_valid::validation::Error::Length(
                     ::serde_valid::error::Message::new(
-                        ::serde_valid::validation::LengthParams::new(
+                        ::serde_valid::LengthParams::new(
                             #field_ident,
                             #min_length_tokens,
                             #max_length_tokens

@@ -47,7 +47,7 @@ macro_rules! extract_numeric_range_validator{
 
             let field_name = field.name();
             let field_ident = field.ident();
-            let message = quote!(::serde_valid::validation::$Params::to_default_message);
+            let message = quote!(::serde_valid::$Params::to_default_message);
 
             quote!(
                 if !::serde_valid::$validate_function(
@@ -60,7 +60,7 @@ macro_rules! extract_numeric_range_validator{
                         .or_default()
                         .push(::serde_valid::validation::Error::$ErrorType(
                             ::serde_valid::error::Message::new(
-                                ::serde_valid::validation::$Params::new(
+                                ::serde_valid::$Params::new(
                                     *#field_ident,
                                     #$field,
                                 ),

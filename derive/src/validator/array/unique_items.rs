@@ -25,7 +25,7 @@ fn inner_extract_array_unique_items_validator(
                 .or_default()
                 .push(::serde_valid::validation::Error::UniqueItems(
                     ::serde_valid::error::Message::new(
-                        ::serde_valid::validation::UniqueItemsParams::new(
+                        ::serde_valid::UniqueItemsParams::new(
                             #field_ident,
                         ),
                         #message

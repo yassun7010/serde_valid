@@ -38,6 +38,6 @@ fn inner_extract_numeric_multiple_of_validator_from_meta_name_value(
     validation_value: &syn::Lit,
 ) -> TokenStream {
     let multiple_of = get_numeric(VALIDATION_LABEL, field, validation_value);
-    let message = quote!(::serde_valid::validation::MultipleOfParams::to_default_message);
+    let message = quote!(::serde_valid::MultipleOfParams::to_default_message);
     inner_extract_numeric_multiple_of_validator(field, multiple_of, message)
 }
