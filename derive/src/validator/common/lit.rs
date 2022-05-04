@@ -2,22 +2,11 @@ use crate::abort::abort_invalid_attribute_on_field;
 use crate::lit::LitNumeric;
 use crate::types::Field;
 
-pub fn get_numeric<'a>(
-    validation_label: &str,
-    field: &impl Field,
-    lit: &'a syn::Lit,
-) -> LitNumeric<'a> {
+pub fn get_numeric<'a>(lit: &'a syn::Lit) -> Result<LitNumeric<'a>, crate::Error> {
     match lit {
-        syn::Lit::Int(l) => LitNumeric::Int(l),
-        syn::Lit::Float(l) => LitNumeric::Float(l),
-        _ => abort_invalid_attribute_on_field(
-            field,
-            lit.span(),
-            &format!(
-                "invalid argument type for `{}` validator: only numeric literals are allowed",
-                validation_label
-            ),
-        ),
+        syn::Lit::Int(int) => Ok(LitNumeric::Int(int)),
+        syn::Lit::Float(float) => Ok(LitNumeric::Float(float)),
+        _ => Err(crate::Error::new_numeric_literal_error(lit.span())),
     }
 }
 

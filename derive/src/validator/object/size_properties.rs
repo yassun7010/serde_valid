@@ -12,7 +12,6 @@ macro_rules! extract_object_size_validator{
         $Params:tt,
         $ErrorType:tt,
         $limit:tt,
-        $label:tt,
         $function_name:ident,
         $inner_function_name:ident,
         $validate_function:ident
@@ -21,16 +20,14 @@ macro_rules! extract_object_size_validator{
         pub fn $function_name(
             field: &impl Field,
             validation_value: &syn::Lit,
-        ) -> Validator {
+        ) -> Result<Validator, crate::Error> {
             if let Some(option_field) = field.option_field() {
-                Validator::Option(Box::new($function_name(
-                    &option_field,
-                    validation_value,
+                Ok(Validator::Option(Box::new(
+                    $function_name(&option_field, validation_value)?
                 )))
             } else {
-                Validator::Normal($inner_function_name(
-                    field,
-                    validation_value,
+                Ok(Validator::Normal(
+                    $inner_function_name(field, validation_value)?
                 ))
             }
         }
@@ -38,14 +35,13 @@ macro_rules! extract_object_size_validator{
         fn $inner_function_name(
             field: &impl Field,
             validation_value: &syn::Lit,
-        ) -> TokenStream {
-            let $limit = get_numeric($label, field, validation_value);
-
+        ) -> Result<TokenStream, crate::Error> {
             let field_name = field.name();
             let field_ident = field.ident();
+            let $limit = get_numeric(validation_value)?;
             let message = quote!(::serde_valid::$Params::to_default_message);
 
-            quote!(
+            Ok(quote!(
                 if !::serde_valid::$validate_function(
                     #field_ident,
                     #$limit
@@ -64,7 +60,7 @@ macro_rules! extract_object_size_validator{
                             )
                         ));
                 }
-            )
+            ))
         }
     }
 }
@@ -73,7 +69,6 @@ extract_object_size_validator!(
     MaxPropertiesParams,
     MaxProperties,
     max_properties,
-    "max_properties",
     extract_object_max_properties_validator,
     inner_extract_object_max_properties_validator,
     validate_object_max_properties
@@ -83,7 +78,6 @@ extract_object_size_validator!(
     MinPropertiesParams,
     MinProperties,
     min_properties,
-    "min_properties",
     extract_object_min_properties_validator,
     inner_extract_object_min_properties_validator,
     validate_object_min_properties

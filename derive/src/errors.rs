@@ -52,6 +52,10 @@ impl Error {
         Self::new(span, "#[validate(validation...)] needs validation.")
     }
 
+    pub fn new_numeric_literal_error(span: proc_macro2::Span) -> Self {
+        Self::new(span, "Allow only numeric literal.")
+    }
+
     pub fn new_unknown_meta_error(
         span: proc_macro2::Span,
         unknown: &str,

@@ -12,7 +12,6 @@ macro_rules! extract_string_length_validator{
         $Params:tt,
         $ErrorType:tt,
         $field:tt,
-        $label:tt,
         $function_name:ident,
         $inner_function_name:ident,
         $validate_function:ident
@@ -20,34 +19,30 @@ macro_rules! extract_string_length_validator{
         pub fn $function_name(
             field: &impl Field,
             validation_value: &syn::Lit,
-        ) -> Validator {
+        ) -> Result<Validator, crate::Error> {
             if let Some(array_field) = field.array_field() {
                 match array_field.ty() {
                     syn::Type::Path(element_type) => {
                         if let Some(element_type_ident) = element_type.path.get_ident() {
                             if ["u8", "char"].contains(&element_type_ident.to_string().as_str()) {
-                                return Validator::Normal($inner_function_name(
-                                    field,
-                                    validation_value,
+                                return Ok(Validator::Normal(
+                                    $inner_function_name(field, validation_value)?
                                 ));
                             }
                         }
                     }
                     _ => (),
                 }
-                Validator::Array(Box::new($function_name(
-                    &array_field,
-                    validation_value,
+                Ok(Validator::Array(Box::new(
+                    $function_name(&array_field, validation_value)?
                 )))
             } else if let Some(option_field) = field.option_field() {
-                Validator::Option(Box::new($function_name(
-                    &option_field,
-                    validation_value,
+                Ok(Validator::Option(Box::new(
+                    $function_name(&option_field, validation_value)?
                 )))
             } else {
-                Validator::Normal($inner_function_name(
-                    field,
-                    validation_value,
+                Ok(Validator::Normal(
+                    $inner_function_name(field, validation_value)?
                 ))
             }
         }
@@ -55,13 +50,13 @@ macro_rules! extract_string_length_validator{
         fn $inner_function_name(
             field: &impl Field,
             validation_value: &syn::Lit,
-        ) -> TokenStream {
+        ) -> Result<TokenStream, crate::Error> {
             let field_name = field.name();
             let field_ident = field.ident();
-            let $field = get_numeric($label, field, validation_value);
+            let $field = get_numeric(validation_value)?;
             let message = quote!(::serde_valid::$Params::to_default_message);
 
-            quote!(
+            Ok(quote!(
                 if !::serde_valid::$validate_function(
                     #field_ident,
                     #$field,
@@ -80,7 +75,7 @@ macro_rules! extract_string_length_validator{
                             )
                         ));
                 }
-            )
+            ))
         }
     }
 }
@@ -89,7 +84,6 @@ extract_string_length_validator!(
     MaxLengthParams,
     MaxLength,
     max_length,
-    "max_length",
     extract_string_max_length_validator,
     inner_extract_string_max_length_validator,
     validate_string_max_length
@@ -98,7 +92,6 @@ extract_string_length_validator!(
     MinLengthParams,
     MinLength,
     min_length,
-    "min_length",
     extract_string_min_length_validator,
     inner_extract_string_min_length_validator,
     validate_string_min_length
