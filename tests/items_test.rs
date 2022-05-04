@@ -156,7 +156,7 @@ fn items_err_message_test() {
         serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
         serde_json::to_string(&json!({
             "val": [
-                "the length of the items must be `>= 4`, but `3`."
+                "the length of the items must be `>= 4`."
             ]
         }))
         .unwrap()

@@ -9,7 +9,8 @@ use std::collections::HashMap;
 fn properties_hash_map_type_test() {
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(properties(min_properties = 3, max_properties = 3))]
+        #[validate(min_properties = 3)]
+        #[validate(max_properties = 3)]
         val: HashMap<String, String>,
     }
 
@@ -26,7 +27,8 @@ fn properties_hash_map_type_test() {
 fn properties_btree_map_type_test() {
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(properties(min_properties = 3, max_properties = 3))]
+        #[validate(min_properties = 3)]
+        #[validate(max_properties = 3)]
         val: BTreeMap<String, String>,
     }
 
@@ -40,10 +42,11 @@ fn properties_btree_map_type_test() {
 }
 
 #[test]
-fn properties_json_map_type_test() {
+fn properties_json_value_map_type_test() {
     #[derive(Deserialize, Validate)]
     struct TestStruct {
-        #[validate(properties(min_properties = 3, max_properties = 3))]
+        #[validate(min_properties = 3)]
+        #[validate(max_properties = 3)]
         val: serde_json::Map<String, serde_json::Value>,
     }
 
@@ -62,7 +65,8 @@ fn properties_json_map_type_test() {
 fn properties_is_err_test() {
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(properties(min_properties = 3, max_properties = 3))]
+        #[validate(min_properties = 3)]
+        #[validate(max_properties = 3)]
         val: BTreeMap<String, String>,
     }
 
@@ -78,7 +82,8 @@ fn properties_is_err_test() {
 fn properties_hash_map_type_err_message_test() {
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(properties(min_properties = 3, max_properties = 3))]
+        #[validate(min_properties = 3)]
+        #[validate(max_properties = 3)]
         val: HashMap<String, String>,
     }
 
@@ -91,7 +96,7 @@ fn properties_hash_map_type_err_message_test() {
         serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
         serde_json::to_string(&json!({
             "val": [
-                "properties size of {\"key1\": \"value1\"} must be in `3 <= size <= 3`, but `1`."
+                "the size of the properties must be `>= 3`."
             ]
         }))
         .unwrap()
@@ -102,7 +107,8 @@ fn properties_hash_map_type_err_message_test() {
 fn properties_btree_map_type_err_message_test() {
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(properties(min_properties = 3, max_properties = 3))]
+        #[validate(min_properties = 3)]
+        #[validate(max_properties = 3)]
         val: BTreeMap<String, String>,
     }
 
@@ -115,7 +121,7 @@ fn properties_btree_map_type_err_message_test() {
         serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
         serde_json::to_string(&json!({
             "val": [
-                "properties size of {\"key1\": \"value1\"} must be in `3 <= size <= 3`, but `1`."
+                "the size of the properties must be `>= 3`."
             ]
         }))
         .unwrap()
@@ -126,7 +132,8 @@ fn properties_btree_map_type_err_message_test() {
 fn properties_json_map_type_err_message_test() {
     #[derive(Deserialize, Validate)]
     struct TestStruct {
-        #[validate(properties(min_properties = 3, max_properties = 3))]
+        #[validate(min_properties = 3)]
+        #[validate(max_properties = 3)]
         val: serde_json::Map<String, serde_json::Value>,
     }
 
@@ -141,7 +148,7 @@ fn properties_json_map_type_err_message_test() {
         serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
         serde_json::to_string(&json!({
             "val": [
-                "properties size of {\"key1\":\"value1\"} must be in `3 <= size <= 3`, but `1`."
+                "the size of the properties must be `>= 3`.",
             ]
         }))
         .unwrap()
@@ -150,60 +157,62 @@ fn properties_json_map_type_err_message_test() {
 
 #[test]
 fn range_custom_err_message_fn_test() {
-    fn error_message(_params: &serde_valid::validation::error::PropertiesParams) -> String {
-        "this is custom message.".to_string()
-    }
+    // todo!()
+    // fn error_message(_params: &serde_valid::validation::error::PropertiesParams) -> String {
+    //     "this is custom message.".to_string()
+    // }
 
-    #[derive(Deserialize, Validate)]
-    struct TestStruct {
-        #[validate(properties(min_properties = 3, max_properties = 3, message_fn(error_message)))]
-        val: serde_json::Map<String, serde_json::Value>,
-    }
+    // #[derive(Deserialize, Validate)]
+    // struct TestStruct {
+    //     #[validate(properties(min_properties = 3, max_properties = 3, message_fn(error_message)))]
+    //     val: serde_json::Map<String, serde_json::Value>,
+    // }
 
-    let s: TestStruct = serde_json::from_value(json!({
-        "val": {
-            "key1": "value1",
-        }
-    }))
-    .unwrap();
+    // let s: TestStruct = serde_json::from_value(json!({
+    //     "val": {
+    //         "key1": "value1",
+    //     }
+    // }))
+    // .unwrap();
 
-    assert_eq!(
-        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
-        serde_json::to_string(&json!({
-            "val": [
-                "this is custom message."
-            ]
-        }))
-        .unwrap()
-    );
+    // assert_eq!(
+    //     serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
+    //     serde_json::to_string(&json!({
+    //         "val": [
+    //             "this is custom message."
+    //         ]
+    //     }))
+    //     .unwrap()
+    // );
 }
 
 #[test]
 fn range_custom_err_message_test() {
-    #[derive(Deserialize, Validate)]
-    struct TestStruct {
-        #[validate(properties(
-            min_properties = 3,
-            max_properties = 3,
-            message = "this is custom message."
-        ))]
-        val: serde_json::Map<String, serde_json::Value>,
-    }
+    // todo!()
+    // #[derive(Deserialize, Validate)]
+    // struct TestStruct {
+    //     #[validate(properties(
+    //         min_properties = 3,
+    //         max_properties = 3,
+    //         message = "this is custom message."
+    //     ))]
+    //     val: serde_json::Map<String, serde_json::Value>,
+    // }
 
-    let s: TestStruct = serde_json::from_value(json!({
-        "val": {
-            "key1": "value1",
-        }
-    }))
-    .unwrap();
+    // let s: TestStruct = serde_json::from_value(json!({
+    //     "val": {
+    //         "key1": "value1",
+    //     }
+    // }))
+    // .unwrap();
 
-    assert_eq!(
-        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
-        serde_json::to_string(&json!({
-            "val": [
-                "this is custom message."
-            ]
-        }))
-        .unwrap()
-    );
+    // assert_eq!(
+    //     serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
+    //     serde_json::to_string(&json!({
+    //         "val": [
+    //             "this is custom message."
+    //         ]
+    //     }))
+    //     .unwrap()
+    // );
 }

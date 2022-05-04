@@ -8,6 +8,9 @@ use crate::validator::numeric::{
     extract_numeric_maximum_validator, extract_numeric_minimum_validator,
     extract_numeric_multiple_of_validator_from_meta_name_value,
 };
+use crate::validator::object::{
+    extract_object_max_properties_validator, extract_object_min_properties_validator,
+};
 use crate::validator::string::extract_string_pattern_validator_from_meta_name_value;
 use crate::validator::Validator;
 use syn::spanned::Spanned;
@@ -39,6 +42,18 @@ pub fn extract_validator_from_nested_meta_name_value(
         }
         "min_items" => return Ok(extract_array_min_items_validator(field, validation_value)),
         "max_items" => return Ok(extract_array_max_items_validator(field, validation_value)),
+        "min_properties" => {
+            return Ok(extract_object_min_properties_validator(
+                field,
+                validation_value,
+            ))
+        }
+        "max_properties" => {
+            return Ok(extract_object_max_properties_validator(
+                field,
+                validation_value,
+            ))
+        }
         "multiple_of" => {
             return Ok(extract_numeric_multiple_of_validator_from_meta_name_value(
                 field,

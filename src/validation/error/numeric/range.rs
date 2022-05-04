@@ -1,7 +1,7 @@
 use crate::validation::error::ToDefaultMessage;
 
-macro_rules! struct_range_params {
-    ($Param:tt, $field:tt, $format:tt) => {
+macro_rules! struct_numeric_range_params {
+    ($Param:tt, $field:tt, $message:tt) => {
         #[derive(Debug)]
         pub struct $Param {
             value: String,
@@ -32,20 +32,20 @@ macro_rules! struct_range_params {
 
         impl ToDefaultMessage for $Param {
             fn to_default_message(&self) -> String {
-                format!($format, self.$field)
+                format!($message, self.$field)
             }
         }
     };
 }
 
-struct_range_params!(MinimumParams, minimum, "the number must be `>= {}`.");
-struct_range_params!(MaximumParams, maximum, "the number must be `<= {}`.");
-struct_range_params!(
+struct_numeric_range_params!(MinimumParams, minimum, "the number must be `>= {}`.");
+struct_numeric_range_params!(MaximumParams, maximum, "the number must be `<= {}`.");
+struct_numeric_range_params!(
     ExclusiveMinimumParams,
     exclusive_minimum,
     "the number must be `> {}`."
 );
-struct_range_params!(
+struct_numeric_range_params!(
     ExclusiveMaximumParams,
     exclusive_maximum,
     "the number must be `< {}`."

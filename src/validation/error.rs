@@ -13,7 +13,7 @@ pub use message::{Message, ToDefaultMessage};
 pub use numeric::{
     ExclusiveMaximumParams, ExclusiveMinimumParams, MaximumParams, MinimumParams, MultipleOfParams,
 };
-pub use object::PropertiesParams;
+pub use object::{MaxPropertiesParams, MinPropertiesParams};
 pub use string::{LengthParams, PatternParams};
 
 #[derive(Debug, serde::Serialize, thiserror::Error)]
@@ -61,7 +61,11 @@ pub enum Error {
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    Properties(Message<PropertiesParams>),
+    MinProperties(Message<MinPropertiesParams>),
+
+    #[error("{0}")]
+    #[serde(serialize_with = "serialize_error_message")]
+    MaxProperties(Message<MaxPropertiesParams>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]

@@ -1,3 +1,3 @@
-mod properties;
+mod size;
 
-pub use properties::PropertiesParams;
+pub use size::{MaxPropertiesParams, MinPropertiesParams};
