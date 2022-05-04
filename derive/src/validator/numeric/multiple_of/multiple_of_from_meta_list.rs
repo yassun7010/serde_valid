@@ -51,7 +51,7 @@ fn inner_extract_numeric_multiple_of_validator_from_meta_list(
     let multiple_of = get_multiple_of_from_meta_list(field, attribute, validation_args);
     let message = extract_message_tokens(VALIDATION_LABEL, field, attribute, validation_args)
         .unwrap_or(quote!(
-            ::serde_valid::validation::error::MultipleOfParams::to_default_message
+            ::serde_valid::validation::MultipleOfParams::to_default_message
         ));
     inner_extract_numeric_multiple_of_validator(field, multiple_of, message)
 }

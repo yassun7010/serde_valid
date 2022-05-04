@@ -19,13 +19,13 @@ fn inner_extract_array_unique_items_validator(
         if !::serde_valid::validate_array_unique_items(
             #field_ident
         ) {
-            use ::serde_valid::validation::error::ToDefaultMessage;
+            use ::serde_valid::error::ToDefaultMessage;
             __errors
                 .entry(#field_name)
                 .or_default()
                 .push(::serde_valid::validation::Error::UniqueItems(
-                    ::serde_valid::validation::error::Message::new(
-                        ::serde_valid::validation::error::UniqueItemsParams::new(
+                    ::serde_valid::error::Message::new(
+                        ::serde_valid::validation::UniqueItemsParams::new(
                             #field_ident,
                         ),
                         #message

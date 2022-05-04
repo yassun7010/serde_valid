@@ -43,20 +43,20 @@ macro_rules! extract_object_size_validator{
 
             let field_name = field.name();
             let field_ident = field.ident();
-            let message = quote!(::serde_valid::validation::error::$Params::to_default_message);
+            let message = quote!(::serde_valid::validation::$Params::to_default_message);
 
             quote!(
                 if !::serde_valid::$validate_function(
                     #field_ident,
                     #$field
                 ) {
-                    use ::serde_valid::validation::error::ToDefaultMessage;
+                    use ::serde_valid::error::ToDefaultMessage;
                     __errors
                         .entry(#field_name)
                         .or_default()
                         .push(::serde_valid::validation::Error::$ErrorType(
-                            ::serde_valid::validation::error::Message::new(
-                                ::serde_valid::validation::error::$Params::new(
+                            ::serde_valid::error::Message::new(
+                                ::serde_valid::validation::$Params::new(
                                     #field_ident,
                                     #$field
                                 ),

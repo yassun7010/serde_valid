@@ -166,7 +166,7 @@ fn items_err_message_test() {
 #[test]
 fn items_custom_err_message_fn_test() {
     // todo!()
-    // fn error_message(_params: &serde_valid::validation::error::ItemsParams) -> String {
+    // fn error_message(_params: &serde_valid::error::ItemsParams) -> String {
     //     "this is custom message.".to_string()
     // }
 

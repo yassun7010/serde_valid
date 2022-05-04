@@ -158,7 +158,7 @@ fn properties_json_map_type_err_message_test() {
 #[test]
 fn range_custom_err_message_fn_test() {
     // todo!()
-    // fn error_message(_params: &serde_valid::validation::error::PropertiesParams) -> String {
+    // fn error_message(_params: &serde_valid::validation::PropertiesParams) -> String {
     //     "this is custom message.".to_string()
     // }
 

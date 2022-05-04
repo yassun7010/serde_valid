@@ -1,12 +1,17 @@
 mod array;
-pub mod error;
+mod error;
 mod generic;
 mod numeric;
 mod object;
 mod string;
 
 pub use array::{validate_array_max_items, validate_array_min_items, validate_array_unique_items};
-pub use error::{Error, Errors, MapErrors, Message, ToDefaultMessage, VecErrors};
+pub use error::{
+    EnumerateParams, Error, Errors, ExclusiveMaximumParams, ExclusiveMinimumParams, LengthParams,
+    MapErrors, MaxItemsParams, MaxPropertiesParams, MaximumParams, Message, MinItemsParams,
+    MinPropertiesParams, MinimumParams, MultipleOfParams, PatternParams, UniqueItemsParams,
+    VecErrors,
+};
 pub use generic::validate_generic_enumerate;
 pub use numeric::{
     validate_numeric_exclusive_maximum, validate_numeric_exclusive_minimum,

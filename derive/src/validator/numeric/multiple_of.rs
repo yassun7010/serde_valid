@@ -22,13 +22,13 @@ fn inner_extract_numeric_multiple_of_validator(
             *#field_ident,
             #multiple_of,
         ) {
-            use ::serde_valid::validation::error::ToDefaultMessage;
+            use ::serde_valid::error::ToDefaultMessage;
             __errors
                 .entry(#field_name)
                 .or_default()
                 .push(::serde_valid::validation::Error::MultipleOf(
-                    ::serde_valid::validation::error::Message::new(
-                        ::serde_valid::validation::error::MultipleOfParams::new(
+                    ::serde_valid::error::Message::new(
+                        ::serde_valid::validation::MultipleOfParams::new(
                             *#field_ident,
                             #multiple_of,
                         ),

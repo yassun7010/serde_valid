@@ -1,4 +1,4 @@
-use crate::validation::error::ToDefaultMessage;
+use crate::error::ToDefaultMessage;
 
 macro_rules! struct_numeric_range_params {
     ($Param:tt, $field:tt, $message:tt) => {

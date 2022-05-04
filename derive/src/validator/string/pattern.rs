@@ -28,13 +28,13 @@ fn inner_extract_string_pattern_validator(
             #field_ident,
             __pattern,
         ) {
-            use ::serde_valid::validation::error::ToDefaultMessage;
+            use ::serde_valid::error::ToDefaultMessage;
             __errors
                 .entry(#field_name)
                 .or_default()
                 .push(::serde_valid::validation::Error::Pattern(
-                    ::serde_valid::validation::error::Message::new(
-                        ::serde_valid::validation::error::PatternParams::new(
+                    ::serde_valid::error::Message::new(
+                        ::serde_valid::validation::PatternParams::new(
                             #field_ident,
                             __pattern,
                         ),

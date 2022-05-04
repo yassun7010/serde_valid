@@ -1,5 +1,5 @@
+use crate::error::ToDefaultMessage;
 use crate::traits::Size;
-use crate::validation::error::ToDefaultMessage;
 
 macro_rules! struct_object_size_params {
     ($Param:tt, $field:tt, $message:tt) => {

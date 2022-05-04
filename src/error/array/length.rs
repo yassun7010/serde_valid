@@ -1,4 +1,4 @@
-use crate::validation::error::ToDefaultMessage;
+use crate::error::ToDefaultMessage;
 
 /// Length validation.
 ///

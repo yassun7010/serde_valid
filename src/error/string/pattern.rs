@@ -1,5 +1,5 @@
+use crate::error::ToDefaultMessage;
 use crate::traits::IsMatch;
-use crate::validation::error::ToDefaultMessage;
 use regex::Regex;
 
 #[derive(Debug, serde::Serialize)]

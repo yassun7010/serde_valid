@@ -1,4 +1,4 @@
-use crate::validation::error::ToDefaultMessage;
+use crate::error::ToDefaultMessage;
 
 #[derive(Debug, serde::Serialize)]
 pub struct LengthParams {

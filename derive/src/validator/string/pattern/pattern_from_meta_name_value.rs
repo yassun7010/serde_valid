@@ -30,6 +30,6 @@ fn inner_extract_string_pattern_validator_from_meta_name_value(
     validation_value: &syn::Lit,
 ) -> TokenStream {
     let pattern = get_str(VALIDATION_LABEL, field, validation_value);
-    let message = quote!(::serde_valid::validation::error::PatternParams::to_default_message);
+    let message = quote!(::serde_valid::validation::PatternParams::to_default_message);
     inner_extract_string_pattern_validator(field, &pattern, &message)
 }

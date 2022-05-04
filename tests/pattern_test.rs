@@ -215,7 +215,7 @@ fn pattern_err_message_test() {
 
 #[test]
 fn pattern_custom_err_message_fn_test() {
-    fn error_message(_params: &serde_valid::validation::error::PatternParams) -> String {
+    fn error_message(_params: &serde_valid::validation::PatternParams) -> String {
         "this is custom message.".to_string()
     }
 

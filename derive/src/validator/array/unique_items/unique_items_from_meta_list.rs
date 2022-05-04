@@ -48,7 +48,7 @@ fn inner_extract_array_unique_items_validator_from_meta_list(
     inner_extract_array_unique_items_validator(
         field,
         message.unwrap_or(quote!(
-            ::serde_valid::validation::error::ItemsParams::to_default_message
+            ::serde_valid::validation::ItemsParams::to_default_message
         )),
     )
 }
