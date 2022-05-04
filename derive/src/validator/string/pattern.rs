@@ -1,8 +1,6 @@
-mod pattern_from_meta_list;
 mod pattern_from_meta_name_value;
 
 use crate::types::Field;
-pub use pattern_from_meta_list::extract_string_pattern_of_validator_from_meta_list;
 pub use pattern_from_meta_name_value::extract_string_pattern_validator_from_meta_name_value;
 use proc_macro2::TokenStream;
 use quote::quote;

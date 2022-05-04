@@ -1,13 +1,17 @@
-mod unique_items_from_meta_list;
-mod unique_items_from_meta_path;
-
-use crate::types::Field;
+use crate::{types::Field, validator::Validator};
 use proc_macro2::TokenStream;
 use quote::quote;
-pub use unique_items_from_meta_list::extract_array_unique_items_validator_from_meta_list;
-pub use unique_items_from_meta_path::extract_array_unique_items_validator_from_meta_path;
 
-const VALIDATION_LABEL: &'static str = "unique_items";
+pub fn extract_array_unique_items_validator(field: &impl Field) -> Validator {
+    if let Some(option_field) = field.option_field() {
+        Validator::Option(Box::new(extract_array_unique_items_validator(
+            &option_field,
+        )))
+    } else {
+        let message = quote!(::serde_valid::UniqueItemsParams::to_default_message);
+        Validator::Normal(inner_extract_array_unique_items_validator(field, message))
+    }
+}
 
 fn inner_extract_array_unique_items_validator(
     field: &impl Field,

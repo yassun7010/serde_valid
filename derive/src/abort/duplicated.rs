@@ -17,21 +17,6 @@ pub fn abort_duplicated_argument(
     );
 }
 
-pub fn abort_duplicated_lit_argument(
-    validation_label: &str,
-    field: &impl Field,
-    span: proc_macro2::Span,
-) -> ! {
-    abort_invalid_attribute_on_field(
-        field,
-        span,
-        &format!(
-            "Duplicated literal argument of `{}` validator: only unique argument is allowed",
-            validation_label
-        ),
-    );
-}
-
 pub fn abort_duplicated_path_argument(
     validation_label: &str,
     field: &impl Field,

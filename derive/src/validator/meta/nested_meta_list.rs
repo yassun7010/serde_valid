@@ -1,12 +1,11 @@
 use crate::errors::Error;
 use crate::types::{Field, SingleIdentPath};
-use crate::validator::array::extract_array_unique_items_validator_from_meta_list;
+use crate::validator::common::MetaListValidation;
 use crate::validator::generic::{
     extract_generic_custom_validator, extract_generic_enumerate_validator,
 };
-use crate::validator::numeric::extract_numeric_multiple_of_validator_from_meta_list;
-use crate::validator::string::extract_string_pattern_of_validator_from_meta_list;
 use crate::validator::Validator;
+use std::str::FromStr;
 use syn::spanned::Spanned;
 
 pub fn extract_validator_from_nested_meta_list(
@@ -20,45 +19,27 @@ pub fn extract_validator_from_nested_meta_list(
     } = validation_list;
     let validation_ident = SingleIdentPath::new(&validation_name).ident();
 
-    match validation_ident.to_string().as_ref() {
-        "multiple_of" => {
-            return Ok(extract_numeric_multiple_of_validator_from_meta_list(
-                field,
-                attribute,
-                validation_list,
-            ))
-        }
-        "pattern" => {
-            return Ok(extract_string_pattern_of_validator_from_meta_list(
-                field,
-                attribute,
-                validation_list,
-            ))
-        }
-        "unique_items" => {
-            return Ok(extract_array_unique_items_validator_from_meta_list(
-                field,
-                attribute,
-                validation_list,
-            ))
-        }
-        "enumerate" => {
+    match MetaListValidation::from_str(&validation_ident.to_string()) {
+        Ok(MetaListValidation::Enumerate) => {
             return Ok(extract_generic_enumerate_validator(
                 field,
                 attribute,
                 validation_list,
             ))
         }
-        "custom" => {
+        Ok(MetaListValidation::Custom) => {
             return Ok(extract_generic_custom_validator(
                 field,
                 attribute,
                 validation_list,
             ))
         }
-        v => Err(Error::new(
+        Err(unknown) => Err(Error::new_unknown_meta_error(
             validation_name.span(),
-            format!("Unexpected list validator: {v:?}"),
+            &unknown,
+            &MetaListValidation::iter()
+                .map(|x| x.name())
+                .collect::<Vec<_>>(),
         )),
     }
 }

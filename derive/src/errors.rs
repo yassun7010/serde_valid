@@ -35,25 +35,16 @@ impl Error {
         Self::new(span, "it needs at least one validator")
     }
 
-    pub fn new_path_meta_name_error(
+    pub fn new_unknown_meta_error(
         span: proc_macro2::Span,
-        target: &str,
+        unknown: &str,
         candidates: &[&str],
     ) -> Self {
-        if let Some(candidate) = did_you_mean(target, candidates) {
-            Self::new_do_you_mean_name_error(span, target, &candidate)
-        } else {
-            Self::new(
-                span,
-                format!("path meta must be selected from {candidates:?}"),
-            )
-        }
-    }
+        let filterd_candidates = did_you_mean(unknown, candidates).unwrap_or(candidates.to_vec());
 
-    fn new_do_you_mean_name_error(span: proc_macro2::Span, target: &str, candidate: &str) -> Self {
         Self::new(
             span,
-            format!("Unknown name: `{target}`. Do you mean `{candidate}`?"),
+            format!("Unknown: `{unknown}`. Is it one of the following?\n{filterd_candidates:#?}"),
         )
     }
 
@@ -62,20 +53,33 @@ impl Error {
     }
 }
 
-fn did_you_mean<'a, T, I>(field: &str, alternates: I) -> Option<String>
+fn did_you_mean<'a, T, I>(unknown: &'a str, candidates: I) -> Option<Vec<&'a str>>
 where
     T: AsRef<str> + 'a,
     I: IntoIterator<Item = &'a T>,
 {
-    let mut candidate: Option<(f64, &str)> = None;
-    for pv in alternates {
-        let confidence = ::strsim::jaro_winkler(field, pv.as_ref());
-        if confidence > 0.8 && (candidate.is_none() || (candidate.as_ref().unwrap().0 < confidence))
-        {
-            candidate = Some((confidence, pv.as_ref()));
-        }
+    let mut filterd = candidates
+        .into_iter()
+        .map(|candidate| {
+            (
+                ::strsim::jaro_winkler(unknown, candidate.as_ref()),
+                candidate.as_ref(),
+            )
+        })
+        .filter(|(confidence, _)| *confidence > 0.8)
+        .collect::<Vec<_>>();
+
+    if filterd.len() == 0 {
+        None
+    } else {
+        filterd.sort_by(|a, b| b.0.partial_cmp(&a.0).unwrap_or(std::cmp::Ordering::Equal));
+        Some(
+            filterd
+                .into_iter()
+                .map(|(_, candidate)| candidate)
+                .collect(),
+        )
     }
-    candidate.map(|(_, candidate)| candidate.into())
 }
 
 pub type Errors = Vec<Error>;
