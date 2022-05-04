@@ -1,2 +1,2 @@
 mod numeric;
-pub use numeric::{LitNumeric, NumericInfo};
+pub use numeric::LitNumeric;

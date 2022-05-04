@@ -12,7 +12,8 @@ fn enum_named_variant_validation_is_ok_test() {
 
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(range(minimum = 0, maximum = 10))]
+        #[validate(minimum = 0)]
+        #[validate(maximum = 10)]
         val: i32,
     }
 
@@ -36,7 +37,8 @@ fn enum_unnamed_variant_validation_is_ok_test() {
 
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(range(minimum = 0, maximum = 10))]
+        #[validate(minimum = 0)]
+        #[validate(maximum = 10)]
         val: i32,
     }
 
@@ -58,7 +60,8 @@ fn enum_newtype_variant_validation_is_ok_test() {
 
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(range(minimum = 0, maximum = 10))]
+        #[validate(minimum = 0)]
+        #[validate(maximum = 10)]
         val: i32,
     }
 

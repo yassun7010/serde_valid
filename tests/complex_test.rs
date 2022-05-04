@@ -6,16 +6,20 @@ struct TestStruct<'a> {
     #[validate(enumerate(5, 10, 15))]
     // Numeric validator
     #[validate(multiple_of = 5)]
-    #[validate(range(minimum = 5, maximum = 5))]
-    #[validate(range(exclusive_minimum = 4, exclusive_maximum = 6))]
+    #[validate(minimum = 5)]
+    #[validate(maximum = 5)]
+    #[validate(exclusive_minimum = 4)]
+    #[validate(exclusive_maximum = 6)]
     int_value: i32,
 
     // Generic validator
     #[validate(enumerate(5.0, 10.0, 15.0))]
     // Numeric validator
     #[validate(multiple_of = 5.0)]
-    #[validate(range(minimum = 5.0, maximum = 5.0))]
-    #[validate(range(exclusive_minimum = 4.0, exclusive_maximum = 6.0))]
+    #[validate(minimum = 5.0)]
+    #[validate(maximum = 5.0)]
+    #[validate(exclusive_minimum = 4.0)]
+    #[validate(exclusive_maximum = 6.0)]
     float_value: f32,
 
     // Generic validator
@@ -36,7 +40,8 @@ struct TestStruct<'a> {
     #[validate(enumerate(5, 10, 15))]
     // Numeric validator
     #[validate(multiple_of = 5)]
-    #[validate(range(minimum = 5, maximum = 5))]
+    #[validate(minimum = 5)]
+    #[validate(maximum = 5)]
     optional_value: Option<i32>,
 
     // Generic validator
@@ -47,7 +52,8 @@ struct TestStruct<'a> {
     #[validate(max_items = 3)]
     // Numeric validator
     #[validate(multiple_of = 5)]
-    #[validate(range(minimum = 5, maximum = 15))]
+    #[validate(minimum = 5)]
+    #[validate(maximum = 15)]
     vec_value: Vec<i32>,
 
     // Nested validator
@@ -68,16 +74,20 @@ struct TestInnerStruct<'a> {
     #[validate(enumerate(5, 10, 15))]
     // Numeric validator
     #[validate(multiple_of = 5)]
-    #[validate(range(minimum = 5, maximum = 5))]
-    #[validate(range(exclusive_minimum = 4, exclusive_maximum = 6))]
+    #[validate(minimum = 5)]
+    #[validate(maximum = 5)]
+    #[validate(exclusive_minimum = 4)]
+    #[validate(exclusive_maximum = 6)]
     inner_int_value: i32,
 
     // Generic validator
     #[validate(enumerate(5.0, 10.0, 15.0))]
     // Numeric validator
     #[validate(multiple_of = 5.0)]
-    #[validate(range(minimum = 5.0, maximum = 5.0))]
-    #[validate(range(exclusive_minimum = 4.0, exclusive_maximum = 6.0))]
+    #[validate(minimum = 5.0)]
+    #[validate(maximum = 5.0)]
+    #[validate(exclusive_minimum = 4.0)]
+    #[validate(exclusive_maximum = 6.0)]
     inner_float_value: f32,
 
     // Generic validator
@@ -98,7 +108,8 @@ struct TestInnerStruct<'a> {
     #[validate(enumerate(5, 10, 15))]
     // Numeric validator
     #[validate(multiple_of = 5)]
-    #[validate(range(minimum = 5, maximum = 5))]
+    #[validate(minimum = 5)]
+    #[validate(maximum = 5)]
     inner_optional_value: Option<i32>,
 
     // Generic validator
@@ -109,7 +120,8 @@ struct TestInnerStruct<'a> {
     #[validate(max_items = 3)]
     // Numeric validator
     #[validate(multiple_of = 5)]
-    #[validate(range(minimum = 5, maximum = 15))]
+    #[validate(minimum = 5)]
+    #[validate(maximum = 15)]
     inner_vec_value: Vec<i32>,
 }
 

@@ -1,224 +1,111 @@
-use crate::abort::{
-    abort_duplicated_argument, abort_invalid_attribute_on_field, abort_required_path_argument,
-    abort_unexpected_name_value_argument, abort_unknown_list_argument, abort_unknown_path_argument,
-};
-use crate::lit::NumericInfo;
-use crate::types::{Field, SingleIdentPath};
-use crate::validator::common::{
-    check_common_meta_list_argument, check_common_meta_name_value_argument, check_lit,
-    extract_message_tokens, get_numeric,
-};
+use crate::types::Field;
+use crate::validator::common::get_numeric;
 use crate::validator::Validator;
 use proc_macro2::TokenStream;
 use quote::quote;
-use syn::spanned::Spanned;
 
-const VALIDATION_LABEL: &'static str = "range";
-const EXPECTED_KEYS: [&str; 4] = [
-    "minimum",
-    "exclusive_minimum",
-    "maximum",
-    "exclusive_maximum",
-];
-
-pub fn extract_numeric_range_validator(
-    field: &impl Field,
-    attribute: &syn::Attribute,
-    validation_list: &syn::MetaList,
-) -> Validator {
-    let syn::MetaList {
-        nested: validation_args,
-        ..
-    } = validation_list;
-    if let Some(array_field) = field.array_field() {
-        Validator::Array(Box::new(extract_numeric_range_validator(
-            &array_field,
-            attribute,
-            validation_list,
-        )))
-    } else if let Some(option_field) = field.option_field() {
-        Validator::Option(Box::new(extract_numeric_range_validator(
-            &option_field,
-            attribute,
-            validation_list,
-        )))
-    } else {
-        Validator::Normal(inner_extract_numeric_range_validator(
-            field,
-            attribute,
-            validation_args,
-        ))
-    }
-}
-
-fn inner_extract_numeric_range_validator(
-    field: &impl Field,
-    attribute: &syn::Attribute,
-    validation_args: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
-) -> TokenStream {
-    let field_name = field.name();
-    let field_ident = field.ident();
-    let (minimum_tokens, maximum_tokens) =
-        extract_numeric_range_validator_tokens(field, attribute, validation_args);
-    let message = extract_message_tokens(VALIDATION_LABEL, field, attribute, validation_args)
-        .unwrap_or(quote!(
-            ::serde_valid::validation::error::RangeParams::to_default_message
-        ));
-
-    quote!(
-        if !::serde_valid::validate_numeric_range(
-            *#field_ident,
-            #minimum_tokens,
-            #maximum_tokens
-        ) {
-            use ::serde_valid::validation::error::ToDefaultMessage;
-            __errors
-                .entry(#field_name)
-                .or_default()
-                .push(::serde_valid::validation::Error::Range(
-                    ::serde_valid::validation::error::Message::new(
-                        ::serde_valid::validation::error::RangeParams::new(
-                            *#field_ident,
-                            #minimum_tokens,
-                            #maximum_tokens
-                        ),
-                        #message
-                    )
-                ));
-        }
-    )
-}
-
-fn extract_numeric_range_validator_tokens(
-    field: &impl Field,
-    attribute: &syn::Attribute,
-    validation_args: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
-) -> (TokenStream, TokenStream) {
-    let mut minimum = None;
-    let mut exclusive_minimum = None;
-    let mut maximum = None;
-    let mut exclusive_maximum = None;
-    for validation_arg in validation_args {
-        match validation_arg {
-            syn::NestedMeta::Meta(ref item) => match item {
-                syn::Meta::NameValue(limit_name_value) => update_limit(
+macro_rules! extract_numeric_range_validator{
+    (
+        $Params:tt,
+        $ErrorType:tt,
+        $field:tt,
+        $label:tt,
+        $function_name:ident,
+        $inner_function_name:ident,
+        $validate_function:ident
+    ) => {
+        pub fn $function_name(
+            field: &impl Field,
+            validation_value: &syn::Lit,
+        ) -> Validator {
+            if let Some(array_field) = field.array_field() {
+                Validator::Array(Box::new($function_name(
+                    &array_field,
+                    validation_value,
+                )))
+            } else if let Some(option_field) = field.option_field() {
+                Validator::Option(Box::new($function_name(
+                    &option_field,
+                    validation_value,
+                )))
+            } else {
+                Validator::Normal($inner_function_name(
                     field,
-                    limit_name_value,
-                    &mut minimum,
-                    &mut exclusive_minimum,
-                    &mut maximum,
-                    &mut exclusive_maximum,
-                ),
-                syn::Meta::List(list) => {
-                    if !check_common_meta_list_argument(list) {
-                        abort_unknown_list_argument(VALIDATION_LABEL, field, item.span(), list);
-                    };
-                }
-                syn::Meta::Path(path) => {
-                    abort_unknown_path_argument(VALIDATION_LABEL, field, item.span(), path)
-                }
-            },
-            syn::NestedMeta::Lit(lit) => check_lit(VALIDATION_LABEL, field, lit.span(), lit),
-        }
-    }
-    let minimum_tokens = get_limit_tokens(field, minimum, exclusive_minimum);
-    let maximum_tokens = get_limit_tokens(field, maximum, exclusive_maximum);
-
-    if minimum_tokens.to_string() == "None" && maximum_tokens.to_string() == "None" {
-        abort_required_path_argument(VALIDATION_LABEL, &EXPECTED_KEYS, field, attribute.span());
-    }
-    (minimum_tokens, maximum_tokens)
-}
-
-fn update_limit<'a>(
-    field: &impl Field,
-    limit_name_value: &'a syn::MetaNameValue,
-    minimum: &mut Option<NumericInfo<'a>>,
-    exclusive_minimum: &mut Option<NumericInfo<'a>>,
-    maximum: &mut Option<NumericInfo<'a>>,
-    exclusive_maximum: &mut Option<NumericInfo<'a>>,
-) {
-    let syn::MetaNameValue {
-        path: limit_name,
-        lit: limit_value,
-        ..
-    } = limit_name_value;
-    let limit_name_ident = SingleIdentPath::new(limit_name).ident();
-    match limit_name_ident.to_string().as_ref() {
-        "minimum" => {
-            update_numeric(minimum, field, limit_value, limit_name_ident);
-        }
-        "exclusive_minimum" => {
-            update_numeric(exclusive_minimum, field, limit_value, limit_name_ident)
-        }
-        "maximum" => update_numeric(maximum, field, limit_value, limit_name_ident),
-        "exclusive_maximum" => {
-            update_numeric(exclusive_maximum, field, limit_value, limit_name_ident)
-        }
-        unknown_value => {
-            if !check_common_meta_name_value_argument(limit_name_value) {
-                abort_unexpected_name_value_argument(
-                    VALIDATION_LABEL,
-                    unknown_value,
-                    &EXPECTED_KEYS,
-                    field,
-                    limit_name.span(),
-                    limit_name_value,
-                );
+                    validation_value,
+                ))
             }
         }
-    }
-}
 
-fn update_numeric<'a>(
-    target: &mut Option<NumericInfo<'a>>,
-    field: &impl Field,
-    limit_value: &'a syn::Lit,
-    limit_name_ident: &'a syn::Ident,
-) {
-    if target.is_some() {
-        abort_duplicated_argument(
-            VALIDATION_LABEL,
-            field,
-            limit_value.span(),
-            limit_name_ident,
-        )
-    }
+        fn $inner_function_name(
+            field: &impl Field,
+            validation_value: &syn::Lit,
+        ) -> TokenStream {
+            let $field = get_numeric($label, field, validation_value);
 
-    *target = Some(NumericInfo::new(
-        get_numeric(VALIDATION_LABEL, field, limit_value),
-        limit_name_ident,
-    ));
-}
+            let field_name = field.name();
+            let field_ident = field.ident();
+            let message = quote!(::serde_valid::validation::error::$Params::to_default_message);
 
-fn get_limit_tokens(
-    field: &impl Field,
-    inclusive_limit: Option<NumericInfo>,
-    exclusive_limit: Option<NumericInfo>,
-) -> proc_macro2::TokenStream {
-    match (inclusive_limit, exclusive_limit) {
-        (Some(inclusive), Some(exclusive)) => {
-            let span = inclusive
-                .path_ident()
-                .span()
-                .join(exclusive.path_ident().span())
-                .unwrap_or(inclusive.path_ident().span());
-            abort_invalid_attribute_on_field(
-                field,
-                span,
-                &format!(
-                    "Both `{}` and `{}` have been set in `range` validator: conflict",
-                    inclusive.path_name(),
-                    exclusive.path_name()
-                ),
+            quote!(
+                if !::serde_valid::$validate_function(
+                    *#field_ident,
+                    #$field,
+                ) {
+                    use ::serde_valid::validation::error::ToDefaultMessage;
+                    __errors
+                        .entry(#field_name)
+                        .or_default()
+                        .push(::serde_valid::validation::Error::$ErrorType(
+                            ::serde_valid::validation::error::Message::new(
+                                ::serde_valid::validation::error::$Params::new(
+                                    *#field_ident,
+                                    #$field,
+                                ),
+                                #message
+                            )
+                        ));
+                }
             )
         }
-        (Some(inclusive_limit), None) => {
-            quote!(Some(::serde_valid::Limit::Inclusive(#inclusive_limit)))
-        }
-        (None, Some(exclusive_limit)) => {
-            quote!(Some(::serde_valid::Limit::Exclusive(#exclusive_limit)))
-        }
-        (None, None) => quote!(None),
     }
 }
+
+extract_numeric_range_validator!(
+    MinimumParams,
+    Minimum,
+    minimum,
+    "minimum",
+    extract_numeric_minimum_validator,
+    inner_extract_numeric_minimum_validator,
+    validate_numeric_minimum
+);
+
+extract_numeric_range_validator!(
+    MaximumParams,
+    Maximum,
+    maximum,
+    "maximum",
+    extract_numeric_maximum_validator,
+    inner_extract_numeric_maximum_validator,
+    validate_numeric_maximum
+);
+
+extract_numeric_range_validator!(
+    ExclusiveMinimumParams,
+    ExclusiveMinimum,
+    exclusive_minimum,
+    "exclusive_minimum",
+    extract_numeric_exclusive_minimum_validator,
+    inner_extract_numeric_exclusive_minimum_validator,
+    validate_numeric_exclusive_minimum
+);
+
+extract_numeric_range_validator!(
+    ExclusiveMaximumParams,
+    ExclusiveMaximum,
+    exclusive_maximum,
+    "exclusive_maximum",
+    extract_numeric_exclusive_maximum_validator,
+    inner_extract_numeric_exclusive_maximum_validator,
+    validate_numeric_exclusive_maximum
+);

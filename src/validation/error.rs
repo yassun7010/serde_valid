@@ -10,7 +10,9 @@ pub use array::{MaxItemsParams, MinItemsParams, UniqueItemsParams};
 pub use errors::{Errors, MapErrors, VecErrors};
 pub use generic::EnumerateParams;
 pub use message::{Message, ToDefaultMessage};
-pub use numeric::{MultipleOfParams, RangeParams};
+pub use numeric::{
+    ExclusiveMaximumParams, ExclusiveMinimumParams, MaximumParams, MinimumParams, MultipleOfParams,
+};
 pub use object::PropertiesParams;
 pub use string::{LengthParams, PatternParams};
 
@@ -19,7 +21,19 @@ pub use string::{LengthParams, PatternParams};
 pub enum Error {
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    Range(Message<RangeParams>),
+    Minimum(Message<MinimumParams>),
+
+    #[error("{0}")]
+    #[serde(serialize_with = "serialize_error_message")]
+    Maximum(Message<MaximumParams>),
+
+    #[error("{0}")]
+    #[serde(serialize_with = "serialize_error_message")]
+    ExclusiveMinimum(Message<ExclusiveMinimumParams>),
+
+    #[error("{0}")]
+    #[serde(serialize_with = "serialize_error_message")]
+    ExclusiveMaximum(Message<ExclusiveMaximumParams>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]

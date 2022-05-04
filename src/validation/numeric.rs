@@ -1,4 +1,10 @@
+mod exclusive_maximum;
+mod exclusive_minimum;
+mod maximum;
+mod minimum;
 mod multiple_of;
-mod range;
+pub use exclusive_maximum::validate_numeric_exclusive_maximum;
+pub use exclusive_minimum::validate_numeric_exclusive_minimum;
+pub use maximum::validate_numeric_maximum;
+pub use minimum::validate_numeric_minimum;
 pub use multiple_of::validate_numeric_multiple_of;
-pub use range::{validate_numeric_range, Limit};
