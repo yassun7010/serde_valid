@@ -20,19 +20,36 @@ impl Error {
     }
 
     pub fn new_literal_meta_item_error(span: proc_macro2::Span) -> Self {
-        Self::new(span, "literal meta item does not support.")
+        Self::new(span, "#[validate(`literal`)] type does not support.")
     }
 
-    pub fn new_name_value_meta_item_error(span: proc_macro2::Span) -> Self {
-        Self::new(span, "name value meta does not support.")
+    pub fn new_meta_name_value_item_error(span: proc_macro2::Span) -> Self {
+        Self::new(span, "#[validate = something...] type does not support.")
+    }
+
+    pub fn new_meta_name_value_need_value_error(
+        span: proc_macro2::Span,
+        validation_type: &str,
+    ) -> Self {
+        Self::new(
+            span,
+            format!("#[validate({validation_type} = ???)] needs validation value."),
+        )
+    }
+
+    pub fn new_meta_list_need_value_error(span: proc_macro2::Span, validation_type: &str) -> Self {
+        Self::new(
+            span,
+            format!("#[validate({validation_type}(???, ???, ...))] needs validation value."),
+        )
     }
 
     pub fn new_attribute_parse_error(span: proc_macro2::Span, error: &syn::Error) -> Self {
-        Self::new(span, format!("attribute parse error: {error}"))
+        Self::new(span, format!("#[validate] parse error: {error}"))
     }
 
     pub fn new_attribute_required_error(span: proc_macro2::Span) -> Self {
-        Self::new(span, "it needs at least one validator")
+        Self::new(span, "#[validate(validation...)] needs validation.")
     }
 
     pub fn new_unknown_meta_error(

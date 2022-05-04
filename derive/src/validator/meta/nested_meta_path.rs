@@ -1,4 +1,3 @@
-use crate::errors::Error;
 use crate::types::{Field, SingleIdentPath};
 use crate::validator::array::extract_array_unique_items_validator;
 use crate::validator::common::{MetaListValidation, MetaNameValueValidation, MetaPathValidation};
@@ -9,18 +8,33 @@ pub fn extract_validator_from_nested_meta_path(
     field: &impl Field,
     _attribute: &syn::Attribute,
     validation: &syn::Path,
-) -> Result<Validator, Error> {
+) -> Result<Validator, crate::Error> {
     let validation_ident = SingleIdentPath::new(validation).ident();
-    match MetaPathValidation::from_str(&validation_ident.to_string()) {
+    let validation_name = validation_ident.to_string();
+    match MetaPathValidation::from_str(&validation_name) {
         Ok(MetaPathValidation::UniqueItems) => Ok(extract_array_unique_items_validator(field)),
-        Err(unknown) => Err(Error::new_unknown_meta_error(
-            validation_ident.span(),
-            &unknown,
-            &MetaPathValidation::iter()
-                .map(|x| x.name())
-                .chain(MetaNameValueValidation::iter().map(|x| x.name()))
-                .chain(MetaListValidation::iter().map(|x| x.name()))
-                .collect::<Vec<_>>(),
-        )),
+        Err(unknown) => {
+            if MetaNameValueValidation::from_str(&validation_name).is_ok() {
+                Err(crate::Error::new_meta_name_value_need_value_error(
+                    validation_ident.span(),
+                    &validation_name,
+                ))
+            } else if MetaListValidation::from_str(&validation_name).is_ok() {
+                Err(crate::Error::new_meta_list_need_value_error(
+                    validation_ident.span(),
+                    &validation_name,
+                ))
+            } else {
+                Err(crate::Error::new_unknown_meta_error(
+                    validation_ident.span(),
+                    &unknown,
+                    &MetaPathValidation::iter()
+                        .map(|x| x.name())
+                        .chain(MetaNameValueValidation::iter().map(|x| x.name()))
+                        .chain(MetaListValidation::iter().map(|x| x.name()))
+                        .collect::<Vec<_>>(),
+                ))
+            }
+        }
     }
 }

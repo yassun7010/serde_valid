@@ -19,7 +19,8 @@ pub fn extract_meta_validator(
     match attribute.parse_meta() {
         Ok(syn::Meta::List(syn::MetaList { ref nested, .. })) => {
             // only validation from there on
-            for meta_item in nested {
+            if nested.len() > 0 {
+                let meta_item = &nested[0];
                 match meta_item {
                     syn::NestedMeta::Meta(item) => match item {
                         syn::Meta::Path(validation_path) => {
@@ -50,11 +51,9 @@ pub fn extract_meta_validator(
                 };
             }
         }
-        Ok(syn::Meta::Path(validation)) => {
-            return extract_validator_from_meta_path(field, attribute, &validation)
-        }
+        Ok(syn::Meta::Path(_)) => return extract_validator_from_meta_path(field, attribute),
         Ok(syn::Meta::NameValue(_)) => {
-            return Err(Error::new_name_value_meta_item_error(attribute.span()))
+            return Err(Error::new_meta_name_value_item_error(attribute.span()))
         }
         Err(error) => return Err(Error::new_attribute_parse_error(attribute.span(), &error)),
     };

@@ -1,23 +1,14 @@
 use crate::errors::Error;
-use crate::types::{Field, SingleIdentPath};
+use crate::types::Field;
 use crate::validator::Validator;
 use proc_macro2::TokenStream;
 use quote::quote;
-use syn::spanned::Spanned;
 
 pub fn extract_validator_from_meta_path(
     field: &impl Field,
     _attribute: &syn::Attribute,
-    validation: &syn::Path,
 ) -> Result<Validator, Error> {
-    let validation_ident = SingleIdentPath::new(validation).ident();
-    match validation_ident.to_string().as_ref() {
-        "validate" => return Ok(extract_validate_validator(field)),
-        v => Err(Error::new(
-            validation.span(),
-            format!("Unexpected path validator: {v:?}"),
-        )),
-    }
+    Ok(extract_validate_validator(field))
 }
 
 fn extract_validate_validator(field: &impl Field) -> Validator {
@@ -26,11 +17,11 @@ fn extract_validate_validator(field: &impl Field) -> Validator {
     } else if let Some(option_field) = field.option_field() {
         Validator::Option(Box::new(extract_validate_validator(&option_field)))
     } else {
-        Validator::Normal(extract_validate_validator_tokens(field))
+        Validator::Normal(inner_extract_validate_validator(field))
     }
 }
 
-fn extract_validate_validator_tokens(field: &impl Field) -> TokenStream {
+fn inner_extract_validate_validator(field: &impl Field) -> TokenStream {
     let field_ident = field.ident();
     let field_name = field.name();
     quote!(
