@@ -4,10 +4,10 @@ use crate::validator::Validator;
 use proc_macro2::TokenStream;
 use quote::quote;
 
-/// Range validation.
+/// Length validation.
 ///
-/// See <https://json-schema.org/understanding-json-schema/reference/numeric.html#range>
-macro_rules! extract_numeric_range_validator{
+/// See <https://json-schema.org/understanding-json-schema/reference/array.html#length>
+macro_rules! extract_array_length_validator{
     (
         $Params:tt,
         $ErrorType:tt,
@@ -21,21 +21,13 @@ macro_rules! extract_numeric_range_validator{
             field: &impl Field,
             validation_value: &syn::Lit,
         ) -> Validator {
-            if let Some(array_field) = field.array_field() {
-                Validator::Array(Box::new($function_name(
-                    &array_field,
-                    validation_value,
-                )))
-            } else if let Some(option_field) = field.option_field() {
+            if let Some(option_field) = field.option_field() {
                 Validator::Option(Box::new($function_name(
                     &option_field,
                     validation_value,
                 )))
             } else {
-                Validator::Normal($inner_function_name(
-                    field,
-                    validation_value,
-                ))
+                Validator::Normal($inner_function_name(field, validation_value))
             }
         }
 
@@ -51,7 +43,7 @@ macro_rules! extract_numeric_range_validator{
 
             quote!(
                 if !::serde_valid::$validate_function(
-                    *#field_ident,
+                    #field_ident,
                     #$field,
                 ) {
                     use ::serde_valid::validation::error::ToDefaultMessage;
@@ -61,7 +53,7 @@ macro_rules! extract_numeric_range_validator{
                         .push(::serde_valid::validation::Error::$ErrorType(
                             ::serde_valid::validation::error::Message::new(
                                 ::serde_valid::validation::error::$Params::new(
-                                    *#field_ident,
+                                    #field_ident,
                                     #$field,
                                 ),
                                 #message
@@ -73,42 +65,22 @@ macro_rules! extract_numeric_range_validator{
     }
 }
 
-extract_numeric_range_validator!(
-    MinimumParams,
-    Minimum,
-    minimum,
-    "minimum",
-    extract_numeric_minimum_validator,
-    inner_extract_numeric_minimum_validator,
-    validate_numeric_minimum
+extract_array_length_validator!(
+    MaxItemsParams,
+    MaxItems,
+    max_items,
+    "max_items",
+    extract_array_max_items_validator,
+    inner_extract_array_max_items_validator,
+    validate_array_max_items
 );
 
-extract_numeric_range_validator!(
-    MaximumParams,
-    Maximum,
-    maximum,
-    "maximum",
-    extract_numeric_maximum_validator,
-    inner_extract_numeric_maximum_validator,
-    validate_numeric_maximum
-);
-
-extract_numeric_range_validator!(
-    ExclusiveMinimumParams,
-    ExclusiveMinimum,
-    exclusive_minimum,
-    "exclusive_minimum",
-    extract_numeric_exclusive_minimum_validator,
-    inner_extract_numeric_exclusive_minimum_validator,
-    validate_numeric_exclusive_minimum
-);
-
-extract_numeric_range_validator!(
-    ExclusiveMaximumParams,
-    ExclusiveMaximum,
-    exclusive_maximum,
-    "exclusive_maximum",
-    extract_numeric_exclusive_maximum_validator,
-    inner_extract_numeric_exclusive_maximum_validator,
-    validate_numeric_exclusive_maximum
+extract_array_length_validator!(
+    MinItemsParams,
+    MinItems,
+    min_items,
+    "min_items",
+    extract_array_min_items_validator,
+    inner_extract_array_min_items_validator,
+    validate_array_min_items
 );
