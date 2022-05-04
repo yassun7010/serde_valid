@@ -1,53 +1,58 @@
 use crate::error::ToDefaultMessage;
 
-#[derive(Debug, serde::Serialize)]
-pub struct LengthParams {
-    length: String,
-    min_length: Option<usize>,
-    max_length: Option<usize>,
-}
-
-impl LengthParams {
-    pub fn new<T>(length: T, min_length: Option<usize>, max_length: Option<usize>) -> Self
-    where
-        T: PartialOrd + PartialEq + std::fmt::Debug,
-    {
-        Self {
-            length: format!("{:?}", length),
-            min_length,
-            max_length,
+/// Length validation.
+///
+/// See <https://json-schema.org/understanding-json-schema/reference/string.html#length>
+macro_rules! struct_string_length_params {
+    ($Param:tt, $limit:tt, $message:tt) => {
+        #[derive(Debug, serde::Serialize)]
+        pub struct $Param {
+            value: String,
+            $limit: usize,
         }
-    }
 
-    #[allow(dead_code)]
-    pub fn length(&self) -> &String {
-        &self.length
-    }
+        impl $Param {
+            pub fn new<T>(value: T, $limit: usize) -> Self
+            where
+                T: PartialOrd + PartialEq + std::fmt::Debug,
+            {
+                Self {
+                    value: format!("{:?}", value),
+                    $limit,
+                }
+            }
 
-    #[allow(dead_code)]
-    pub fn min_length(&self) -> Option<usize> {
-        self.min_length
-    }
+            #[allow(dead_code)]
+            pub fn value(&self) -> &str {
+                &self.value
+            }
 
-    #[allow(dead_code)]
-    pub fn max_length(&self) -> Option<usize> {
-        self.max_length
-    }
+            #[allow(dead_code)]
+            pub fn length(&self) -> usize {
+                self.value.len()
+            }
+
+            #[allow(dead_code)]
+            pub fn $limit(&self) -> usize {
+                self.$limit
+            }
+        }
+
+        impl ToDefaultMessage for $Param {
+            fn to_default_message(&self) -> String {
+                format!($message, self.$limit)
+            }
+        }
+    };
 }
 
-impl ToDefaultMessage for LengthParams {
-    fn to_default_message(&self) -> String {
-        let min_length = match &self.min_length {
-            Some(length) => format!("{} <= ", length),
-            None => String::new(),
-        };
-        let max_length = match &self.max_length {
-            Some(length) => format!(" <= {}", length),
-            None => String::new(),
-        };
-        format!(
-            "length of {} must be in `{}length{}`, but not.",
-            self.length, min_length, max_length
-        )
-    }
-}
+struct_string_length_params!(
+    MinLengthParams,
+    min_length,
+    "the length of the value must be `>= {}`."
+);
+struct_string_length_params!(
+    MaxLengthParams,
+    max_length,
+    "the length of the value must be `<= {}`."
+);

@@ -5,9 +5,9 @@ pub mod validation;
 
 pub use deserialize::*;
 pub use error::{
-    EnumerateParams, Error, ExclusiveMaximumParams, ExclusiveMinimumParams, LengthParams,
-    MaxItemsParams, MaxPropertiesParams, MaximumParams, MinItemsParams, MinPropertiesParams,
-    MinimumParams, MultipleOfParams, PatternParams, UniqueItemsParams,
+    EnumerateParams, Error, ExclusiveMaximumParams, ExclusiveMinimumParams, MaxItemsParams,
+    MaxLengthParams, MaxPropertiesParams, MaximumParams, MinItemsParams, MinLengthParams,
+    MinPropertiesParams, MinimumParams, MultipleOfParams, PatternParams, UniqueItemsParams,
 };
 pub use traits::*;
 pub use validation::{
@@ -15,7 +15,7 @@ pub use validation::{
     validate_generic_enumerate, validate_numeric_exclusive_maximum,
     validate_numeric_exclusive_minimum, validate_numeric_maximum, validate_numeric_minimum,
     validate_numeric_multiple_of, validate_object_max_properties, validate_object_min_properties,
-    validate_string_length, validate_string_pattern,
+    validate_string_max_length, validate_string_min_length, validate_string_pattern,
 };
 
 pub trait Validate {

@@ -21,24 +21,6 @@ pub fn get_numeric<'a>(
     }
 }
 
-pub fn get_integer<'a>(
-    validation_label: &str,
-    field: &impl Field,
-    lit: &'a syn::Lit,
-) -> &'a syn::LitInt {
-    match lit {
-        syn::Lit::Int(lit_int) => lit_int,
-        _ => abort_invalid_attribute_on_field(
-            field,
-            lit.span(),
-            &format!(
-                "invalid argument type for `{}` validator: only integer literals are allowed",
-                validation_label
-            ),
-        ),
-    }
-}
-
 pub fn get_str<'a>(
     validation_label: &str,
     field: &impl Field,

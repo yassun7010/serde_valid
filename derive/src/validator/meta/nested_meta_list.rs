@@ -5,9 +5,7 @@ use crate::validator::generic::{
     extract_generic_custom_validator, extract_generic_enumerate_validator,
 };
 use crate::validator::numeric::extract_numeric_multiple_of_validator_from_meta_list;
-use crate::validator::string::{
-    extract_string_length_validator, extract_string_pattern_of_validator_from_meta_list,
-};
+use crate::validator::string::extract_string_pattern_of_validator_from_meta_list;
 use crate::validator::Validator;
 use syn::spanned::Spanned;
 
@@ -25,13 +23,6 @@ pub fn extract_validator_from_nested_meta_list(
     match validation_ident.to_string().as_ref() {
         "multiple_of" => {
             return Ok(extract_numeric_multiple_of_validator_from_meta_list(
-                field,
-                attribute,
-                validation_list,
-            ))
-        }
-        "length" => {
-            return Ok(extract_string_length_validator(
                 field,
                 attribute,
                 validation_list,

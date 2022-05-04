@@ -25,14 +25,16 @@ struct TestStruct<'a> {
     // Generic validator
     #[validate(enumerate("12345", "67890"))]
     // String validator
-    #[validate(length(min_length = 5, max_length = 5))]
+    #[validate(min_length = 5)]
+    #[validate(max_length = 5)]
     #[validate(pattern = r"^\d{5}$")]
     string_value: String,
 
     // Generic validator
     #[validate(enumerate("12345", "67890"))]
     // String validator
-    #[validate(length(min_length = 5, max_length = 5))]
+    #[validate(min_length = 5)]
+    #[validate(max_length = 5)]
     #[validate(pattern = r"^\d{5}$")]
     str_value: &'a str,
 
@@ -93,14 +95,16 @@ struct TestInnerStruct<'a> {
     // Generic validator
     #[validate(enumerate("12345", "67890"))]
     // String validator
-    #[validate(length(min_length = 5, max_length = 5))]
+    #[validate(min_length = 5)]
+    #[validate(max_length = 5)]
     #[validate(pattern = r"^\d{5}$")]
     inner_string_value: String,
 
     // Generic validator
     #[validate(enumerate("12345", "67890"))]
     // String validator
-    #[validate(length(min_length = 5, max_length = 5))]
+    #[validate(min_length = 5)]
+    #[validate(max_length = 5)]
     #[validate(pattern = r"^\d{5}$")]
     inner_str_value: &'a str,
 

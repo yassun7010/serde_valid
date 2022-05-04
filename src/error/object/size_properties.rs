@@ -2,21 +2,21 @@ use crate::error::ToDefaultMessage;
 use crate::traits::Size;
 
 macro_rules! struct_object_size_params {
-    ($Param:tt, $field:tt, $message:tt) => {
+    ($Param:tt, $limit:tt, $message:tt) => {
         #[derive(Debug)]
         pub struct $Param {
             properties_size: usize,
-            $field: usize,
+            $limit: usize,
         }
 
         impl $Param {
-            pub fn new<T>(properties: &T, $field: usize) -> Self
+            pub fn new<T>(properties: &T, $limit: usize) -> Self
             where
                 T: Size,
             {
                 Self {
                     properties_size: properties.size(),
-                    $field,
+                    $limit,
                 }
             }
 
@@ -26,14 +26,14 @@ macro_rules! struct_object_size_params {
             }
 
             #[allow(dead_code)]
-            pub fn $field(&self) -> usize {
-                self.$field
+            pub fn $limit(&self) -> usize {
+                self.$limit
             }
         }
 
         impl ToDefaultMessage for $Param {
             fn to_default_message(&self) -> String {
-                format!($message, self.$field)
+                format!($message, self.$limit)
             }
         }
     };

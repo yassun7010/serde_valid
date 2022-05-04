@@ -11,7 +11,7 @@ macro_rules! extract_array_length_validator{
     (
         $Params:tt,
         $ErrorType:tt,
-        $field:tt,
+        $limit:tt,
         $label:tt,
         $function_name:ident,
         $inner_function_name:ident,
@@ -35,7 +35,7 @@ macro_rules! extract_array_length_validator{
             field: &impl Field,
             validation_value: &syn::Lit,
         ) -> TokenStream {
-            let $field = get_numeric($label, field, validation_value);
+            let $limit = get_numeric($label, field, validation_value);
 
             let field_name = field.name();
             let field_ident = field.ident();
@@ -44,7 +44,7 @@ macro_rules! extract_array_length_validator{
             quote!(
                 if !::serde_valid::$validate_function(
                     #field_ident,
-                    #$field,
+                    #$limit,
                 ) {
                     use ::serde_valid::error::ToDefaultMessage;
                     __errors
@@ -54,7 +54,7 @@ macro_rules! extract_array_length_validator{
                             ::serde_valid::error::Message::new(
                                 ::serde_valid::$Params::new(
                                     #field_ident,
-                                    #$field,
+                                    #$limit,
                                 ),
                                 #message
                             )

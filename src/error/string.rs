@@ -1,5 +1,5 @@
 mod length;
 mod pattern;
 
-pub use length::LengthParams;
+pub use length::{MaxLengthParams, MinLengthParams};
 pub use pattern::PatternParams;

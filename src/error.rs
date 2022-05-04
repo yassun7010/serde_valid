@@ -13,7 +13,7 @@ pub use numeric::{
     ExclusiveMaximumParams, ExclusiveMinimumParams, MaximumParams, MinimumParams, MultipleOfParams,
 };
 pub use object::{MaxPropertiesParams, MinPropertiesParams};
-pub use string::{LengthParams, PatternParams};
+pub use string::{MaxLengthParams, MinLengthParams, PatternParams};
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error<E>

@@ -29,14 +29,3 @@ pub fn abort_unexpected_list_argument(
 ) -> ! {
     abort_unexpected_path_argument(validation_label, value, expected_values, field, span)
 }
-
-pub fn abort_unexpected_name_value_argument(
-    validation_label: &str,
-    value: &str,
-    expected_values: &[&str],
-    field: &impl Field,
-    span: proc_macro2::Span,
-    _name_value: &syn::MetaNameValue,
-) -> ! {
-    abort_unexpected_path_argument(validation_label, value, expected_values, field, span)
-}

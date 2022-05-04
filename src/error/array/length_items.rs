@@ -4,21 +4,21 @@ use crate::error::ToDefaultMessage;
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/array.html#length>
 macro_rules! struct_array_length_params {
-    ($Param:tt, $field:tt, $message:tt) => {
+    ($Param:tt, $limit:tt, $message:tt) => {
         #[derive(Debug)]
         pub struct $Param {
             items: Vec<String>,
-            $field: usize,
+            $limit: usize,
         }
 
         impl $Param {
-            pub fn new<T>(items: &[T], $field: usize) -> Self
+            pub fn new<T>(items: &[T], $limit: usize) -> Self
             where
                 T: std::fmt::Debug,
             {
                 Self {
                     items: items.iter().map(|i| format!("{:?}", i)).collect(),
-                    $field,
+                    $limit,
                 }
             }
 
@@ -28,14 +28,14 @@ macro_rules! struct_array_length_params {
             }
 
             #[allow(dead_code)]
-            pub fn $field(&self) -> usize {
-                self.$field
+            pub fn $limit(&self) -> usize {
+                self.$limit
             }
         }
 
         impl ToDefaultMessage for $Param {
             fn to_default_message(&self) -> String {
-                format!($message, self.$field,)
+                format!($message, self.$limit,)
             }
         }
     };
