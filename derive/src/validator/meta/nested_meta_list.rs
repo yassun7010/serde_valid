@@ -30,11 +30,7 @@ pub fn extract_validator_from_nested_meta_list(
             )?)
         }
         Ok(MetaListValidation::Custom) => {
-            return Ok(extract_generic_custom_validator(
-                field,
-                attribute,
-                validation_list,
-            ))
+            return Ok(extract_generic_custom_validator(field, validation_list)?)
         }
         Err(unknown) => Err(crate::Error::new_unknown_meta_error(
             validation_name.span(),

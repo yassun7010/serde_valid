@@ -5,13 +5,6 @@ mod parenthesized {
     pub fn meta_path_validation(_val: &Vec<i32>) -> Result<(), serde_valid::validation::Error> {
         Ok(())
     }
-
-    pub fn meta_list_validation(
-        _val1: &Vec<i32>,
-        _val2: &i32,
-    ) -> Result<(), serde_valid::validation::Error> {
-        Ok(())
-    }
 }
 
 #[test]
@@ -42,50 +35,6 @@ fn custom_meta_path_when_parenthesized_path_is_ok_test() {
 
     let s = TestStruct {
         val: vec![1, 2, 3, 4],
-    };
-    assert!(s.validate().is_ok());
-}
-
-#[test]
-fn custom_meta_list_is_ok_test() {
-    fn user_validation(
-        _val1: &Vec<i32>,
-        _val2: &i32,
-        _lit1: f32,
-        _val3: &f32,
-        _lit2: bool,
-    ) -> Result<(), serde_valid::validation::Error> {
-        Ok(())
-    }
-
-    #[derive(Validate)]
-    struct TestStruct {
-        #[validate(custom(user_validation(val2, 1.234, val3, true)))]
-        val1: Vec<i32>,
-        val2: i32,
-        val3: f32,
-    }
-
-    let s = TestStruct {
-        val1: vec![1, 2, 3, 4],
-        val2: 5,
-        val3: 1.234,
-    };
-    assert!(s.validate().is_ok());
-}
-
-#[test]
-fn custom_meta_list_when_parenthesized_path_is_ok_test() {
-    #[derive(Validate)]
-    struct TestStruct {
-        #[validate(custom(parenthesized::meta_list_validation(val2)))]
-        val1: Vec<i32>,
-        val2: i32,
-    }
-
-    let s = TestStruct {
-        val1: vec![1, 2, 3, 4],
-        val2: 5,
     };
     assert!(s.validate().is_ok());
 }

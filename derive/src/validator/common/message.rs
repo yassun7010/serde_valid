@@ -41,7 +41,7 @@ pub fn extract_message_fn_tokens(
                 }
             }
         },
-        syn::NestedMeta::Lit(lit) => Err(crate::Error::new_literal_error(lit.span())),
+        syn::NestedMeta::Lit(lit) => Err(crate::Error::literal_not_support(lit)),
     }
 }
 
@@ -136,7 +136,7 @@ fn get_message_fn_from_nested_meta(
             for arg in message_fn_define.iter().skip(1) {
                 args.push(arg.clone())
             }
-            Err(crate::Error::new_message_fn_name_tail_error(args.span()))
+            Err(crate::Error::message_fn_tail_error(args.span()))
         }
     }
 }

@@ -1,5 +1,6 @@
 use proc_macro2::TokenStream;
 use quote::quote;
+use syn::spanned::Spanned;
 
 pub fn fields_errors_tokens() -> TokenStream {
     quote!(::serde_valid::validation::Errors::Fields(__errors))
@@ -59,12 +60,12 @@ impl Error {
         Self::new(span, "#[validate(validation...)] needs validation.")
     }
 
-    pub fn new_numeric_literal_error(span: proc_macro2::Span) -> Self {
-        Self::new(span, "Allow only numeric literal.")
+    pub fn new_numeric_literal_error(lit: &syn::Lit) -> Self {
+        Self::new(lit.span(), "Allow only numeric literal.")
     }
 
-    pub fn new_str_literal_error(span: proc_macro2::Span) -> Self {
-        Self::new(span, "Allow only str literal.")
+    pub fn new_str_literal_error(lit: &syn::Lit) -> Self {
+        Self::new(lit.span(), "Allow only str literal.")
     }
 
     pub fn new_unknown_meta_error(
@@ -87,16 +88,28 @@ impl Error {
         )
     }
 
-    pub fn new_message_fn_name_tail_error(span: proc_macro2::Span) -> Self {
-        Self::new(span, format!("message_fn support only 1 item."))
+    pub fn message_fn_tail_error(span: proc_macro2::Span) -> Self {
+        Self::new(span, format!("`message_fn` support only 1 item."))
     }
 
-    pub fn new_literal_error(span: proc_macro2::Span) -> Self {
-        Self::new(span, "literal does not support.")
+    pub fn custom_fn_need_item(span: proc_macro2::Span) -> Self {
+        Self::new(span, format!("`custom_fn` need items."))
     }
 
-    pub fn new_too_manyitems_error(span: proc_macro2::Span) -> Self {
-        Self::new(span, "Too many items.")
+    pub fn custom_fn_tail_error(span: proc_macro2::Span) -> Self {
+        Self::new(span, format!("`custom_fn` support only 1 item."))
+    }
+
+    pub fn literal_not_support(lit: &syn::Lit) -> Self {
+        Self::new(lit.span(), "Literal does not support.")
+    }
+
+    pub fn name_value_not_support(name_value: &syn::MetaNameValue) -> Self {
+        Self::new(name_value.span(), "Name value does not support.")
+    }
+
+    pub fn too_many_list_items(span: proc_macro2::Span) -> Self {
+        Self::new(span, "Too many list items.")
     }
 
     pub fn to_compile_error(&self) -> TokenStream {

@@ -23,7 +23,7 @@ pub fn extract_meta_validator(
             let messaeg_fn = match nested.len() {
                 0..=1 => None,
                 2 => Some(extract_message_fn_tokens(&nested[1])?),
-                _ => Err(crate::Error::new_too_manyitems_error(nested[2].span()))?,
+                _ => Err(crate::Error::too_many_list_items(nested[2].span()))?,
             };
 
             let validation = if nested.len() > 0 {
