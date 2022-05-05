@@ -1,6 +1,5 @@
 use errors::to_compile_errors;
 use proc_macro::TokenStream;
-mod abort;
 mod derive;
 mod errors;
 mod lit;

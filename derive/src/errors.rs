@@ -60,12 +60,16 @@ impl Error {
         Self::new(span, "#[validate(validation...)] needs validation.")
     }
 
-    pub fn new_numeric_literal_error(lit: &syn::Lit) -> Self {
-        Self::new(lit.span(), "Allow only numeric literal.")
+    pub fn literal_only(meta: &syn::Meta) -> Self {
+        Self::new(meta.span(), "Allow literal only.")
     }
 
-    pub fn new_str_literal_error(lit: &syn::Lit) -> Self {
-        Self::new(lit.span(), "Allow only str literal.")
+    pub fn numeric_literal_only(lit: &syn::Lit) -> Self {
+        Self::new(lit.span(), "Allow numeric literal only.")
+    }
+
+    pub fn str_literal_only(lit: &syn::Lit) -> Self {
+        Self::new(lit.span(), "Allow str literal only.")
     }
 
     pub fn new_unknown_meta_error(
@@ -79,6 +83,10 @@ impl Error {
             span,
             format!("Unknown: `{unknown}`. Is it one of the following?\n{filterd_candidates:#?}"),
         )
+    }
+
+    pub fn enumerate_need_item(path: &syn::Path) -> Self {
+        Self::new(path.span(), format!("`enumerate` need items."))
     }
 
     pub fn message_fn_need_item(span: proc_macro2::Span) -> Self {
