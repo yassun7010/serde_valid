@@ -81,6 +81,10 @@ impl Error {
         )
     }
 
+    pub fn message_fn_need_item(span: proc_macro2::Span) -> Self {
+        Self::new(span, format!("`message_fn` need items."))
+    }
+
     pub fn new_message_fn_name_error(span: proc_macro2::Span) -> Self {
         Self::new(
             span,
@@ -92,12 +96,12 @@ impl Error {
         Self::new(span, format!("`message_fn` support only 1 item."))
     }
 
-    pub fn custom_fn_need_item(span: proc_macro2::Span) -> Self {
-        Self::new(span, format!("`custom_fn` need items."))
+    pub fn custom_need_item(span: proc_macro2::Span) -> Self {
+        Self::new(span, format!("`custom` need items."))
     }
 
-    pub fn custom_fn_tail_error(span: proc_macro2::Span) -> Self {
-        Self::new(span, format!("`custom_fn` support only 1 item."))
+    pub fn custom_tail_error(span: proc_macro2::Span) -> Self {
+        Self::new(span, format!("`custom` support only 1 item."))
     }
 
     pub fn literal_not_support(lit: &syn::Lit) -> Self {

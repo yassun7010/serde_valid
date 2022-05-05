@@ -56,7 +56,9 @@ fn extract_message_fn_tokens_from_meta_list(
     let path_label = path_ident.to_string();
 
     match MetaListMessage::from_str(&path_label) {
-        Ok(MetaListMessage::MessageFn) => get_message_fn_from_nested_meta(message_fn_define),
+        Ok(MetaListMessage::MessageFn) => {
+            get_message_fn_from_nested_meta(path_ident, message_fn_define)
+        }
         Err(unknown) => {
             if MetaNameValueMessage::from_str(&path_label).is_ok() {
                 Err(crate::Error::new_meta_list_need_value_error(
@@ -114,12 +116,11 @@ fn extract_message_fn_tokens_from_name_value(
 }
 
 fn get_message_fn_from_nested_meta(
+    path_ident: &syn::Ident,
     message_fn_define: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
 ) -> Result<TokenStream, crate::Error> {
     match message_fn_define.len() {
-        0 => Err(crate::Error::new_message_fn_name_error(
-            message_fn_define.span(),
-        )),
+        0 => Err(crate::Error::message_fn_need_item(path_ident.span())),
         1 => match &message_fn_define[0] {
             syn::NestedMeta::Meta(ref meta) => match meta {
                 syn::Meta::Path(fn_name) => Ok(quote!(#fn_name)),
@@ -130,14 +131,9 @@ fn get_message_fn_from_nested_meta(
             },
             syn::NestedMeta::Lit(lit) => Err(crate::Error::new_message_fn_name_error(lit.span())),
         },
-        _ => {
-            let mut args: syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma> =
-                syn::punctuated::Punctuated::new();
-            for arg in message_fn_define.iter().skip(1) {
-                args.push(arg.clone())
-            }
-            Err(crate::Error::message_fn_tail_error(args.span()))
-        }
+        _ => Err(crate::Error::message_fn_tail_error(
+            message_fn_define[1].span(),
+        )),
     }
 }
 
