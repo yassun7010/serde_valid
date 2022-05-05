@@ -2,23 +2,31 @@ use crate::{types::Field, validator::Validator};
 use proc_macro2::TokenStream;
 use quote::quote;
 
-pub fn extract_array_unique_items_validator(field: &impl Field) -> Validator {
+pub fn extract_array_unique_items_validator(
+    field: &impl Field,
+    message_fn: Option<TokenStream>,
+) -> Validator {
     if let Some(option_field) = field.option_field() {
         Validator::Option(Box::new(extract_array_unique_items_validator(
             &option_field,
+            message_fn,
         )))
     } else {
-        let message = quote!(::serde_valid::UniqueItemsParams::to_default_message);
-        Validator::Normal(inner_extract_array_unique_items_validator(field, message))
+        Validator::Normal(inner_extract_array_unique_items_validator(
+            field, message_fn,
+        ))
     }
 }
 
 fn inner_extract_array_unique_items_validator(
     field: &impl Field,
-    message: TokenStream,
+    message_fn: Option<TokenStream>,
 ) -> TokenStream {
     let field_name = field.name();
     let field_ident = field.ident();
+    let message =
+        message_fn.unwrap_or(quote!(::serde_valid::UniqueItemsParams::to_default_message));
+
     quote!(
         if !::serde_valid::validate_array_unique_items(
             #field_ident

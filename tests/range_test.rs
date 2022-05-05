@@ -274,48 +274,54 @@ fn range_exclusive_err_message_test() {
 
 #[test]
 fn range_custom_err_message_fn_test() {
-    // todo!()
-    // fn error_message(_params: &serde_valid::validation::RangeParams) -> String {
-    //     "this is custom message.".to_string()
-    // }
+    fn custom_min_error_message(_params: &serde_valid::MinimumParams) -> String {
+        "this is min custom message.".to_string()
+    }
 
-    // #[derive(Validate)]
-    // struct TestStruct {
-    //     #[validate(range(minimum = 1, maximum = 10, message_fn(error_message),))]
-    //     val: i32,
-    // }
+    fn custom_max_error_message(_params: &serde_valid::MaximumParams) -> String {
+        "this is max custom message.".to_string()
+    }
 
-    // let s = TestStruct { val: 0 };
+    #[derive(Validate)]
+    struct TestStruct {
+        #[validate(minimum = 5, message_fn(custom_min_error_message))]
+        #[validate(maximum = 3, message_fn(custom_max_error_message))]
+        val: i32,
+    }
 
-    // assert_eq!(
-    //     serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
-    //     serde_json::to_string(&json!({
-    //         "val": [
-    //             "this is custom message."
-    //         ]
-    //     }))
-    //     .unwrap()
-    // );
+    let s = TestStruct { val: 4 };
+
+    assert_eq!(
+        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
+        serde_json::to_string(&json!({
+            "val": [
+                "this is min custom message.",
+                "this is max custom message."
+            ]
+        }))
+        .unwrap()
+    );
 }
 
 #[test]
 fn range_custom_err_message_test() {
-    // todo!()
-    // #[derive(Validate)]
-    // struct TestStruct {
-    //     #[validate(range(minimum = 1, maximum = 10, message = "this is custom message."))]
-    //     val: i32,
-    // }
+    #[derive(Validate)]
+    struct TestStruct {
+        #[validate(minimum = 5, message = "this is min custom message.")]
+        #[validate(maximum = 3, message = "this is max custom message.")]
+        val: i32,
+    }
 
-    // let s = TestStruct { val: 0 };
+    let s = TestStruct { val: 4 };
 
-    // assert_eq!(
-    //     serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
-    //     serde_json::to_string(&json!({
-    //         "val": [
-    //             "this is custom message."
-    //         ]
-    //     }))
-    //     .unwrap()
-    // );
+    assert_eq!(
+        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
+        serde_json::to_string(&json!({
+            "val": [
+                "this is min custom message.",
+                "this is max custom message."
+            ]
+        }))
+        .unwrap()
+    );
 }

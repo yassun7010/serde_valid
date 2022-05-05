@@ -4,6 +4,7 @@ use crate::validator::generic::{
     extract_generic_custom_validator, extract_generic_enumerate_validator,
 };
 use crate::validator::Validator;
+use proc_macro2::TokenStream;
 use std::str::FromStr;
 use syn::spanned::Spanned;
 
@@ -11,6 +12,7 @@ pub fn extract_validator_from_nested_meta_list(
     field: &impl Field,
     attribute: &syn::Attribute,
     validation_list: &syn::MetaList,
+    message_fn: Option<TokenStream>,
 ) -> Result<Validator, crate::Error> {
     let syn::MetaList {
         path: validation_name,
@@ -24,6 +26,7 @@ pub fn extract_validator_from_nested_meta_list(
                 field,
                 attribute,
                 validation_list,
+                message_fn,
             )?)
         }
         Ok(MetaListValidation::Custom) => {

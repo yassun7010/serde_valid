@@ -12,18 +12,34 @@ pub fn extract_generic_enumerate_validator(
     field: &impl Field,
     attribute: &syn::Attribute,
     validation_list: &syn::MetaList,
+    message_fn: Option<TokenStream>,
 ) -> Result<Validator, crate::Error> {
     if let Some(array_field) = field.array_field() {
         Ok(Validator::Array(Box::new(
-            extract_generic_enumerate_validator(&array_field, attribute, validation_list)?,
+            extract_generic_enumerate_validator(
+                &array_field,
+                attribute,
+                validation_list,
+                message_fn,
+            )?,
         )))
     } else if let Some(option_field) = field.option_field() {
         Ok(Validator::Option(Box::new(
-            extract_generic_enumerate_validator(&option_field, attribute, validation_list)?,
+            extract_generic_enumerate_validator(
+                &option_field,
+                attribute,
+                validation_list,
+                message_fn,
+            )?,
         )))
     } else {
         Ok(Validator::Normal(
-            inner_extract_generic_enumerate_validator(field, attribute, validation_list)?,
+            inner_extract_generic_enumerate_validator(
+                field,
+                attribute,
+                validation_list,
+                message_fn,
+            )?,
         ))
     }
 }
@@ -32,6 +48,7 @@ fn inner_extract_generic_enumerate_validator(
     field: &impl Field,
     attribute: &syn::Attribute,
     validation_list: &syn::MetaList,
+    message_fn: Option<TokenStream>,
 ) -> Result<TokenStream, crate::Error> {
     let syn::MetaList {
         nested: validation_args,
@@ -41,7 +58,7 @@ fn inner_extract_generic_enumerate_validator(
     let field_ident = field.ident();
 
     let enumerate = get_enumerate(field, attribute, validation_args);
-    let message = quote!(::serde_valid::EnumerateParams::to_default_message);
+    let message = message_fn.unwrap_or(quote!(::serde_valid::EnumerateParams::to_default_message));
 
     Ok(quote!(
         if !::serde_valid::validate_generic_enumerate(

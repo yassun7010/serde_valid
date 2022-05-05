@@ -19,24 +19,27 @@ macro_rules! extract_array_length_validator{
         pub fn $function_name(
             field: &impl Field,
             validation_value: &syn::Lit,
+            message_fn: Option<TokenStream>,
         ) -> Result<Validator, crate::Error> {
             if let Some(option_field) = field.option_field() {
                 Ok(Validator::Option(Box::new(
-                    $function_name(&option_field, validation_value)?
+                    $function_name(&option_field, validation_value, message_fn)?
                 )))
             } else {
-                Ok(Validator::Normal($inner_function_name(field, validation_value)?))
+                Ok(Validator::Normal($inner_function_name(field, validation_value, message_fn)?))
             }
         }
 
         fn $inner_function_name(
             field: &impl Field,
             validation_value: &syn::Lit,
+            message_fn: Option<TokenStream>,
         ) -> Result<TokenStream, crate::Error> {
             let field_name = field.name();
             let field_ident = field.ident();
             let $limit = get_numeric(validation_value)?;
-            let message = quote!(::serde_valid::$Params::to_default_message);
+            let message =
+                message_fn.unwrap_or(quote!(::serde_valid::$Params::to_default_message));
 
             Ok(quote!(
                 if !::serde_valid::$validate_function(

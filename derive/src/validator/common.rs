@@ -7,7 +7,7 @@ pub use check::{
     check_validation_arg_meta,
 };
 pub use lit::{get_numeric, get_str};
-pub use message::extract_message_tokens;
+pub use message::extract_message_fn_tokens;
 
 macro_rules! count {
     () => (0usize);
@@ -20,6 +20,10 @@ macro_rules! enum_str {
         }
 
         impl $name {
+            pub fn name(&self) -> &'static str {
+                unimplemented!()
+            }
+
             pub fn iter() -> std::array::IntoIter<Self, 0> {
                 [].into_iter()
             }
@@ -33,6 +37,7 @@ macro_rules! enum_str {
             }
         }
     };
+
     (pub enum $name:ident {
         $($variant:ident = $val:literal),*,
     }) => {
@@ -41,7 +46,6 @@ macro_rules! enum_str {
         }
 
         impl $name {
-            #[allow(dead_code)]
             pub fn name(&self) -> &'static str {
                 match *self {
                     $($name::$variant => $val),*

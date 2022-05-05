@@ -8,18 +8,19 @@ use crate::validator::Validator;
 pub fn extract_numeric_multiple_of_validator(
     field: &impl Field,
     validation_value: &syn::Lit,
+    message_fn: Option<TokenStream>,
 ) -> Result<Validator, crate::Error> {
     if let Some(array_field) = field.array_field() {
         Ok(Validator::Array(Box::new(
-            extract_numeric_multiple_of_validator(&array_field, validation_value)?,
+            extract_numeric_multiple_of_validator(&array_field, validation_value, message_fn)?,
         )))
     } else if let Some(option_field) = field.option_field() {
         Ok(Validator::Option(Box::new(
-            extract_numeric_multiple_of_validator(&option_field, validation_value)?,
+            extract_numeric_multiple_of_validator(&option_field, validation_value, message_fn)?,
         )))
     } else {
         Ok(Validator::Normal(
-            inner_extract_numeric_multiple_of_validator(field, validation_value)?,
+            inner_extract_numeric_multiple_of_validator(field, validation_value, message_fn)?,
         ))
     }
 }
@@ -27,11 +28,12 @@ pub fn extract_numeric_multiple_of_validator(
 fn inner_extract_numeric_multiple_of_validator(
     field: &impl Field,
     validation_value: &syn::Lit,
+    message_fn: Option<TokenStream>,
 ) -> Result<TokenStream, crate::Error> {
     let field_name = field.name();
     let field_ident = field.ident();
     let multiple_of = get_numeric(validation_value)?;
-    let message = quote!(::serde_valid::MultipleOfParams::to_default_message);
+    let message = message_fn.unwrap_or(quote!(::serde_valid::MultipleOfParams::to_default_message));
 
     Ok(quote!(
         if !::serde_valid::validate_numeric_multiple_of(

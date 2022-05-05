@@ -19,6 +19,7 @@ macro_rules! extract_string_length_validator{
         pub fn $function_name(
             field: &impl Field,
             validation_value: &syn::Lit,
+            message_fn: Option<TokenStream>,
         ) -> Result<Validator, crate::Error> {
             if let Some(array_field) = field.array_field() {
                 match array_field.ty() {
@@ -26,7 +27,7 @@ macro_rules! extract_string_length_validator{
                         if let Some(element_type_ident) = element_type.path.get_ident() {
                             if ["u8", "char"].contains(&element_type_ident.to_string().as_str()) {
                                 return Ok(Validator::Normal(
-                                    $inner_function_name(field, validation_value)?
+                                    $inner_function_name(field, validation_value, message_fn)?
                                 ));
                             }
                         }
@@ -34,15 +35,15 @@ macro_rules! extract_string_length_validator{
                     _ => (),
                 }
                 Ok(Validator::Array(Box::new(
-                    $function_name(&array_field, validation_value)?
+                    $function_name(&array_field, validation_value, message_fn)?
                 )))
             } else if let Some(option_field) = field.option_field() {
                 Ok(Validator::Option(Box::new(
-                    $function_name(&option_field, validation_value)?
+                    $function_name(&option_field, validation_value, message_fn)?
                 )))
             } else {
                 Ok(Validator::Normal(
-                    $inner_function_name(field, validation_value)?
+                    $inner_function_name(field, validation_value, message_fn)?
                 ))
             }
         }
@@ -50,11 +51,13 @@ macro_rules! extract_string_length_validator{
         fn $inner_function_name(
             field: &impl Field,
             validation_value: &syn::Lit,
+            message_fn: Option<TokenStream>,
         ) -> Result<TokenStream, crate::Error> {
             let field_name = field.name();
             let field_ident = field.ident();
             let $field = get_numeric(validation_value)?;
-            let message = quote!(::serde_valid::$Params::to_default_message);
+            let message =
+                message_fn.unwrap_or(quote!(::serde_valid::$Params::to_default_message));
 
             Ok(quote!(
                 if !::serde_valid::$validate_function(

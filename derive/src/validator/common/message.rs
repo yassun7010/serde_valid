@@ -6,13 +6,17 @@ use syn::spanned::Spanned;
 
 use super::{get_str, MetaListMessage, MetaNameValueMessage, MetaPathMessage};
 
-pub fn extract_message_tokens(nested_meta: &syn::NestedMeta) -> Result<TokenStream, crate::Error> {
+pub fn extract_message_fn_tokens(
+    nested_meta: &syn::NestedMeta,
+) -> Result<TokenStream, crate::Error> {
     match nested_meta {
         syn::NestedMeta::Meta(meta) => match meta {
             syn::Meta::List(message_fn_list) => {
-                extract_message_tokens_from_meta_list(message_fn_list)
+                extract_message_fn_tokens_from_meta_list(message_fn_list)
             }
-            syn::Meta::NameValue(name_value) => extract_message_tokens_from_name_value(name_value),
+            syn::Meta::NameValue(name_value) => {
+                extract_message_fn_tokens_from_name_value(name_value)
+            }
             syn::Meta::Path(path) => {
                 let path_label = SingleIdentPath::new(path).ident().to_string();
                 if MetaNameValueMessage::from_str(&path_label).is_ok() {
@@ -32,6 +36,7 @@ pub fn extract_message_tokens(nested_meta: &syn::NestedMeta) -> Result<TokenStre
                         &MetaNameValueMessage::iter()
                             .map(|x| x.name())
                             .chain(MetaListMessage::iter().map(|x| x.name()))
+                            .chain(MetaPathMessage::iter().map(|x| x.name()))
                             .collect::<Vec<_>>(),
                     ))
                 }
@@ -41,7 +46,7 @@ pub fn extract_message_tokens(nested_meta: &syn::NestedMeta) -> Result<TokenStre
     }
 }
 
-fn extract_message_tokens_from_meta_list(
+fn extract_message_fn_tokens_from_meta_list(
     syn::MetaList {
         path,
         nested: message_fn_define,
@@ -77,14 +82,14 @@ fn extract_message_tokens_from_meta_list(
     }
 }
 
-fn extract_message_tokens_from_name_value(
+fn extract_message_fn_tokens_from_name_value(
     syn::MetaNameValue { path, lit, .. }: &syn::MetaNameValue,
 ) -> Result<TokenStream, crate::Error> {
     let path_ident = SingleIdentPath::new(&path).ident();
     let path_label = path_ident.to_string();
 
     match MetaNameValueMessage::from_str(&path_label) {
-        Ok(MetaNameValueMessage::Message) => get_message_from_lit(lit),
+        Ok(MetaNameValueMessage::Message) => get_message_fn_from_lit(lit),
         Err(unknown) => {
             if MetaListMessage::from_str(&path_label).is_ok() {
                 Err(crate::Error::new_meta_list_need_value_error(
@@ -137,6 +142,6 @@ fn get_message_fn_from_nested_meta(
     }
 }
 
-fn get_message_from_lit(lit: &syn::Lit) -> Result<TokenStream, crate::Error> {
+fn get_message_fn_from_lit(lit: &syn::Lit) -> Result<TokenStream, crate::Error> {
     get_str(lit).map(|lit_str| quote!(|_| { #lit_str.to_string() }))
 }

@@ -165,48 +165,53 @@ fn items_err_message_test() {
 
 #[test]
 fn items_custom_err_message_fn_test() {
-    // todo!()
-    // fn error_message(_params: &serde_valid::error::ItemsParams) -> String {
-    //     "this is custom message.".to_string()
-    // }
+    fn min_error_message(_params: &serde_valid::MinItemsParams) -> String {
+        "this is min custom message.".to_string()
+    }
+    fn max_error_message(_params: &serde_valid::MaxItemsParams) -> String {
+        "this is max custom message.".to_string()
+    }
 
-    // #[derive(Validate)]
-    // struct TestStruct {
-    //     #[validate(items(min_items = 4, max_items = 4, message_fn(error_message)))]
-    //     val: Vec<i32>,
-    // }
+    #[derive(Validate)]
+    struct TestStruct {
+        #[validate(min_items = 4, message_fn(min_error_message))]
+        #[validate(max_items = 2, message_fn(max_error_message))]
+        val: Vec<i32>,
+    }
 
-    // let s = TestStruct { val: vec![1, 2, 3] };
+    let s = TestStruct { val: vec![1, 2, 3] };
 
-    // assert_eq!(
-    //     serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
-    //     serde_json::to_string(&json!({
-    //         "val": [
-    //             "this is custom message."
-    //         ]
-    //     }))
-    //     .unwrap()
-    // );
+    assert_eq!(
+        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
+        serde_json::to_string(&json!({
+            "val": [
+                "this is min custom message.",
+                "this is max custom message."
+            ]
+        }))
+        .unwrap()
+    );
 }
 
 #[test]
 fn items_custom_err_message_test() {
-    // todo!()
-    // #[derive(Validate)]
-    // struct TestStruct {
-    //     #[validate(items(min_items = 4, max_items = 4, message = "this is custom message."))]
-    //     val: Vec<i32>,
-    // }
+    #[derive(Validate)]
+    struct TestStruct {
+        #[validate(min_items = 4, message = "this is min custom message.")]
+        #[validate(max_items = 2, message = "this is max custom message.")]
+        val: Vec<i32>,
+    }
 
-    // let s = TestStruct { val: vec![1, 2, 3] };
+    let s = TestStruct { val: vec![1, 2, 3] };
 
-    // assert_eq!(
-    //     serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
-    //     serde_json::to_string(&json!({
-    //         "val": [
-    //             "this is custom message."
-    //         ]
-    //     }))
-    //     .unwrap()
-    // );
+    assert_eq!(
+        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
+        serde_json::to_string(&json!({
+            "val": [
+                "this is min custom message.",
+                "this is max custom message."
+            ]
+        }))
+        .unwrap()
+    );
 }
