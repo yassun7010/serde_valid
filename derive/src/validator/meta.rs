@@ -51,7 +51,7 @@ pub fn extract_meta_validator(
             };
             return validation;
         }
-        Ok(syn::Meta::Path(_)) => return extract_validator_from_meta_path(field, attribute),
+        Ok(syn::Meta::Path(_)) => return extract_validator_from_meta_path(field),
         Ok(syn::Meta::NameValue(_)) => {
             return Err(Error::new_meta_name_value_item_error(attribute.span()))
         }
