@@ -3,7 +3,6 @@ mod nested_meta_list;
 mod nested_meta_name_value;
 mod nested_meta_path;
 
-use crate::errors::Error;
 use crate::types::Field;
 use crate::validator::Validator;
 use meta_path::extract_validator_from_meta_path;
@@ -17,7 +16,7 @@ use super::common::extract_message_fn_tokens;
 pub fn extract_meta_validator(
     field: &impl Field,
     attribute: &syn::Attribute,
-) -> Result<Validator, Error> {
+) -> Result<Validator, crate::Error> {
     match attribute.parse_meta() {
         Ok(syn::Meta::List(syn::MetaList { ref nested, .. })) => {
             let messaeg_fn = match nested.len() {
@@ -43,18 +42,25 @@ pub fn extract_meta_validator(
                         }
                     },
                     syn::NestedMeta::Lit(lit) => {
-                        Err(Error::new_literal_meta_item_error(lit.span()))
+                        Err(crate::Error::new_literal_meta_item_error(lit.span()))
                     }
                 }
             } else {
-                Err(Error::new_attribute_required_error(attribute.span()))
+                Err(crate::Error::new_attribute_required_error(attribute.span()))
             };
             return validation;
         }
         Ok(syn::Meta::Path(_)) => return extract_validator_from_meta_path(field),
         Ok(syn::Meta::NameValue(_)) => {
-            return Err(Error::new_meta_name_value_item_error(attribute.span()))
+            return Err(crate::Error::new_meta_name_value_item_error(
+                attribute.span(),
+            ))
         }
-        Err(error) => return Err(Error::new_attribute_parse_error(attribute.span(), &error)),
+        Err(error) => {
+            return Err(crate::Error::new_attribute_parse_error(
+                attribute.span(),
+                &error,
+            ))
+        }
     };
 }

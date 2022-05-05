@@ -1,4 +1,4 @@
-use crate::errors::{fields_errors_tokens, new_type_errors_tokens, Errors};
+use crate::error::{fields_errors_tokens, new_type_errors_tokens};
 use crate::types::{Field, UnnamedField};
 use crate::validator::{extract_meta_validator, FieldValidators};
 use proc_macro2::TokenStream;
@@ -10,7 +10,7 @@ use syn::parse_quote;
 pub fn expand_unnamed_struct_derive(
     input: &syn::DeriveInput,
     fields: &syn::FieldsUnnamed,
-) -> Result<TokenStream, Errors> {
+) -> Result<TokenStream, crate::Errors> {
     let ident = &input.ident;
     let (impl_generics, type_generics, where_clause) = input.generics.split_for_impl();
 
@@ -44,7 +44,7 @@ pub fn expand_unnamed_struct_derive(
 
 pub fn collect_unnamed_fields_validators<'a>(
     fields: &'a syn::FieldsUnnamed,
-) -> Result<Vec<FieldValidators<'a, UnnamedField<'a>>>, Errors> {
+) -> Result<Vec<FieldValidators<'a, UnnamedField<'a>>>, crate::Errors> {
     let mut errors = vec![];
 
     let validators = fields
@@ -69,8 +69,8 @@ pub fn collect_unnamed_fields_validators<'a>(
 
 fn collect_unnamed_field_validators<'a>(
     (index, field): (usize, &'a syn::Field),
-) -> Result<FieldValidators<'a, UnnamedField<'a>>, Errors> {
-    let mut errors: Errors = vec![];
+) -> Result<FieldValidators<'a, UnnamedField<'a>>, crate::Errors> {
+    let mut errors: crate::Errors = vec![];
 
     let unnamed_field = UnnamedField::new(index, field);
     let validators = unnamed_field

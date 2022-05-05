@@ -1,13 +1,13 @@
-use errors::to_compile_errors;
-use proc_macro::TokenStream;
 mod derive;
-mod errors;
+mod error;
 mod lit;
 mod types;
 mod validator;
 
 use derive::expand_derive;
-use errors::Error;
+use error::to_compile_errors;
+use error::{Error, Errors};
+use proc_macro::TokenStream;
 use proc_macro_error::proc_macro_error;
 use syn::{parse_macro_input, DeriveInput};
 

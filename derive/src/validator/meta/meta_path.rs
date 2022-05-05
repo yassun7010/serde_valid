@@ -1,10 +1,9 @@
-use crate::errors::Error;
 use crate::types::Field;
 use crate::validator::Validator;
 use proc_macro2::TokenStream;
 use quote::quote;
 
-pub fn extract_validator_from_meta_path(field: &impl Field) -> Result<Validator, Error> {
+pub fn extract_validator_from_meta_path(field: &impl Field) -> Result<Validator, crate::Error> {
     Ok(extract_validate_validator(field))
 }
 
