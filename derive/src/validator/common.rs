@@ -15,7 +15,7 @@ macro_rules! count {
 }
 
 macro_rules! enum_str {
-    (enum $name:ident {
+    (pub enum $name:ident {
         $($variant:ident = $val:literal),*,
     }) => {
         pub enum $name {
@@ -51,14 +51,14 @@ macro_rules! enum_str {
 }
 
 enum_str! {
-    enum MetaListValidation {
+    pub enum MetaListValidation {
         Enumerate = "enumerate",
         Custom = "custom",
     }
 }
 
 enum_str! {
-    enum MetaNameValueValidation {
+    pub enum MetaNameValueValidation {
         Minimum = "minimum",
         Maximum = "maximum",
         ExclusiveMinimum = "exclusive_minimum",
@@ -75,7 +75,14 @@ enum_str! {
 }
 
 enum_str! {
-    enum MetaPathValidation {
+    pub enum MetaPathValidation {
         UniqueItems = "unique_items",
+    }
+}
+
+enum_str! {
+    pub enum MessageType {
+        Message = "message",
+        MessageFn = "message_fn",
     }
 }

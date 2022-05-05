@@ -7,36 +7,29 @@ use proc_macro2::TokenStream;
 use quote::quote;
 use syn::spanned::Spanned;
 
+use super::MessageType;
+
 pub fn extract_message_tokens(
     validation_label: &str,
     field: &impl Field,
-    _attribute: &syn::Attribute,
-    validation_args: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
+    meta: &syn::Meta,
 ) -> Option<TokenStream> {
     let mut message_fmt = None;
-    for validation_arg in validation_args {
-        match validation_arg {
-            syn::NestedMeta::Meta(ref meta) => match meta {
-                syn::Meta::List(message_fn_list) => update_message_fn_from_meta_list(
-                    validation_label,
-                    &mut message_fmt,
-                    field,
-                    message_fn_list,
-                ),
-                syn::Meta::Path(_) => continue,
-                syn::Meta::NameValue(message_fn_key_value) => {
-                    update_message_fn_from_meta_name_value(
-                        validation_label,
-                        &mut message_fmt,
-                        field,
-                        message_fn_key_value,
-                    )
-                }
-            },
-            syn::NestedMeta::Lit(_) => continue,
-        }
+    match meta {
+        syn::Meta::List(message_fn_list) => extract_message_tokens_from_meta_list(
+            validation_label,
+            &mut message_fmt,
+            field,
+            message_fn_list,
+        ),
+        syn::Meta::Path(_) => continue,
+        syn::Meta::NameValue(message_fn_key_value) => update_message_fn_from_meta_name_value(
+            validation_label,
+            &mut message_fmt,
+            field,
+            message_fn_key_value,
+        ),
     }
-    message_fmt
 }
 
 fn update_message_fn_from_meta_path(
@@ -56,19 +49,25 @@ fn update_message_fn_from_meta_path(
     *message_fn = Some(quote!(#fn_name));
 }
 
-fn update_message_fn_from_meta_list(
+fn extract_message_tokens_from_meta_list(
     validation_label: &str,
     message_fn: &mut Option<TokenStream>,
     field: &impl Field,
     syn::MetaList {
-        path: name,
+        path,
         nested: message_fn_defines,
         ..
     }: &syn::MetaList,
-) {
-    let message_ident = SingleIdentPath::new(&name).ident();
+) => Result<TokenStream> {
+    let message_ident = SingleIdentPath::new(&path).ident();
     let message_label = message_ident.to_string();
 
+    match MessageType::from_str(message_label) {
+        MessageType::Message => {},
+        _ => {
+
+        }
+    }
     match message_label.as_ref() {
         "message_fn" => update_message_fn_from_nested_meta(
             validation_label,
