@@ -14,7 +14,7 @@ use crate::validator::object::{
 };
 use crate::validator::string::{
     extract_string_max_length_validator, extract_string_min_length_validator,
-    extract_string_pattern_validator_from_meta_name_value,
+    extract_string_pattern_validator,
 };
 use crate::validator::Validator;
 use std::str::FromStr;
@@ -86,10 +86,7 @@ pub fn extract_validator_from_nested_meta_name_value(
             )?)
         }
         Ok(MetaNameValueValidation::Pattern) => {
-            return Ok(extract_string_pattern_validator_from_meta_name_value(
-                field,
-                validation_value,
-            ))
+            return Ok(extract_string_pattern_validator(field, validation_value)?)
         }
         Err(unknown) => Err(Error::new_unknown_meta_error(
             validation_name.span(),

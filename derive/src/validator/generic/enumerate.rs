@@ -1,5 +1,5 @@
 use crate::types::Field;
-use crate::validator::common::{check_validation_arg_meta, extract_message_tokens};
+use crate::validator::common::check_validation_arg_meta;
 use crate::validator::Validator;
 use proc_macro2::TokenStream;
 use proc_macro_error::abort;
@@ -12,24 +12,18 @@ pub fn extract_generic_enumerate_validator(
     field: &impl Field,
     attribute: &syn::Attribute,
     validation_list: &syn::MetaList,
-) -> Validator {
+) -> Result<Validator, crate::Error> {
     if let Some(array_field) = field.array_field() {
-        Validator::Array(Box::new(extract_generic_enumerate_validator(
-            &array_field,
-            attribute,
-            validation_list,
+        Ok(Validator::Array(Box::new(
+            extract_generic_enumerate_validator(&array_field, attribute, validation_list)?,
         )))
     } else if let Some(option_field) = field.option_field() {
-        Validator::Option(Box::new(extract_generic_enumerate_validator(
-            &option_field,
-            attribute,
-            validation_list,
+        Ok(Validator::Option(Box::new(
+            extract_generic_enumerate_validator(&option_field, attribute, validation_list)?,
         )))
     } else {
-        Validator::Normal(inner_extract_generic_enumerate_validator(
-            field,
-            attribute,
-            validation_list,
+        Ok(Validator::Normal(
+            inner_extract_generic_enumerate_validator(field, attribute, validation_list)?,
         ))
     }
 }
@@ -38,7 +32,7 @@ fn inner_extract_generic_enumerate_validator(
     field: &impl Field,
     attribute: &syn::Attribute,
     validation_list: &syn::MetaList,
-) -> TokenStream {
+) -> Result<TokenStream, crate::Error> {
     let syn::MetaList {
         nested: validation_args,
         ..
@@ -47,10 +41,9 @@ fn inner_extract_generic_enumerate_validator(
     let field_ident = field.ident();
 
     let enumerate = get_enumerate(field, attribute, validation_args);
-    let message = extract_message_tokens(VALIDATION_LABEL, field, attribute, validation_args)
-        .unwrap_or(quote!(::serde_valid::EnumerateParams::to_default_message));
+    let message = quote!(::serde_valid::EnumerateParams::to_default_message);
 
-    quote!(
+    Ok(quote!(
         if !::serde_valid::validate_generic_enumerate(
             #field_ident,
             &[#enumerate],
@@ -69,7 +62,7 @@ fn inner_extract_generic_enumerate_validator(
                 )
                 ));
         }
-    )
+    ))
 }
 
 fn get_enumerate<'a>(

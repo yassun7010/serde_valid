@@ -20,11 +20,11 @@ impl Error {
     }
 
     pub fn new_literal_meta_item_error(span: proc_macro2::Span) -> Self {
-        Self::new(span, "#[validate(`literal`)] type does not support.")
+        Self::new(span, "#[validate(`literal`)] does not support.")
     }
 
     pub fn new_meta_name_value_item_error(span: proc_macro2::Span) -> Self {
-        Self::new(span, "#[validate = something...] type does not support.")
+        Self::new(span, "#[validate = something...] does not support.")
     }
 
     pub fn new_meta_name_value_need_value_error(
@@ -37,10 +37,17 @@ impl Error {
         )
     }
 
+    pub fn new_meta_path_need_value_error(span: proc_macro2::Span, validation_type: &str) -> Self {
+        Self::new(
+            span,
+            format!("#[validate({validation_type}(???))] needs validation path."),
+        )
+    }
+
     pub fn new_meta_list_need_value_error(span: proc_macro2::Span, validation_type: &str) -> Self {
         Self::new(
             span,
-            format!("#[validate({validation_type}(???, ???, ...))] needs validation value."),
+            format!("#[validate({validation_type}(???, ???, ...))] needs validation list."),
         )
     }
 
@@ -56,6 +63,10 @@ impl Error {
         Self::new(span, "Allow only numeric literal.")
     }
 
+    pub fn new_str_literal_error(span: proc_macro2::Span) -> Self {
+        Self::new(span, "Allow only str literal.")
+    }
+
     pub fn new_unknown_meta_error(
         span: proc_macro2::Span,
         unknown: &str,
@@ -67,6 +78,21 @@ impl Error {
             span,
             format!("Unknown: `{unknown}`. Is it one of the following?\n{filterd_candidates:#?}"),
         )
+    }
+
+    pub fn new_message_fn_name_error(span: proc_macro2::Span) -> Self {
+        Self::new(
+            span,
+            format!("#[validate(..., message_fn(???))] needs message_fn name."),
+        )
+    }
+
+    pub fn new_message_fn_name_tail_error(span: proc_macro2::Span) -> Self {
+        Self::new(span, format!("message_fn support only 1 item."))
+    }
+
+    pub fn new_literal_error(span: proc_macro2::Span) -> Self {
+        Self::new(span, "literal does not support.")
     }
 
     pub fn to_compile_error(&self) -> TokenStream {

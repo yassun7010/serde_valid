@@ -1,6 +1,4 @@
-use crate::abort::abort_invalid_attribute_on_field;
 use crate::lit::LitNumeric;
-use crate::types::Field;
 
 pub fn get_numeric<'a>(lit: &'a syn::Lit) -> Result<LitNumeric<'a>, crate::Error> {
     match lit {
@@ -10,20 +8,9 @@ pub fn get_numeric<'a>(lit: &'a syn::Lit) -> Result<LitNumeric<'a>, crate::Error
     }
 }
 
-pub fn get_str<'a>(
-    validation_label: &str,
-    field: &impl Field,
-    lit: &'a syn::Lit,
-) -> &'a syn::LitStr {
+pub fn get_str(lit: &syn::Lit) -> Result<&syn::LitStr, crate::Error> {
     match lit {
-        syn::Lit::Str(l) => l,
-        _ => abort_invalid_attribute_on_field(
-            field,
-            lit.span(),
-            &format!(
-                "invalid argument type for `{}` validator: only str literals are allowed",
-                validation_label
-            ),
-        ),
+        syn::Lit::Str(lit_str) => Ok(lit_str),
+        _ => Err(crate::Error::new_str_literal_error(lit.span())),
     }
 }

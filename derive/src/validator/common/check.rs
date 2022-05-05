@@ -1,6 +1,5 @@
 use crate::abort::{
-    abort_unknown_list_argument, abort_unknown_lit_argument, abort_unknown_name_value_argument,
-    abort_unknown_path_argument,
+    abort_unknown_list_argument, abort_unknown_name_value_argument, abort_unknown_path_argument,
 };
 use crate::types::{Field, SingleIdentPath};
 use syn::spanned::Spanned;
@@ -32,15 +31,6 @@ pub fn check_validation_arg_meta(
             abort_unknown_path_argument(validation_label, field, arg.span(), path)
         }
     }
-}
-
-pub fn check_lit(
-    validation_label: &str,
-    field: &impl Field,
-    span: proc_macro2::Span,
-    lit: &syn::Lit,
-) {
-    abort_unknown_lit_argument(validation_label, field, span, lit)
 }
 
 pub fn check_common_meta_list_argument(list: &syn::MetaList) -> bool {

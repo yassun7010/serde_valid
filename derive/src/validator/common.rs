@@ -3,7 +3,7 @@ mod lit;
 mod message;
 
 pub use check::{
-    check_common_meta_list_argument, check_common_meta_name_value_argument, check_lit,
+    check_common_meta_list_argument, check_common_meta_name_value_argument,
     check_validation_arg_meta,
 };
 pub use lit::{get_numeric, get_str};
@@ -15,6 +15,24 @@ macro_rules! count {
 }
 
 macro_rules! enum_str {
+    (pub enum $name:ident {}) => {
+        pub enum $name {
+        }
+
+        impl $name {
+            pub fn iter() -> std::array::IntoIter<Self, 0> {
+                [].into_iter()
+            }
+        }
+
+        impl std::str::FromStr for $name {
+            type Err = String;
+
+            fn from_str(s: &str) -> Result<Self, Self::Err> {
+                Err(s.to_owned())
+            }
+        }
+    };
     (pub enum $name:ident {
         $($variant:ident = $val:literal),*,
     }) => {
@@ -81,8 +99,18 @@ enum_str! {
 }
 
 enum_str! {
-    pub enum MessageType {
-        Message = "message",
+    pub enum MetaListMessage {
         MessageFn = "message_fn",
+    }
+}
+
+enum_str! {
+    pub enum MetaNameValueMessage {
+        Message = "message",
+    }
+}
+
+enum_str! {
+    pub enum MetaPathMessage {
     }
 }

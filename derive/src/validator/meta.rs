@@ -12,6 +12,8 @@ use nested_meta_name_value::extract_validator_from_nested_meta_name_value;
 use nested_meta_path::extract_validator_from_nested_meta_path;
 use syn::spanned::Spanned;
 
+use super::common::extract_message_tokens;
+
 pub fn extract_meta_validator(
     field: &impl Field,
     attribute: &syn::Attribute,
@@ -19,14 +21,7 @@ pub fn extract_meta_validator(
     match attribute.parse_meta() {
         Ok(syn::Meta::List(syn::MetaList { ref nested, .. })) => {
             let messaeg = if nested.len() > 1 {
-                let meta_item = &nested[0];
-                match meta_item {
-                    syn::NestedMeta::Meta(meta) => match meta {
-                        syn::Meta::Path(path) => {}
-                    },
-                    syn::NestedMeta::Lit(_) => {}
-                }
-                Some("ababa")
+                Some(extract_message_tokens(&nested[0])?)
             } else {
                 None
             };

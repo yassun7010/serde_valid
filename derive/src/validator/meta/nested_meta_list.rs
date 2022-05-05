@@ -1,4 +1,3 @@
-use crate::errors::Error;
 use crate::types::{Field, SingleIdentPath};
 use crate::validator::common::MetaListValidation;
 use crate::validator::generic::{
@@ -12,7 +11,7 @@ pub fn extract_validator_from_nested_meta_list(
     field: &impl Field,
     attribute: &syn::Attribute,
     validation_list: &syn::MetaList,
-) -> Result<Validator, Error> {
+) -> Result<Validator, crate::Error> {
     let syn::MetaList {
         path: validation_name,
         ..
@@ -25,7 +24,7 @@ pub fn extract_validator_from_nested_meta_list(
                 field,
                 attribute,
                 validation_list,
-            ))
+            )?)
         }
         Ok(MetaListValidation::Custom) => {
             return Ok(extract_generic_custom_validator(
@@ -34,7 +33,7 @@ pub fn extract_validator_from_nested_meta_list(
                 validation_list,
             ))
         }
-        Err(unknown) => Err(Error::new_unknown_meta_error(
+        Err(unknown) => Err(crate::Error::new_unknown_meta_error(
             validation_name.span(),
             &unknown,
             &MetaListValidation::iter()

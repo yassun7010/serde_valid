@@ -1,160 +1,142 @@
-use crate::abort::{
-    abort_duplicated_argument, abort_unknown_list_argument, abort_unknown_name_value_argument,
-};
-use crate::types::{Field, SingleIdentPath};
-use crate::validator::common::check_lit;
+use crate::types::SingleIdentPath;
 use proc_macro2::TokenStream;
 use quote::quote;
+use std::str::FromStr;
 use syn::spanned::Spanned;
 
-use super::MessageType;
+use super::{get_str, MetaListMessage, MetaNameValueMessage, MetaPathMessage};
 
-pub fn extract_message_tokens(
-    validation_label: &str,
-    field: &impl Field,
-    meta: &syn::Meta,
-) -> Option<TokenStream> {
-    let mut message_fmt = None;
-    match meta {
-        syn::Meta::List(message_fn_list) => extract_message_tokens_from_meta_list(
-            validation_label,
-            &mut message_fmt,
-            field,
-            message_fn_list,
-        ),
-        syn::Meta::Path(_) => continue,
-        syn::Meta::NameValue(message_fn_key_value) => update_message_fn_from_meta_name_value(
-            validation_label,
-            &mut message_fmt,
-            field,
-            message_fn_key_value,
-        ),
+pub fn extract_message_tokens(nested_meta: &syn::NestedMeta) -> Result<TokenStream, crate::Error> {
+    match nested_meta {
+        syn::NestedMeta::Meta(meta) => match meta {
+            syn::Meta::List(message_fn_list) => {
+                extract_message_tokens_from_meta_list(message_fn_list)
+            }
+            syn::Meta::NameValue(name_value) => extract_message_tokens_from_name_value(name_value),
+            syn::Meta::Path(path) => {
+                let path_label = SingleIdentPath::new(path).ident().to_string();
+                if MetaNameValueMessage::from_str(&path_label).is_ok() {
+                    Err(crate::Error::new_meta_name_value_need_value_error(
+                        path.span(),
+                        &path_label,
+                    ))
+                } else if MetaListMessage::from_str(&path_label).is_ok() {
+                    Err(crate::Error::new_meta_list_need_value_error(
+                        path.span(),
+                        &path_label,
+                    ))
+                } else {
+                    Err(crate::Error::new_unknown_meta_error(
+                        path.span(),
+                        &path_label,
+                        &MetaNameValueMessage::iter()
+                            .map(|x| x.name())
+                            .chain(MetaListMessage::iter().map(|x| x.name()))
+                            .collect::<Vec<_>>(),
+                    ))
+                }
+            }
+        },
+        syn::NestedMeta::Lit(lit) => Err(crate::Error::new_literal_error(lit.span())),
     }
-}
-
-fn update_message_fn_from_meta_path(
-    validation_label: &str,
-    message_fn: &mut Option<TokenStream>,
-    field: &impl Field,
-    fn_name: &syn::Path,
-    message_fn_ident: &syn::Ident,
-) {
-    check_duplicated_message_fn_argument(
-        validation_label,
-        message_fn,
-        field,
-        fn_name,
-        message_fn_ident,
-    );
-    *message_fn = Some(quote!(#fn_name));
 }
 
 fn extract_message_tokens_from_meta_list(
-    validation_label: &str,
-    message_fn: &mut Option<TokenStream>,
-    field: &impl Field,
     syn::MetaList {
         path,
-        nested: message_fn_defines,
+        nested: message_fn_define,
         ..
     }: &syn::MetaList,
-) => Result<TokenStream> {
-    let message_ident = SingleIdentPath::new(&path).ident();
-    let message_label = message_ident.to_string();
+) -> Result<TokenStream, crate::Error> {
+    let path_ident = SingleIdentPath::new(&path).ident();
+    let path_label = path_ident.to_string();
 
-    match MessageType::from_str(message_label) {
-        MessageType::Message => {},
-        _ => {
-
+    match MetaListMessage::from_str(&path_label) {
+        Ok(MetaListMessage::MessageFn) => get_message_fn_from_nested_meta(message_fn_define),
+        Err(unknown) => {
+            if MetaNameValueMessage::from_str(&path_label).is_ok() {
+                Err(crate::Error::new_meta_list_need_value_error(
+                    path.span(),
+                    &path_label,
+                ))
+            } else if MetaPathMessage::from_str(&path_label).is_ok() {
+                Err(crate::Error::new_meta_path_need_value_error(
+                    path.span(),
+                    &path_label,
+                ))
+            } else {
+                Err(crate::Error::new_unknown_meta_error(
+                    path_ident.span(),
+                    &unknown,
+                    &MetaListMessage::iter()
+                        .map(|x| x.name())
+                        .collect::<Vec<_>>(),
+                ))
+            }
         }
-    }
-    match message_label.as_ref() {
-        "message_fn" => update_message_fn_from_nested_meta(
-            validation_label,
-            message_fn,
-            field,
-            message_fn_defines,
-            message_ident,
-        ),
-        _ => {}
     }
 }
 
-fn update_message_fn_from_meta_name_value(
-    validation_label: &str,
-    message_fn: &mut Option<TokenStream>,
-    field: &impl Field,
-    syn::MetaNameValue {
-        path: name,
-        lit: message,
-        ..
-    }: &syn::MetaNameValue,
-) {
-    let message_ident = SingleIdentPath::new(&name).ident();
-    let message_label = message_ident.to_string();
+fn extract_message_tokens_from_name_value(
+    syn::MetaNameValue { path, lit, .. }: &syn::MetaNameValue,
+) -> Result<TokenStream, crate::Error> {
+    let path_ident = SingleIdentPath::new(&path).ident();
+    let path_label = path_ident.to_string();
 
-    match message_label.as_ref() {
-        "message" => {
-            return update_message_fn_from_lit(validation_label, message_fn, field, message)
+    match MetaNameValueMessage::from_str(&path_label) {
+        Ok(MetaNameValueMessage::Message) => get_message_from_lit(lit),
+        Err(unknown) => {
+            if MetaListMessage::from_str(&path_label).is_ok() {
+                Err(crate::Error::new_meta_list_need_value_error(
+                    path.span(),
+                    &path_label,
+                ))
+            } else if MetaPathMessage::from_str(&path_label).is_ok() {
+                Err(crate::Error::new_meta_path_need_value_error(
+                    path.span(),
+                    &path_label,
+                ))
+            } else {
+                Err(crate::Error::new_unknown_meta_error(
+                    path_ident.span(),
+                    &unknown,
+                    &MetaNameValueMessage::iter()
+                        .map(|x| x.name())
+                        .collect::<Vec<_>>(),
+                ))
+            }
         }
-        _ => {}
     }
 }
 
-fn update_message_fn_from_nested_meta(
-    validation_label: &str,
-    message_fn: &mut Option<TokenStream>,
-    field: &impl Field,
-    message_fn_defines: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
-    message_fn_ident: &syn::Ident,
-) {
-    for message_fn_define in message_fn_defines {
-        match message_fn_define {
+fn get_message_fn_from_nested_meta(
+    message_fn_define: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
+) -> Result<TokenStream, crate::Error> {
+    match message_fn_define.len() {
+        0 => Err(crate::Error::new_message_fn_name_error(
+            message_fn_define.span(),
+        )),
+        1 => match &message_fn_define[0] {
             syn::NestedMeta::Meta(ref meta) => match meta {
-                syn::Meta::Path(fn_name) => {
-                    update_message_fn_from_meta_path(
-                        validation_label,
-                        message_fn,
-                        field,
-                        fn_name,
-                        message_fn_ident,
-                    );
+                syn::Meta::Path(fn_name) => Ok(quote!(#fn_name)),
+                syn::Meta::List(list) => Err(crate::Error::new_message_fn_name_error(list.span())),
+                syn::Meta::NameValue(name_value) => {
+                    Err(crate::Error::new_message_fn_name_error(name_value.span()))
                 }
-                syn::Meta::List(fn_define) => {
-                    abort_unknown_list_argument(validation_label, field, meta.span(), fn_define)
-                }
-                syn::Meta::NameValue(name_value) => abort_unknown_name_value_argument(
-                    validation_label,
-                    field,
-                    meta.span(),
-                    name_value,
-                ),
             },
-            syn::NestedMeta::Lit(lit) => check_lit(validation_label, field, lit.span(), lit),
+            syn::NestedMeta::Lit(lit) => Err(crate::Error::new_message_fn_name_error(lit.span())),
+        },
+        _ => {
+            let mut args: syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma> =
+                syn::punctuated::Punctuated::new();
+            for arg in message_fn_define.iter().skip(1) {
+                args.push(arg.clone())
+            }
+            Err(crate::Error::new_message_fn_name_tail_error(args.span()))
         }
     }
 }
 
-fn update_message_fn_from_lit(
-    validation_label: &str,
-    message_fn: &mut Option<TokenStream>,
-    field: &impl Field,
-    lit: &syn::Lit,
-) {
-    match lit {
-        syn::Lit::Str(message) => *message_fn = Some(quote!(|_| { #message.to_string() })),
-        _ => check_lit(validation_label, field, lit.span(), lit),
-    }
-}
-
-fn check_duplicated_message_fn_argument(
-    validation_label: &str,
-    message_fn: &mut Option<TokenStream>,
-    field: &impl Field,
-    fn_name: &syn::Path,
-    message_fn_ident: &syn::Ident,
-) {
-    if message_fn.is_some() {
-        abort_duplicated_argument(validation_label, field, fn_name.span(), message_fn_ident)
-    }
+fn get_message_from_lit(lit: &syn::Lit) -> Result<TokenStream, crate::Error> {
+    get_str(lit).map(|lit_str| quote!(|_| { #lit_str.to_string() }))
 }
