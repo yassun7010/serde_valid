@@ -41,8 +41,8 @@ pub fn extract_meta_validator(
                             )
                         }
                     },
-                    syn::NestedMeta::Lit(_) => {
-                        Err(Error::new_literal_meta_item_error(meta_item.span()))
+                    syn::NestedMeta::Lit(lit) => {
+                        Err(Error::new_literal_meta_item_error(lit.span()))
                     }
                 }
             } else {
