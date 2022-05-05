@@ -83,7 +83,7 @@ impl Error {
     pub fn new_message_fn_name_error(span: proc_macro2::Span) -> Self {
         Self::new(
             span,
-            format!("#[validate(..., message_fn(???))] needs message_fn name."),
+            format!("#[validate(..., message_fn(???))] allow only function path."),
         )
     }
 
