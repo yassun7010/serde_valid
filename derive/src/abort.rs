@@ -1,10 +1,8 @@
-mod duplicated;
 mod expected;
 mod required;
 mod unknown;
 
 use crate::types::Field;
-pub use duplicated::*;
 pub use expected::*;
 use proc_macro_error::abort;
 pub use required::*;
