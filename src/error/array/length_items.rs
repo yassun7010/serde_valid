@@ -42,12 +42,12 @@ macro_rules! struct_array_length_params {
 }
 
 struct_array_length_params!(
-    MinItemsParams,
+    MinItemsErrorParams,
     min_items,
     "the length of the items must be `>= {}`."
 );
 struct_array_length_params!(
-    MaxItemsParams,
+    MaxItemsErrorParams,
     max_items,
     "the length of the items must be `<= {}`."
 );

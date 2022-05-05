@@ -35,7 +35,9 @@ fn inner_extract_string_pattern_validator(
     let field_name = field.name();
     let field_ident = field.ident();
     let pattern = get_str(validation_value)?;
-    let message = message_fn.unwrap_or(quote!(::serde_valid::PatternParams::to_default_message));
+    let message = message_fn.unwrap_or(quote!(
+        ::serde_valid::PatternErrorParams::to_default_message
+    ));
     let pattern_ident = syn::Ident::new(
         &format!("{}_PATTERN", &field_ident).to_uppercase(),
         field_ident.span(),
@@ -54,7 +56,7 @@ fn inner_extract_string_pattern_validator(
                 .or_default()
                 .push(::serde_valid::validation::Error::Pattern(
                     ::serde_valid::error::Message::new(
-                        ::serde_valid::PatternParams::new(
+                        ::serde_valid::PatternErrorParams::new(
                             #field_ident,
                             __pattern,
                         ),

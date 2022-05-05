@@ -47,12 +47,12 @@ macro_rules! struct_string_length_params {
 }
 
 struct_string_length_params!(
-    MinLengthParams,
+    MinLengthErrorParams,
     min_length,
     "the length of the value must be `>= {}`."
 );
 struct_string_length_params!(
-    MaxLengthParams,
+    MaxLengthErrorParams,
     max_length,
     "the length of the value must be `<= {}`."
 );

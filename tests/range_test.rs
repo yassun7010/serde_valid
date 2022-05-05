@@ -274,11 +274,11 @@ fn range_exclusive_err_message_test() {
 
 #[test]
 fn range_custom_err_message_fn_test() {
-    fn custom_min_error_message(_params: &serde_valid::MinimumParams) -> String {
+    fn custom_min_error_message(_params: &serde_valid::MinimumErrorParams) -> String {
         "this is min custom message.".to_string()
     }
 
-    fn custom_max_error_message(_params: &serde_valid::MaximumParams) -> String {
+    fn custom_max_error_message(_params: &serde_valid::MaximumErrorParams) -> String {
         "this is max custom message.".to_string()
     }
 

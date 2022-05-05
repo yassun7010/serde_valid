@@ -1,2 +1,2 @@
 mod enumerate;
-pub use enumerate::EnumerateParams;
+pub use enumerate::EnumerateErrorParams;

@@ -5,9 +5,10 @@ pub mod validation;
 
 pub use deserialize::*;
 pub use error::{
-    EnumerateParams, Error, ExclusiveMaximumParams, ExclusiveMinimumParams, MaxItemsParams,
-    MaxLengthParams, MaxPropertiesParams, MaximumParams, MinItemsParams, MinLengthParams,
-    MinPropertiesParams, MinimumParams, MultipleOfParams, PatternParams, UniqueItemsParams,
+    EnumerateErrorParams, Error, ExclusiveMaximumErrorParams, ExclusiveMinimumErrorParams,
+    MaxItemsErrorParams, MaxLengthErrorParams, MaxPropertiesErrorParams, MaximumErrorParams,
+    MinItemsErrorParams, MinLengthErrorParams, MinPropertiesErrorParams, MinimumErrorParams,
+    MultipleOfErrorParams, PatternErrorParams, UniqueItemsErrorParams,
 };
 pub use traits::*;
 pub use validation::{

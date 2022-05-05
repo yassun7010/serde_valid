@@ -38,15 +38,15 @@ macro_rules! struct_numeric_range_params {
     };
 }
 
-struct_numeric_range_params!(MinimumParams, minimum, "the number must be `>= {}`.");
-struct_numeric_range_params!(MaximumParams, maximum, "the number must be `<= {}`.");
+struct_numeric_range_params!(MinimumErrorParams, minimum, "the number must be `>= {}`.");
+struct_numeric_range_params!(MaximumErrorParams, maximum, "the number must be `<= {}`.");
 struct_numeric_range_params!(
-    ExclusiveMinimumParams,
+    ExclusiveMinimumErrorParams,
     exclusive_minimum,
     "the number must be `> {}`."
 );
 struct_numeric_range_params!(
-    ExclusiveMaximumParams,
+    ExclusiveMaximumErrorParams,
     exclusive_maximum,
     "the number must be `< {}`."
 );

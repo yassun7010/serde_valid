@@ -157,11 +157,11 @@ fn properties_json_map_type_err_message_test() {
 
 #[test]
 fn range_custom_err_message_fn_test() {
-    fn min_custom_error_message(_params: &serde_valid::MinPropertiesParams) -> String {
+    fn min_custom_error_message(_params: &serde_valid::MinPropertiesErrorParams) -> String {
         "this is min custom message.".to_string()
     }
 
-    fn max_custom_error_message(_params: &serde_valid::MaxPropertiesParams) -> String {
+    fn max_custom_error_message(_params: &serde_valid::MaxPropertiesErrorParams) -> String {
         "this is max custom message.".to_string()
     }
 

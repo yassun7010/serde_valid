@@ -1,5 +1,8 @@
 mod multiple_of;
 mod range;
 
-pub use multiple_of::MultipleOfParams;
-pub use range::{ExclusiveMaximumParams, ExclusiveMinimumParams, MaximumParams, MinimumParams};
+pub use multiple_of::MultipleOfErrorParams;
+pub use range::{
+    ExclusiveMaximumErrorParams, ExclusiveMinimumErrorParams, MaximumErrorParams,
+    MinimumErrorParams,
+};

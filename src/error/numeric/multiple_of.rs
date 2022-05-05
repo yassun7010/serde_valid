@@ -1,12 +1,12 @@
 use crate::error::ToDefaultMessage;
 
 #[derive(Debug, serde::Serialize)]
-pub struct MultipleOfParams {
+pub struct MultipleOfErrorParams {
     value: String,
     multiple_of: String,
 }
 
-impl MultipleOfParams {
+impl MultipleOfErrorParams {
     pub fn new<T>(value: T, multiple_of: T) -> Self
     where
         T: PartialEq + std::ops::Rem<Output = T> + num_traits::Zero + ToString,
@@ -28,7 +28,7 @@ impl MultipleOfParams {
     }
 }
 
-impl ToDefaultMessage for MultipleOfParams {
+impl ToDefaultMessage for MultipleOfErrorParams {
     fn to_default_message(&self) -> String {
         format!(
             "`{}` must be multiple of `{}`, but not.",

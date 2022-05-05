@@ -3,12 +3,12 @@ use crate::traits::IsMatch;
 use regex::Regex;
 
 #[derive(Debug, serde::Serialize)]
-pub struct PatternParams {
+pub struct PatternErrorParams {
     value: String,
     pattern: String,
 }
 
-impl PatternParams {
+impl PatternErrorParams {
     pub fn new<T>(value: &T, pattern: &Regex) -> Self
     where
         T: IsMatch + ?Sized + std::fmt::Debug,
@@ -30,7 +30,7 @@ impl PatternParams {
     }
 }
 
-impl ToDefaultMessage for PatternParams {
+impl ToDefaultMessage for PatternErrorParams {
     fn to_default_message(&self) -> String {
         format!(
             "{} must match the pattern of \"{}\", but not.",

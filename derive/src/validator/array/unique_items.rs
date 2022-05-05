@@ -24,8 +24,9 @@ fn inner_extract_array_unique_items_validator(
 ) -> TokenStream {
     let field_name = field.name();
     let field_ident = field.ident();
-    let message =
-        message_fn.unwrap_or(quote!(::serde_valid::UniqueItemsParams::to_default_message));
+    let message = message_fn.unwrap_or(quote!(
+        ::serde_valid::UniqueItemsErrorParams::to_default_message
+    ));
 
     quote!(
         if !::serde_valid::validate_array_unique_items(
@@ -37,7 +38,7 @@ fn inner_extract_array_unique_items_validator(
                 .or_default()
                 .push(::serde_valid::validation::Error::UniqueItems(
                     ::serde_valid::error::Message::new(
-                        ::serde_valid::UniqueItemsParams::new(
+                        ::serde_valid::UniqueItemsErrorParams::new(
                             #field_ident,
                         ),
                         #message

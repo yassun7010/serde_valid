@@ -9,7 +9,7 @@ use quote::quote;
 /// See <https://json-schema.org/understanding-json-schema/reference/object.html#size>
 macro_rules! extract_object_size_validator{
     (
-        $Params:tt,
+        $ErrorParams:tt,
         $ErrorType:tt,
         $limit:tt,
         $function_name:ident,
@@ -42,7 +42,7 @@ macro_rules! extract_object_size_validator{
             let field_ident = field.ident();
             let $limit = get_numeric(validation_value)?;
             let message =
-                message_fn.unwrap_or(quote!(::serde_valid::$Params::to_default_message));
+                message_fn.unwrap_or(quote!(::serde_valid::$ErrorParams::to_default_message));
 
             Ok(quote!(
                 if !::serde_valid::$validate_function(
@@ -55,7 +55,7 @@ macro_rules! extract_object_size_validator{
                         .or_default()
                         .push(::serde_valid::validation::Error::$ErrorType(
                             ::serde_valid::error::Message::new(
-                                ::serde_valid::$Params::new(
+                                ::serde_valid::$ErrorParams::new(
                                     #field_ident,
                                     #$limit
                                 ),
@@ -69,7 +69,7 @@ macro_rules! extract_object_size_validator{
 }
 
 extract_object_size_validator!(
-    MaxPropertiesParams,
+    MaxPropertiesErrorParams,
     MaxProperties,
     max_properties,
     extract_object_max_properties_validator,
@@ -78,7 +78,7 @@ extract_object_size_validator!(
 );
 
 extract_object_size_validator!(
-    MinPropertiesParams,
+    MinPropertiesErrorParams,
     MinProperties,
     min_properties,
     extract_object_min_properties_validator,

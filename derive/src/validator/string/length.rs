@@ -9,7 +9,7 @@ use quote::quote;
 /// See <https://json-schema.org/understanding-json-schema/reference/string.html#length>
 macro_rules! extract_string_length_validator{
     (
-        $Params:tt,
+        $ErrorParams:tt,
         $ErrorType:tt,
         $field:tt,
         $function_name:ident,
@@ -57,7 +57,7 @@ macro_rules! extract_string_length_validator{
             let field_ident = field.ident();
             let $field = get_numeric(validation_value)?;
             let message =
-                message_fn.unwrap_or(quote!(::serde_valid::$Params::to_default_message));
+                message_fn.unwrap_or(quote!(::serde_valid::$ErrorParams::to_default_message));
 
             Ok(quote!(
                 if !::serde_valid::$validate_function(
@@ -70,7 +70,7 @@ macro_rules! extract_string_length_validator{
                         .or_default()
                         .push(::serde_valid::validation::Error::$ErrorType(
                             ::serde_valid::error::Message::new(
-                                ::serde_valid::$Params::new(
+                                ::serde_valid::$ErrorParams::new(
                                     #field_ident,
                                     #$field,
                                 ),
@@ -84,7 +84,7 @@ macro_rules! extract_string_length_validator{
 }
 
 extract_string_length_validator!(
-    MaxLengthParams,
+    MaxLengthErrorParams,
     MaxLength,
     max_length,
     extract_string_max_length_validator,
@@ -92,7 +92,7 @@ extract_string_length_validator!(
     validate_string_max_length
 );
 extract_string_length_validator!(
-    MinLengthParams,
+    MinLengthErrorParams,
     MinLength,
     min_length,
     extract_string_min_length_validator,

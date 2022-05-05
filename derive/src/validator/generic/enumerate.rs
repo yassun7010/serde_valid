@@ -33,7 +33,9 @@ fn inner_extract_generic_enumerate_validator(
     let field_ident = field.ident();
 
     let enumerate = get_enumerate(item_list)?;
-    let message = message_fn.unwrap_or(quote!(::serde_valid::EnumerateParams::to_default_message));
+    let message = message_fn.unwrap_or(quote!(
+        ::serde_valid::EnumerateErrorParams::to_default_message
+    ));
 
     Ok(quote!(
         if !::serde_valid::validate_generic_enumerate(
@@ -46,7 +48,7 @@ fn inner_extract_generic_enumerate_validator(
                 .or_default()
                 .push(::serde_valid::validation::Error::Enumerate(
                     ::serde_valid::error::Message::new(
-                        ::serde_valid::EnumerateParams::new(
+                        ::serde_valid::EnumerateErrorParams::new(
                             #field_ident,
                             &[#enumerate],
                         ),

@@ -1,5 +1,5 @@
 mod length_items;
 mod unique_items;
 
-pub use length_items::{MaxItemsParams, MinItemsParams};
-pub use unique_items::UniqueItemsParams;
+pub use length_items::{MaxItemsErrorParams, MinItemsErrorParams};
+pub use unique_items::UniqueItemsErrorParams;

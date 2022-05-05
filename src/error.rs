@@ -6,14 +6,15 @@ mod object;
 mod string;
 
 use crate::validation;
-pub use array::{MaxItemsParams, MinItemsParams, UniqueItemsParams};
-pub use generic::EnumerateParams;
+pub use array::{MaxItemsErrorParams, MinItemsErrorParams, UniqueItemsErrorParams};
+pub use generic::EnumerateErrorParams;
 pub use message::{Message, ToDefaultMessage};
 pub use numeric::{
-    ExclusiveMaximumParams, ExclusiveMinimumParams, MaximumParams, MinimumParams, MultipleOfParams,
+    ExclusiveMaximumErrorParams, ExclusiveMinimumErrorParams, MaximumErrorParams,
+    MinimumErrorParams, MultipleOfErrorParams,
 };
-pub use object::{MaxPropertiesParams, MinPropertiesParams};
-pub use string::{MaxLengthParams, MinLengthParams, PatternParams};
+pub use object::{MaxPropertiesErrorParams, MinPropertiesErrorParams};
+pub use string::{MaxLengthErrorParams, MinLengthErrorParams, PatternErrorParams};
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error<E>

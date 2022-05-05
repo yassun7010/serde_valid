@@ -40,12 +40,12 @@ macro_rules! struct_object_size_params {
 }
 
 struct_object_size_params!(
-    MinPropertiesParams,
+    MinPropertiesErrorParams,
     min_properties,
     "the size of the properties must be `>= {}`."
 );
 struct_object_size_params!(
-    MaxPropertiesParams,
+    MaxPropertiesErrorParams,
     max_properties,
     "the size of the properties must be `<= {}`."
 );
