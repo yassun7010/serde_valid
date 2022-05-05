@@ -33,8 +33,7 @@ pub fn extract_message_fn_tokens(
                     Err(crate::Error::new_unknown_meta_error(
                         path.span(),
                         &path_label,
-                        &MetaNameValueMessage::iter()
-                            .map(|x| x.name())
+                        &(MetaNameValueMessage::iter().map(|x| x.name()))
                             .chain(MetaListMessage::iter().map(|x| x.name()))
                             .chain(MetaPathMessage::iter().map(|x| x.name()))
                             .collect::<Vec<_>>(),

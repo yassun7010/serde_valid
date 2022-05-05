@@ -33,8 +33,7 @@ pub fn extract_validator_from_nested_meta_path(
                 Err(crate::Error::new_unknown_meta_error(
                     validation_ident.span(),
                     &unknown,
-                    &MetaPathValidation::iter()
-                        .map(|x| x.name())
+                    &(MetaPathValidation::iter().map(|x| x.name()))
                         .chain(MetaNameValueValidation::iter().map(|x| x.name()))
                         .chain(MetaListValidation::iter().map(|x| x.name()))
                         .collect::<Vec<_>>(),
