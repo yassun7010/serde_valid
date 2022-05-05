@@ -1,6 +1,5 @@
 mod derive;
 mod error;
-mod lit;
 mod types;
 mod validator;
 
