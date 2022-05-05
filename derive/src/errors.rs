@@ -95,6 +95,10 @@ impl Error {
         Self::new(span, "literal does not support.")
     }
 
+    pub fn new_too_manyitems_error(span: proc_macro2::Span) -> Self {
+        Self::new(span, "Too many items.")
+    }
+
     pub fn to_compile_error(&self) -> TokenStream {
         self.0.to_compile_error()
     }

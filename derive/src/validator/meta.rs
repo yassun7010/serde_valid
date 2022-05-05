@@ -20,11 +20,12 @@ pub fn extract_meta_validator(
 ) -> Result<Validator, Error> {
     match attribute.parse_meta() {
         Ok(syn::Meta::List(syn::MetaList { ref nested, .. })) => {
-            let messaeg_fn = if nested.len() > 1 {
-                Some(extract_message_fn_tokens(&nested[1])?)
-            } else {
-                None
+            let messaeg_fn = match nested.len() {
+                0..=1 => None,
+                2 => Some(extract_message_fn_tokens(&nested[1])?),
+                _ => Err(crate::Error::new_too_manyitems_error(nested[2].span()))?,
             };
+
             let validation = if nested.len() > 0 {
                 let meta_item = &nested[0];
                 match meta_item {
