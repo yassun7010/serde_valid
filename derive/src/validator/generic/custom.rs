@@ -17,14 +17,14 @@ pub fn extract_generic_custom_validator(
         _ => Err(crate::Error::custom_tail_error(nested.span()))?,
     };
 
-    return Ok(Validator::Normal(quote!(
+    Ok(Validator::Normal(quote!(
         if let Err(__error) = #custom_fn_name(#field_ident) {
             __errors
                 .entry(#field_name)
                 .or_default()
                 .push(__error);
         };
-    )));
+    )))
 }
 
 fn extract_custom_fn_name(nested_meta: &syn::NestedMeta) -> Result<TokenStream, crate::Error> {
@@ -35,7 +35,7 @@ fn extract_custom_fn_name(nested_meta: &syn::NestedMeta) -> Result<TokenStream, 
                 Ok(quote!(#fn_name))
             }
             syn::Meta::NameValue(name_value) => {
-                Err(crate::Error::name_value_not_support(name_value))?
+                Err(crate::Error::meta_name_value_not_support(name_value))?
             }
             syn::Meta::Path(fn_name) => Ok(quote!(#fn_name)),
         },

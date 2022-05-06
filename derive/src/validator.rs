@@ -7,6 +7,7 @@ mod object;
 mod string;
 
 pub use crate::types::Field;
+pub use generic::collect_rules;
 pub use meta::extract_meta_validator;
 use proc_macro2::TokenStream;
 use quote::quote;

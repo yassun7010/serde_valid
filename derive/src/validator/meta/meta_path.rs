@@ -4,20 +4,18 @@ use proc_macro2::TokenStream;
 use quote::quote;
 
 pub fn extract_validator_from_meta_path(field: &impl Field) -> Result<Validator, crate::Error> {
-    Ok(extract_validate_validator(field))
-}
-
-fn extract_validate_validator(field: &impl Field) -> Validator {
-    if let Some(array_field) = field.array_field() {
-        Validator::Array(Box::new(extract_validate_validator(&array_field)))
+    let validator = if let Some(array_field) = field.array_field() {
+        Validator::Array(Box::new(extract_validator_from_meta_path(&array_field)?))
     } else if let Some(option_field) = field.option_field() {
-        Validator::Option(Box::new(extract_validate_validator(&option_field)))
+        Validator::Option(Box::new(extract_validator_from_meta_path(&option_field)?))
     } else {
-        Validator::Normal(inner_extract_validate_validator(field))
-    }
+        Validator::Normal(inner_extract_validator_from_meta_path(field))
+    };
+
+    Ok(validator)
 }
 
-fn inner_extract_validate_validator(field: &impl Field) -> TokenStream {
+fn inner_extract_validator_from_meta_path(field: &impl Field) -> TokenStream {
     let field_ident = field.ident();
     let field_name = field.name();
     quote!(

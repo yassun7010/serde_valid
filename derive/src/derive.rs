@@ -11,8 +11,8 @@ use unnamed_struct_derive::expand_unnamed_struct_derive;
 pub fn expand_derive(input: &syn::DeriveInput) -> Result<TokenStream, crate::Errors> {
     match &input.data {
         syn::Data::Struct(syn::DataStruct { ref fields, .. }) => match fields {
-            syn::Fields::Named(named) => expand_named_struct_derive(input, named),
-            syn::Fields::Unnamed(unnamed) => expand_unnamed_struct_derive(input, unnamed),
+            syn::Fields::Named(fields) => expand_named_struct_derive(input, fields),
+            syn::Fields::Unnamed(fields) => expand_unnamed_struct_derive(input, fields),
             syn::Fields::Unit => Err(vec![crate::Error::new(
                 input.span(),
                 "#[derive(Validate)] does not support Unit Struct.",

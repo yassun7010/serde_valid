@@ -52,8 +52,11 @@ impl Error {
         )
     }
 
-    pub fn new_attribute_parse_error(span: proc_macro2::Span, error: &syn::Error) -> Self {
-        Self::new(span, format!("#[validate] parse error: {error}"))
+    pub fn attribute_parse_error(attribute: &syn::Attribute, error: &syn::Error) -> Self {
+        Self::new(
+            attribute.span(),
+            format!("#[validate] parse error: {error}"),
+        )
     }
 
     pub fn new_attribute_required_error(span: proc_macro2::Span) -> Self {
@@ -83,6 +86,14 @@ impl Error {
             span,
             format!("Unknown: `{unknown}`. Is it one of the following?\n{filterd_candidates:#?}"),
         )
+    }
+
+    pub fn rule_need_arguments(path: &syn::Path) -> Self {
+        Self::new(path.span(), "`rule` function needs arguments.")
+    }
+
+    pub fn rule_required_first_argument_path(meta: &syn::NestedMeta) -> Self {
+        Self::new(meta.span(), "`rule` first arg must be field path.")
     }
 
     pub fn enumerate_need_item(path: &syn::Path) -> Self {
@@ -116,8 +127,12 @@ impl Error {
         Self::new(lit.span(), "Literal does not support.")
     }
 
-    pub fn name_value_not_support(name_value: &syn::MetaNameValue) -> Self {
+    pub fn meta_name_value_not_support(name_value: &syn::MetaNameValue) -> Self {
         Self::new(name_value.span(), "Name value does not support.")
+    }
+
+    pub fn meta_list_not_support(list: &syn::MetaList) -> Self {
+        Self::new(list.span(), "List does not support.")
     }
 
     pub fn too_many_list_items(span: proc_macro2::Span) -> Self {
