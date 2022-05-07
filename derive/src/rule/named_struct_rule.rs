@@ -3,7 +3,7 @@ use quote::{quote, ToTokens};
 use syn::parse_quote;
 use syn::spanned::Spanned;
 
-use crate::types::{SingleIdentPath, TokenStreams};
+use crate::types::TokenStreams;
 
 pub fn collect_rules_from_named_struct(
     attributes: &Vec<syn::Attribute>,
@@ -86,44 +86,37 @@ fn extract_rule_from_meta_list(
 ) -> Result<TokenStream, crate::Errors> {
     let mut errors = vec![];
 
-    let first_arg = if let Some(arg) = nested.first() {
-        match arg {
-            syn::NestedMeta::Meta(meta) => match meta {
-                syn::Meta::Path(path) => Ok(SingleIdentPath::new(path)),
-                _ => Err(crate::Error::rule_required_first_argument_path(arg)),
-            },
-            syn::NestedMeta::Lit(_) => Err(crate::Error::rule_required_first_argument_path(arg)),
-        }
-    } else {
-        Err(crate::Error::rule_need_arguments(rule_fn_name))
-    };
+    if nested.is_empty() {
+        errors.push(crate::Error::rule_need_arguments(rule_fn_name));
+    }
 
     let rule_fn_args = nested
         .iter()
-        .filter_map(|arg| match arg {
-            syn::NestedMeta::Meta(meta) => match meta {
-                syn::Meta::Path(field) => Some(quote!(#field)),
-                syn::Meta::List(list) => {
-                    errors.push(crate::Error::meta_list_not_support(list));
-                    None
-                }
-                syn::Meta::NameValue(name_value) => {
-                    errors.push(crate::Error::meta_name_value_not_support(name_value));
-                    None
-                }
-            },
-            syn::NestedMeta::Lit(lit) => Some(lit.to_token_stream()),
+        .filter_map(|nested_meta| {
+            let arg = match nested_meta {
+                syn::NestedMeta::Meta(meta) => match meta {
+                    syn::Meta::Path(path) => Some(quote!(&self.#path)),
+                    _ => None,
+                },
+                _ => None,
+            };
+            if arg.is_none() {
+                errors.push(crate::Error::rule_allow_path_arguments(
+                    rule_fn_name,
+                    nested_meta,
+                ));
+            }
+            arg
         })
         .collect::<TokenStreams>();
 
-    match first_arg {
-        Ok(field) => {
+    match nested.first() {
+        Some(field) => {
             if errors.len() > 0 {
                 return Err(errors);
             }
 
-            let field_ident = field.ident();
-            let field_name = field_ident.to_string();
+            let field_name = field.to_token_stream().to_string();
 
             Ok(quote!(
                 if let Err(__error) = #rule_fn_name(#rule_fn_args) {
@@ -134,10 +127,6 @@ fn extract_rule_from_meta_list(
                 };
             ))
         }
-        Err(error) => {
-            errors.push(error);
-
-            Err(errors)
-        }
+        None => Err(errors),
     }
 }

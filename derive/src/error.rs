@@ -32,12 +32,26 @@ impl Error {
         Self::new(path.span(), "`rule` function needs arguments.")
     }
 
-    pub fn rule_required_first_argument_path(meta: &syn::NestedMeta) -> Self {
-        Self::new(meta.span(), "`rule` first argument must be field path.")
+    pub fn rule_allow_path_arguments(
+        rule_fn_name_path: &syn::Path,
+        meta: &syn::NestedMeta,
+    ) -> Self {
+        let rule_fn_name = quote!(#rule_fn_name_path).to_string();
+        Self::new(
+            meta.span(),
+            format!("#[rule({rule_fn_name}(???, ???, ...))] allow field path only."),
+        )
     }
 
-    pub fn rule_required_first_argument_index(meta: &syn::NestedMeta) -> Self {
-        Self::new(meta.span(), "`rule` first argument must be field index.")
+    pub fn rule_allow_index_arguments(
+        rule_fn_name_path: &syn::Path,
+        meta: &syn::NestedMeta,
+    ) -> Self {
+        let rule_fn_name = quote!(#rule_fn_name_path).to_string();
+        Self::new(
+            meta.span(),
+            format!("#[rule({rule_fn_name}(???, ???, ...))] allow index integer only."),
+        )
     }
 
     pub fn rule_attribute_parse_error(attribute: &syn::Attribute, error: &syn::Error) -> Self {
@@ -145,10 +159,6 @@ impl Error {
 
     pub fn meta_name_value_not_support(name_value: &syn::MetaNameValue) -> Self {
         Self::new(name_value.span(), "Name value does not support.")
-    }
-
-    pub fn meta_list_not_support(list: &syn::MetaList) -> Self {
-        Self::new(list.span(), "List does not support.")
     }
 
     pub fn meta_path_not_support(path: &syn::Path) -> Self {

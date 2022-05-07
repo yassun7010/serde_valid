@@ -1,5 +1,5 @@
 use proc_macro2::TokenStream;
-use quote::quote;
+use quote::{quote, ToTokens};
 use syn::parse_quote;
 use syn::spanned::Spanned;
 
@@ -86,49 +86,37 @@ fn extract_rule_from_meta_list(
 ) -> Result<TokenStream, crate::Errors> {
     let mut errors = vec![];
 
-    let first_arg = if let Some(arg) = nested.first() {
-        match arg {
-            syn::NestedMeta::Meta(meta) => match meta {
-                syn::Meta::Path(_) => Err(crate::Error::rule_required_first_argument_index(arg)),
-                _ => Err(crate::Error::rule_required_first_argument_path(arg)),
-            },
-            syn::NestedMeta::Lit(lit) => match lit {
-                syn::Lit::Int(int) => Ok(int),
-                _ => Err(crate::Error::rule_required_first_argument_index(arg)),
-            },
-        }
-    } else {
-        Err(crate::Error::rule_need_arguments(rule_fn_name))
-    };
+    if nested.is_empty() {
+        errors.push(crate::Error::rule_need_arguments(rule_fn_name));
+    }
 
     let rule_fn_args = nested
         .iter()
-        .filter_map(|arg| match arg {
-            syn::NestedMeta::Meta(meta) => match meta {
-                syn::Meta::Path(path) => {
-                    errors.push(crate::Error::meta_path_not_support(path));
-                    None
-                }
-                syn::Meta::List(list) => {
-                    errors.push(crate::Error::meta_list_not_support(list));
-                    None
-                }
-                syn::Meta::NameValue(name_value) => {
-                    errors.push(crate::Error::meta_name_value_not_support(name_value));
-                    None
-                }
-            },
-            syn::NestedMeta::Lit(lit) => Some(quote!(&self.#lit)),
+        .filter_map(|nested_meta| {
+            let arg = match nested_meta {
+                syn::NestedMeta::Lit(lit) => match lit {
+                    syn::Lit::Int(int) => Some(quote!(&self.#int)),
+                    _ => None,
+                },
+                syn::NestedMeta::Meta(_) => None,
+            };
+            if arg.is_none() {
+                errors.push(crate::Error::rule_allow_index_arguments(
+                    rule_fn_name,
+                    nested_meta,
+                ));
+            }
+            arg
         })
         .collect::<TokenStreams>();
 
-    match first_arg {
-        Ok(field) => {
+    match nested.first() {
+        Some(field) => {
             if errors.len() > 0 {
                 return Err(errors);
             }
 
-            let field_name = field.to_string();
+            let field_name = field.to_token_stream().to_string();
 
             Ok(quote!(
                 if let Err(__error) = #rule_fn_name(#rule_fn_args) {
@@ -139,10 +127,6 @@ fn extract_rule_from_meta_list(
                 };
             ))
         }
-        Err(error) => {
-            errors.push(error);
-
-            Err(errors)
-        }
+        None => Err(errors),
     }
 }
