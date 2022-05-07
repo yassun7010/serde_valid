@@ -12,9 +12,9 @@ pub fn extract_generic_custom_validator(
     let field_ident = field.ident();
 
     let custom_fn_name = match nested.len() {
-        0 => Err(crate::Error::custom_need_item(path.span()))?,
+        0 => Err(crate::Error::validate_custom_need_item(path.span()))?,
         1 => extract_custom_fn_name(&nested[0])?,
-        _ => Err(crate::Error::custom_tail_error(nested.span()))?,
+        _ => Err(crate::Error::validate_custom_tail_error(nested.span()))?,
     };
 
     Ok(Validator::Normal(quote!(

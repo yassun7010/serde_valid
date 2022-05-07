@@ -21,6 +21,8 @@ pub fn extract_meta_validator(
         Ok(syn::Meta::NameValue(_)) => Err(crate::Error::validate_meta_name_value_not_support(
             attribute.span(),
         )),
-        Err(error) => Err(crate::Error::attribute_parse_error(attribute, &error)),
+        Err(error) => Err(crate::Error::validate_attribute_parse_error(
+            attribute, &error,
+        )),
     }
 }

@@ -25,12 +25,12 @@ pub fn extract_message_fn_tokens(
                         &path_label,
                     ))
                 } else if MetaListMessage::from_str(&path_label).is_ok() {
-                    Err(crate::Error::new_meta_list_need_value_error(
+                    Err(crate::Error::validate_meta_list_need_value(
                         path.span(),
                         &path_label,
                     ))
                 } else {
-                    Err(crate::Error::new_unknown_meta_error(
+                    Err(crate::Error::validate_unknown_type(
                         path.span(),
                         &path_label,
                         &(MetaNameValueMessage::iter().map(|x| x.name()))
@@ -61,17 +61,17 @@ fn extract_message_fn_tokens_from_meta_list(
         }
         Err(unknown) => {
             if MetaNameValueMessage::from_str(&path_label).is_ok() {
-                Err(crate::Error::new_meta_list_need_value_error(
+                Err(crate::Error::validate_meta_list_need_value(
                     path.span(),
                     &path_label,
                 ))
             } else if MetaPathMessage::from_str(&path_label).is_ok() {
-                Err(crate::Error::new_meta_path_need_value_error(
+                Err(crate::Error::validate_meta_path_need_value(
                     path.span(),
                     &path_label,
                 ))
             } else {
-                Err(crate::Error::new_unknown_meta_error(
+                Err(crate::Error::validate_unknown_type(
                     path_ident.span(),
                     &unknown,
                     &MetaListMessage::iter()
@@ -93,17 +93,17 @@ fn extract_message_fn_tokens_from_name_value(
         Ok(MetaNameValueMessage::Message) => get_message_fn_from_lit(lit),
         Err(unknown) => {
             if MetaListMessage::from_str(&path_label).is_ok() {
-                Err(crate::Error::new_meta_list_need_value_error(
+                Err(crate::Error::validate_meta_list_need_value(
                     path.span(),
                     &path_label,
                 ))
             } else if MetaPathMessage::from_str(&path_label).is_ok() {
-                Err(crate::Error::new_meta_path_need_value_error(
+                Err(crate::Error::validate_meta_path_need_value(
                     path.span(),
                     &path_label,
                 ))
             } else {
-                Err(crate::Error::new_unknown_meta_error(
+                Err(crate::Error::validate_unknown_type(
                     path_ident.span(),
                     &unknown,
                     &MetaNameValueMessage::iter()
@@ -117,12 +117,12 @@ fn extract_message_fn_tokens_from_name_value(
 
 fn get_message_fn_from_nested_meta(
     path_ident: &syn::Ident,
-    message_fn_define: &CommaSeparatedNestedMetas,
+    fn_define: &CommaSeparatedNestedMetas,
 ) -> Result<TokenStream, crate::Error> {
-    match message_fn_define.len() {
+    match fn_define.len() {
         0 => Err(crate::Error::message_fn_need_item(path_ident.span())),
         1 => {
-            let fn_name = match &message_fn_define[0] {
+            let fn_name = match &fn_define[0] {
                 syn::NestedMeta::Meta(ref meta) => match meta {
                     syn::Meta::Path(fn_name) => Some(quote!(#fn_name)),
                     _ => None,
@@ -130,12 +130,10 @@ fn get_message_fn_from_nested_meta(
                 _ => None,
             };
             fn_name.ok_or(crate::Error::message_fn_allow_name_path(
-                message_fn_define[0].span(),
+                fn_define[0].span(),
             ))
         }
-        _ => Err(crate::Error::message_fn_tail_error(
-            message_fn_define[1].span(),
-        )),
+        _ => Err(crate::Error::message_fn_tail_error(fn_define[1].span())),
     }
 }
 

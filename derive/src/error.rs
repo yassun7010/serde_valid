@@ -54,7 +54,10 @@ impl Error {
         )
     }
 
-    pub fn rule_attribute_parse_error(attribute: &syn::Attribute, error: &syn::Error) -> Self {
+    pub fn rule_validate_attribute_parse_error(
+        attribute: &syn::Attribute,
+        error: &syn::Error,
+    ) -> Self {
         Self::new(attribute.span(), format!("#[rule] parse error: {error}"))
     }
 
@@ -76,44 +79,32 @@ impl Error {
         )
     }
 
-    pub fn new_meta_path_need_value_error(span: proc_macro2::Span, validation_type: &str) -> Self {
+    pub fn validate_meta_path_need_value(span: proc_macro2::Span, validation_type: &str) -> Self {
         Self::new(
             span,
             format!("#[validate({validation_type}(???))] needs validation path."),
         )
     }
 
-    pub fn new_meta_list_need_value_error(span: proc_macro2::Span, validation_type: &str) -> Self {
+    pub fn validate_meta_list_need_value(span: proc_macro2::Span, validation_type: &str) -> Self {
         Self::new(
             span,
             format!("#[validate({validation_type}(???, ???, ...))] needs validation list."),
         )
     }
 
-    pub fn attribute_parse_error(attribute: &syn::Attribute, error: &syn::Error) -> Self {
+    pub fn validate_attribute_parse_error(attribute: &syn::Attribute, error: &syn::Error) -> Self {
         Self::new(
             attribute.span(),
             format!("#[validate] parse error: {error}"),
         )
     }
 
-    pub fn new_attribute_required_error(span: proc_macro2::Span) -> Self {
-        Self::new(span, "#[validate(validation...)] needs validation.")
+    pub fn validate_type_required_error(span: proc_macro2::Span) -> Self {
+        Self::new(span, "#[validate(???)] needs validation type.")
     }
 
-    pub fn literal_only(meta: &syn::Meta) -> Self {
-        Self::new(meta.span(), "Allow literal only.")
-    }
-
-    pub fn numeric_literal_only(lit: &syn::Lit) -> Self {
-        Self::new(lit.span(), "Allow numeric literal only.")
-    }
-
-    pub fn str_literal_only(lit: &syn::Lit) -> Self {
-        Self::new(lit.span(), "Allow str literal only.")
-    }
-
-    pub fn new_unknown_meta_error(
+    pub fn validate_unknown_type(
         span: proc_macro2::Span,
         unknown: &str,
         candidates: &[&str],
@@ -126,8 +117,16 @@ impl Error {
         )
     }
 
-    pub fn enumerate_need_item(path: &syn::Path) -> Self {
+    pub fn validate_enumerate_need_item(path: &syn::Path) -> Self {
         Self::new(path.span(), format!("`enumerate` need items."))
+    }
+
+    pub fn validate_custom_need_item(span: proc_macro2::Span) -> Self {
+        Self::new(span, format!("`custom` need items."))
+    }
+
+    pub fn validate_custom_tail_error(span: proc_macro2::Span) -> Self {
+        Self::new(span, format!("`custom` support only 1 item."))
     }
 
     pub fn message_fn_need_item(span: proc_macro2::Span) -> Self {
@@ -145,12 +144,16 @@ impl Error {
         Self::new(span, format!("`message_fn` support only 1 item."))
     }
 
-    pub fn custom_need_item(span: proc_macro2::Span) -> Self {
-        Self::new(span, format!("`custom` need items."))
+    pub fn literal_only(meta: &syn::Meta) -> Self {
+        Self::new(meta.span(), "Allow literal only.")
     }
 
-    pub fn custom_tail_error(span: proc_macro2::Span) -> Self {
-        Self::new(span, format!("`custom` support only 1 item."))
+    pub fn numeric_literal_only(lit: &syn::Lit) -> Self {
+        Self::new(lit.span(), "Allow numeric literal only.")
+    }
+
+    pub fn str_literal_only(lit: &syn::Lit) -> Self {
+        Self::new(lit.span(), "Allow str literal only.")
     }
 
     pub fn literal_not_support(lit: &syn::Lit) -> Self {

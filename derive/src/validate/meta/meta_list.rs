@@ -36,7 +36,7 @@ pub fn extract_validator_from_meta_list(
             }
         }
     } else {
-        Err(crate::Error::new_attribute_required_error(attribute.span()))
+        Err(crate::Error::validate_type_required_error(attribute.span()))
     };
 
     validation

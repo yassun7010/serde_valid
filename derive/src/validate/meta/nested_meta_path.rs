@@ -24,12 +24,12 @@ pub fn extract_validator_from_nested_meta_path(
                     &validation_name,
                 ))
             } else if MetaListValidation::from_str(&validation_name).is_ok() {
-                Err(crate::Error::new_meta_list_need_value_error(
+                Err(crate::Error::validate_meta_list_need_value(
                     validation_ident.span(),
                     &validation_name,
                 ))
             } else {
-                Err(crate::Error::new_unknown_meta_error(
+                Err(crate::Error::validate_unknown_type(
                     validation_ident.span(),
                     &unknown,
                     &(MetaPathValidation::iter().map(|x| x.name()))

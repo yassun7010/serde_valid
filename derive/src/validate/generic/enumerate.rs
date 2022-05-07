@@ -67,7 +67,7 @@ fn get_enumerate<'a>(
     let mut enumerate = Lits::new();
 
     if nested.len() == 0 {
-        Err(crate::Error::enumerate_need_item(path))?
+        Err(crate::Error::validate_enumerate_need_item(path))?
     }
     for item in nested {
         match item {

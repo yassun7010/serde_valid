@@ -32,7 +32,9 @@ pub fn collect_rules_from_named_struct(
                 None
             }
             Err(error) => {
-                errors.push(crate::Error::rule_attribute_parse_error(attribute, &error));
+                errors.push(crate::Error::rule_validate_attribute_parse_error(
+                    attribute, &error,
+                ));
                 None
             }
         })
