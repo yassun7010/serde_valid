@@ -1,6 +1,6 @@
 use crate::types::Field;
-use crate::validator::common::get_numeric;
-use crate::validator::Validator;
+use crate::validate::common::get_numeric;
+use crate::validate::Validator;
 use proc_macro2::TokenStream;
 use quote::quote;
 

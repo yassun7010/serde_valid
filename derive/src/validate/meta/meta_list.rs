@@ -2,8 +2,8 @@ use super::nested_meta_list::extract_validator_from_nested_meta_list;
 use super::nested_meta_name_value::extract_validator_from_nested_meta_name_value;
 use super::nested_meta_path::extract_validator_from_nested_meta_path;
 use crate::types::Field;
-use crate::validator::common::extract_message_fn_tokens;
-use crate::validator::Validator;
+use crate::validate::common::extract_message_fn_tokens;
+use crate::validate::Validator;
 use syn::spanned::Spanned;
 
 pub fn extract_validator_from_meta_list(

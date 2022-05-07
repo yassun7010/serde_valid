@@ -2,7 +2,7 @@ mod derive;
 mod error;
 mod rule;
 mod types;
-mod validator;
+mod validate;
 
 use derive::expand_derive;
 use error::to_compile_errors;

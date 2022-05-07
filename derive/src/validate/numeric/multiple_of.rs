@@ -2,8 +2,8 @@ use crate::types::Field;
 use proc_macro2::TokenStream;
 use quote::quote;
 
-use crate::validator::common::get_numeric;
-use crate::validator::Validator;
+use crate::validate::common::get_numeric;
+use crate::validate::Validator;
 
 pub fn extract_numeric_multiple_of_validator(
     field: &impl Field,

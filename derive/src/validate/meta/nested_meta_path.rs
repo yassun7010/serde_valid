@@ -1,9 +1,9 @@
 use proc_macro2::TokenStream;
 
 use crate::types::{Field, SingleIdentPath};
-use crate::validator::array::extract_array_unique_items_validator;
-use crate::validator::common::{MetaListValidation, MetaNameValueValidation, MetaPathValidation};
-use crate::validator::Validator;
+use crate::validate::array::extract_array_unique_items_validator;
+use crate::validate::common::{MetaListValidation, MetaNameValueValidation, MetaPathValidation};
+use crate::validate::Validator;
 use std::str::FromStr;
 
 pub fn extract_validator_from_nested_meta_path(

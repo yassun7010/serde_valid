@@ -1,5 +1,5 @@
 use crate::types::Field;
-use crate::validator::Validator;
+use crate::validate::Validator;
 use proc_macro2::TokenStream;
 use quote::quote;
 use syn::spanned::Spanned;

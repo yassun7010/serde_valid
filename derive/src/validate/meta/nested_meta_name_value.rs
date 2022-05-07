@@ -1,21 +1,21 @@
 use crate::types::{Field, SingleIdentPath};
-use crate::validator::array::{
+use crate::validate::array::{
     extract_array_max_items_validator, extract_array_min_items_validator,
 };
-use crate::validator::common::MetaNameValueValidation;
-use crate::validator::numeric::{
+use crate::validate::common::MetaNameValueValidation;
+use crate::validate::numeric::{
     extract_numeric_exclusive_maximum_validator, extract_numeric_exclusive_minimum_validator,
     extract_numeric_maximum_validator, extract_numeric_minimum_validator,
     extract_numeric_multiple_of_validator,
 };
-use crate::validator::object::{
+use crate::validate::object::{
     extract_object_max_properties_validator, extract_object_min_properties_validator,
 };
-use crate::validator::string::{
+use crate::validate::string::{
     extract_string_max_length_validator, extract_string_min_length_validator,
     extract_string_pattern_validator,
 };
-use crate::validator::Validator;
+use crate::validate::Validator;
 use proc_macro2::TokenStream;
 use std::str::FromStr;
 use syn::spanned::Spanned;

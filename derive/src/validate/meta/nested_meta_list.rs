@@ -1,9 +1,9 @@
 use crate::types::{Field, SingleIdentPath};
-use crate::validator::common::MetaListValidation;
-use crate::validator::generic::{
+use crate::validate::common::MetaListValidation;
+use crate::validate::generic::{
     extract_generic_custom_validator, extract_generic_enumerate_validator,
 };
-use crate::validator::Validator;
+use crate::validate::Validator;
 use proc_macro2::TokenStream;
 use std::str::FromStr;
 use syn::spanned::Spanned;

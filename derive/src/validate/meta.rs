@@ -5,7 +5,7 @@ mod nested_meta_name_value;
 mod nested_meta_path;
 
 use crate::types::Field;
-use crate::validator::Validator;
+use crate::validate::Validator;
 use meta_path::extract_validator_from_meta_path;
 use syn::spanned::Spanned;
 

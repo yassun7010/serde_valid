@@ -1,4 +1,4 @@
-use crate::{types::Field, validator::Validator};
+use crate::{types::Field, validate::Validator};
 use proc_macro2::TokenStream;
 use quote::quote;
 

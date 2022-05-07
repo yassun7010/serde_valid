@@ -1,7 +1,7 @@
 use crate::error::{fields_errors_tokens, new_type_errors_tokens};
 use crate::rule::collect_rules_from_unnamed_struct;
 use crate::types::{Field, UnnamedField};
-use crate::validator::{extract_meta_validator, FieldValidators};
+use crate::validate::{extract_meta_validator, FieldValidators};
 use proc_macro2::TokenStream;
 use quote::quote;
 use std::borrow::Cow;
