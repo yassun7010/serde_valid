@@ -41,11 +41,14 @@ fn rule_enum_is_ok() {
     #[derive(Validate)]
     enum TestEnum {
         #[rule(sample_rule(val))]
-        NamedFields { val: i32 },
+        NamedFields {
+            val: i32,
+        },
         #[rule(sample_rule(0))]
         UnnamedFields(i32, i32),
         #[rule(sample_rule(0))]
         NewType(i32),
+        NoField,
     }
 
     let s1 = TestEnum::NamedFields { val: 5 };
@@ -54,4 +57,6 @@ fn rule_enum_is_ok() {
     assert!(s2.validate().is_ok());
     let s3 = TestEnum::NewType(5);
     assert!(s3.validate().is_ok());
+    let s4 = TestEnum::NoField;
+    assert!(s4.validate().is_ok());
 }
