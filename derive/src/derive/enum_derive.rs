@@ -17,33 +17,48 @@ pub fn expand_enum_validate_derive(
     let ident = &input.ident;
     let (impl_generics, type_generics, where_clause) = input.generics.split_for_impl();
 
-    let validations_and_rules = TokenStream::from_iter(
-        variants
-            .iter()
-            .map(|variant| match &variant.fields {
-                syn::Fields::Named(named_fields) => {
-                    expand_enum_variant_named_fields_validation(ident, variant, named_fields)
-                }
-                syn::Fields::Unnamed(unnamed_fields) => {
-                    expand_enum_variant_unnamed_fields_varidation(ident, variant, unnamed_fields)
-                }
-                syn::Fields::Unit => Ok(quote!()),
-            })
-            .collect::<Result<TokenStream, _>>(),
-    );
+    let mut errors: crate::Errors = vec![];
 
-    Ok(quote!(
-        impl #impl_generics ::serde_valid::Validate for #ident #type_generics #where_clause {
-            fn validate(&self) -> Result<(), ::serde_valid::validation::Errors> {
-                #validations_and_rules
-
-                Result::Ok(())
+    let validations_and_rules =
+        TokenStream::from_iter(variants.iter().map(|variant| match &variant.fields {
+            syn::Fields::Named(named_fields) => {
+                match expand_enum_variant_named_fields(ident, variant, named_fields) {
+                    Ok(variant_varidates_and_rules) => variant_varidates_and_rules,
+                    Err(variant_errors) => {
+                        errors.extend(variant_errors);
+                        quote!()
+                    }
+                }
             }
-        }
-    ))
+            syn::Fields::Unnamed(unnamed_fields) => {
+                match expand_enum_variant_unnamed_fields_varidation(ident, variant, unnamed_fields)
+                {
+                    Ok(variant_varidates_and_rules) => variant_varidates_and_rules,
+                    Err(variant_errors) => {
+                        errors.extend(variant_errors);
+                        quote!()
+                    }
+                }
+            }
+            syn::Fields::Unit => quote!(),
+        }));
+
+    if errors.is_empty() {
+        Ok(quote!(
+            impl #impl_generics ::serde_valid::Validate for #ident #type_generics #where_clause {
+                fn validate(&self) -> Result<(), ::serde_valid::validation::Errors> {
+                    #validations_and_rules
+
+                    Result::Ok(())
+                }
+            }
+        ))
+    } else {
+        Err(errors)
+    }
 }
 
-fn expand_enum_variant_named_fields_validation(
+fn expand_enum_variant_named_fields(
     ident: &syn::Ident,
     variant: &syn::Variant,
     named_fields: &syn::FieldsNamed,
