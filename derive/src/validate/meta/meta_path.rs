@@ -3,7 +3,7 @@ use crate::validate::Validator;
 use proc_macro2::TokenStream;
 use quote::quote;
 
-pub fn extract_validator_from_meta_path(field: &impl Field) -> Result<Validator, crate::Error> {
+pub fn extract_validator_from_meta_path(field: &impl Field) -> Result<Validator, crate::Errors> {
     let validator = if let Some(array_field) = field.array_field() {
         Validator::Array(Box::new(extract_validator_from_meta_path(&array_field)?))
     } else if let Some(option_field) = field.option_field() {

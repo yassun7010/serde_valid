@@ -29,99 +29,51 @@ pub fn extract_validator_from_nested_meta_name_value(
         ..
     }: &syn::MetaNameValue,
     message_fn: Option<TokenStream>,
-) -> Result<Validator, crate::Error> {
+) -> Result<Validator, crate::Errors> {
     let validation_name_ident = SingleIdentPath::new(validation_name).ident();
     match MetaNameValueValidation::from_str(&validation_name_ident.to_string()) {
         Ok(MetaNameValueValidation::Minimum) => {
-            return Ok(extract_numeric_minimum_validator(
-                field,
-                validation_value,
-                message_fn,
-            )?)
+            extract_numeric_minimum_validator(field, validation_value, message_fn)
         }
         Ok(MetaNameValueValidation::Maximum) => {
-            return Ok(extract_numeric_maximum_validator(
-                field,
-                validation_value,
-                message_fn,
-            )?)
+            extract_numeric_maximum_validator(field, validation_value, message_fn)
         }
         Ok(MetaNameValueValidation::ExclusiveMinimum) => {
-            return Ok(extract_numeric_exclusive_minimum_validator(
-                field,
-                validation_value,
-                message_fn,
-            )?)
+            extract_numeric_exclusive_minimum_validator(field, validation_value, message_fn)
         }
         Ok(MetaNameValueValidation::ExclusiveMaximum) => {
-            return Ok(extract_numeric_exclusive_maximum_validator(
-                field,
-                validation_value,
-                message_fn,
-            )?)
+            extract_numeric_exclusive_maximum_validator(field, validation_value, message_fn)
         }
         Ok(MetaNameValueValidation::MinLength) => {
-            return Ok(extract_string_min_length_validator(
-                field,
-                validation_value,
-                message_fn,
-            )?)
+            extract_string_min_length_validator(field, validation_value, message_fn)
         }
         Ok(MetaNameValueValidation::MaxLength) => {
-            return Ok(extract_string_max_length_validator(
-                field,
-                validation_value,
-                message_fn,
-            )?)
+            extract_string_max_length_validator(field, validation_value, message_fn)
         }
         Ok(MetaNameValueValidation::MinItems) => {
-            return Ok(extract_array_min_items_validator(
-                field,
-                validation_value,
-                message_fn,
-            )?)
+            extract_array_min_items_validator(field, validation_value, message_fn)
         }
         Ok(MetaNameValueValidation::MaxItems) => {
-            return Ok(extract_array_max_items_validator(
-                field,
-                validation_value,
-                message_fn,
-            )?)
+            extract_array_max_items_validator(field, validation_value, message_fn)
         }
         Ok(MetaNameValueValidation::MinProperties) => {
-            return Ok(extract_object_min_properties_validator(
-                field,
-                validation_value,
-                message_fn,
-            )?)
+            extract_object_min_properties_validator(field, validation_value, message_fn)
         }
         Ok(MetaNameValueValidation::MaxProperties) => {
-            return Ok(extract_object_max_properties_validator(
-                field,
-                validation_value,
-                message_fn,
-            )?)
+            extract_object_max_properties_validator(field, validation_value, message_fn)
         }
         Ok(MetaNameValueValidation::MultipleOf) => {
-            return Ok(extract_numeric_multiple_of_validator(
-                field,
-                validation_value,
-                message_fn,
-            )?)
+            extract_numeric_multiple_of_validator(field, validation_value, message_fn)
         }
         Ok(MetaNameValueValidation::Pattern) => {
-            return Ok(extract_string_pattern_validator(
-                field,
-                validation_value,
-                message_fn,
-            )?)
+            extract_string_pattern_validator(field, validation_value, message_fn)
         }
-        Err(unknown) => Err(crate::Error::validate_unknown_type(
+        Err(unknown) => Err(vec![crate::Error::validate_unknown_type(
             validation_name.span(),
             &unknown,
             &MetaNameValueValidation::iter()
                 .map(|x| x.name())
                 .collect::<Vec<_>>(),
-        )),
+        )]),
     }
 }

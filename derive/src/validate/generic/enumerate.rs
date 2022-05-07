@@ -10,7 +10,7 @@ pub fn extract_generic_enumerate_validator(
     attribute: &syn::Attribute,
     item_list: &syn::MetaList,
     message_fn: Option<TokenStream>,
-) -> Result<Validator, crate::Error> {
+) -> Result<Validator, crate::Errors> {
     if let Some(array_field) = field.array_field() {
         Ok(Validator::Array(Box::new(
             extract_generic_enumerate_validator(&array_field, attribute, item_list, message_fn)?,
@@ -30,7 +30,7 @@ fn inner_extract_generic_enumerate_validator(
     field: &impl Field,
     item_list: &syn::MetaList,
     message_fn: Option<TokenStream>,
-) -> Result<TokenStream, crate::Error> {
+) -> Result<TokenStream, crate::Errors> {
     let field_name = field.name();
     let field_ident = field.ident();
 
@@ -63,18 +63,23 @@ fn inner_extract_generic_enumerate_validator(
 
 fn get_enumerate<'a>(
     syn::MetaList { path, nested, .. }: &'a syn::MetaList,
-) -> Result<Lits<'a>, crate::Error> {
+) -> Result<Lits<'a>, crate::Errors> {
+    let mut errors = vec![];
     let mut enumerate = Lits::new();
 
     if nested.len() == 0 {
-        Err(crate::Error::validate_enumerate_need_item(path))?
+        errors.push(crate::Error::validate_enumerate_need_item(path));
     }
     for item in nested {
         match item {
             syn::NestedMeta::Lit(lit) => enumerate.push(lit),
-            syn::NestedMeta::Meta(meta) => Err(crate::Error::literal_only(meta))?,
+            syn::NestedMeta::Meta(meta) => errors.push(crate::Error::literal_only(meta)),
         }
     }
 
-    Ok(enumerate)
+    if errors.is_empty() {
+        Ok(enumerate)
+    } else {
+        Err(errors)
+    }
 }

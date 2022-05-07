@@ -20,7 +20,7 @@ macro_rules! extract_string_length_validator{
             field: &impl Field,
             validation_value: &syn::Lit,
             message_fn: Option<TokenStream>,
-        ) -> Result<Validator, crate::Error> {
+        ) -> Result<Validator, crate::Errors> {
             if let Some(array_field) = field.array_field() {
                 match array_field.ty() {
                     syn::Type::Path(element_type) => {
@@ -52,7 +52,7 @@ macro_rules! extract_string_length_validator{
             field: &impl Field,
             validation_value: &syn::Lit,
             message_fn: Option<TokenStream>,
-        ) -> Result<TokenStream, crate::Error> {
+        ) -> Result<TokenStream, crate::Errors> {
             let field_name = field.name();
             let field_ident = field.ident();
             let $field = get_numeric(validation_value)?;

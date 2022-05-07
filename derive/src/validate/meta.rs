@@ -14,15 +14,17 @@ use self::meta_list::extract_validator_from_meta_list;
 pub fn extract_meta_validator(
     field: &impl Field,
     attribute: &syn::Attribute,
-) -> Result<Validator, crate::Error> {
+) -> Result<Validator, crate::Errors> {
     match attribute.parse_meta() {
         Ok(syn::Meta::List(list)) => extract_validator_from_meta_list(field, attribute, &list),
         Ok(syn::Meta::Path(_)) => extract_validator_from_meta_path(field),
-        Ok(syn::Meta::NameValue(_)) => Err(crate::Error::validate_meta_name_value_not_support(
-            attribute.span(),
-        )),
-        Err(error) => Err(crate::Error::validate_attribute_parse_error(
+        Ok(syn::Meta::NameValue(_)) => {
+            Err(vec![crate::Error::validate_meta_name_value_not_support(
+                attribute.span(),
+            )])
+        }
+        Err(error) => Err(vec![crate::Error::validate_attribute_parse_error(
             attribute, &error,
-        )),
+        )]),
     }
 }

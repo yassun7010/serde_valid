@@ -16,7 +16,7 @@ pub fn expand_named_struct_derive(
     let ident = &input.ident;
     let (impl_generics, type_generics, where_clause) = input.generics.split_for_impl();
 
-    let mut errors: crate::Errors = vec![];
+    let mut errors = vec![];
 
     let (rule_fields, rules) = match collect_rules_from_named_struct(&input.attrs) {
         Ok((rule_fields, rules)) => (rule_fields, TokenStream::from_iter(rules)),
@@ -91,7 +91,7 @@ pub fn collect_named_fields_validators_list<'a>(
 fn collect_named_field_validators<'a>(
     field: &'a syn::Field,
 ) -> Result<FieldValidators<'a, NamedField<'a>>, crate::Errors> {
-    let mut errors: crate::Errors = vec![];
+    let mut errors = vec![];
 
     let named_field = NamedField::new(field);
     let validators = named_field
@@ -101,8 +101,8 @@ fn collect_named_field_validators<'a>(
         .filter_map(
             |attribute| match extract_meta_validator(&named_field, attribute) {
                 Ok(validator) => Some(validator),
-                Err(error) => {
-                    errors.push(error);
+                Err(validator_error) => {
+                    errors.extend(validator_error);
                     None
                 }
             },

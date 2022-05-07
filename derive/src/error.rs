@@ -62,11 +62,11 @@ impl Error {
     }
 
     pub fn validate_meta_literal_not_support(span: proc_macro2::Span) -> Self {
-        Self::new(span, "#[validate(`literal`)] does not support.")
+        Self::new(span, "#[validate(???)] does not support literal.")
     }
 
     pub fn validate_meta_name_value_not_support(span: proc_macro2::Span) -> Self {
-        Self::new(span, "#[validate = something...] does not support.")
+        Self::new(span, "#[validate = ???] format does not support.")
     }
 
     pub fn validate_meta_name_value_need_value(

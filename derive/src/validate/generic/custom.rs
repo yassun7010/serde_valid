@@ -7,15 +7,16 @@ use syn::spanned::Spanned;
 pub fn extract_generic_custom_validator(
     field: &impl Field,
     syn::MetaList { path, nested, .. }: &syn::MetaList,
-) -> Result<Validator, crate::Error> {
+) -> Result<Validator, crate::Errors> {
     let field_name = field.name();
     let field_ident = field.ident();
 
     let custom_fn_name = match nested.len() {
-        0 => Err(crate::Error::validate_custom_need_item(path.span()))?,
-        1 => extract_custom_fn_name(&nested[0])?,
-        _ => Err(crate::Error::validate_custom_tail_error(nested.span()))?,
-    };
+        0 => Err(crate::Error::validate_custom_need_item(path.span())),
+        1 => extract_custom_fn_name(&nested[0]),
+        _ => Err(crate::Error::validate_custom_tail_error(nested.span())),
+    }
+    .map_err(|error| vec![error])?;
 
     Ok(Validator::Normal(quote!(
         if let Err(__error) = #custom_fn_name(#field_ident) {

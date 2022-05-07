@@ -17,7 +17,7 @@ pub fn expand_enum_validate_derive(
     let ident = &input.ident;
     let (impl_generics, type_generics, where_clause) = input.generics.split_for_impl();
 
-    let mut errors: crate::Errors = vec![];
+    let mut errors = vec![];
 
     let validations_and_rules =
         TokenStream::from_iter(variants.iter().map(|variant| match &variant.fields {
@@ -63,7 +63,7 @@ fn expand_enum_variant_named_fields(
     variant: &syn::Variant,
     named_fields: &syn::FieldsNamed,
 ) -> Result<TokenStream, crate::Errors> {
-    let mut errors: crate::Errors = vec![];
+    let mut errors = vec![];
 
     let variant_ident = &variant.ident;
     let mut fields_idents = CommaSeparatedTokenStreams::new();
@@ -125,7 +125,7 @@ fn expand_enum_variant_unnamed_fields_varidation(
     variant: &syn::Variant,
     unnamed_fields: &syn::FieldsUnnamed,
 ) -> Result<TokenStream, crate::Errors> {
-    let mut errors: crate::Errors = vec![];
+    let mut errors = vec![];
 
     let variant_ident = &variant.ident;
     let mut fields_idents = CommaSeparatedTokenStreams::new();

@@ -10,7 +10,7 @@ use crate::types::CommaSeparatedTokenStreams;
 pub fn collect_rules_from_named_struct(
     attributes: &Vec<syn::Attribute>,
 ) -> Result<(HashSet<syn::Ident>, TokenStream), crate::Errors> {
-    let mut errors: crate::Errors = vec![];
+    let mut errors = vec![];
 
     let mut rule_fields = HashSet::new();
     let rules = attributes
@@ -52,7 +52,7 @@ fn collect_rule(
         path, ref nested, ..
     }: &syn::MetaList,
 ) -> Result<(syn::Ident, TokenStream), crate::Errors> {
-    let mut errors: crate::Errors = vec![];
+    let mut errors = vec![];
 
     match nested.len() {
         0 => Err(vec![crate::Error::rule_need_function(path.span())])?,

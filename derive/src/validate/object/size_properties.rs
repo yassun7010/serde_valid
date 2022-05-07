@@ -21,7 +21,7 @@ macro_rules! extract_object_size_validator{
             field: &impl Field,
             validation_value: &syn::Lit,
             message_fn: Option<TokenStream>,
-        ) -> Result<Validator, crate::Error> {
+        ) -> Result<Validator, crate::Errors> {
             if let Some(option_field) = field.option_field() {
                 Ok(Validator::Option(Box::new(
                     $function_name(&option_field, validation_value, message_fn)?
@@ -37,7 +37,7 @@ macro_rules! extract_object_size_validator{
             field: &impl Field,
             validation_value: &syn::Lit,
             message_fn: Option<TokenStream>,
-        ) -> Result<TokenStream, crate::Error> {
+        ) -> Result<TokenStream, crate::Errors> {
             let field_name = field.name();
             let field_ident = field.ident();
             let $limit = get_numeric(validation_value)?;

@@ -9,7 +9,7 @@ pub fn extract_string_pattern_validator(
     field: &impl Field,
     validation_value: &syn::Lit,
     message_fn: Option<TokenStream>,
-) -> Result<Validator, crate::Error> {
+) -> Result<Validator, crate::Errors> {
     if let Some(array_field) = field.array_field() {
         Ok(Validator::Array(Box::new(
             extract_string_pattern_validator(&array_field, validation_value, message_fn)?,
@@ -31,7 +31,7 @@ fn inner_extract_string_pattern_validator(
     field: &impl Field,
     validation_value: &syn::Lit,
     message_fn: Option<TokenStream>,
-) -> Result<TokenStream, crate::Error> {
+) -> Result<TokenStream, crate::Errors> {
     let field_name = field.name();
     let field_ident = field.ident();
     let pattern = get_str(validation_value)?;

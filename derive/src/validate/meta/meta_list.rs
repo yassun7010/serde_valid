@@ -10,14 +10,26 @@ pub fn extract_validator_from_meta_list(
     field: &impl Field,
     attribute: &syn::Attribute,
     syn::MetaList { nested, .. }: &syn::MetaList,
-) -> Result<Validator, crate::Error> {
+) -> Result<Validator, crate::Errors> {
+    let mut errors = vec![];
     let messaeg_fn = match nested.len() {
         0..=1 => None,
-        2 => Some(extract_message_fn_tokens(&nested[1])?),
-        _ => Err(crate::Error::too_many_list_items(nested[2].span()))?,
+        2 => match extract_message_fn_tokens(&nested[1]) {
+            Ok(message_fn) => Some(message_fn),
+            Err(message_fn_errors) => {
+                errors.extend(message_fn_errors);
+                None
+            }
+        },
+        _ => {
+            for meta in nested.iter().skip(1) {
+                errors.push(crate::Error::too_many_list_items(meta.span()));
+            }
+            None
+        }
     };
 
-    let validation = if nested.len() > 0 {
+    if nested.len() > 0 {
         let meta_item = &nested[0];
         match meta_item {
             syn::NestedMeta::Meta(meta) => match meta {
@@ -30,14 +42,18 @@ pub fn extract_validator_from_meta_list(
                 syn::Meta::NameValue(name_value) => extract_validator_from_nested_meta_name_value(
                     field, attribute, name_value, messaeg_fn,
                 ),
-            },
+            }
+            .map_err(|validator_errors| {
+                errors.extend(validator_errors);
+                errors
+            }),
             syn::NestedMeta::Lit(lit) => {
-                Err(crate::Error::validate_meta_literal_not_support(lit.span()))
+                errors.push(crate::Error::validate_meta_literal_not_support(lit.span()));
+                Err(errors)
             }
         }
     } else {
-        Err(crate::Error::validate_type_required_error(attribute.span()))
-    };
-
-    validation
+        errors.push(crate::Error::validate_type_required_error(attribute.span()));
+        Err(errors)
+    }
 }

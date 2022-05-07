@@ -16,7 +16,7 @@ pub fn expand_unnamed_struct_derive(
     let ident = &input.ident;
     let (impl_generics, type_generics, where_clause) = input.generics.split_for_impl();
 
-    let mut errors: crate::Errors = vec![];
+    let mut errors = vec![];
 
     let (rule_fields, rules) = match collect_rules_from_unnamed_struct(&input.attrs) {
         Ok((rule_fields, rules)) => (rule_fields, TokenStream::from_iter(rules)),
@@ -96,7 +96,7 @@ pub fn collect_unnamed_fields_validators_list<'a>(
 fn collect_unnamed_field_validators<'a>(
     (index, field): (usize, &'a syn::Field),
 ) -> Result<FieldValidators<'a, UnnamedField<'a>>, crate::Errors> {
-    let mut errors: crate::Errors = vec![];
+    let mut errors = vec![];
 
     let unnamed_field = UnnamedField::new(index, field);
     let validators = unnamed_field
@@ -106,8 +106,8 @@ fn collect_unnamed_field_validators<'a>(
         .filter_map(
             |attribute| match extract_meta_validator(&unnamed_field, attribute) {
                 Ok(validator) => Some(validator),
-                Err(error) => {
-                    errors.push(error);
+                Err(validator_errors) => {
+                    errors.extend(validator_errors);
                     None
                 }
             },
