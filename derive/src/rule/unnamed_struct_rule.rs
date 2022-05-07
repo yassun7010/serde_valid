@@ -3,6 +3,8 @@ use quote::quote;
 use syn::parse_quote;
 use syn::spanned::Spanned;
 
+use crate::types::TokenStreams;
+
 pub fn collect_rules_from_unnamed_struct(
     attributes: &Vec<syn::Attribute>,
 ) -> Result<Vec<TokenStream>, crate::Errors> {
@@ -118,7 +120,7 @@ fn extract_rule_from_meta_list(
             },
             syn::NestedMeta::Lit(lit) => Some(quote!(&self.#lit)),
         })
-        .collect::<syn::punctuated::Punctuated<TokenStream, syn::token::Comma>>();
+        .collect::<TokenStreams>();
 
     match first_arg {
         Ok(field) => {

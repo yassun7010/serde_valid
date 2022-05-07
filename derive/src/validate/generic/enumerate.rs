@@ -3,6 +3,8 @@ use crate::validate::Validator;
 use proc_macro2::TokenStream;
 use quote::quote;
 
+type Lits<'a> = syn::punctuated::Punctuated<&'a syn::Lit, syn::token::Comma>;
+
 pub fn extract_generic_enumerate_validator(
     field: &impl Field,
     attribute: &syn::Attribute,
@@ -61,8 +63,8 @@ fn inner_extract_generic_enumerate_validator(
 
 fn get_enumerate<'a>(
     syn::MetaList { path, nested, .. }: &'a syn::MetaList,
-) -> Result<syn::punctuated::Punctuated<&'a syn::Lit, syn::token::Comma>, crate::Error> {
-    let mut enumerate = syn::punctuated::Punctuated::<&syn::Lit, syn::token::Comma>::new();
+) -> Result<Lits<'a>, crate::Error> {
+    let mut enumerate = Lits::new();
 
     if nested.len() == 0 {
         Err(crate::Error::enumerate_need_item(path))?

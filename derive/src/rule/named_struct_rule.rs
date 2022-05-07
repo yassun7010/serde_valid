@@ -3,7 +3,7 @@ use quote::{quote, ToTokens};
 use syn::parse_quote;
 use syn::spanned::Spanned;
 
-use crate::types::SingleIdentPath;
+use crate::types::{SingleIdentPath, TokenStreams};
 
 pub fn collect_rules_from_named_struct(
     attributes: &Vec<syn::Attribute>,
@@ -114,7 +114,7 @@ fn extract_rule_from_meta_list(
             },
             syn::NestedMeta::Lit(lit) => Some(lit.to_token_stream()),
         })
-        .collect::<syn::punctuated::Punctuated<TokenStream, syn::token::Comma>>();
+        .collect::<TokenStreams>();
 
     match first_arg {
         Ok(field) => {

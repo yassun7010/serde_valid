@@ -1,11 +1,12 @@
 use super::named_struct_derive::collect_named_fields_validators;
 use super::unnamed_struct_derive::collect_unnamed_fields_validators;
 use crate::error::{fields_errors_tokens, new_type_errors_tokens};
+use crate::types::TokenStreams;
 use proc_macro2::TokenStream;
 use quote::quote;
 use std::iter::FromIterator;
 
-type Variants = syn::punctuated::Punctuated<syn::Variant, syn::token::Comma>;
+pub type Variants = syn::punctuated::Punctuated<syn::Variant, syn::token::Comma>;
 
 pub fn expand_enum_validate_derive(
     input: &syn::DeriveInput,
@@ -46,7 +47,7 @@ fn expand_enum_variant_named_fields_validation(
 ) -> Result<TokenStream, crate::Errors> {
     let variant_ident = &variant.ident;
     let fields_validators = collect_named_fields_validators(named_fields)?;
-    let mut fields_idents = syn::punctuated::Punctuated::<TokenStream, syn::token::Comma>::new();
+    let mut fields_idents = TokenStreams::new();
     let fields_validators_tokens =
         TokenStream::from_iter(fields_validators.iter().map(|validators| {
             let field_ident = validators.ident();
@@ -81,7 +82,7 @@ fn expand_enum_variant_unnamed_fields_varidation(
 ) -> Result<TokenStream, crate::Errors> {
     let variant_ident = &variant.ident;
     let fields_validators = collect_unnamed_fields_validators(unnamed_fields)?;
-    let mut fields_idents = syn::punctuated::Punctuated::<TokenStream, syn::token::Comma>::new();
+    let mut fields_idents = TokenStreams::new();
     let fields_validators_tokens =
         TokenStream::from_iter(fields_validators.iter().map(|validators| {
             if let Some(token) = validators.get_tokens() {

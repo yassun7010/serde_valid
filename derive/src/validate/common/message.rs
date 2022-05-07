@@ -1,4 +1,4 @@
-use crate::types::SingleIdentPath;
+use crate::types::{NestedMetas, SingleIdentPath};
 use proc_macro2::TokenStream;
 use quote::quote;
 use std::str::FromStr;
@@ -117,7 +117,7 @@ fn extract_message_fn_tokens_from_name_value(
 
 fn get_message_fn_from_nested_meta(
     path_ident: &syn::Ident,
-    message_fn_define: &syn::punctuated::Punctuated<syn::NestedMeta, syn::token::Comma>,
+    message_fn_define: &NestedMetas,
 ) -> Result<TokenStream, crate::Error> {
     match message_fn_define.len() {
         0 => Err(crate::Error::message_fn_need_item(path_ident.span())),
