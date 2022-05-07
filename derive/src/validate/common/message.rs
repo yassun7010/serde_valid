@@ -121,16 +121,18 @@ fn get_message_fn_from_nested_meta(
 ) -> Result<TokenStream, crate::Error> {
     match message_fn_define.len() {
         0 => Err(crate::Error::message_fn_need_item(path_ident.span())),
-        1 => match &message_fn_define[0] {
-            syn::NestedMeta::Meta(ref meta) => match meta {
-                syn::Meta::Path(fn_name) => Ok(quote!(#fn_name)),
-                syn::Meta::List(list) => Err(crate::Error::new_message_fn_name_error(list.span())),
-                syn::Meta::NameValue(name_value) => {
-                    Err(crate::Error::new_message_fn_name_error(name_value.span()))
-                }
-            },
-            syn::NestedMeta::Lit(lit) => Err(crate::Error::new_message_fn_name_error(lit.span())),
-        },
+        1 => {
+            let fn_name = match &message_fn_define[0] {
+                syn::NestedMeta::Meta(ref meta) => match meta {
+                    syn::Meta::Path(fn_name) => Some(quote!(#fn_name)),
+                    _ => None,
+                },
+                _ => None,
+            };
+            fn_name.ok_or(crate::Error::message_fn_allow_name_path(
+                message_fn_define[0].span(),
+            ))
+        }
         _ => Err(crate::Error::message_fn_tail_error(
             message_fn_define[1].span(),
         )),

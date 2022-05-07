@@ -134,10 +134,10 @@ impl Error {
         Self::new(span, format!("`message_fn` need items."))
     }
 
-    pub fn new_message_fn_name_error(span: proc_macro2::Span) -> Self {
+    pub fn message_fn_allow_name_path(span: proc_macro2::Span) -> Self {
         Self::new(
             span,
-            format!("#[validate(..., message_fn(???))] allow only function path."),
+            format!("#[validate(..., message_fn(???))] allow only function name path."),
         )
     }
 
