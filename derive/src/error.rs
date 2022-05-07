@@ -20,15 +20,35 @@ impl Error {
         Self(syn::Error::new(span, message.into()))
     }
 
-    pub fn new_literal_meta_item_error(span: proc_macro2::Span) -> Self {
+    pub fn rule_need_function(span: proc_macro2::Span) -> Self {
+        Self::new(span, "#[rule(???)] needs rule_fn.")
+    }
+
+    pub fn rule_allow_single_function(span: proc_macro2::Span) -> Self {
+        Self::new(span, "#[rule] allow single function.")
+    }
+
+    pub fn rule_need_arguments(path: &syn::Path) -> Self {
+        Self::new(path.span(), "`rule` function needs arguments.")
+    }
+
+    pub fn rule_required_first_argument_path(meta: &syn::NestedMeta) -> Self {
+        Self::new(meta.span(), "`rule` first argument must be field path.")
+    }
+
+    pub fn rule_attribute_parse_error(attribute: &syn::Attribute, error: &syn::Error) -> Self {
+        Self::new(attribute.span(), format!("#[rule] parse error: {error}"))
+    }
+
+    pub fn validate_meta_literal_not_support(span: proc_macro2::Span) -> Self {
         Self::new(span, "#[validate(`literal`)] does not support.")
     }
 
-    pub fn new_meta_name_value_item_error(span: proc_macro2::Span) -> Self {
+    pub fn validate_meta_name_value_not_support(span: proc_macro2::Span) -> Self {
         Self::new(span, "#[validate = something...] does not support.")
     }
 
-    pub fn new_meta_name_value_need_value_error(
+    pub fn validate_meta_name_value_need_value(
         span: proc_macro2::Span,
         validation_type: &str,
     ) -> Self {
@@ -88,14 +108,6 @@ impl Error {
         )
     }
 
-    pub fn rule_need_arguments(path: &syn::Path) -> Self {
-        Self::new(path.span(), "`rule` function needs arguments.")
-    }
-
-    pub fn rule_required_first_argument_path(meta: &syn::NestedMeta) -> Self {
-        Self::new(meta.span(), "`rule` first arg must be field path.")
-    }
-
     pub fn enumerate_need_item(path: &syn::Path) -> Self {
         Self::new(path.span(), format!("`enumerate` need items."))
     }
@@ -133,6 +145,10 @@ impl Error {
 
     pub fn meta_list_not_support(list: &syn::MetaList) -> Self {
         Self::new(list.span(), "List does not support.")
+    }
+
+    pub fn meta_path_not_support(path: &syn::Path) -> Self {
+        Self::new(path.span(), "Path does not support.")
     }
 
     pub fn too_many_list_items(span: proc_macro2::Span) -> Self {

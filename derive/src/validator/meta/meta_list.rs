@@ -31,7 +31,9 @@ pub fn extract_validator_from_meta_list(
                     field, attribute, name_value, messaeg_fn,
                 ),
             },
-            syn::NestedMeta::Lit(lit) => Err(crate::Error::new_literal_meta_item_error(lit.span())),
+            syn::NestedMeta::Lit(lit) => {
+                Err(crate::Error::validate_meta_literal_not_support(lit.span()))
+            }
         }
     } else {
         Err(crate::Error::new_attribute_required_error(attribute.span()))

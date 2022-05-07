@@ -1,8 +1,13 @@
 use serde_valid::Validate;
 
+fn sample_rule(val: &i32) -> Result<(), serde_valid::validation::Error> {
+    Ok(())
+}
+
 #[test]
-fn rule_is_ok_test() {
+fn rule_struct_named_fields_is_ok_test() {
     #[derive(Validate)]
+    #[rule(sample_rule(val))]
     struct TestStruct {
         #[validate(minimum = 0)]
         #[validate(maximum = 10)]
@@ -10,5 +15,19 @@ fn rule_is_ok_test() {
     }
 
     let s = TestStruct { val: 5 };
+    assert!(s.validate().is_ok());
+}
+
+#[test]
+fn rule_struct_unnamed_fields_is_ok_test() {
+    #[derive(Validate)]
+    #[rule(sample_rule(0))]
+    struct TestStruct(
+        #[validate(minimum = 0)]
+        #[validate(maximum = 10)]
+        i32,
+    );
+
+    let s = TestStruct(5);
     assert!(s.validate().is_ok());
 }

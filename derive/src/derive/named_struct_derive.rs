@@ -15,10 +15,10 @@ pub fn expand_named_struct_derive(
     let ident = &input.ident;
     let (impl_generics, type_generics, where_clause) = input.generics.split_for_impl();
 
-    let mut macro_errors: crate::Errors = vec![];
+    let mut errors: crate::Errors = vec![];
 
     let rules = TokenStream::from_iter(collect_rules(&input.attrs).unwrap_or_else(|rule_errors| {
-        macro_errors.extend(rule_errors.into_iter());
+        errors.extend(rule_errors.into_iter());
         vec![quote!()]
     }));
 
@@ -29,29 +29,33 @@ pub fn expand_named_struct_derive(
                 .map(|validator| validator.generate_tokens()),
         ),
         Err(validation_errors) => {
-            macro_errors.extend(validation_errors.into_iter());
+            errors.extend(validation_errors.into_iter());
             quote!()
         }
     };
 
-    let errors = fields_errors_tokens();
+    let raise_errors = fields_errors_tokens();
 
-    Ok(quote!(
-        impl #impl_generics ::serde_valid::Validate for #ident #type_generics #where_clause {
-            fn validate(&self) -> Result<(), ::serde_valid::validation::Errors> {
-                let mut __errors = ::serde_valid::validation::MapErrors::new();
+    if errors.is_empty() {
+        Ok(quote!(
+            impl #impl_generics ::serde_valid::Validate for #ident #type_generics #where_clause {
+                fn validate(&self) -> Result<(), ::serde_valid::validation::Errors> {
+                    let mut __errors = ::serde_valid::validation::MapErrors::new();
 
-                #validators
-                #rules
+                    #validators
+                    #rules
 
-                if __errors.is_empty() {
-                    Result::Ok(())
-                } else {
-                    Result::Err(#errors)
+                    if __errors.is_empty() {
+                        Result::Ok(())
+                    } else {
+                        Result::Err(#raise_errors)
+                    }
                 }
             }
-        }
-    ))
+        ))
+    } else {
+        Err(errors)
+    }
 }
 
 pub fn collect_named_fields_validators<'a>(
@@ -71,11 +75,11 @@ pub fn collect_named_fields_validators<'a>(
         })
         .collect();
 
-    if !errors.is_empty() {
-        return Err(errors);
+    if errors.is_empty() {
+        Ok(validators)
+    } else {
+        Err(errors)
     }
-
-    Ok(validators)
 }
 
 fn collect_named_field_validators<'a>(

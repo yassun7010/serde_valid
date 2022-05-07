@@ -19,7 +19,7 @@ pub fn extract_validator_from_nested_meta_path(
         }
         Err(unknown) => {
             if MetaNameValueValidation::from_str(&validation_name).is_ok() {
-                Err(crate::Error::new_meta_name_value_need_value_error(
+                Err(crate::Error::validate_meta_name_value_need_value(
                     validation_ident.span(),
                     &validation_name,
                 ))
