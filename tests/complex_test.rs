@@ -130,7 +130,7 @@ struct TestInnerStruct<'a> {
 }
 
 #[test]
-fn complex_validation_test() {
+fn complex_validation() {
     let s = TestStruct {
         int_value: 5,
         float_value: 5.0,

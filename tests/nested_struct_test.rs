@@ -2,7 +2,7 @@ use serde_json::json;
 use serde_valid::Validate;
 
 #[test]
-fn nested_validate_test() {
+fn nested_validate() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate]
@@ -25,7 +25,7 @@ fn nested_validate_test() {
 }
 
 #[test]
-fn nested_validate_vec_type_test() {
+fn nested_validate_vec_type() {
     #[derive(Debug, Validate)]
     struct TestStruct {
         #[validate]
@@ -55,7 +55,7 @@ fn nested_validate_vec_type_test() {
 }
 
 #[test]
-fn nested_validate_option_type_test() {
+fn nested_validate_option_type() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate]
@@ -78,7 +78,7 @@ fn nested_validate_option_type_test() {
 }
 
 #[test]
-fn nested_validate_err_message_test() {
+fn nested_validate_err_message() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate]

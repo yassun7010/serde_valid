@@ -2,7 +2,7 @@ use serde_json::json;
 use serde_valid::Validate;
 
 #[test]
-fn items_vec_type_test() {
+fn items_vec_type() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(min_items = 4)]
@@ -17,7 +17,7 @@ fn items_vec_type_test() {
 }
 
 #[test]
-fn items_array_type_test() {
+fn items_array_type() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(min_items = 4)]
@@ -30,7 +30,7 @@ fn items_array_type_test() {
 }
 
 #[test]
-fn items_min_items_is_ok_test() {
+fn items_min_items_is_ok() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(min_items = 3)]
@@ -43,7 +43,7 @@ fn items_min_items_is_ok_test() {
 }
 
 #[test]
-fn items_min_items_is_err_test() {
+fn items_min_items_is_err() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(min_items = 4)]
@@ -56,7 +56,7 @@ fn items_min_items_is_err_test() {
 }
 
 #[test]
-fn items_max_items_is_ok_test() {
+fn items_max_items_is_ok() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(min_items = 0)]
@@ -69,7 +69,7 @@ fn items_max_items_is_ok_test() {
 }
 
 #[test]
-fn items_max_items_is_err_test() {
+fn items_max_items_is_err() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(min_items = 1)]
@@ -82,7 +82,7 @@ fn items_max_items_is_err_test() {
 }
 
 #[test]
-fn items_vec_type_is_ok_test() {
+fn items_vec_type_is_ok() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(min_items = 2)]
@@ -97,7 +97,7 @@ fn items_vec_type_is_ok_test() {
 }
 
 #[test]
-fn items_option_type_is_ok_test() {
+fn items_option_type_is_ok() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(min_items = 4)]
@@ -112,7 +112,7 @@ fn items_option_type_is_ok_test() {
 }
 
 #[test]
-fn items_nested_option_type_is_ok_test() {
+fn items_nested_option_type_is_ok() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(min_items = 3)]
@@ -127,7 +127,7 @@ fn items_nested_option_type_is_ok_test() {
 }
 
 #[test]
-fn items_vec_optional_type_is_ok_test() {
+fn items_vec_optional_type_is_ok() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(min_items = 3)]
@@ -142,7 +142,7 @@ fn items_vec_optional_type_is_ok_test() {
 }
 
 #[test]
-fn items_err_message_test() {
+fn items_err_message() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(min_items = 4)]
@@ -164,7 +164,7 @@ fn items_err_message_test() {
 }
 
 #[test]
-fn items_custom_err_message_fn_test() {
+fn items_custom_err_message_fn() {
     fn min_error_message(_params: &serde_valid::MinItemsErrorParams) -> String {
         "this is min custom message.".to_string()
     }
@@ -194,7 +194,7 @@ fn items_custom_err_message_fn_test() {
 }
 
 #[test]
-fn items_custom_err_message_test() {
+fn items_custom_err_message() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(min_items = 4, message = "this is min custom message.")]

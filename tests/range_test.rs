@@ -2,7 +2,7 @@ use serde_json::json;
 use serde_valid::Validate;
 
 #[test]
-fn range_integer_test() {
+fn range_integer() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(minimum = 0)]
@@ -15,7 +15,7 @@ fn range_integer_test() {
 }
 
 #[test]
-fn range_float_test() {
+fn range_float() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(minimum = 0.0)]
@@ -28,7 +28,7 @@ fn range_float_test() {
 }
 
 #[test]
-fn range_exclusive_test() {
+fn range_exclusive() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(exclusive_minimum = 0)]
@@ -41,7 +41,7 @@ fn range_exclusive_test() {
 }
 
 #[test]
-fn range_minimum_is_ok_test() {
+fn range_minimum_is_ok() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(minimum = 0)]
@@ -54,7 +54,7 @@ fn range_minimum_is_ok_test() {
 }
 
 #[test]
-fn range_minimum_is_err_test() {
+fn range_minimum_is_err() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(minimum = 1)]
@@ -67,7 +67,7 @@ fn range_minimum_is_err_test() {
 }
 
 #[test]
-fn range_exclusive_minimum_is_ok_test() {
+fn range_exclusive_minimum_is_ok() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(exclusive_minimum = 0)]
@@ -80,7 +80,7 @@ fn range_exclusive_minimum_is_ok_test() {
 }
 
 #[test]
-fn range_exclusive_minimum_is_err_test() {
+fn range_exclusive_minimum_is_err() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(exclusive_minimum = 0)]
@@ -93,7 +93,7 @@ fn range_exclusive_minimum_is_err_test() {
 }
 
 #[test]
-fn range_maximum_is_ok_test() {
+fn range_maximum_is_ok() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(minimum = 0)]
@@ -106,7 +106,7 @@ fn range_maximum_is_ok_test() {
 }
 
 #[test]
-fn range_maximum_is_err_test() {
+fn range_maximum_is_err() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(minimum = 1)]
@@ -119,7 +119,7 @@ fn range_maximum_is_err_test() {
 }
 
 #[test]
-fn range_exclusive_maximum_is_ok_test() {
+fn range_exclusive_maximum_is_ok() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(exclusive_maximum = 10)]
@@ -132,7 +132,7 @@ fn range_exclusive_maximum_is_ok_test() {
 }
 
 #[test]
-fn range_exclusive_maximum_is_err_test() {
+fn range_exclusive_maximum_is_err() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(exclusive_maximum = 10)]
@@ -145,7 +145,7 @@ fn range_exclusive_maximum_is_err_test() {
 }
 
 #[test]
-fn range_vec_type_is_ok_test() {
+fn range_vec_type_is_ok() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(minimum = 0)]
@@ -158,7 +158,7 @@ fn range_vec_type_is_ok_test() {
 }
 
 #[test]
-fn range_nested_vec_type_is_ok_test() {
+fn range_nested_vec_type_is_ok() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(minimum = 0)]
@@ -173,7 +173,7 @@ fn range_nested_vec_type_is_ok_test() {
 }
 
 #[test]
-fn range_option_type_is_ok_test() {
+fn range_option_type_is_ok() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(minimum = 0)]
@@ -186,7 +186,7 @@ fn range_option_type_is_ok_test() {
 }
 
 #[test]
-fn range_nested_option_type_is_ok_test() {
+fn range_nested_option_type_is_ok() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(minimum = 0)]
@@ -199,7 +199,7 @@ fn range_nested_option_type_is_ok_test() {
 }
 
 #[test]
-fn range_vec_optional_type_is_ok_test() {
+fn range_vec_optional_type_is_ok() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(minimum = 0)]
@@ -214,7 +214,7 @@ fn range_vec_optional_type_is_ok_test() {
 }
 
 #[test]
-fn range_array_optional_type_is_ok_test() {
+fn range_array_optional_type_is_ok() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(minimum = 0)]
@@ -229,7 +229,7 @@ fn range_array_optional_type_is_ok_test() {
 }
 
 #[test]
-fn range_inclusive_err_message_test() {
+fn range_inclusive_err_message() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(minimum = 1)]
@@ -251,7 +251,7 @@ fn range_inclusive_err_message_test() {
 }
 
 #[test]
-fn range_exclusive_err_message_test() {
+fn range_exclusive_err_message() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(exclusive_minimum = 1)]
@@ -273,7 +273,7 @@ fn range_exclusive_err_message_test() {
 }
 
 #[test]
-fn range_custom_err_message_fn_test() {
+fn range_custom_err_message_fn() {
     fn custom_min_error_message(_params: &serde_valid::MinimumErrorParams) -> String {
         "this is min custom message.".to_string()
     }
@@ -304,7 +304,7 @@ fn range_custom_err_message_fn_test() {
 }
 
 #[test]
-fn range_custom_err_message_test() {
+fn range_custom_err_message() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(minimum = 5, message = "this is min custom message.")]

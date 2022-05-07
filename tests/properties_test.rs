@@ -6,7 +6,7 @@ use std::collections::BTreeMap;
 use std::collections::HashMap;
 
 #[test]
-fn properties_hash_map_type_test() {
+fn properties_hash_map_type() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(min_properties = 3)]
@@ -24,7 +24,7 @@ fn properties_hash_map_type_test() {
 }
 
 #[test]
-fn properties_btree_map_type_test() {
+fn properties_btree_map_type() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(min_properties = 3)]
@@ -42,7 +42,7 @@ fn properties_btree_map_type_test() {
 }
 
 #[test]
-fn properties_json_value_map_type_test() {
+fn properties_json_value_map_type() {
     #[derive(Deserialize, Validate)]
     struct TestStruct {
         #[validate(min_properties = 3)]
@@ -62,7 +62,7 @@ fn properties_json_value_map_type_test() {
 }
 
 #[test]
-fn properties_is_err_test() {
+fn properties_is_err() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(min_properties = 3)]
@@ -79,7 +79,7 @@ fn properties_is_err_test() {
 }
 
 #[test]
-fn properties_hash_map_type_err_message_test() {
+fn properties_hash_map_type_err_message() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(min_properties = 3)]
@@ -104,7 +104,7 @@ fn properties_hash_map_type_err_message_test() {
 }
 
 #[test]
-fn properties_btree_map_type_err_message_test() {
+fn properties_btree_map_type_err_message() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(min_properties = 3)]
@@ -129,7 +129,7 @@ fn properties_btree_map_type_err_message_test() {
 }
 
 #[test]
-fn properties_json_map_type_err_message_test() {
+fn properties_json_map_type_err_message() {
     #[derive(Deserialize, Validate)]
     struct TestStruct {
         #[validate(min_properties = 3)]
@@ -156,7 +156,7 @@ fn properties_json_map_type_err_message_test() {
 }
 
 #[test]
-fn range_custom_err_message_fn_test() {
+fn range_custom_err_message_fn() {
     fn min_custom_error_message(_params: &serde_valid::MinPropertiesErrorParams) -> String {
         "this is min custom message.".to_string()
     }
@@ -193,7 +193,7 @@ fn range_custom_err_message_fn_test() {
 }
 
 #[test]
-fn range_custom_err_message_test() {
+fn range_custom_err_message() {
     #[derive(Deserialize, Validate)]
     struct TestStruct {
         #[validate(min_properties = 3, message = "this is min custom message.")]

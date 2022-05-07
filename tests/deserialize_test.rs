@@ -3,7 +3,7 @@ use serde_json::json;
 use serde_valid::Validate;
 
 #[test]
-fn deserialize_with_validation_from_value_is_ok_test() {
+fn deserialize_with_validation_from_value_is_ok() {
     #[derive(Debug, Validate, Deserialize)]
     struct TestStruct {
         #[validate(minimum = 0)]
@@ -15,7 +15,7 @@ fn deserialize_with_validation_from_value_is_ok_test() {
 }
 
 #[test]
-fn deserialize_with_validation_from_str_is_ok_test() {
+fn deserialize_with_validation_from_str_is_ok() {
     #[derive(Debug, Validate, Deserialize)]
     struct TestStruct {
         #[validate(minimum = 0)]
@@ -30,7 +30,7 @@ fn deserialize_with_validation_from_str_is_ok_test() {
 }
 
 #[test]
-fn deserialize_with_validation_from_slice_is_ok_test() {
+fn deserialize_with_validation_from_slice_is_ok() {
     #[derive(Debug, Validate, Deserialize)]
     struct TestStruct {
         #[validate(minimum = 0)]
@@ -42,7 +42,7 @@ fn deserialize_with_validation_from_slice_is_ok_test() {
 }
 
 #[test]
-fn deserialize_validation_err_to_string_test() {
+fn deserialize_validation_err_to_string() {
     #[derive(Debug, Validate, Deserialize)]
     struct TestStruct {
         #[validate(minimum = 0)]
@@ -59,7 +59,7 @@ fn deserialize_validation_err_to_string_test() {
 }
 
 #[test]
-fn deserialize_validation_err_to_json_value_test() {
+fn deserialize_validation_err_to_json_value() {
     #[derive(Debug, Validate, Deserialize)]
     struct TestStruct {
         #[validate(minimum = 0)]

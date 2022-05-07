@@ -1,11 +1,11 @@
 use serde_valid::Validate;
 
-fn sample_rule(val: &i32) -> Result<(), serde_valid::validation::Error> {
+fn sample_rule(_val: &i32) -> Result<(), serde_valid::validation::Error> {
     Ok(())
 }
 
 #[test]
-fn rule_struct_named_fields_is_ok_test() {
+fn rule_struct_named_fields_is_ok() {
     #[derive(Validate)]
     #[rule(sample_rule(val))]
     struct TestStruct {
@@ -19,7 +19,7 @@ fn rule_struct_named_fields_is_ok_test() {
 }
 
 #[test]
-fn rule_struct_unnamed_fields_is_ok_test() {
+fn rule_struct_unnamed_fields_is_ok() {
     #[derive(Validate)]
     #[rule(sample_rule(0))]
     struct TestStruct(

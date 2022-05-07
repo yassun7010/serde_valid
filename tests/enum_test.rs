@@ -1,7 +1,7 @@
 use serde_valid::Validate;
 
 #[test]
-fn enum_named_variant_validation_is_ok_test() {
+fn enum_named_variant_validation_is_ok() {
     #[derive(Validate)]
     enum TestEnum {
         Named {
@@ -24,7 +24,7 @@ fn enum_named_variant_validation_is_ok_test() {
 }
 
 #[test]
-fn enum_unnamed_variant_validation_is_ok_test() {
+fn enum_unnamed_variant_validation_is_ok() {
     #[derive(Validate)]
     enum TestEnum {
         #[allow(dead_code)]
@@ -47,7 +47,7 @@ fn enum_unnamed_variant_validation_is_ok_test() {
 }
 
 #[test]
-fn enum_newtype_variant_validation_is_ok_test() {
+fn enum_newtype_variant_validation_is_ok() {
     #[derive(Validate)]
     enum TestEnum {
         NewType(#[validate(range(minimum = 0, maximum = 10))] i32),

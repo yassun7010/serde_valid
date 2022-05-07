@@ -8,7 +8,7 @@ mod parenthesized {
 }
 
 #[test]
-fn custom_meta_path_is_ok_test() {
+fn custom_validation_is_ok() {
     fn user_validation(_val: &Vec<i32>) -> Result<(), serde_valid::validation::Error> {
         Ok(())
     }
@@ -26,7 +26,7 @@ fn custom_meta_path_is_ok_test() {
 }
 
 #[test]
-fn custom_meta_path_when_parenthesized_path_is_ok_test() {
+fn custom_parenthesized_path_validation_is_ok() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(custom(parenthesized::meta_path_validation))]
@@ -40,7 +40,7 @@ fn custom_meta_path_when_parenthesized_path_is_ok_test() {
 }
 
 #[test]
-fn custom_is_err_test() {
+fn custom_validation_error() {
     fn user_validation(_val: &Vec<i32>) -> Result<(), serde_valid::validation::Error> {
         Err(serde_valid::validation::Error::Custom(
             "this is custom message.".to_string(),

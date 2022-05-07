@@ -1,7 +1,7 @@
 use serde_valid::Validate;
 
 #[test]
-fn multiple_of_integer_is_ok_test() {
+fn multiple_of_integer_is_ok() {
     #[derive(Validate)]
     struct TestStruct(#[validate(multiple_of = 5)] i32);
 
