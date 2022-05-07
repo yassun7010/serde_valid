@@ -40,6 +40,12 @@ impl<'a, F: Field + Clone> FieldValidators<'a, F> {
         self.field.ident()
     }
 
+    pub fn is_empty(&self) -> bool {
+        self.validators.is_empty()
+            && self.optional_validators.is_none()
+            && self.array_validators.is_none()
+    }
+
     pub fn push(&mut self, validator: Validator) {
         match validator {
             Validator::Normal(token) => self.validators.push(token),
@@ -94,16 +100,23 @@ impl<'a, F: Field + Clone> FieldValidators<'a, F> {
         )
     }
 
+    pub fn get_field_variable_token(&self) -> TokenStream {
+        let field_ident = self.field.ident();
+        let field_getter = self.field.getter_token();
+        quote!(
+            let #field_ident = &self.#field_getter;
+        )
+    }
+
     pub fn generate_tokens(&self) -> TokenStream {
         let normal_tokens = self.normal_tokens();
         let optional_tokens = self.optional_tokens();
         let array_tokens = self.array_tokens();
 
         if normal_tokens.is_some() || optional_tokens.is_some() || array_tokens.is_some() {
-            let field_ident = self.field.ident();
-            let field_tokens = self.field.ident_tokens();
+            let field_variable_token = self.get_field_variable_token();
             quote!(
-                let #field_ident = &self.#field_tokens;
+                #field_variable_token
                 #normal_tokens
                 #optional_tokens
                 #array_tokens

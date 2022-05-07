@@ -35,3 +35,23 @@ fn rule_new_type_is_ok() {
     let s = TestNewType(5);
     assert!(s.validate().is_ok());
 }
+
+#[test]
+fn rule_enum_is_ok() {
+    #[derive(Validate)]
+    enum TestEnum {
+        #[rule(sample_rule(val))]
+        NamedFields { val: i32 },
+        #[rule(sample_rule(0))]
+        UnnamedFields(i32, i32),
+        #[rule(sample_rule(0))]
+        NewType(i32),
+    }
+
+    let s1 = TestEnum::NamedFields { val: 5 };
+    assert!(s1.validate().is_ok());
+    let s2 = TestEnum::UnnamedFields(5, 5);
+    assert!(s2.validate().is_ok());
+    let s3 = TestEnum::NewType(5);
+    assert!(s3.validate().is_ok());
+}

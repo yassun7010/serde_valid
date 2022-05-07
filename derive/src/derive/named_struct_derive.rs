@@ -5,6 +5,7 @@ use crate::validate::{extract_meta_validator, FieldValidators};
 use proc_macro2::TokenStream;
 use quote::quote;
 use std::borrow::Cow;
+use std::collections::HashSet;
 use std::iter::FromIterator;
 use syn::parse_quote;
 
@@ -17,19 +18,22 @@ pub fn expand_named_struct_derive(
 
     let mut errors: crate::Errors = vec![];
 
-    let rules = TokenStream::from_iter(
-        collect_rules_from_named_struct(&input.attrs).unwrap_or_else(|rule_errors| {
-            errors.extend(rule_errors.into_iter());
-            vec![quote!()]
-        }),
-    );
+    let (rule_fields, rules) = match collect_rules_from_named_struct(&input.attrs) {
+        Ok((rule_fields, rules)) => (rule_fields, TokenStream::from_iter(rules)),
+        Err(rule_errors) => {
+            errors.extend(rule_errors);
+            (HashSet::new(), quote!())
+        }
+    };
 
-    let validators = match collect_named_fields_validators(fields) {
-        Ok(field_validators) => TokenStream::from_iter(
-            field_validators
-                .iter()
-                .map(|validator| validator.generate_tokens()),
-        ),
+    let validates = match collect_named_fields_validators_list(fields) {
+        Ok(field_validators) => TokenStream::from_iter(field_validators.iter().map(|validator| {
+            if validator.is_empty() && rule_fields.contains(validator.ident()) {
+                validator.get_field_variable_token()
+            } else {
+                validator.generate_tokens()
+            }
+        })),
         Err(validation_errors) => {
             errors.extend(validation_errors.into_iter());
             quote!()
@@ -44,7 +48,7 @@ pub fn expand_named_struct_derive(
                 fn validate(&self) -> Result<(), ::serde_valid::validation::Errors> {
                     let mut __errors = ::serde_valid::validation::MapErrors::new();
 
-                    #validators
+                    #validates
                     #rules
 
                     if __errors.is_empty() {
@@ -60,7 +64,7 @@ pub fn expand_named_struct_derive(
     }
 }
 
-pub fn collect_named_fields_validators<'a>(
+pub fn collect_named_fields_validators_list<'a>(
     fields: &'a syn::FieldsNamed,
 ) -> Result<Vec<FieldValidators<'a, NamedField<'a>>>, crate::Errors> {
     let mut errors = vec![];

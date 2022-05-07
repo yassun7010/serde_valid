@@ -1,9 +1,11 @@
-use super::named_struct_derive::collect_named_fields_validators;
-use super::unnamed_struct_derive::collect_unnamed_fields_validators;
+use super::named_struct_derive::collect_named_fields_validators_list;
+use super::unnamed_struct_derive::collect_unnamed_fields_validators_list;
 use crate::error::{fields_errors_tokens, new_type_errors_tokens};
-use crate::types::TokenStreams;
+use crate::rule::{collect_rules_from_named_struct, collect_rules_from_unnamed_struct};
+use crate::types::CommaSeparatedTokenStreams;
 use proc_macro2::TokenStream;
 use quote::quote;
+use std::collections::HashSet;
 use std::iter::FromIterator;
 
 pub type Variants = syn::punctuated::Punctuated<syn::Variant, syn::token::Comma>;
@@ -14,7 +16,8 @@ pub fn expand_enum_validate_derive(
 ) -> Result<TokenStream, crate::Errors> {
     let ident = &input.ident;
     let (impl_generics, type_generics, where_clause) = input.generics.split_for_impl();
-    let validations = TokenStream::from_iter(
+
+    let validations_and_rules = TokenStream::from_iter(
         variants
             .iter()
             .map(|variant| match &variant.fields {
@@ -32,7 +35,7 @@ pub fn expand_enum_validate_derive(
     Ok(quote!(
         impl #impl_generics ::serde_valid::Validate for #ident #type_generics #where_clause {
             fn validate(&self) -> Result<(), ::serde_valid::validation::Errors> {
-                #validations
+                #validations_and_rules
 
                 Result::Ok(())
             }
@@ -45,34 +48,61 @@ fn expand_enum_variant_named_fields_validation(
     variant: &syn::Variant,
     named_fields: &syn::FieldsNamed,
 ) -> Result<TokenStream, crate::Errors> {
+    let mut errors: crate::Errors = vec![];
+
     let variant_ident = &variant.ident;
-    let fields_validators = collect_named_fields_validators(named_fields)?;
-    let mut fields_idents = TokenStreams::new();
-    let fields_validators_tokens =
-        TokenStream::from_iter(fields_validators.iter().map(|validators| {
-            let field_ident = validators.ident();
-            if let Some(token) = validators.get_tokens() {
-                fields_idents.push(quote!(#field_ident));
-                quote!(#token)
-            } else {
-                fields_idents.push(quote!(#field_ident: _));
-                quote!()
-            }
-        }));
+    let mut fields_idents = CommaSeparatedTokenStreams::new();
 
-    let errors = fields_errors_tokens();
-
-    Ok(quote!(
-        if let #ident::#variant_ident{#fields_idents} = &self {
-            let mut __errors = ::serde_valid::validation::MapErrors::new();
-
-            #fields_validators_tokens
-
-            if !__errors.is_empty() {
-                Result::Err(#errors)?
-            }
+    let (rule_fields, rules) = match collect_rules_from_named_struct(&variant.attrs) {
+        Ok(field_rules) => field_rules,
+        Err(variant_errors) => {
+            errors.extend(variant_errors.into_iter());
+            (HashSet::new(), quote!())
         }
-    ))
+    };
+
+    let validates = match collect_named_fields_validators_list(named_fields) {
+        Ok(field_validators_list) => {
+            TokenStream::from_iter(field_validators_list.iter().map(|validators| {
+                let field_ident = validators.ident();
+
+                if let Some(token) = validators.get_tokens() {
+                    fields_idents.push(quote!(#field_ident));
+                    quote!(#token)
+                } else {
+                    if rule_fields.contains(field_ident) {
+                        fields_idents.push(quote!(#field_ident));
+                    } else {
+                        fields_idents.push(quote!(#field_ident: _));
+                    }
+                    quote!()
+                }
+            }))
+        }
+        Err(fields_errors) => {
+            errors.extend(fields_errors.into_iter());
+            quote!()
+        }
+    };
+
+    let variant_errors = fields_errors_tokens();
+
+    if errors.is_empty() {
+        Ok(quote!(
+            if let #ident::#variant_ident{#fields_idents} = &self {
+                let mut __errors = ::serde_valid::validation::MapErrors::new();
+
+                #validates
+                #rules
+
+                if !__errors.is_empty() {
+                    Result::Err(#variant_errors)?
+                }
+            }
+        ))
+    } else {
+        Err(errors)
+    }
 }
 
 fn expand_enum_variant_unnamed_fields_varidation(
@@ -80,34 +110,63 @@ fn expand_enum_variant_unnamed_fields_varidation(
     variant: &syn::Variant,
     unnamed_fields: &syn::FieldsUnnamed,
 ) -> Result<TokenStream, crate::Errors> {
+    let mut errors: crate::Errors = vec![];
+
     let variant_ident = &variant.ident;
-    let fields_validators = collect_unnamed_fields_validators(unnamed_fields)?;
-    let mut fields_idents = TokenStreams::new();
-    let fields_validators_tokens =
-        TokenStream::from_iter(fields_validators.iter().map(|validators| {
-            if let Some(token) = validators.get_tokens() {
-                let ident = validators.ident();
-                fields_idents.push(quote!(#ident));
-                quote!(#token)
-            } else {
-                fields_idents.push(quote!(_));
-                quote!()
-            }
-        }));
-    let errors = if fields_validators.len() != 1 {
+    let mut fields_idents = CommaSeparatedTokenStreams::new();
+
+    let (rule_fields, rules) = match collect_rules_from_unnamed_struct(&variant.attrs) {
+        Ok(field_rules) => field_rules,
+        Err(variant_errors) => {
+            errors.extend(variant_errors.into_iter());
+            (HashSet::new(), quote!())
+        }
+    };
+
+    let validates = match collect_unnamed_fields_validators_list(unnamed_fields) {
+        Ok(field_validators_list) => {
+            TokenStream::from_iter(field_validators_list.iter().map(|validators| {
+                let field_ident = validators.ident();
+
+                if let Some(token) = validators.get_tokens() {
+                    fields_idents.push(quote!(#field_ident));
+                    quote!(#token)
+                } else {
+                    if rule_fields.contains(field_ident) {
+                        fields_idents.push(quote!(#field_ident));
+                    } else {
+                        fields_idents.push(quote!(_));
+                    }
+                    quote!()
+                }
+            }))
+        }
+        Err(fields_errors) => {
+            errors.extend(fields_errors.into_iter());
+            quote!()
+        }
+    };
+
+    let variant_errors = if unnamed_fields.unnamed.len() != 1 {
         fields_errors_tokens()
     } else {
         new_type_errors_tokens()
     };
-    Ok(quote!(
-        if let #ident::#variant_ident(#fields_idents) = &self {
-            let mut __errors = ::serde_valid::validation::MapErrors::new();
 
-            #fields_validators_tokens
+    if errors.is_empty() {
+        Ok(quote!(
+            if let #ident::#variant_ident(#fields_idents) = &self {
+                let mut __errors = ::serde_valid::validation::MapErrors::new();
 
-            if !__errors.is_empty() {
-                Result::Err(#errors)?
+                #validates
+                #rules
+
+                if !__errors.is_empty() {
+                    Result::Err(#variant_errors)?
+                }
             }
-        }
-    ))
+        ))
+    } else {
+        Err(errors)
+    }
 }

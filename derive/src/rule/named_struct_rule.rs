@@ -1,21 +1,27 @@
+use std::collections::HashSet;
+
 use proc_macro2::TokenStream;
 use quote::{quote, ToTokens};
 use syn::parse_quote;
 use syn::spanned::Spanned;
 
-use crate::types::TokenStreams;
+use crate::types::CommaSeparatedTokenStreams;
 
 pub fn collect_rules_from_named_struct(
     attributes: &Vec<syn::Attribute>,
-) -> Result<Vec<TokenStream>, crate::Errors> {
+) -> Result<(HashSet<syn::Ident>, TokenStream), crate::Errors> {
     let mut errors: crate::Errors = vec![];
 
+    let mut rule_fields = HashSet::new();
     let rules = attributes
         .iter()
         .filter(|attribute| attribute.path == parse_quote!(rule))
         .filter_map(|attribute| match attribute.parse_meta() {
             Ok(syn::Meta::List(list)) => match collect_rule(&list) {
-                Ok(stream) => Some(stream),
+                Ok((field_ident, stream)) => {
+                    rule_fields.insert(field_ident);
+                    Some(stream)
+                }
                 Err(rule_errors) => {
                     errors.extend(rule_errors);
                     None
@@ -33,7 +39,7 @@ pub fn collect_rules_from_named_struct(
         .collect::<Vec<_>>();
 
     if errors.is_empty() {
-        Ok(rules)
+        Ok((rule_fields, TokenStream::from_iter(rules)))
     } else {
         Err(errors)
     }
@@ -43,7 +49,7 @@ fn collect_rule(
     syn::MetaList {
         path, ref nested, ..
     }: &syn::MetaList,
-) -> Result<TokenStream, crate::Errors> {
+) -> Result<(syn::Ident, TokenStream), crate::Errors> {
     let mut errors: crate::Errors = vec![];
 
     match nested.len() {
@@ -83,7 +89,7 @@ fn extract_rule_from_meta_list(
         ref nested,
         ..
     }: &syn::MetaList,
-) -> Result<TokenStream, crate::Errors> {
+) -> Result<(syn::Ident, TokenStream), crate::Errors> {
     let mut errors = vec![];
 
     if nested.is_empty() {
@@ -95,7 +101,7 @@ fn extract_rule_from_meta_list(
         .filter_map(|nested_meta| {
             let arg = match nested_meta {
                 syn::NestedMeta::Meta(meta) => match meta {
-                    syn::Meta::Path(path) => Some(quote!(&self.#path)),
+                    syn::Meta::Path(path) => Some(quote!(#path)),
                     _ => None,
                 },
                 _ => None,
@@ -108,7 +114,7 @@ fn extract_rule_from_meta_list(
             }
             arg
         })
-        .collect::<TokenStreams>();
+        .collect::<CommaSeparatedTokenStreams>();
 
     match nested.first() {
         Some(field) => {
@@ -118,13 +124,16 @@ fn extract_rule_from_meta_list(
 
             let field_name = field.to_token_stream().to_string();
 
-            Ok(quote!(
-                if let Err(__error) = #rule_fn_name(#rule_fn_args) {
-                    __errors
-                        .entry(#field_name)
-                        .or_default()
-                        .push(__error);
-                };
+            Ok((
+                syn::Ident::new(&field_name, field.span()),
+                quote!(
+                    if let Err(__error) = #rule_fn_name(#rule_fn_args) {
+                        __errors
+                            .entry(#field_name)
+                            .or_default()
+                            .push(__error);
+                    };
+                ),
             ))
         }
         None => Err(errors),

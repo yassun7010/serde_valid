@@ -38,7 +38,7 @@ impl<'a> Field for UnnamedField<'a> {
         &self.ident
     }
 
-    fn ident_tokens(&self) -> proc_macro2::TokenStream {
+    fn getter_token(&self) -> proc_macro2::TokenStream {
         let index = syn::Index::from(self.index);
         quote!(#index)
     }
