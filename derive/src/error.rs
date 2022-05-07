@@ -36,6 +36,10 @@ impl Error {
         Self::new(meta.span(), "`rule` first argument must be field path.")
     }
 
+    pub fn rule_required_first_argument_index(meta: &syn::NestedMeta) -> Self {
+        Self::new(meta.span(), "`rule` first argument must be field index.")
+    }
+
     pub fn rule_attribute_parse_error(attribute: &syn::Attribute, error: &syn::Error) -> Self {
         Self::new(attribute.span(), format!("#[rule] parse error: {error}"))
     }

@@ -1,6 +1,6 @@
 use crate::error::fields_errors_tokens;
+use crate::rule::collect_rules_from_named_struct;
 use crate::types::{Field, NamedField};
-use crate::validator::collect_rules;
 use crate::validator::{extract_meta_validator, FieldValidators};
 use proc_macro2::TokenStream;
 use quote::quote;
@@ -17,10 +17,12 @@ pub fn expand_named_struct_derive(
 
     let mut errors: crate::Errors = vec![];
 
-    let rules = TokenStream::from_iter(collect_rules(&input.attrs).unwrap_or_else(|rule_errors| {
-        errors.extend(rule_errors.into_iter());
-        vec![quote!()]
-    }));
+    let rules = TokenStream::from_iter(
+        collect_rules_from_named_struct(&input.attrs).unwrap_or_else(|rule_errors| {
+            errors.extend(rule_errors.into_iter());
+            vec![quote!()]
+        }),
+    );
 
     let validators = match collect_named_fields_validators(fields) {
         Ok(field_validators) => TokenStream::from_iter(
@@ -34,7 +36,7 @@ pub fn expand_named_struct_derive(
         }
     };
 
-    let raise_errors = fields_errors_tokens();
+    let fields_errors = fields_errors_tokens();
 
     if errors.is_empty() {
         Ok(quote!(
@@ -48,7 +50,7 @@ pub fn expand_named_struct_derive(
                     if __errors.is_empty() {
                         Result::Ok(())
                     } else {
-                        Result::Err(#raise_errors)
+                        Result::Err(#fields_errors)
                     }
                 }
             }

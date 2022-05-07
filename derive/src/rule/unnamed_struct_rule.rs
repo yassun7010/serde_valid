@@ -1,18 +1,18 @@
 use proc_macro2::TokenStream;
-use quote::{quote, ToTokens};
+use quote::quote;
 use syn::parse_quote;
 use syn::spanned::Spanned;
 
-use crate::types::SingleIdentPath;
-
-pub fn collect_rules(attributes: &Vec<syn::Attribute>) -> Result<Vec<TokenStream>, crate::Errors> {
+pub fn collect_rules_from_unnamed_struct(
+    attributes: &Vec<syn::Attribute>,
+) -> Result<Vec<TokenStream>, crate::Errors> {
     let mut errors: crate::Errors = vec![];
 
     let rules = attributes
         .iter()
         .filter(|attribute| attribute.path == parse_quote!(rule))
         .filter_map(|attribute| match attribute.parse_meta() {
-            Ok(syn::Meta::List(list)) => match extra_rule(&list) {
+            Ok(syn::Meta::List(list)) => match collect_rule(&list) {
                 Ok(stream) => Some(stream),
                 Err(rule_errors) => {
                     errors.extend(rule_errors);
@@ -37,12 +37,13 @@ pub fn collect_rules(attributes: &Vec<syn::Attribute>) -> Result<Vec<TokenStream
     }
 }
 
-fn extra_rule(
+fn collect_rule(
     syn::MetaList {
         path, ref nested, ..
     }: &syn::MetaList,
 ) -> Result<TokenStream, crate::Errors> {
     let mut errors: crate::Errors = vec![];
+
     match nested.len() {
         0 => Err(vec![crate::Error::rule_need_function(path.span())])?,
         2.. => nested.iter().skip(1).for_each(|nested_meta| {
@@ -50,9 +51,10 @@ fn extra_rule(
         }),
         _ => {}
     }
+
     let rule = match &nested[0] {
         syn::NestedMeta::Meta(meta) => match meta {
-            syn::Meta::List(list) => extra_meta_rule(&list),
+            syn::Meta::List(list) => extract_rule_from_meta_list(&list),
             syn::Meta::NameValue(name_value) => {
                 Err(vec![crate::Error::meta_name_value_not_support(&name_value)])
             }
@@ -73,7 +75,7 @@ fn extra_rule(
     }
 }
 
-fn extra_meta_rule(
+fn extract_rule_from_meta_list(
     syn::MetaList {
         path: rule_fn_name,
         ref nested,
@@ -85,10 +87,13 @@ fn extra_meta_rule(
     let first_arg = if let Some(arg) = nested.first() {
         match arg {
             syn::NestedMeta::Meta(meta) => match meta {
-                syn::Meta::Path(path) => Ok(SingleIdentPath::new(path)),
+                syn::Meta::Path(_) => Err(crate::Error::rule_required_first_argument_index(arg)),
                 _ => Err(crate::Error::rule_required_first_argument_path(arg)),
             },
-            syn::NestedMeta::Lit(_) => Err(crate::Error::rule_required_first_argument_path(arg)),
+            syn::NestedMeta::Lit(lit) => match lit {
+                syn::Lit::Int(int) => Ok(int),
+                _ => Err(crate::Error::rule_required_first_argument_index(arg)),
+            },
         }
     } else {
         Err(crate::Error::rule_need_arguments(rule_fn_name))
@@ -98,7 +103,10 @@ fn extra_meta_rule(
         .iter()
         .filter_map(|arg| match arg {
             syn::NestedMeta::Meta(meta) => match meta {
-                syn::Meta::Path(field) => Some(quote!(#field)),
+                syn::Meta::Path(path) => {
+                    errors.push(crate::Error::meta_path_not_support(path));
+                    None
+                }
                 syn::Meta::List(list) => {
                     errors.push(crate::Error::meta_list_not_support(list));
                     None
@@ -108,7 +116,7 @@ fn extra_meta_rule(
                     None
                 }
             },
-            syn::NestedMeta::Lit(lit) => Some(lit.to_token_stream()),
+            syn::NestedMeta::Lit(lit) => Some(quote!(&self.#lit)),
         })
         .collect::<syn::punctuated::Punctuated<TokenStream, syn::token::Comma>>();
 
@@ -118,8 +126,7 @@ fn extra_meta_rule(
                 return Err(errors);
             }
 
-            let field_ident = field.ident();
-            let field_name = field_ident.to_string();
+            let field_name = field.to_string();
 
             Ok(quote!(
                 if let Err(__error) = #rule_fn_name(#rule_fn_args) {

@@ -1,4 +1,5 @@
 use crate::error::{fields_errors_tokens, new_type_errors_tokens};
+use crate::rule::collect_rules_from_unnamed_struct;
 use crate::types::{Field, UnnamedField};
 use crate::validator::{extract_meta_validator, FieldValidators};
 use proc_macro2::TokenStream;
@@ -14,32 +15,53 @@ pub fn expand_unnamed_struct_derive(
     let ident = &input.ident;
     let (impl_generics, type_generics, where_clause) = input.generics.split_for_impl();
 
-    let validators = TokenStream::from_iter(
-        collect_unnamed_fields_validators(fields)?
-            .iter()
-            .map(|validator| validator.generate_tokens()),
+    let mut errors: crate::Errors = vec![];
+
+    let rules = TokenStream::from_iter(
+        collect_rules_from_unnamed_struct(&input.attrs).unwrap_or_else(|rule_errors| {
+            errors.extend(rule_errors.into_iter());
+            vec![quote!()]
+        }),
     );
-    let errors = if fields.unnamed.len() != 1 {
+
+    let validators = match collect_unnamed_fields_validators(fields) {
+        Ok(field_validators) => TokenStream::from_iter(
+            field_validators
+                .iter()
+                .map(|validator| validator.generate_tokens()),
+        ),
+        Err(validation_errors) => {
+            errors.extend(validation_errors.into_iter());
+            quote!()
+        }
+    };
+
+    let fields_errors = if fields.unnamed.len() != 1 {
         fields_errors_tokens()
     } else {
         new_type_errors_tokens()
     };
 
-    Ok(quote!(
-        impl #impl_generics ::serde_valid::Validate for #ident #type_generics #where_clause {
-            fn validate(&self) -> Result<(), ::serde_valid::validation::Errors> {
-                let mut __errors = ::serde_valid::validation::MapErrors::new();
+    if errors.is_empty() {
+        Ok(quote!(
+            impl #impl_generics ::serde_valid::Validate for #ident #type_generics #where_clause {
+                fn validate(&self) -> Result<(), ::serde_valid::validation::Errors> {
+                    let mut __errors = ::serde_valid::validation::MapErrors::new();
 
-                #validators
+                    #validators
+                    #rules
 
-                if __errors.is_empty() {
-                    Result::Ok(())
-                } else {
-                    Result::Err(#errors)
+                    if __errors.is_empty() {
+                        Result::Ok(())
+                    } else {
+                        Result::Err(#fields_errors)
+                    }
                 }
             }
-        }
-    ))
+        ))
+    } else {
+        Err(errors)
+    }
 }
 
 pub fn collect_unnamed_fields_validators<'a>(
