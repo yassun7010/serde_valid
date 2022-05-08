@@ -55,7 +55,7 @@ pub fn expand_enum_validate_derive(
                 fn validate(&self) -> Result<(), ::serde_valid::validation::Errors> {
                     #validations_and_rules
 
-                    Result::Ok(())
+                    Ok(())
                 }
             }
         ))
@@ -119,7 +119,7 @@ fn expand_enum_variant_named_fields(
                 #rules
 
                 if !__errors.is_empty() {
-                    Result::Err(#variant_errors)?
+                    Err(#variant_errors)?
                 }
             }
         ))
@@ -187,7 +187,7 @@ fn expand_enum_variant_unnamed_fields_varidation(
                 #rules
 
                 if !__errors.is_empty() {
-                    Result::Err(#variant_errors)?
+                    Err(#variant_errors)?
                 }
             }
         ))

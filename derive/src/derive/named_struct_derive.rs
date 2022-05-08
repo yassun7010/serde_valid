@@ -52,9 +52,9 @@ pub fn expand_named_struct_derive(
                     #rules
 
                     if __errors.is_empty() {
-                        Result::Ok(())
+                        Ok(())
                     } else {
-                        Result::Err(#fields_errors)
+                        Err(#fields_errors)
                     }
                 }
             }
