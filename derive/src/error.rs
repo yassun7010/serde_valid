@@ -39,7 +39,7 @@ impl Error {
         let rule_fn_name = quote!(#rule_fn_name_path).to_string();
         Self::new(
             meta.span(),
-            format!("#[rule({rule_fn_name}(???, ???, ...))] allow field path only."),
+            format!("#[rule({rule_fn_name}(???, ...))] allow field path only."),
         )
     }
 
@@ -50,7 +50,7 @@ impl Error {
         let rule_fn_name = quote!(#rule_fn_name_path).to_string();
         Self::new(
             meta.span(),
-            format!("#[rule({rule_fn_name}(???, ???, ...))] allow index integer only."),
+            format!("#[rule({rule_fn_name}(???, ...))] allow index integer only."),
         )
     }
 
@@ -89,7 +89,7 @@ impl Error {
     pub fn validate_meta_list_need_value(span: proc_macro2::Span, validation_type: &str) -> Self {
         Self::new(
             span,
-            format!("#[validate({validation_type}(???, ???, ...))] needs validation list."),
+            format!("#[validate({validation_type}(???, ...))] needs validation list."),
         )
     }
 
