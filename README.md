@@ -127,6 +127,7 @@ assert!(s.validate().is_ok());
 ```
 
 ## Rules
+
 If you want to check multi fields validation, you can use `#[rule]`.
 
 ```rust
@@ -171,6 +172,39 @@ fn sample_rule(_val1: &i32, _val2: &str) -> Result<(), serde_valid::validation::
 struct SampleStruct(i32, String);
 
 let s = SampleStruct(0, "1".to_owned());
+
+assert!(s.validate().is_ok());
+```
+
+## Validate Trait
+
+By implementing the validation trait, Your original type can use Serde Valid validations.
+
+```rust
+struct MyType(String);
+
+impl ValidateStringMaxLength for MyType {
+    fn validate(&self, max_length: usize) -> Result<(), serde_valid::MaxLengthErrorParams> {
+        ValidateStringMaxLength::validate(&self.0, max_length)
+    }
+}
+
+impl ValidateStringMinLength for MyType {
+    fn validate(&self, min_length: usize) -> Result<(), serde_valid::MinLengthErrorParams> {
+        ValidateStringMinLength::validate(&self.0, min_length)
+    }
+}
+
+#[derive(Validate)]
+struct TestStruct {
+    #[validate(min_length = 5)]
+    #[validate(max_length = 5)]
+    val: MyType,
+}
+
+let s = TestStruct {
+    val: MyType(String::from("😍👺🙋🏽👨‍🎤👨‍👩‍👧‍👦")),
+};
 
 assert!(s.validate().is_ok());
 ```
