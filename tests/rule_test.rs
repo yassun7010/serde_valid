@@ -11,7 +11,7 @@ fn sample_ok_rule2(_val1: &i32, _val2: &str) -> Result<(), serde_valid::validati
 
 fn sample_err_rule(_val1: &i32, _val2: &str) -> Result<(), serde_valid::validation::Error> {
     Err(serde_valid::validation::Error::Custom(
-        "rule error.".to_owned(),
+        "Rule error add to the first arg of the rule_method.".to_owned(),
     ))
 }
 
@@ -46,21 +46,21 @@ fn rule_struct_named_fields_is_ok() {
 #[test]
 fn rule_struct_named_fields_is_err() {
     #[derive(Validate)]
-    #[rule(sample_err_rule(val1, val2))]
+    #[rule(sample_err_rule(val2, val1))]
     struct TestStruct {
-        val1: i32,
-        val2: String,
+        val1: String,
+        val2: i32,
     }
 
     let s = TestStruct {
-        val1: 5,
-        val2: "val2".to_owned(),
+        val1: "val1".to_owned(),
+        val2: 1,
     };
     assert_eq!(
         serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
         serde_json::to_string(&json!({
-            "val1": [
-                "rule error."
+            "val2": [
+                "Rule error add to the first arg of the rule_method."
             ]
         }))
         .unwrap()
