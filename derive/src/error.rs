@@ -16,8 +16,19 @@ pub fn new_type_errors_tokens() -> TokenStream {
 pub struct Error(syn::Error);
 
 impl Error {
-    pub fn new<Message: Into<String>>(span: proc_macro2::Span, message: Message) -> Self {
+    fn new<Message: Into<String>>(span: proc_macro2::Span, message: Message) -> Self {
         Self(syn::Error::new(span, message.into()))
+    }
+
+    pub fn unit_struct_not_support(input: &syn::DeriveInput) -> Self {
+        Self::new(
+            input.span(),
+            "#[derive(Validate)] does not support Unit Struct.",
+        )
+    }
+
+    pub fn union_not_support(input: &syn::DeriveInput) -> Self {
+        Self::new(input.span(), "#[derive(Validate)] does not support Union.")
     }
 
     pub fn rule_need_function(span: proc_macro2::Span) -> Self {
