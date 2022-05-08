@@ -1,5 +1,5 @@
 use serde_json::json;
-use serde_valid::{Validate, ValidateArrayMaxItems, ValidateArrayMinItems};
+use serde_valid::{Validate, ValidateMaxItems, ValidateMinItems};
 
 #[test]
 fn items_vec_type() {
@@ -220,15 +220,15 @@ fn items_custom_err_message() {
 fn items_trait() {
     struct MyType(Vec<i32>);
 
-    impl ValidateArrayMinItems for MyType {
+    impl ValidateMinItems for MyType {
         fn validate(&self, min_items: usize) -> Result<(), serde_valid::MinItemsErrorParams> {
-            ValidateArrayMinItems::validate(&self.0, min_items)
+            ValidateMinItems::validate(&self.0, min_items)
         }
     }
 
-    impl ValidateArrayMaxItems for MyType {
+    impl ValidateMaxItems for MyType {
         fn validate(&self, max_items: usize) -> Result<(), serde_valid::MaxItemsErrorParams> {
-            ValidateArrayMaxItems::validate(&self.0, max_items)
+            ValidateMaxItems::validate(&self.0, max_items)
         }
     }
 

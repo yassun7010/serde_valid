@@ -68,7 +68,7 @@ extract_array_length_validator!(
     max_items,
     extract_array_max_items_validator,
     inner_extract_array_max_items_validator,
-    ValidateArrayMaxItems
+    ValidateMaxItems
 );
 
 extract_array_length_validator!(
@@ -77,5 +77,5 @@ extract_array_length_validator!(
     min_items,
     extract_array_min_items_validator,
     inner_extract_array_min_items_validator,
-    ValidateArrayMinItems
+    ValidateMinItems
 );

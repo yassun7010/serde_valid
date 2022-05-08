@@ -1,5 +1,5 @@
 use serde_json::json;
-use serde_valid::{Validate, ValidateArrayUniqueItems};
+use serde_valid::{Validate, ValidateUniqueItems};
 
 #[test]
 fn unique_items_vec_type() {
@@ -116,7 +116,7 @@ fn unique_items_custom_err_message() {
 fn unique_items_trait() {
     struct MyType(Vec<i32>);
 
-    impl ValidateArrayUniqueItems for MyType {
+    impl ValidateUniqueItems for MyType {
         fn validate(&self) -> Result<(), serde_valid::UniqueItemsErrorParams> {
             self.0.validate()
         }

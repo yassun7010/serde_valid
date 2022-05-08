@@ -74,7 +74,7 @@ extract_numeric_range_validator!(
     maximum,
     extract_numeric_maximum_validator,
     inner_extract_numeric_maximum_validator,
-    ValidateNumericMaximum
+    ValidateMaximum
 );
 
 extract_numeric_range_validator!(
@@ -83,7 +83,7 @@ extract_numeric_range_validator!(
     minimum,
     extract_numeric_minimum_validator,
     inner_extract_numeric_minimum_validator,
-    ValidateNumericMinimum
+    ValidateMinimum
 );
 
 extract_numeric_range_validator!(
@@ -92,7 +92,7 @@ extract_numeric_range_validator!(
     exclusive_maximum,
     extract_numeric_exclusive_maximum_validator,
     inner_extract_numeric_exclusive_maximum_validator,
-    ValidateNumericExclusiveMaximum
+    ValidateExclusiveMaximum
 );
 
 extract_numeric_range_validator!(
@@ -101,5 +101,5 @@ extract_numeric_range_validator!(
     exclusive_minimum,
     extract_numeric_exclusive_minimum_validator,
     inner_extract_numeric_exclusive_minimum_validator,
-    ValidateNumericExclusiveMinimum
+    ValidateExclusiveMinimum
 );

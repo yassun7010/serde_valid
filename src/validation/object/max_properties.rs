@@ -3,11 +3,11 @@ use crate::{traits::Size, MaxPropertiesErrorParams};
 /// Size validation.
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/object.html#size>
-pub trait ValidateObjectMaxProperties {
+pub trait ValidateMaxProperties {
     fn validate(&self, max_properties: usize) -> Result<(), MaxPropertiesErrorParams>;
 }
 
-impl<T> ValidateObjectMaxProperties for T
+impl<T> ValidateMaxProperties for T
 where
     T: Size,
 {
@@ -33,7 +33,7 @@ mod tests {
         map.insert("key1".to_string(), "value1".to_string());
         map.insert("key2".to_string(), "value2".to_string());
         map.insert("key3".to_string(), "value3".to_string());
-        assert!(ValidateObjectMaxProperties::validate(&map, 3).is_ok());
+        assert!(ValidateMaxProperties::validate(&map, 3).is_ok());
     }
 
     #[test]
@@ -42,7 +42,7 @@ mod tests {
         map.insert("key1".to_string(), "value1".to_string());
         map.insert("key2".to_string(), "value2".to_string());
         map.insert("key3".to_string(), "value3".to_string());
-        assert!(ValidateObjectMaxProperties::validate(&map, 3).is_ok());
+        assert!(ValidateMaxProperties::validate(&map, 3).is_ok());
     }
 
     #[test]
@@ -54,8 +54,8 @@ mod tests {
         });
         let map = value.as_object().unwrap();
 
-        assert!(ValidateObjectMaxProperties::validate(map, 4).is_ok());
-        assert!(ValidateObjectMaxProperties::validate(map, 3).is_ok());
+        assert!(ValidateMaxProperties::validate(map, 4).is_ok());
+        assert!(ValidateMaxProperties::validate(map, 3).is_ok());
     }
 
     #[test]
@@ -67,6 +67,6 @@ mod tests {
         });
         let map = value.as_object().unwrap();
 
-        assert!(ValidateObjectMaxProperties::validate(map, 2).is_err());
+        assert!(ValidateMaxProperties::validate(map, 2).is_err());
     }
 }

@@ -12,11 +12,10 @@ pub use error::{
 };
 pub use traits::*;
 pub use validation::{
-    ValidateArrayMaxItems, ValidateArrayMinItems, ValidateArrayUniqueItems,
-    ValidateGenericEnumerate, ValidateNumericExclusiveMaximum, ValidateNumericExclusiveMinimum,
-    ValidateNumericMaximum, ValidateNumericMinimum, ValidateNumericMultipleOf,
-    ValidateObjectMaxProperties, ValidateObjectMinProperties, ValidateStringMaxLength,
-    ValidateStringMinLength, ValidateStringPattern,
+    ValidateEnumerate, ValidateExclusiveMaximum, ValidateExclusiveMinimum, ValidateMaxItems,
+    ValidateMaxLength, ValidateMaxProperties, ValidateMaximum, ValidateMinItems, ValidateMinLength,
+    ValidateMinProperties, ValidateMinimum, ValidateMultipleOf, ValidatePattern,
+    ValidateUniqueItems,
 };
 
 pub trait Validate {

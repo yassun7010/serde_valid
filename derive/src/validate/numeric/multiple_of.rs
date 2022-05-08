@@ -38,7 +38,7 @@ fn inner_extract_numeric_multiple_of_validator(
     ));
 
     Ok(quote!(
-        if let Err(error_params) = ::serde_valid::ValidateNumericMultipleOf::validate(
+        if let Err(error_params) = ::serde_valid::ValidateMultipleOf::validate(
             #field_ident,
             #multiple_of,
         ) {

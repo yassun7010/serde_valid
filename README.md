@@ -183,15 +183,15 @@ By implementing the validation trait, Your original type can use Serde Valid val
 ```rust
 struct MyType(String);
 
-impl ValidateStringMaxLength for MyType {
+impl ValidateMaxLength for MyType {
     fn validate(&self, max_length: usize) -> Result<(), serde_valid::MaxLengthErrorParams> {
-        ValidateStringMaxLength::validate(&self.0, max_length)
+        ValidateMaxLength::validate(&self.0, max_length)
     }
 }
 
-impl ValidateStringMinLength for MyType {
+impl ValidateMinLength for MyType {
     fn validate(&self, min_length: usize) -> Result<(), serde_valid::MinLengthErrorParams> {
-        ValidateStringMinLength::validate(&self.0, min_length)
+        ValidateMinLength::validate(&self.0, min_length)
     }
 }
 

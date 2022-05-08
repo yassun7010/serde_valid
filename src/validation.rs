@@ -5,12 +5,12 @@ mod numeric;
 mod object;
 mod string;
 
-pub use array::{ValidateArrayMaxItems, ValidateArrayMinItems, ValidateArrayUniqueItems};
+pub use array::{ValidateMaxItems, ValidateMinItems, ValidateUniqueItems};
 pub use error::{Error, Errors, MapErrors, VecErrors};
-pub use generic::ValidateGenericEnumerate;
+pub use generic::ValidateEnumerate;
 pub use numeric::{
-    ValidateNumericExclusiveMaximum, ValidateNumericExclusiveMinimum, ValidateNumericMaximum,
-    ValidateNumericMinimum, ValidateNumericMultipleOf,
+    ValidateExclusiveMaximum, ValidateExclusiveMinimum, ValidateMaximum, ValidateMinimum,
+    ValidateMultipleOf,
 };
-pub use object::{ValidateObjectMaxProperties, ValidateObjectMinProperties};
-pub use string::{ValidateStringMaxLength, ValidateStringMinLength, ValidateStringPattern};
+pub use object::{ValidateMaxProperties, ValidateMinProperties};
+pub use string::{ValidateMaxLength, ValidateMinLength, ValidatePattern};

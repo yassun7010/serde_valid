@@ -1,5 +1,5 @@
 use serde_json::json;
-use serde_valid::{Validate, ValidateStringPattern};
+use serde_valid::{Validate, ValidatePattern};
 use std::borrow::Cow;
 use std::ffi::{OsStr, OsString};
 
@@ -267,9 +267,9 @@ fn pattern_custom_err_message() {
 fn pattern_trait() {
     struct MyType(String);
 
-    impl ValidateStringPattern for MyType {
+    impl ValidatePattern for MyType {
         fn validate(&self, pattern: &regex::Regex) -> Result<(), serde_valid::PatternErrorParams> {
-            ValidateStringPattern::validate(&self.0, pattern)
+            ValidatePattern::validate(&self.0, pattern)
         }
     }
 

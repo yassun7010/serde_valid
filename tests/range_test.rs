@@ -1,7 +1,6 @@
 use serde_json::json;
 use serde_valid::{
-    Validate, ValidateNumericExclusiveMaximum, ValidateNumericExclusiveMinimum,
-    ValidateNumericMaximum, ValidateNumericMinimum,
+    Validate, ValidateExclusiveMaximum, ValidateExclusiveMinimum, ValidateMaximum, ValidateMinimum,
 };
 
 #[test]
@@ -333,33 +332,33 @@ fn range_custom_err_message() {
 fn range_trait() {
     struct MyType(i32);
 
-    impl ValidateNumericMinimum<i32> for MyType {
+    impl ValidateMinimum<i32> for MyType {
         fn validate(&self, minimum: i32) -> Result<(), serde_valid::MinimumErrorParams> {
-            ValidateNumericMinimum::validate(&self.0, minimum)
+            ValidateMinimum::validate(&self.0, minimum)
         }
     }
 
-    impl ValidateNumericMaximum<i32> for MyType {
+    impl ValidateMaximum<i32> for MyType {
         fn validate(&self, maximum: i32) -> Result<(), serde_valid::MaximumErrorParams> {
-            ValidateNumericMaximum::validate(&self.0, maximum)
+            ValidateMaximum::validate(&self.0, maximum)
         }
     }
 
-    impl ValidateNumericExclusiveMinimum<i32> for MyType {
+    impl ValidateExclusiveMinimum<i32> for MyType {
         fn validate(
             &self,
             exclusive_minimum: i32,
         ) -> Result<(), serde_valid::ExclusiveMinimumErrorParams> {
-            ValidateNumericExclusiveMinimum::validate(&self.0, exclusive_minimum)
+            ValidateExclusiveMinimum::validate(&self.0, exclusive_minimum)
         }
     }
 
-    impl ValidateNumericExclusiveMaximum<i32> for MyType {
+    impl ValidateExclusiveMaximum<i32> for MyType {
         fn validate(
             &self,
             exclusive_maximum: i32,
         ) -> Result<(), serde_valid::ExclusiveMaximumErrorParams> {
-            ValidateNumericExclusiveMaximum::validate(&self.0, exclusive_maximum)
+            ValidateExclusiveMaximum::validate(&self.0, exclusive_maximum)
         }
     }
 

@@ -1,2 +1,2 @@
 mod enumerate;
-pub use enumerate::ValidateGenericEnumerate;
+pub use enumerate::ValidateEnumerate;

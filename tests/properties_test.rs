@@ -2,8 +2,8 @@ use serde_valid::Validate;
 
 use serde::Deserialize;
 use serde_json::json;
-use serde_valid::ValidateObjectMaxProperties;
-use serde_valid::ValidateObjectMinProperties;
+use serde_valid::ValidateMaxProperties;
+use serde_valid::ValidateMinProperties;
 use std::collections::BTreeMap;
 use std::collections::HashMap;
 
@@ -227,21 +227,21 @@ fn range_custom_err_message() {
 fn properties_trait() {
     struct MyType(HashMap<String, String>);
 
-    impl ValidateObjectMaxProperties for MyType {
+    impl ValidateMaxProperties for MyType {
         fn validate(
             &self,
             max_properties: usize,
         ) -> Result<(), serde_valid::MaxPropertiesErrorParams> {
-            ValidateObjectMaxProperties::validate(&self.0, max_properties)
+            ValidateMaxProperties::validate(&self.0, max_properties)
         }
     }
 
-    impl ValidateObjectMinProperties for MyType {
+    impl ValidateMinProperties for MyType {
         fn validate(
             &self,
             min_properties: usize,
         ) -> Result<(), serde_valid::MinPropertiesErrorParams> {
-            ValidateObjectMinProperties::validate(&self.0, min_properties)
+            ValidateMinProperties::validate(&self.0, min_properties)
         }
     }
 

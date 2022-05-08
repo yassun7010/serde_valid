@@ -40,7 +40,7 @@ fn inner_extract_generic_enumerate_validator(
     ));
 
     Ok(quote!(
-        if let Err(error_params) = ::serde_valid::ValidateGenericEnumerate::validate(
+        if let Err(error_params) = ::serde_valid::ValidateEnumerate::validate(
             #field_ident,
             &[#enumerate],
         ) {

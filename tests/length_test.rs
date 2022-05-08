@@ -1,5 +1,5 @@
 use serde_json::json;
-use serde_valid::{Validate, ValidateStringMaxLength, ValidateStringMinLength};
+use serde_valid::{Validate, ValidateMaxLength, ValidateMinLength};
 use std::borrow::Cow;
 use std::ffi::{OsStr, OsString};
 
@@ -386,15 +386,15 @@ fn length_custom_err_message() {
 fn length_trait() {
     struct MyType(String);
 
-    impl ValidateStringMaxLength for MyType {
+    impl ValidateMaxLength for MyType {
         fn validate(&self, max_length: usize) -> Result<(), serde_valid::MaxLengthErrorParams> {
-            ValidateStringMaxLength::validate(&self.0, max_length)
+            ValidateMaxLength::validate(&self.0, max_length)
         }
     }
 
-    impl ValidateStringMinLength for MyType {
+    impl ValidateMinLength for MyType {
         fn validate(&self, min_length: usize) -> Result<(), serde_valid::MinLengthErrorParams> {
-            ValidateStringMinLength::validate(&self.0, min_length)
+            ValidateMinLength::validate(&self.0, min_length)
         }
     }
 

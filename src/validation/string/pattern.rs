@@ -4,11 +4,11 @@ use regex::Regex;
 /// RegularExpressions validation.
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/string.html#regular-expressions>
-pub trait ValidateStringPattern {
+pub trait ValidatePattern {
     fn validate(&self, pattern: &Regex) -> Result<(), PatternErrorParams>;
 }
 
-impl<T> ValidateStringPattern for T
+impl<T> ValidatePattern for T
 where
     T: IsMatch + ?Sized,
 {
@@ -30,7 +30,7 @@ mod tests {
 
     #[test]
     fn test_validate_string_pattern_str_type() {
-        assert!(ValidateStringPattern::validate(
+        assert!(ValidatePattern::validate(
             "2020-09-10",
             &Regex::new(r"^\d{4}-\d{2}-\d{2}$").unwrap()
         )
@@ -39,7 +39,7 @@ mod tests {
 
     #[test]
     fn test_validate_string_pattern_string_type() {
-        assert!(ValidateStringPattern::validate(
+        assert!(ValidatePattern::validate(
             &String::from("2020-09-10"),
             &Regex::new(r"^\d{4}-\d{2}-\d{2}$").unwrap()
         )
@@ -48,7 +48,7 @@ mod tests {
 
     #[test]
     fn test_validate_string_pattern_cow_str_type() {
-        assert!(ValidateStringPattern::validate(
+        assert!(ValidatePattern::validate(
             &Cow::from("2020-09-10"),
             &Regex::new(r"^\d{4}-\d{2}-\d{2}$").unwrap()
         )
@@ -57,7 +57,7 @@ mod tests {
 
     #[test]
     fn test_validate_string_pattern_os_str_type() {
-        assert!(ValidateStringPattern::validate(
+        assert!(ValidatePattern::validate(
             OsStr::new("2020-09-10"),
             &Regex::new(r"^\d{4}-\d{2}-\d{2}$").unwrap()
         )
@@ -66,7 +66,7 @@ mod tests {
 
     #[test]
     fn test_validate_string_pattern_os_string_type() {
-        assert!(ValidateStringPattern::validate(
+        assert!(ValidatePattern::validate(
             &OsString::from("2020-09-10"),
             &Regex::new(r"^\d{4}-\d{2}-\d{2}$").unwrap()
         )
@@ -75,7 +75,7 @@ mod tests {
 
     #[test]
     fn test_validate_string_pattern_path_type() {
-        assert!(ValidateStringPattern::validate(
+        assert!(ValidatePattern::validate(
             Path::new("./foo/bar.txt"),
             &Regex::new(r"^*.txt$").unwrap()
         )
@@ -84,7 +84,7 @@ mod tests {
 
     #[test]
     fn test_validate_string_pattern_path_buf_type() {
-        assert!(ValidateStringPattern::validate(
+        assert!(ValidatePattern::validate(
             &PathBuf::from("./foo/bar.txt"),
             &Regex::new(r"^*.txt$").unwrap()
         )
@@ -93,7 +93,7 @@ mod tests {
 
     #[test]
     fn test_validate_string_pattern_is_false() {
-        assert!(ValidateStringPattern::validate(
+        assert!(ValidatePattern::validate(
             "2020/09/10",
             &Regex::new(r"^\d{4}-\d{2}-\d{2}$").unwrap()
         )

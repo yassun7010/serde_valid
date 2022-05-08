@@ -3,11 +3,11 @@ use crate::{traits::Size, MinPropertiesErrorParams};
 /// Size validation.
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/object.html#size>
-pub trait ValidateObjectMinProperties {
+pub trait ValidateMinProperties {
     fn validate(&self, min_properties: usize) -> Result<(), MinPropertiesErrorParams>;
 }
 
-impl<T> ValidateObjectMinProperties for T
+impl<T> ValidateMinProperties for T
 where
     T: Size,
 {
@@ -33,7 +33,7 @@ mod tests {
         map.insert("key1".to_string(), "value1".to_string());
         map.insert("key2".to_string(), "value2".to_string());
         map.insert("key3".to_string(), "value3".to_string());
-        assert!(ValidateObjectMinProperties::validate(&map, 3).is_ok());
+        assert!(ValidateMinProperties::validate(&map, 3).is_ok());
     }
 
     #[test]
@@ -42,7 +42,7 @@ mod tests {
         map.insert("key1".to_string(), "value1".to_string());
         map.insert("key2".to_string(), "value2".to_string());
         map.insert("key3".to_string(), "value3".to_string());
-        assert!(ValidateObjectMinProperties::validate(&map, 3).is_ok());
+        assert!(ValidateMinProperties::validate(&map, 3).is_ok());
     }
 
     #[test]
@@ -54,8 +54,8 @@ mod tests {
         });
         let map = value.as_object().unwrap();
 
-        assert!(ValidateObjectMinProperties::validate(map, 2).is_ok());
-        assert!(ValidateObjectMinProperties::validate(map, 3).is_ok());
+        assert!(ValidateMinProperties::validate(map, 2).is_ok());
+        assert!(ValidateMinProperties::validate(map, 3).is_ok());
     }
 
     #[test]
@@ -67,6 +67,6 @@ mod tests {
         });
         let map = value.as_object().unwrap();
 
-        assert!(ValidateObjectMinProperties::validate(map, 4).is_err());
+        assert!(ValidateMinProperties::validate(map, 4).is_err());
     }
 }

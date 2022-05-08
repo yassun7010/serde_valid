@@ -1,7 +1,7 @@
 /// Range validation.
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/numeric.html#range>
-pub trait ValidateNumericExclusiveMaximum<T>
+pub trait ValidateExclusiveMaximum<T>
 where
     T: PartialOrd + PartialEq,
 {
@@ -10,7 +10,7 @@ where
 
 macro_rules! impl_validate_numeric_exclusive_maximum {
     ($ty:ty) => {
-        impl ValidateNumericExclusiveMaximum<$ty> for $ty {
+        impl ValidateExclusiveMaximum<$ty> for $ty {
             fn validate(
                 &self,
                 exclusive_maximum: $ty,
@@ -47,20 +47,20 @@ mod tests {
     #[test]
     fn test_validate_numeric_exclusive_maximum_is_true() {
         // Unspecified generic type:
-        assert!(ValidateNumericExclusiveMaximum::validate(&10, 11).is_ok());
+        assert!(ValidateExclusiveMaximum::validate(&10, 11).is_ok());
     }
 
     #[test]
     fn test_validate_numeric_exclusive_maximum_is_false() {
-        assert!(ValidateNumericExclusiveMaximum::validate(&5, 4).is_err());
-        assert!(ValidateNumericExclusiveMaximum::validate(&10, 10).is_err());
+        assert!(ValidateExclusiveMaximum::validate(&5, 4).is_err());
+        assert!(ValidateExclusiveMaximum::validate(&10, 10).is_err());
     }
 
     #[test]
     fn test_validate_numeric_exclusive_maximum_specified_type() {
-        assert!(ValidateNumericExclusiveMaximum::validate(&0.2, 0.5).is_ok());
-        assert!(ValidateNumericExclusiveMaximum::validate(&0, 5u8).is_ok());
-        assert!(ValidateNumericExclusiveMaximum::validate(&0, 4u16).is_ok());
-        assert!(ValidateNumericExclusiveMaximum::validate(&0, 6u32).is_ok());
+        assert!(ValidateExclusiveMaximum::validate(&0.2, 0.5).is_ok());
+        assert!(ValidateExclusiveMaximum::validate(&0, 5u8).is_ok());
+        assert!(ValidateExclusiveMaximum::validate(&0, 4u16).is_ok());
+        assert!(ValidateExclusiveMaximum::validate(&0, 6u32).is_ok());
     }
 }

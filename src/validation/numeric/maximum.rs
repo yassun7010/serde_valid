@@ -3,7 +3,7 @@ use crate::MaximumErrorParams;
 /// Range validation.
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/numeric.html#range>
-pub trait ValidateNumericMaximum<T>
+pub trait ValidateMaximum<T>
 where
     T: PartialOrd + PartialEq,
 {
@@ -12,7 +12,7 @@ where
 
 macro_rules! impl_validate_numeric_maximum {
     ($ty:ty) => {
-        impl ValidateNumericMaximum<$ty> for $ty {
+        impl ValidateMaximum<$ty> for $ty {
             fn validate(&self, maximum: $ty) -> Result<(), MaximumErrorParams> {
                 if *self <= maximum {
                     Ok(())
@@ -46,20 +46,20 @@ mod tests {
     #[test]
     fn test_validate_numeric_maximum_is_true() {
         // Unspecified generic type:
-        assert!(ValidateNumericMaximum::validate(&10, 11).is_ok());
-        assert!(ValidateNumericMaximum::validate(&10, 10).is_ok());
+        assert!(ValidateMaximum::validate(&10, 11).is_ok());
+        assert!(ValidateMaximum::validate(&10, 10).is_ok());
     }
 
     #[test]
     fn test_validate_numeric_maximum_is_false() {
-        assert!(ValidateNumericMaximum::validate(&5, 4).is_err());
+        assert!(ValidateMaximum::validate(&5, 4).is_err());
     }
 
     #[test]
     fn test_validate_numeric_maximum_specified_type() {
-        assert!(ValidateNumericMaximum::validate(&0.2, 0.5).is_ok());
-        assert!(ValidateNumericMaximum::validate(&0, 5u8).is_ok());
-        assert!(ValidateNumericMaximum::validate(&0, 4u16).is_ok());
-        assert!(ValidateNumericMaximum::validate(&0, 6u32).is_ok());
+        assert!(ValidateMaximum::validate(&0.2, 0.5).is_ok());
+        assert!(ValidateMaximum::validate(&0, 5u8).is_ok());
+        assert!(ValidateMaximum::validate(&0, 4u16).is_ok());
+        assert!(ValidateMaximum::validate(&0, 6u32).is_ok());
     }
 }
