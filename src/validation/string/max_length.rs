@@ -25,23 +25,23 @@ mod tests {
 
     #[test]
     fn test_validate_string_max_length_ascii_is_true() {
-        assert!(ValidateStringMaxLength::check(&"abcde", 5));
-        assert!(ValidateStringMaxLength::check(&"abcde", 6));
+        assert!(ValidateStringMaxLength::check("abcde", 5));
+        assert!(ValidateStringMaxLength::check("abcde", 6));
     }
 
     #[test]
     fn test_validate_string_max_length_unicode_is_true() {
-        assert!(ValidateStringMaxLength::check(&"a̐éö̲", 3));
+        assert!(ValidateStringMaxLength::check("a̐éö̲", 3));
     }
 
     #[test]
     fn test_validate_string_max_length_japanese_is_true() {
-        assert!(ValidateStringMaxLength::check(&"あ堯", 2));
+        assert!(ValidateStringMaxLength::check("あ堯", 2));
     }
 
     #[test]
     fn test_validate_string_max_length_emoji_is_true() {
-        assert!(ValidateStringMaxLength::check(&"😍👺🙋🏽👨‍🎤👨‍👩‍👧‍👦", 5));
+        assert!(ValidateStringMaxLength::check("😍👺🙋🏽👨‍🎤👨‍👩‍👧‍👦", 5));
     }
 
     #[test]
@@ -79,7 +79,7 @@ mod tests {
 
     #[test]
     fn test_validate_string_max_length_os_str_type() {
-        assert!(ValidateStringMaxLength::check(&OsStr::new("fo�o"), 4));
+        assert!(ValidateStringMaxLength::check(OsStr::new("fo�o"), 4));
     }
 
     #[test]
