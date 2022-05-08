@@ -14,7 +14,7 @@ macro_rules! extract_numeric_range_validator{
         $limit:tt,
         $function_name:ident,
         $inner_function_name:ident,
-        $validate_function:ident
+        $ValidateTrait:ident
     ) => {
         pub fn $function_name(
             field: &impl Field,
@@ -48,7 +48,7 @@ macro_rules! extract_numeric_range_validator{
                 message_fn.unwrap_or(quote!(::serde_valid::$ErrorParams::to_default_message));
 
             Ok(quote!(
-                if !::serde_valid::$validate_function::check(
+                if !::serde_valid::$ValidateTrait::check(
                     #field_ident,
                     #$limit,
                 ) {
