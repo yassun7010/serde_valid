@@ -78,7 +78,7 @@ assert_eq!(
 
 ## Custom Message
 
-For user custom message, Serde Valid provide `message_fn` or `message`.
+For user custom message, Serde Valid provides `message_fn` or `message`.
 
 ```rust
 fn min_error_message(_params: &serde_valid::MinItemsErrorParams) -> String {
@@ -108,7 +108,7 @@ assert_eq!(
 
 ## Custom method
 
-You use your custom validation using by `#[validate(custom)]` validation.
+You can use your custom validation using by `#[validate(custom)]` validation.
 
 ```rust
 fn user_validation(_val: &Vec<i32>) -> Result<(), serde_valid::validation::Error> {
@@ -178,7 +178,7 @@ assert!(s.validate().is_ok());
 
 ## Validate Trait
 
-By implementing the validation trait, Your original type can use Serde Valid validations.
+By implementing the validation trait, Your original type can uses Serde Valid validations.
 
 ```rust
 struct MyType(String);
