@@ -196,13 +196,13 @@ impl ValidateMinLength for MyType {
 }
 
 #[derive(Validate)]
-struct TestStruct {
+struct SampleStruct {
     #[validate(min_length = 5)]
     #[validate(max_length = 5)]
     val: MyType,
 }
 
-let s = TestStruct {
+let s = SampleStruct {
     val: MyType(String::from("😍👺🙋🏽👨‍🎤👨‍👩‍👧‍👦")),
 };
 
