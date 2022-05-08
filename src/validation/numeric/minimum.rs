@@ -3,7 +3,7 @@
 /// See <https://json-schema.org/understanding-json-schema/reference/numeric.html#range>
 pub trait ValidateNumericMinimum<T>
 where
-    T: PartialOrd + PartialEq + Copy,
+    T: PartialOrd + PartialEq,
 {
     fn validate(&self, minimum: T) -> bool;
 }

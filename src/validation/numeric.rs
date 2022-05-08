@@ -45,7 +45,7 @@ macro_rules! impl_validate_numeric_range {
 
         impl<T, U> $tt<T> for Option<U>
         where
-            T: PartialOrd + PartialEq + Copy,
+            T: PartialOrd + PartialEq,
             U: $tt<T>,
         {
             fn validate(&self, minimum: T) -> bool {
