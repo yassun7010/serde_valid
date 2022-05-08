@@ -4,14 +4,14 @@ use crate::error::ToDefaultMessage;
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/string.html#length>
 macro_rules! struct_string_length_params {
-    ($Param:tt, $limit:tt, $message:tt) => {
+    ($Params:tt, $limit:tt, $message:tt) => {
         #[derive(Debug, serde::Serialize)]
-        pub struct $Param {
+        pub struct $Params {
             value: String,
             $limit: usize,
         }
 
-        impl $Param {
+        impl $Params {
             pub fn new<T>(value: T, $limit: usize) -> Self
             where
                 T: PartialOrd + PartialEq + std::fmt::Debug,
@@ -38,7 +38,7 @@ macro_rules! struct_string_length_params {
             }
         }
 
-        impl ToDefaultMessage for $Param {
+        impl ToDefaultMessage for $Params {
             fn to_default_message(&self) -> String {
                 format!($message, self.$limit)
             }

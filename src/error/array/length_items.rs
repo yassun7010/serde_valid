@@ -4,14 +4,14 @@ use crate::error::ToDefaultMessage;
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/array.html#length>
 macro_rules! struct_array_length_params {
-    ($Param:tt, $limit:tt, $message:tt) => {
+    ($Params:tt, $limit:tt, $message:tt) => {
         #[derive(Debug)]
-        pub struct $Param {
+        pub struct $Params {
             items: Vec<String>,
             $limit: usize,
         }
 
-        impl $Param {
+        impl $Params {
             pub fn new<T>(items: &[T], $limit: usize) -> Self
             where
                 T: std::fmt::Debug,
@@ -33,7 +33,7 @@ macro_rules! struct_array_length_params {
             }
         }
 
-        impl ToDefaultMessage for $Param {
+        impl ToDefaultMessage for $Params {
             fn to_default_message(&self) -> String {
                 format!($message, self.$limit,)
             }

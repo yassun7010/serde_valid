@@ -1,14 +1,14 @@
 use crate::error::ToDefaultMessage;
 
 macro_rules! struct_numeric_range_params {
-    ($Param:tt, $limit:tt, $message:tt) => {
+    ($Params:tt, $limit:tt, $message:tt) => {
         #[derive(Debug)]
-        pub struct $Param {
+        pub struct $Params {
             value: String,
             $limit: String,
         }
 
-        impl $Param {
+        impl $Params {
             pub fn new<T>(value: T, $limit: T) -> Self
             where
                 T: PartialOrd + PartialEq + ToString,
@@ -30,7 +30,7 @@ macro_rules! struct_numeric_range_params {
             }
         }
 
-        impl ToDefaultMessage for $Param {
+        impl ToDefaultMessage for $Params {
             fn to_default_message(&self) -> String {
                 format!($message, self.$limit)
             }
