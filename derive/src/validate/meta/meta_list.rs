@@ -4,7 +4,6 @@ use super::nested_meta_path::extract_validator_from_nested_meta_path;
 use crate::types::Field;
 use crate::validate::common::extract_message_fn_tokens;
 use crate::validate::Validator;
-use syn::spanned::Spanned;
 
 pub fn extract_validator_from_meta_list(
     field: &impl Field,
@@ -23,7 +22,7 @@ pub fn extract_validator_from_meta_list(
         },
         _ => {
             for meta in nested.iter().skip(1) {
-                errors.push(crate::Error::too_many_list_items(meta.span()));
+                errors.push(crate::Error::too_many_list_items(meta));
             }
             None
         }
@@ -48,12 +47,12 @@ pub fn extract_validator_from_meta_list(
                 errors
             }),
             syn::NestedMeta::Lit(lit) => {
-                errors.push(crate::Error::validate_meta_literal_not_support(lit.span()));
+                errors.push(crate::Error::validate_meta_literal_not_support(lit));
                 Err(errors)
             }
         }
     } else {
-        errors.push(crate::Error::validate_type_required_error(attribute.span()));
+        errors.push(crate::Error::validate_type_required_error(attribute));
         Err(errors)
     }
 }

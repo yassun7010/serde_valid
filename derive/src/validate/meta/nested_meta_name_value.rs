@@ -18,7 +18,6 @@ use crate::validate::string::{
 use crate::validate::Validator;
 use proc_macro2::TokenStream;
 use std::str::FromStr;
-use syn::spanned::Spanned;
 
 pub fn extract_validator_from_nested_meta_name_value(
     field: &impl Field,
@@ -69,7 +68,7 @@ pub fn extract_validator_from_nested_meta_name_value(
             extract_string_pattern_validator(field, validation_value, message_fn)
         }
         Err(unknown) => Err(vec![crate::Error::validate_unknown_type(
-            validation_name.span(),
+            validation_name,
             &unknown,
             &MetaNameValueValidation::iter()
                 .map(|x| x.name())

@@ -2,6 +2,8 @@ use proc_macro2::TokenStream;
 use quote::quote;
 use syn::spanned::Spanned;
 
+use crate::types::CommaSeparatedNestedMetas;
+
 pub fn fields_errors_tokens() -> TokenStream {
     quote!(::serde_valid::validation::Errors::Fields(__errors))
 }
@@ -31,12 +33,12 @@ impl Error {
         Self::new(input.span(), "#[derive(Validate)] does not support Union.")
     }
 
-    pub fn rule_need_function(span: proc_macro2::Span) -> Self {
-        Self::new(span, "#[rule(???)] needs rule_fn.")
+    pub fn rule_need_function(path: &syn::Path) -> Self {
+        Self::new(path.span(), "#[rule(???)] needs rule_fn.")
     }
 
-    pub fn rule_allow_single_function(span: proc_macro2::Span) -> Self {
-        Self::new(span, "#[rule] allow single function.")
+    pub fn rule_allow_single_function(nested_meta: &syn::NestedMeta) -> Self {
+        Self::new(nested_meta.span(), "#[rule] allow single function.")
     }
 
     pub fn rule_need_arguments(path: &syn::Path) -> Self {
@@ -72,34 +74,34 @@ impl Error {
         Self::new(attribute.span(), format!("#[rule] parse error: {error}"))
     }
 
-    pub fn validate_meta_literal_not_support(span: proc_macro2::Span) -> Self {
-        Self::new(span, "#[validate(???)] does not support literal.")
+    pub fn validate_meta_literal_not_support(lit: &syn::Lit) -> Self {
+        Self::new(lit.span(), "#[validate(???)] does not support literal.")
     }
 
-    pub fn validate_meta_name_value_not_support(span: proc_macro2::Span) -> Self {
-        Self::new(span, "#[validate = ???] format does not support.")
-    }
-
-    pub fn validate_meta_name_value_need_value(
-        span: proc_macro2::Span,
-        validation_type: &str,
-    ) -> Self {
+    pub fn validate_meta_name_value_not_support(name_value: syn::MetaNameValue) -> Self {
         Self::new(
-            span,
+            name_value.span(),
+            "#[validate = ???] format does not support.",
+        )
+    }
+
+    pub fn validate_meta_name_value_need_value(path: &syn::Path, validation_type: &str) -> Self {
+        Self::new(
+            path.span(),
             format!("#[validate({validation_type} = ???)] needs validation value."),
         )
     }
 
-    pub fn validate_meta_path_need_value(span: proc_macro2::Span, validation_type: &str) -> Self {
+    pub fn validate_meta_path_need_value(path: &syn::Path, validation_type: &str) -> Self {
         Self::new(
-            span,
+            path.span(),
             format!("#[validate({validation_type}(???))] needs validation path."),
         )
     }
 
-    pub fn validate_meta_list_need_value(span: proc_macro2::Span, validation_type: &str) -> Self {
+    pub fn validate_meta_list_need_value(path: &syn::Path, validation_type: &str) -> Self {
         Self::new(
-            span,
+            path.span(),
             format!("#[validate({validation_type}(???, ...))] needs validation list."),
         )
     }
@@ -111,19 +113,15 @@ impl Error {
         )
     }
 
-    pub fn validate_type_required_error(span: proc_macro2::Span) -> Self {
-        Self::new(span, "#[validate(???)] needs validation type.")
+    pub fn validate_type_required_error(attribute: &syn::Attribute) -> Self {
+        Self::new(attribute.span(), "#[validate(???)] needs validation type.")
     }
 
-    pub fn validate_unknown_type(
-        span: proc_macro2::Span,
-        unknown: &str,
-        candidates: &[&str],
-    ) -> Self {
+    pub fn validate_unknown_type(path: &syn::Path, unknown: &str, candidates: &[&str]) -> Self {
         let filterd_candidates = did_you_mean(unknown, candidates).unwrap_or(candidates.to_vec());
 
         Self::new(
-            span,
+            path.span(),
             format!("Unknown: `{unknown}`. Is it one of the following?\n{filterd_candidates:#?}"),
         )
     }
@@ -132,27 +130,30 @@ impl Error {
         Self::new(path.span(), format!("`enumerate` need items."))
     }
 
-    pub fn validate_custom_need_item(span: proc_macro2::Span) -> Self {
-        Self::new(span, format!("`custom` need items."))
+    pub fn validate_custom_need_item(path: &syn::Path) -> Self {
+        Self::new(path.span(), format!("`custom` need items."))
     }
 
-    pub fn validate_custom_tail_error(span: proc_macro2::Span) -> Self {
-        Self::new(span, format!("`custom` support only 1 item."))
+    pub fn validate_custom_tail_error(nested: &CommaSeparatedNestedMetas) -> Self {
+        Self::new(nested.span(), format!("`custom` support only 1 item."))
     }
 
-    pub fn message_fn_need_item(span: proc_macro2::Span) -> Self {
-        Self::new(span, format!("`message_fn` need items."))
+    pub fn message_fn_need_item(path: &syn::Path) -> Self {
+        Self::new(path.span(), format!("`message_fn` need items."))
     }
 
-    pub fn message_fn_allow_name_path(span: proc_macro2::Span) -> Self {
+    pub fn message_fn_allow_name_path(nested_meta: &syn::NestedMeta) -> Self {
         Self::new(
-            span,
+            nested_meta.span(),
             format!("#[validate(..., message_fn(???))] allow only function name path."),
         )
     }
 
-    pub fn message_fn_tail_error(span: proc_macro2::Span) -> Self {
-        Self::new(span, format!("`message_fn` support only 1 item."))
+    pub fn message_fn_tail_error(nested_meta: &syn::NestedMeta) -> Self {
+        Self::new(
+            nested_meta.span(),
+            format!("`message_fn` support only 1 item."),
+        )
     }
 
     pub fn literal_only(meta: &syn::Meta) -> Self {
@@ -179,8 +180,8 @@ impl Error {
         Self::new(path.span(), "Path does not support.")
     }
 
-    pub fn too_many_list_items(span: proc_macro2::Span) -> Self {
-        Self::new(span, "Too many list items.")
+    pub fn too_many_list_items(nested_meta: &syn::NestedMeta) -> Self {
+        Self::new(nested_meta.span(), "Too many list items.")
     }
 
     pub fn to_compile_error(&self) -> TokenStream {

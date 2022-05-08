@@ -6,7 +6,6 @@ use crate::validate::generic::{
 use crate::validate::Validator;
 use proc_macro2::TokenStream;
 use std::str::FromStr;
-use syn::spanned::Spanned;
 
 pub fn extract_validator_from_nested_meta_list(
     field: &impl Field,
@@ -26,7 +25,7 @@ pub fn extract_validator_from_nested_meta_list(
         }
         Ok(MetaListValidation::Custom) => extract_generic_custom_validator(field, validation_list),
         Err(unknown) => Err(vec![crate::Error::validate_unknown_type(
-            validation_name.span(),
+            validation_name,
             &unknown,
             &MetaListValidation::iter()
                 .map(|x| x.name())

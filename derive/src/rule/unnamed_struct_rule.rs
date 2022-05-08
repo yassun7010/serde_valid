@@ -3,7 +3,6 @@ use std::collections::HashSet;
 use proc_macro2::TokenStream;
 use quote::{quote, ToTokens};
 use syn::parse_quote;
-use syn::spanned::Spanned;
 
 use crate::types::CommaSeparatedTokenStreams;
 
@@ -28,7 +27,7 @@ pub fn collect_rules_from_unnamed_struct(
                 }
             },
             Ok(_) => {
-                errors.push(crate::Error::rule_need_function(attribute.path.span()));
+                errors.push(crate::Error::rule_need_function(&attribute.path));
                 None
             }
             Err(error) => {
@@ -55,9 +54,9 @@ fn collect_rule(
     let mut errors = vec![];
 
     match nested.len() {
-        0 => Err(vec![crate::Error::rule_need_function(path.span())])?,
+        0 => Err(vec![crate::Error::rule_need_function(path)])?,
         2.. => nested.iter().skip(1).for_each(|nested_meta| {
-            errors.push(crate::Error::rule_allow_single_function(nested_meta.span()))
+            errors.push(crate::Error::rule_allow_single_function(nested_meta))
         }),
         _ => {}
     }

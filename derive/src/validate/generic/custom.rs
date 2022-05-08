@@ -2,7 +2,6 @@ use crate::types::Field;
 use crate::validate::Validator;
 use proc_macro2::TokenStream;
 use quote::quote;
-use syn::spanned::Spanned;
 
 pub fn extract_generic_custom_validator(
     field: &impl Field,
@@ -12,9 +11,9 @@ pub fn extract_generic_custom_validator(
     let field_ident = field.ident();
 
     let custom_fn_name = match nested.len() {
-        0 => Err(crate::Error::validate_custom_need_item(path.span())),
+        0 => Err(crate::Error::validate_custom_need_item(path)),
         1 => extract_custom_fn_name(&nested[0]),
-        _ => Err(crate::Error::validate_custom_tail_error(nested.span())),
+        _ => Err(crate::Error::validate_custom_tail_error(&nested)),
     }
     .map_err(|error| vec![error])?;
 
