@@ -136,7 +136,7 @@ If you want to check multi fields validation, you can use `#[rule]`.
 ```rust
 fn sample_rule(_val1: &i32, _val2: &str) -> Result<(), serde_valid::validation::Error> {
     Err(serde_valid::validation::Error::Custom(
-        "Rule error add to the first arg of the rule_method.".to_owned(),
+        "Rule error is added to the first arg of the rule_method.".to_owned(),
     ))
 }
 
@@ -156,7 +156,7 @@ assert_eq!(
     serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
     serde_json::to_string(&json!({
         "val2": [
-            "Rule error add to the first arg of the rule_method."
+            "Rule error is added to the first arg of the rule_method."
         ]
     }))
     .unwrap()
