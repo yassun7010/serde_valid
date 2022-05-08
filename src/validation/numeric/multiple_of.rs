@@ -1,6 +1,6 @@
 /// MultipleOf validation.
 ///
-/// See <https://json-schema.org/understanding-json-schema/reference/numeric.html#multiple_of>
+/// See <https://json-schema.org/understanding-json-schema/reference/numeric.html#multiples>
 pub trait ValidateNumericMultipleOf<T>
 where
     T: std::cmp::PartialEq + std::ops::Rem<Output = T> + num_traits::Zero,
