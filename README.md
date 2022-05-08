@@ -101,7 +101,7 @@ assert_eq!(
     serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
     serde_json::to_string(&json!({
         "val": [
-           "this is min custom message.",
+            "this is min custom message.",
             "this is max custom message."
         ]
     }))
