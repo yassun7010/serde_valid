@@ -8,6 +8,13 @@ You derive `Validate` trait, and write validation.
 
 ```rust
 #[derive(Validate)]
+struct SampleStruct {
+    #[validate(minimum = 0)]
+    #[validate(maximum = 10)]
+    val: i32,
+}
+
+#[derive(Validate)]
 enum SampleEnum {
     Named {
         #[validate]
@@ -18,13 +25,6 @@ enum SampleEnum {
         #[validate(maximum = 10)]
         i32,
     ),
-}
-
-#[derive(Validate)]
-struct SampleStruct {
-    #[validate(minimum = 0)]
-    #[validate(maximum = 10)]
-    val: i32,
 }
 
 let s = SampleEnum::Named {
