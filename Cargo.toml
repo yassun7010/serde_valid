@@ -1,7 +1,7 @@
 [package]
 name = "serde_valid"
 version = "0.1.0"
-authors = ["安谷尚人 <yasutani_naoto@uniquevision.co.jp>"]
+authors = ["yassun4dev <yassun4dev@outlook.com>"]
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
