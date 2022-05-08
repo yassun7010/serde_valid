@@ -5,13 +5,13 @@ pub trait ValidateNumericExclusiveMinimum<T>
 where
     T: PartialOrd + PartialEq,
 {
-    fn validate(&self, exclusive_minimum: T) -> bool;
+    fn check(&self, exclusive_minimum: T) -> bool;
 }
 
 macro_rules! impl_validate_numeric_exclusive_minimum {
     ($ty:ty) => {
         impl ValidateNumericExclusiveMinimum<$ty> for $ty {
-            fn validate(&self, exclusive_minimum: $ty) -> bool {
+            fn check(&self, exclusive_minimum: $ty) -> bool {
                 *self > exclusive_minimum
             }
         }
@@ -40,20 +40,20 @@ mod tests {
     #[test]
     fn test_validate_numeric_exclusive_minimum_is_true() {
         // Unspecified generic type:
-        assert!(ValidateNumericExclusiveMinimum::validate(&10, 9));
+        assert!(ValidateNumericExclusiveMinimum::check(&10, 9));
     }
 
     #[test]
     fn test_validate_numeric_exclusive_minimum_is_false() {
-        assert!(!ValidateNumericExclusiveMinimum::validate(&5, 6));
-        assert!(!ValidateNumericExclusiveMinimum::validate(&5, 5));
+        assert!(!ValidateNumericExclusiveMinimum::check(&5, 6));
+        assert!(!ValidateNumericExclusiveMinimum::check(&5, 5));
     }
 
     #[test]
     fn test_validate_numeric_exclusive_minimum_specified_type() {
-        assert!(ValidateNumericExclusiveMinimum::validate(&0.5, 0.2));
-        assert!(ValidateNumericExclusiveMinimum::validate(&5u8, 0));
-        assert!(ValidateNumericExclusiveMinimum::validate(&4u16, 0));
-        assert!(ValidateNumericExclusiveMinimum::validate(&6u32, 0));
+        assert!(ValidateNumericExclusiveMinimum::check(&0.5, 0.2));
+        assert!(ValidateNumericExclusiveMinimum::check(&5u8, 0));
+        assert!(ValidateNumericExclusiveMinimum::check(&4u16, 0));
+        assert!(ValidateNumericExclusiveMinimum::check(&6u32, 0));
     }
 }

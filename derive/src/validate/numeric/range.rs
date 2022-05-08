@@ -48,7 +48,7 @@ macro_rules! extract_numeric_range_validator{
                 message_fn.unwrap_or(quote!(::serde_valid::$ErrorParams::to_default_message));
 
             Ok(quote!(
-                if !::serde_valid::$validate_function::validate(
+                if !::serde_valid::$validate_function::check(
                     #field_ident,
                     #$limit,
                 ) {

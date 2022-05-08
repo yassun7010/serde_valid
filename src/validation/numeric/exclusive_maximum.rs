@@ -5,13 +5,13 @@ pub trait ValidateNumericExclusiveMaximum<T>
 where
     T: PartialOrd + PartialEq,
 {
-    fn validate(&self, exclusive_maximum: T) -> bool;
+    fn check(&self, exclusive_maximum: T) -> bool;
 }
 
 macro_rules! impl_validate_numeric_exclusive_maximum {
     ($ty:ty) => {
         impl ValidateNumericExclusiveMaximum<$ty> for $ty {
-            fn validate(&self, exclusive_maximum: $ty) -> bool {
+            fn check(&self, exclusive_maximum: $ty) -> bool {
                 *self < exclusive_maximum
             }
         }
@@ -40,20 +40,20 @@ mod tests {
     #[test]
     fn test_validate_numeric_exclusive_maximum_is_true() {
         // Unspecified generic type:
-        assert!(ValidateNumericExclusiveMaximum::validate(&10, 11));
+        assert!(ValidateNumericExclusiveMaximum::check(&10, 11));
     }
 
     #[test]
     fn test_validate_numeric_exclusive_maximum_is_false() {
-        assert!(!ValidateNumericExclusiveMaximum::validate(&5, 4));
-        assert!(!ValidateNumericExclusiveMaximum::validate(&10, 10));
+        assert!(!ValidateNumericExclusiveMaximum::check(&5, 4));
+        assert!(!ValidateNumericExclusiveMaximum::check(&10, 10));
     }
 
     #[test]
     fn test_validate_numeric_exclusive_maximum_specified_type() {
-        assert!(ValidateNumericExclusiveMaximum::validate(&0.2, 0.5));
-        assert!(ValidateNumericExclusiveMaximum::validate(&0, 5u8));
-        assert!(ValidateNumericExclusiveMaximum::validate(&0, 4u16));
-        assert!(ValidateNumericExclusiveMaximum::validate(&0, 6u32));
+        assert!(ValidateNumericExclusiveMaximum::check(&0.2, 0.5));
+        assert!(ValidateNumericExclusiveMaximum::check(&0, 5u8));
+        assert!(ValidateNumericExclusiveMaximum::check(&0, 4u16));
+        assert!(ValidateNumericExclusiveMaximum::check(&0, 6u32));
     }
 }

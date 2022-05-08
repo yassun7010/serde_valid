@@ -38,7 +38,7 @@ fn inner_extract_numeric_multiple_of_validator(
     ));
 
     Ok(quote!(
-        if !::serde_valid::ValidateNumericMultipleOf::validate(
+        if !::serde_valid::ValidateNumericMultipleOf::check(
             #field_ident,
             #multiple_of,
         ) {
