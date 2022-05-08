@@ -3,7 +3,6 @@ use crate::traits::Length;
 /// Length validation.
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/string.html#length>
-
 pub trait ValidateStringMinLength {
     fn check(&self, min_length: usize) -> bool;
 }
