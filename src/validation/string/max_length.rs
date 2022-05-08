@@ -3,11 +3,17 @@ use crate::traits::Length;
 /// Length validation.
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/string.html#length>
-pub fn validate_string_max_length<T>(value: &T, max_length: usize) -> bool
+pub trait ValidateStringMaxLength {
+    fn check(&self, max_length: usize) -> bool;
+}
+
+impl<T> ValidateStringMaxLength for T
 where
     T: Length + ?Sized,
 {
-    max_length >= value.length()
+    fn check(&self, max_length: usize) -> bool {
+        max_length >= self.length()
+    }
 }
 
 #[cfg(test)]
@@ -19,73 +25,79 @@ mod tests {
 
     #[test]
     fn test_validate_string_max_length_ascii_is_true() {
-        assert!(validate_string_max_length("abcde", 5));
-        assert!(validate_string_max_length("abcde", 6));
+        assert!(ValidateStringMaxLength::check(&"abcde", 5));
+        assert!(ValidateStringMaxLength::check(&"abcde", 6));
     }
 
     #[test]
     fn test_validate_string_max_length_unicode_is_true() {
-        assert!(validate_string_max_length("a̐éö̲", 3));
+        assert!(ValidateStringMaxLength::check(&"a̐éö̲", 3));
     }
 
     #[test]
     fn test_validate_string_max_length_japanese_is_true() {
-        assert!(validate_string_max_length("あ堯", 2));
+        assert!(ValidateStringMaxLength::check(&"あ堯", 2));
     }
 
     #[test]
     fn test_validate_string_max_length_emoji_is_true() {
-        assert!(validate_string_max_length("😍👺🙋🏽👨‍🎤👨‍👩‍👧‍👦", 5));
+        assert!(ValidateStringMaxLength::check(&"😍👺🙋🏽👨‍🎤👨‍👩‍👧‍👦", 5));
     }
 
     #[test]
     fn test_validate_string_max_length_string_type() {
-        assert!(validate_string_max_length(&String::from("abcde"), 5));
+        assert!(ValidateStringMaxLength::check(&String::from("abcde"), 5));
     }
 
     #[test]
     fn test_validate_string_max_length_cow_str_type() {
-        assert!(validate_string_max_length(&Cow::from("abcde"), 5));
+        assert!(ValidateStringMaxLength::check(&Cow::from("abcde"), 5));
     }
 
     #[test]
     fn test_validate_string_max_length_vec_u8_type() {
-        assert!(validate_string_max_length(&"abcde".as_bytes().to_vec(), 5));
+        assert!(ValidateStringMaxLength::check(
+            &"abcde".as_bytes().to_vec(),
+            5
+        ));
     }
 
     #[test]
     fn test_validate_string_max_length_vec_char_type() {
-        assert!(validate_string_max_length(&vec!['a', 'b', 'c'], 3));
+        assert!(ValidateStringMaxLength::check(&vec!['a', 'b', 'c'], 3));
     }
 
     #[test]
     fn test_validate_string_max_length_u8_array_type() {
-        assert!(validate_string_max_length("abcde".as_bytes(), 5));
+        assert!(ValidateStringMaxLength::check("abcde".as_bytes(), 5));
     }
 
     #[test]
     fn test_validate_string_max_length_char_array_type() {
-        assert!(validate_string_max_length(&['a', 'b', 'c'], 3));
+        assert!(ValidateStringMaxLength::check(&['a', 'b', 'c'], 3));
     }
 
     #[test]
     fn test_validate_string_max_length_os_str_type() {
-        assert!(validate_string_max_length(OsStr::new("fo�o"), 4));
+        assert!(ValidateStringMaxLength::check(&OsStr::new("fo�o"), 4));
     }
 
     #[test]
     fn test_validate_string_max_length_os_string_type() {
-        assert!(validate_string_max_length(&OsString::from("fo�o"), 4));
+        assert!(ValidateStringMaxLength::check(&OsString::from("fo�o"), 4));
     }
 
     #[test]
     fn test_validate_string_max_length_path_type() {
-        assert!(validate_string_max_length(Path::new("./foo/bar.txt"), 13));
+        assert!(ValidateStringMaxLength::check(
+            &Path::new("./foo/bar.txt"),
+            13
+        ));
     }
 
     #[test]
     fn test_validate_string_max_length_path_buf_type() {
-        assert!(validate_string_max_length(
+        assert!(ValidateStringMaxLength::check(
             &PathBuf::from("./foo/bar.txt"),
             13
         ));
