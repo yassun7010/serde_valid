@@ -45,7 +45,7 @@ pub fn expand_named_struct_derive(
     if errors.is_empty() {
         Ok(quote!(
             impl #impl_generics ::serde_valid::Validate for #ident #type_generics #where_clause {
-                fn validate(&self) -> Result<(), ::serde_valid::validation::Errors> {
+                fn validate(&self) -> std::result::Result<(), ::serde_valid::validation::Errors> {
                     let mut __errors = ::serde_valid::validation::MapErrors::new();
 
                     #validates

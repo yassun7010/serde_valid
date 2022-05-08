@@ -20,7 +20,7 @@ pub use validation::{
 };
 
 pub trait Validate {
-    fn validate(&self) -> Result<(), self::validation::Errors>;
+    fn validate(&self) -> std::result::Result<(), self::validation::Errors>;
 }
 
 pub use serde_valid_derive::Validate;
