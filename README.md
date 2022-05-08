@@ -4,7 +4,7 @@ This is [JSON Schema](https://json-schema.org/) based validation tool using with
 
 ## Usage
 
-You derive `Validate` trait, and write validation.
+You derive `Validate` trait, and write validations.
 
 ```rust
 #[derive(Validate)]
