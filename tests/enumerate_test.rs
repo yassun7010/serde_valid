@@ -2,7 +2,7 @@ use serde_json::json;
 use serde_valid::Validate;
 
 #[test]
-fn enumerate_integer_type_test() {
+fn enumerate_integer_type() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(enumerate(1, 2, 3))]
@@ -14,7 +14,7 @@ fn enumerate_integer_type_test() {
 }
 
 #[test]
-fn enumerate_float_type_test() {
+fn enumerate_float_type() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(enumerate(0.3, 1.2, 1.5))]
@@ -26,7 +26,7 @@ fn enumerate_float_type_test() {
 }
 
 #[test]
-fn enumerate_str_type_test() {
+fn enumerate_str_type() {
     #[derive(Validate)]
     struct TestStruct<'a> {
         #[validate(enumerate("a", "b"))]
@@ -38,7 +38,7 @@ fn enumerate_str_type_test() {
 }
 
 #[test]
-fn enumerate_string_type_test() {
+fn enumerate_string_type() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(enumerate("a", "b"))]
@@ -52,7 +52,7 @@ fn enumerate_string_type_test() {
 }
 
 #[test]
-fn enumerate_vec_type_test() {
+fn enumerate_vec_type() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(enumerate(1, 2, 3, 4, 5))]
@@ -64,7 +64,7 @@ fn enumerate_vec_type_test() {
 }
 
 #[test]
-fn enumerate_option_type_test() {
+fn enumerate_option_type() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(enumerate(1, 2, 3))]
@@ -76,7 +76,7 @@ fn enumerate_option_type_test() {
 }
 
 #[test]
-fn enumerate_vec_option_type_test() {
+fn enumerate_vec_option_type() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(enumerate(3))]
@@ -88,7 +88,7 @@ fn enumerate_vec_option_type_test() {
 }
 
 #[test]
-fn enumerate_is_err_test() {
+fn enumerate_is_err() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(enumerate(0.3, 1.2, 1.5))]
@@ -100,7 +100,7 @@ fn enumerate_is_err_test() {
 }
 
 #[test]
-fn enumerate_err_message_test() {
+fn enumerate_err_message() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(enumerate(1, 2, 3))]
@@ -121,14 +121,14 @@ fn enumerate_err_message_test() {
 }
 
 #[test]
-fn enumerate_custom_err_message_fn_test() {
-    fn error_message(_params: &serde_valid::validation::error::EnumerateParams) -> String {
+fn enumerate_custom_err_message_fn() {
+    fn error_message(_params: &serde_valid::error::EnumerateErrorParams) -> String {
         "this is custom message.".to_string()
     }
 
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(enumerate(1, 2, 3, message_fn(error_message)))]
+        #[validate(enumerate(1, 2, 3), message_fn(error_message))]
         val: i32,
     }
 
@@ -146,10 +146,10 @@ fn enumerate_custom_err_message_fn_test() {
 }
 
 #[test]
-fn enumerate_custom_err_message_test() {
+fn enumerate_custom_err_message() {
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(enumerate(1, 2, 3, message = "this is custom message."))]
+        #[validate(enumerate(1, 2, 3), message = "this is custom message.")]
         val: i32,
     }
 

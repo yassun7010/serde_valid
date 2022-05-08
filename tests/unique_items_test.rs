@@ -2,7 +2,7 @@ use serde_json::json;
 use serde_valid::Validate;
 
 #[test]
-fn unique_items_vec_type_test() {
+fn unique_items_vec_type() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(unique_items)]
@@ -16,7 +16,7 @@ fn unique_items_vec_type_test() {
 }
 
 #[test]
-fn unique_items_slice_type_test() {
+fn unique_items_slice_type() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(unique_items)]
@@ -28,7 +28,7 @@ fn unique_items_slice_type_test() {
 }
 
 #[test]
-fn unique_items_is_err_test() {
+fn unique_items_is_err() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(unique_items)]
@@ -40,7 +40,7 @@ fn unique_items_is_err_test() {
 }
 
 #[test]
-fn unique_items_err_message_test() {
+fn unique_items_err_message() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(unique_items)]
@@ -63,14 +63,14 @@ fn unique_items_err_message_test() {
 }
 
 #[test]
-fn unique_items_custom_err_message_fn_test() {
-    fn error_message(_params: &serde_valid::validation::error::UniqueItemsParams) -> String {
+fn unique_items_custom_err_message_fn() {
+    fn error_message(_params: &serde_valid::UniqueItemsErrorParams) -> String {
         "this is custom message.".to_string()
     }
 
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(unique_items(message_fn(error_message)))]
+        #[validate(unique_items, message_fn(error_message))]
         val: Vec<i32>,
     }
 
@@ -90,10 +90,10 @@ fn unique_items_custom_err_message_fn_test() {
 }
 
 #[test]
-fn unique_items_custom_err_message_test() {
+fn unique_items_custom_err_message() {
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(unique_items(message = "this is custom message."))]
+        #[validate(unique_items, message = "this is custom message.")]
         val: Vec<i32>,
     }
 

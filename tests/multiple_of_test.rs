@@ -2,7 +2,7 @@ use serde_json::json;
 use serde_valid::Validate;
 
 #[test]
-fn multiple_of_integer_is_ok_test() {
+fn multiple_of_integer_is_ok() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(multiple_of = 5)]
@@ -14,7 +14,7 @@ fn multiple_of_integer_is_ok_test() {
 }
 
 #[test]
-fn multiple_of_float_is_ok_test() {
+fn multiple_of_float_is_ok() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(multiple_of = 1.0)]
@@ -26,7 +26,7 @@ fn multiple_of_float_is_ok_test() {
 }
 
 #[test]
-fn multiple_of_integer_is_err_test() {
+fn multiple_of_integer_is_err() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(multiple_of = 3)]
@@ -38,7 +38,7 @@ fn multiple_of_integer_is_err_test() {
 }
 
 #[test]
-fn multiple_of_float_is_err_test() {
+fn multiple_of_float_is_err() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(multiple_of = 0.5)]
@@ -50,7 +50,7 @@ fn multiple_of_float_is_err_test() {
 }
 
 #[test]
-fn multiple_of_vec_type_is_ok_test() {
+fn multiple_of_vec_type_is_ok() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(multiple_of = 4)]
@@ -62,7 +62,7 @@ fn multiple_of_vec_type_is_ok_test() {
 }
 
 #[test]
-fn multiple_of_nested_vec_type_is_ok_test() {
+fn multiple_of_nested_vec_type_is_ok() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(multiple_of = 4)]
@@ -76,7 +76,7 @@ fn multiple_of_nested_vec_type_is_ok_test() {
 }
 
 #[test]
-fn multiple_of_optional_type_is_ok_test() {
+fn multiple_of_optional_type_is_ok() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(multiple_of = 4)]
@@ -88,7 +88,7 @@ fn multiple_of_optional_type_is_ok_test() {
 }
 
 #[test]
-fn multiple_of_nested_optional_type_is_ok_test() {
+fn multiple_of_nested_optional_type_is_ok() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(multiple_of = 4)]
@@ -102,7 +102,7 @@ fn multiple_of_nested_optional_type_is_ok_test() {
 }
 
 #[test]
-fn multiple_of_vec_optional_type_is_ok_test() {
+fn multiple_of_vec_optional_type_is_ok() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(multiple_of = 4)]
@@ -116,7 +116,7 @@ fn multiple_of_vec_optional_type_is_ok_test() {
 }
 
 #[test]
-fn multiple_of_err_message_test() {
+fn multiple_of_err_message() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(multiple_of = 5)]
@@ -137,14 +137,14 @@ fn multiple_of_err_message_test() {
 }
 
 #[test]
-fn multiple_of_custom_err_message_fn_test() {
-    fn error_message(_params: &serde_valid::validation::error::MultipleOfParams) -> String {
+fn multiple_of_custom_err_message_fn() {
+    fn error_message(_params: &serde_valid::MultipleOfErrorParams) -> String {
         "this is custom message.".to_string()
     }
 
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(multiple_of(5, message_fn(error_message)))]
+        #[validate(multiple_of = 5, message_fn(error_message))]
         val: i32,
     }
 
@@ -162,10 +162,10 @@ fn multiple_of_custom_err_message_fn_test() {
 }
 
 #[test]
-fn multiple_of_custom_err_message_test() {
+fn multiple_of_custom_err_message() {
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(multiple_of(5, message = "this is custom message."))]
+        #[validate(multiple_of = 5, message = "this is custom message.")]
         val: i32,
     }
 

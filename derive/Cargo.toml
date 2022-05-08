@@ -2,7 +2,7 @@
 name = "serde_valid_derive"
 version = "0.1.0"
 authors = ["安谷尚人 <yasutani_naoto@uniquevision.co.jp>"]
-edition = "2018"
+edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -13,4 +13,5 @@ proc-macro = true
 proc-macro-error = "1.0"
 proc-macro2 = "^1.0"
 quote = "^1.0"
+strsim = "0.10.0"
 syn = { version = "^1.0", features = ["extra-traits"] }

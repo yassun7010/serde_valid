@@ -4,10 +4,11 @@ use std::borrow::Cow;
 use std::ffi::{OsStr, OsString};
 
 #[test]
-fn length_string_type_test() {
+fn length_string_type() {
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(length(min_length = 4, max_length = 4))]
+        #[validate(min_length = 4)]
+        #[validate(max_length = 4)]
         val: String,
     }
 
@@ -18,10 +19,11 @@ fn length_string_type_test() {
 }
 
 #[test]
-fn length_str_type_test() {
+fn length_str_type() {
     #[derive(Validate)]
     struct TestStruct<'a> {
-        #[validate(length(min_length = 4, max_length = 4))]
+        #[validate(min_length = 4)]
+        #[validate(max_length = 4)]
         val: &'a str,
     }
 
@@ -30,10 +32,11 @@ fn length_str_type_test() {
 }
 
 #[test]
-fn length_cow_str_type_test() {
+fn length_cow_str_type() {
     #[derive(Validate)]
     struct TestStruct<'a> {
-        #[validate(length(min_length = 4, max_length = 4))]
+        #[validate(min_length = 4)]
+        #[validate(max_length = 4)]
         val: Cow<'a, str>,
     }
 
@@ -44,10 +47,11 @@ fn length_cow_str_type_test() {
 }
 
 #[test]
-fn length_vec_u8_type_test() {
+fn length_vec_u8_type() {
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(length(min_length = 4, max_length = 4))]
+        #[validate(min_length = 4)]
+        #[validate(max_length = 4)]
         val: Vec<u8>,
     }
 
@@ -58,10 +62,11 @@ fn length_vec_u8_type_test() {
 }
 
 #[test]
-fn length_vec_char_type_test() {
+fn length_vec_char_type() {
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(length(min_length = 4, max_length = 4))]
+        #[validate(min_length = 4)]
+        #[validate(max_length = 4)]
         val: Vec<char>,
     }
 
@@ -72,10 +77,11 @@ fn length_vec_char_type_test() {
 }
 
 #[test]
-fn length_u8_array_type_test() {
+fn length_u8_array_type() {
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(length(min_length = 4, max_length = 4))]
+        #[validate(min_length = 4)]
+        #[validate(max_length = 4)]
         val: [u8; 4],
     }
 
@@ -86,10 +92,11 @@ fn length_u8_array_type_test() {
 }
 
 #[test]
-fn length_char_array_type_test() {
+fn length_char_array_type() {
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(length(min_length = 4, max_length = 4))]
+        #[validate(min_length = 4)]
+        #[validate(max_length = 4)]
         val: [char; 4],
     }
 
@@ -100,10 +107,11 @@ fn length_char_array_type_test() {
 }
 
 #[test]
-fn length_os_str_type_test() {
+fn length_os_str_type() {
     #[derive(Validate)]
     struct TestStruct<'a> {
-        #[validate(length(min_length = 4, max_length = 4))]
+        #[validate(min_length = 4)]
+        #[validate(max_length = 4)]
         val: &'a OsStr,
     }
 
@@ -114,10 +122,11 @@ fn length_os_str_type_test() {
 }
 
 #[test]
-fn length_os_string_type_test() {
+fn length_os_string_type() {
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(length(min_length = 4, max_length = 4))]
+        #[validate(min_length = 4)]
+        #[validate(max_length = 4)]
         val: OsString,
     }
 
@@ -128,10 +137,11 @@ fn length_os_string_type_test() {
 }
 
 #[test]
-fn length_path_type_test() {
+fn length_path_type() {
     #[derive(Validate)]
     struct TestStruct<'a> {
-        #[validate(length(min_length = 13, max_length = 13))]
+        #[validate(min_length = 13)]
+        #[validate(max_length = 13)]
         val: &'a std::path::Path,
     }
 
@@ -142,10 +152,11 @@ fn length_path_type_test() {
 }
 
 #[test]
-fn length_path_buf_type_test() {
+fn length_path_buf_type() {
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(length(min_length = 13, max_length = 13))]
+        #[validate(min_length = 13)]
+        #[validate(max_length = 13)]
         val: std::path::PathBuf,
     }
 
@@ -156,10 +167,11 @@ fn length_path_buf_type_test() {
 }
 
 #[test]
-fn length_min_length_is_ok_test() {
+fn length_min_length_is_ok() {
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(length(min_length = 0, max_length = 10))]
+        #[validate(min_length = 0)]
+        #[validate(max_length = 10)]
         val: String,
     }
 
@@ -168,10 +180,11 @@ fn length_min_length_is_ok_test() {
 }
 
 #[test]
-fn length_min_length_is_err_test() {
+fn length_min_length_is_err() {
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(length(min_length = 1, max_length = 10))]
+        #[validate(min_length = 1)]
+        #[validate(max_length = 10)]
         val: String,
     }
 
@@ -180,10 +193,11 @@ fn length_min_length_is_err_test() {
 }
 
 #[test]
-fn length_max_length_is_ok_test() {
+fn length_max_length_is_ok() {
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(length(min_length = 0, max_length = 5))]
+        #[validate(min_length = 0)]
+        #[validate(max_length = 5)]
         val: String,
     }
 
@@ -194,10 +208,11 @@ fn length_max_length_is_ok_test() {
 }
 
 #[test]
-fn length_max_length_is_err_test() {
+fn length_max_length_is_err() {
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(length(min_length = 1, max_length = 3))]
+        #[validate(min_length = 1)]
+        #[validate(max_length = 3)]
         val: String,
     }
 
@@ -208,10 +223,11 @@ fn length_max_length_is_err_test() {
 }
 
 #[test]
-fn length_vec_type_is_ok_test() {
+fn length_vec_type_is_ok() {
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(length(min_length = 0, max_length = 4))]
+        #[validate(min_length = 0)]
+        #[validate(min_length = 0)]
         val: Vec<String>,
     }
 
@@ -222,10 +238,11 @@ fn length_vec_type_is_ok_test() {
 }
 
 #[test]
-fn length_nested_vec_type_is_ok_test() {
+fn length_nested_vec_type_is_ok() {
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(length(min_length = 0, max_length = 3))]
+        #[validate(min_length = 0)]
+        #[validate(max_length = 3)]
         val: Vec<Vec<String>>,
     }
 
@@ -239,10 +256,11 @@ fn length_nested_vec_type_is_ok_test() {
 }
 
 #[test]
-fn length_option_type_is_ok_test() {
+fn length_option_type_is_ok() {
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(length(min_length = 0, max_length = 5))]
+        #[validate(min_length = 0)]
+        #[validate(max_length = 5)]
         val: Option<String>,
     }
 
@@ -253,10 +271,11 @@ fn length_option_type_is_ok_test() {
 }
 
 #[test]
-fn length_nested_option_type_is_ok_test() {
+fn length_nested_option_type_is_ok() {
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(length(min_length = 0, max_length = 5))]
+        #[validate(min_length = 0)]
+        #[validate(max_length = 5)]
         val: Option<Option<String>>,
     }
 
@@ -267,10 +286,11 @@ fn length_nested_option_type_is_ok_test() {
 }
 
 #[test]
-fn length_vec_optional_type_is_ok_test() {
+fn length_vec_optional_type_is_ok() {
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(length(min_length = 0, max_length = 5))]
+        #[validate(min_length = 0)]
+        #[validate(max_length = 5)]
         val: Vec<Option<String>>,
     }
 
@@ -281,10 +301,11 @@ fn length_vec_optional_type_is_ok_test() {
 }
 
 #[test]
-fn length_err_message_test() {
+fn length_err_message() {
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(length(min_length = 1, max_length = 3))]
+        #[validate(min_length = 1)]
+        #[validate(max_length = 3)]
         val: String,
     }
 
@@ -296,7 +317,7 @@ fn length_err_message_test() {
         serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
         serde_json::to_string(&json!({
             "val": [
-                "length of \"test\" must be in `1 <= length <= 3`, but not."
+                "the length of the value must be `<= 3`."
             ]
         }))
         .unwrap()
@@ -304,14 +325,19 @@ fn length_err_message_test() {
 }
 
 #[test]
-fn length_custom_err_message_fn_test() {
-    fn error_message(_params: &serde_valid::validation::error::LengthParams) -> String {
-        "this is custom message.".to_string()
+fn length_custom_err_message_fn() {
+    fn custom_min_error_message(_params: &serde_valid::MinLengthErrorParams) -> String {
+        "this is min custom message.".to_string()
+    }
+
+    fn custom_max_error_message(_params: &serde_valid::MaxLengthErrorParams) -> String {
+        "this is max custom message.".to_string()
     }
 
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(length(min_length = 1, max_length = 3, message_fn(error_message)))]
+        #[validate(min_length = 5, message_fn(custom_min_error_message))]
+        #[validate(max_length = 3, message_fn(custom_max_error_message))]
         val: String,
     }
 
@@ -323,7 +349,8 @@ fn length_custom_err_message_fn_test() {
         serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
         serde_json::to_string(&json!({
             "val": [
-                "this is custom message."
+                "this is min custom message.",
+                "this is max custom message."
             ]
         }))
         .unwrap()
@@ -331,10 +358,11 @@ fn length_custom_err_message_fn_test() {
 }
 
 #[test]
-fn length_custom_err_message_test() {
+fn length_custom_err_message() {
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(length(min_length = 1, max_length = 3, message = "this is custom message."))]
+        #[validate(min_length = 5, message = "this is min custom message.")]
+        #[validate(max_length = 3, message = "this is max custom message.")]
         val: String,
     }
 
@@ -346,7 +374,8 @@ fn length_custom_err_message_test() {
         serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
         serde_json::to_string(&json!({
             "val": [
-                "this is custom message."
+                "this is min custom message.",
+                "this is max custom message."
             ]
         }))
         .unwrap()

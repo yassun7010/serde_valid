@@ -4,7 +4,7 @@ use std::borrow::Cow;
 use std::ffi::{OsStr, OsString};
 
 #[test]
-fn pattern_string_type_test() {
+fn pattern_string_type() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(pattern = r"^\d{4}-\d{2}-\d{2}$")]
@@ -18,7 +18,7 @@ fn pattern_string_type_test() {
 }
 
 #[test]
-fn pattern_str_type_test() {
+fn pattern_str_type() {
     #[derive(Validate)]
     struct TestStruct<'a> {
         #[validate(pattern = r"^\d{4}-\d{2}-\d{2}$")]
@@ -30,7 +30,7 @@ fn pattern_str_type_test() {
 }
 
 #[test]
-fn pattern_cow_str_type_test() {
+fn pattern_cow_str_type() {
     #[derive(Validate)]
     struct TestStruct<'a> {
         #[validate(pattern = r"^\d{4}-\d{2}-\d{2}$")]
@@ -44,7 +44,7 @@ fn pattern_cow_str_type_test() {
 }
 
 #[test]
-fn pattern_os_str_type_test() {
+fn pattern_os_str_type() {
     #[derive(Validate)]
     struct TestStruct<'a> {
         #[validate(pattern = r"^\d{4}-\d{2}-\d{2}$")]
@@ -58,7 +58,7 @@ fn pattern_os_str_type_test() {
 }
 
 #[test]
-fn pattern_os_string_type_test() {
+fn pattern_os_string_type() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(pattern = r"^\d{4}-\d{2}-\d{2}$")]
@@ -72,7 +72,7 @@ fn pattern_os_string_type_test() {
 }
 
 #[test]
-fn pattern_path_type_test() {
+fn pattern_path_type() {
     #[derive(Validate)]
     struct TestStruct<'a> {
         #[validate(pattern = r"^\d{4}-\d{2}-\d{2}$")]
@@ -86,7 +86,7 @@ fn pattern_path_type_test() {
 }
 
 #[test]
-fn pattern_path_buf_type_test() {
+fn pattern_path_buf_type() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(pattern = r"^\d{4}-\d{2}-\d{2}$")]
@@ -100,7 +100,7 @@ fn pattern_path_buf_type_test() {
 }
 
 #[test]
-fn pattern_is_err_test() {
+fn pattern_is_err() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(pattern = r"^\d{4}-\d{2}-\d{2}$")]
@@ -114,7 +114,7 @@ fn pattern_is_err_test() {
 }
 
 #[test]
-fn pattern_vec_type_is_ok_test() {
+fn pattern_vec_type_is_ok() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(pattern = r"^\d{4}-\d{2}-\d{2}$")]
@@ -128,7 +128,7 @@ fn pattern_vec_type_is_ok_test() {
 }
 
 #[test]
-fn pattern_nested_vec_type_is_ok_test() {
+fn pattern_nested_vec_type_is_ok() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(pattern = r"^\d{4}-\d{2}-\d{2}$")]
@@ -145,7 +145,7 @@ fn pattern_nested_vec_type_is_ok_test() {
 }
 
 #[test]
-fn pattern_option_type_is_ok_test() {
+fn pattern_option_type_is_ok() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(pattern = r"^\d{4}-\d{2}-\d{2}$")]
@@ -159,7 +159,7 @@ fn pattern_option_type_is_ok_test() {
 }
 
 #[test]
-fn pattern_nested_option_type_is_ok_test() {
+fn pattern_nested_option_type_is_ok() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(pattern = r"^\d{4}-\d{2}-\d{2}$")]
@@ -173,7 +173,7 @@ fn pattern_nested_option_type_is_ok_test() {
 }
 
 #[test]
-fn pattern_vec_optional_type_is_ok_test() {
+fn pattern_vec_optional_type_is_ok() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(pattern = r"^\d{4}-\d{2}-\d{2}$")]
@@ -191,7 +191,7 @@ fn pattern_vec_optional_type_is_ok_test() {
 }
 
 #[test]
-fn pattern_err_message_test() {
+fn pattern_err_message() {
     #[derive(Validate)]
     struct TestStruct {
         #[validate(pattern = r"^\d{4}-\d{2}-\d{2}$")]
@@ -214,14 +214,14 @@ fn pattern_err_message_test() {
 }
 
 #[test]
-fn pattern_custom_err_message_fn_test() {
-    fn error_message(_params: &serde_valid::validation::error::PatternParams) -> String {
+fn pattern_custom_err_message_fn() {
+    fn error_message(_params: &serde_valid::PatternErrorParams) -> String {
         "this is custom message.".to_string()
     }
 
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(pattern(r"^\d{4}-\d{2}-\d{2}$", message_fn(error_message)))]
+        #[validate(pattern = r"^\d{4}-\d{2}-\d{2}$", message_fn(error_message))]
         val: String,
     }
 
@@ -241,10 +241,10 @@ fn pattern_custom_err_message_fn_test() {
 }
 
 #[test]
-fn pattern_custom_err_message_test() {
+fn pattern_custom_err_message() {
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(pattern(r"^\d{4}-\d{2}-\d{2}$", message = "this is custom message."))]
+        #[validate(pattern = r"^\d{4}-\d{2}-\d{2}$", message = "this is custom message.")]
         val: String,
     }
 

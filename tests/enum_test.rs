@@ -1,7 +1,7 @@
 use serde_valid::Validate;
 
 #[test]
-fn enum_named_variant_validation_is_ok_test() {
+fn enum_named_variant_validation_is_ok() {
     #[derive(Validate)]
     enum TestEnum {
         Named {
@@ -12,31 +12,33 @@ fn enum_named_variant_validation_is_ok_test() {
 
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(range(minimum = 0, maximum = 10))]
+        #[validate(minimum = 0)]
+        #[validate(maximum = 10)]
         val: i32,
     }
 
     let s = TestEnum::Named {
-        a: TestStruct { val: 5 },
+        a: TestStruct { val: 12 },
     };
-    assert!(s.validate().is_ok());
+    assert!(s.validate().is_err());
 }
 
 #[test]
-fn enum_unnamed_variant_validation_is_ok_test() {
+fn enum_unnamed_variant_validation_is_ok() {
     #[derive(Validate)]
     enum TestEnum {
-        #[allow(dead_code)]
-        NewType(#[validate(range(minimum = 0, maximum = 10))] i32),
         UnNamed(
-            #[validate(range(minimum = 0, maximum = 10))] i32,
+            #[validate(minimum = 0)]
+            #[validate(maximum = 10)]
+            i32,
             #[validate] TestStruct,
         ),
     }
 
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(range(minimum = 0, maximum = 10))]
+        #[validate(minimum = 0)]
+        #[validate(maximum = 10)]
         val: i32,
     }
 
@@ -45,23 +47,16 @@ fn enum_unnamed_variant_validation_is_ok_test() {
 }
 
 #[test]
-fn enum_newtype_variant_validation_is_ok_test() {
+fn enum_newtype_variant_validation_is_ok() {
     #[derive(Validate)]
     enum TestEnum {
-        NewType(#[validate(range(minimum = 0, maximum = 10))] i32),
-        #[allow(dead_code)]
-        UnNamed(
-            #[validate(range(minimum = 0, maximum = 10))] i32,
-            #[validate] TestStruct,
+        NewType(
+            #[validate(minimum = 0)]
+            #[validate(maximum = 10)]
+            i32,
         ),
     }
 
-    #[derive(Validate)]
-    struct TestStruct {
-        #[validate(range(minimum = 0, maximum = 10))]
-        val: i32,
-    }
-
-    let s = TestEnum::NewType(5);
-    assert!(s.validate().is_ok());
+    let s = TestEnum::NewType(15);
+    assert!(s.validate().is_err());
 }

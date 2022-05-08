@@ -1,4 +1,20 @@
+mod array;
+mod generic;
+mod message;
+mod numeric;
+mod object;
+mod string;
+
 use crate::validation;
+pub use array::{MaxItemsErrorParams, MinItemsErrorParams, UniqueItemsErrorParams};
+pub use generic::EnumerateErrorParams;
+pub use message::{Message, ToDefaultMessage};
+pub use numeric::{
+    ExclusiveMaximumErrorParams, ExclusiveMinimumErrorParams, MaximumErrorParams,
+    MinimumErrorParams, MultipleOfErrorParams,
+};
+pub use object::{MaxPropertiesErrorParams, MinPropertiesErrorParams};
+pub use string::{MaxLengthErrorParams, MinLengthErrorParams, PatternErrorParams};
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error<E>

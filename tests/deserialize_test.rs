@@ -3,10 +3,11 @@ use serde_json::json;
 use serde_valid::Validate;
 
 #[test]
-fn deserialize_with_validation_from_value_is_ok_test() {
+fn deserialize_with_validation_from_value_is_ok() {
     #[derive(Debug, Validate, Deserialize)]
     struct TestStruct {
-        #[validate(range(minimum = 0, maximum = 2000))]
+        #[validate(minimum = 0)]
+        #[validate(maximum = 2000)]
         val: i32,
     }
 
@@ -14,10 +15,11 @@ fn deserialize_with_validation_from_value_is_ok_test() {
 }
 
 #[test]
-fn deserialize_with_validation_from_str_is_ok_test() {
+fn deserialize_with_validation_from_str_is_ok() {
     #[derive(Debug, Validate, Deserialize)]
     struct TestStruct {
-        #[validate(range(minimum = 0, maximum = 2000))]
+        #[validate(minimum = 0)]
+        #[validate(maximum = 2000)]
         val: i32,
     }
 
@@ -28,10 +30,11 @@ fn deserialize_with_validation_from_str_is_ok_test() {
 }
 
 #[test]
-fn deserialize_with_validation_from_slice_is_ok_test() {
+fn deserialize_with_validation_from_slice_is_ok() {
     #[derive(Debug, Validate, Deserialize)]
     struct TestStruct {
-        #[validate(range(minimum = 0, maximum = 2000))]
+        #[validate(minimum = 0)]
+        #[validate(maximum = 2000)]
         val: i32,
     }
 
@@ -39,10 +42,11 @@ fn deserialize_with_validation_from_slice_is_ok_test() {
 }
 
 #[test]
-fn deserialize_validation_err_to_string_test() {
+fn deserialize_validation_err_to_string() {
     #[derive(Debug, Validate, Deserialize)]
     struct TestStruct {
-        #[validate(range(minimum = 0, maximum = 1000))]
+        #[validate(minimum = 0)]
+        #[validate(maximum = 1000)]
         val: i32,
     }
 
@@ -50,15 +54,16 @@ fn deserialize_validation_err_to_string_test() {
 
     assert_eq!(
         serde_json::from_str::<serde_json::Value>(&err.to_string()).unwrap(),
-        json!({"val": ["`1234` must be in `0 <= value <= 1000`, but not."]})
+        json!({"val": ["the number must be `<= 1000`."]})
     );
 }
 
 #[test]
-fn deserialize_validation_err_to_json_value_test() {
+fn deserialize_validation_err_to_json_value() {
     #[derive(Debug, Validate, Deserialize)]
     struct TestStruct {
-        #[validate(range(minimum = 0, maximum = 1000))]
+        #[validate(minimum = 0)]
+        #[validate(maximum = 1000)]
         val: i32,
     }
 
@@ -66,6 +71,6 @@ fn deserialize_validation_err_to_json_value_test() {
 
     assert_eq!(
         serde_json::to_value(err.as_validation_errors().unwrap()).unwrap(),
-        json!({"val": ["`1234` must be in `0 <= value <= 1000`, but not."]})
+        json!({"val": ["the number must be `<= 1000`."]})
     );
 }

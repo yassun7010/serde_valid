@@ -11,7 +11,7 @@ pub trait Field {
 
     fn ident(&self) -> &syn::Ident;
 
-    fn ident_tokens(&self) -> proc_macro2::TokenStream;
+    fn getter_token(&self) -> proc_macro2::TokenStream;
 
     fn attrs(&self) -> &Vec<syn::Attribute>;
 
