@@ -141,7 +141,7 @@ fn enumerate_err_message() {
         serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
         serde_json::to_string(&json!({
             "val": [
-                "value must be in [1, 2, 3]."
+                "the value must be in [1, 2, 3]."
             ]
         }))
         .unwrap()

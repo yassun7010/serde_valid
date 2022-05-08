@@ -23,6 +23,6 @@ impl MultipleOfErrorParams {
 
 impl ToDefaultMessage for MultipleOfErrorParams {
     fn to_default_message(&self) -> String {
-        format!("value must be multiple of `{}`.", self.multiple_of)
+        format!("the value must be multiple of `{}`.", self.multiple_of)
     }
 }

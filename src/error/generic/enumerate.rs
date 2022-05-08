@@ -23,6 +23,6 @@ impl EnumerateErrorParams {
 
 impl ToDefaultMessage for EnumerateErrorParams {
     fn to_default_message(&self) -> String {
-        format!("value must be in {}.", self.enumerate)
+        format!("the value must be in {}.", self.enumerate)
     }
 }
