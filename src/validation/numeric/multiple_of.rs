@@ -1,12 +1,37 @@
 /// MultipleOf validation.
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/numeric.html#multiple_of>
-pub fn validate_numeric_multiple_of<T>(value: T, multiple_of: T) -> bool
+pub trait ValidateNumericMultipleOf<T>
 where
-    T: PartialEq + std::ops::Rem<Output = T> + num_traits::Zero,
+    T: std::cmp::PartialEq + std::ops::Rem<Output = T> + num_traits::Zero,
 {
-    value % multiple_of == T::zero()
+    fn validate(&self, multiple_of: T) -> bool;
 }
+
+macro_rules! impl_validate_numeric_multiple_of {
+    ($ty:ty) => {
+        impl ValidateNumericMultipleOf<$ty> for $ty {
+            fn validate(&self, multiple_of: $ty) -> bool {
+                std::cmp::PartialEq::<$ty>::eq(&(*self % multiple_of), &num_traits::Zero::zero())
+            }
+        }
+    };
+}
+
+impl_validate_numeric_multiple_of!(i8);
+impl_validate_numeric_multiple_of!(i16);
+impl_validate_numeric_multiple_of!(i32);
+impl_validate_numeric_multiple_of!(i64);
+impl_validate_numeric_multiple_of!(i128);
+impl_validate_numeric_multiple_of!(isize);
+impl_validate_numeric_multiple_of!(u8);
+impl_validate_numeric_multiple_of!(u16);
+impl_validate_numeric_multiple_of!(u32);
+impl_validate_numeric_multiple_of!(u64);
+impl_validate_numeric_multiple_of!(u128);
+impl_validate_numeric_multiple_of!(usize);
+impl_validate_numeric_multiple_of!(f32);
+impl_validate_numeric_multiple_of!(f64);
 
 #[cfg(test)]
 mod tests {
@@ -14,23 +39,23 @@ mod tests {
 
     #[test]
     fn test_validate_numeric_multiple_of_integer_is_true() {
-        assert!(validate_numeric_multiple_of(10, 5));
+        assert!(ValidateNumericMultipleOf::validate(&10, 5));
     }
 
     #[test]
     fn test_validate_numeric_multiple_of_float_is_true() {
-        assert!(validate_numeric_multiple_of(12.0, 1.0));
-        assert!(validate_numeric_multiple_of(12.5, 0.5));
+        assert!(ValidateNumericMultipleOf::validate(&12.0, 1.0));
+        assert!(ValidateNumericMultipleOf::validate(&12.5, 0.5));
     }
 
     #[test]
     fn test_validate_numeric_multiple_of_integer_is_false() {
-        assert!(!validate_numeric_multiple_of(10, 3));
+        assert!(!ValidateNumericMultipleOf::validate(&10, 3));
     }
 
     #[test]
     fn test_validate_numeric_multiple_of_float_is_false() {
-        assert!(!validate_numeric_multiple_of(12.0, 5.0));
-        assert!(!validate_numeric_multiple_of(12.5, 0.3));
+        assert!(!ValidateNumericMultipleOf::validate(&12.0, 5.0));
+        assert!(!ValidateNumericMultipleOf::validate(&12.5, 0.3));
     }
 }

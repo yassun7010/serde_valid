@@ -7,7 +7,7 @@ pub use exclusive_maximum::ValidateNumericExclusiveMaximum;
 pub use exclusive_minimum::ValidateNumericExclusiveMinimum;
 pub use maximum::ValidateNumericMaximum;
 pub use minimum::ValidateNumericMinimum;
-pub use multiple_of::validate_numeric_multiple_of;
+pub use multiple_of::ValidateNumericMultipleOf;
 
 macro_rules! impl_validate_numeric_range {
     ($tt:tt) => {

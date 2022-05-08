@@ -38,8 +38,8 @@ fn inner_extract_numeric_multiple_of_validator(
     ));
 
     Ok(quote!(
-        if !::serde_valid::validate_numeric_multiple_of(
-            *#field_ident,
+        if !::serde_valid::ValidateNumericMultipleOf::validate(
+            #field_ident,
             #multiple_of,
         ) {
             use ::serde_valid::error::ToDefaultMessage;
