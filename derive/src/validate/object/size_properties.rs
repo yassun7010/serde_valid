@@ -14,7 +14,8 @@ macro_rules! extract_object_size_validator{
         $limit:tt,
         $function_name:ident,
         $inner_function_name:ident,
-        $ValidateTrait:ident
+        $ValidateTrait:ident,
+        $validation_method:ident
     ) => {
 
         pub fn $function_name(
@@ -45,7 +46,7 @@ macro_rules! extract_object_size_validator{
                 message_fn.unwrap_or(quote!(::serde_valid::$ErrorParams::to_default_message));
 
             Ok(quote!(
-                if let Err(error_params) = ::serde_valid::$ValidateTrait::validate(
+                if let Err(error_params) = ::serde_valid::$ValidateTrait::$validation_method(
                     #field_ident,
                     #$limit
                 ) {
@@ -71,7 +72,8 @@ extract_object_size_validator!(
     max_properties,
     extract_object_max_properties_validator,
     inner_extract_object_max_properties_validator,
-    ValidateMaxProperties
+    ValidateMaxProperties,
+    validate_max_properties
 );
 
 extract_object_size_validator!(
@@ -80,5 +82,6 @@ extract_object_size_validator!(
     min_properties,
     extract_object_min_properties_validator,
     inner_extract_object_min_properties_validator,
-    ValidateMinProperties
+    ValidateMinProperties,
+    validate_min_properties
 );

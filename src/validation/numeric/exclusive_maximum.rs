@@ -5,13 +5,16 @@ pub trait ValidateExclusiveMaximum<T>
 where
     T: PartialOrd + PartialEq,
 {
-    fn validate(&self, exclusive_maximum: T) -> Result<(), crate::ExclusiveMaximumErrorParams>;
+    fn validate_exclusive_maximum(
+        &self,
+        exclusive_maximum: T,
+    ) -> Result<(), crate::ExclusiveMaximumErrorParams>;
 }
 
 macro_rules! impl_validate_numeric_exclusive_maximum {
     ($ty:ty) => {
         impl ValidateExclusiveMaximum<$ty> for $ty {
-            fn validate(
+            fn validate_exclusive_maximum(
                 &self,
                 exclusive_maximum: $ty,
             ) -> Result<(), crate::ExclusiveMaximumErrorParams> {
@@ -47,20 +50,20 @@ mod tests {
     #[test]
     fn test_validate_numeric_exclusive_maximum_is_true() {
         // Unspecified generic type:
-        assert!(ValidateExclusiveMaximum::validate(&10, 11).is_ok());
+        assert!(ValidateExclusiveMaximum::validate_exclusive_maximum(&10, 11).is_ok());
     }
 
     #[test]
     fn test_validate_numeric_exclusive_maximum_is_false() {
-        assert!(ValidateExclusiveMaximum::validate(&5, 4).is_err());
-        assert!(ValidateExclusiveMaximum::validate(&10, 10).is_err());
+        assert!(ValidateExclusiveMaximum::validate_exclusive_maximum(&5, 4).is_err());
+        assert!(ValidateExclusiveMaximum::validate_exclusive_maximum(&10, 10).is_err());
     }
 
     #[test]
     fn test_validate_numeric_exclusive_maximum_specified_type() {
-        assert!(ValidateExclusiveMaximum::validate(&0.2, 0.5).is_ok());
-        assert!(ValidateExclusiveMaximum::validate(&0, 5u8).is_ok());
-        assert!(ValidateExclusiveMaximum::validate(&0, 4u16).is_ok());
-        assert!(ValidateExclusiveMaximum::validate(&0, 6u32).is_ok());
+        assert!(ValidateExclusiveMaximum::validate_exclusive_maximum(&0.2, 0.5).is_ok());
+        assert!(ValidateExclusiveMaximum::validate_exclusive_maximum(&0, 5u8).is_ok());
+        assert!(ValidateExclusiveMaximum::validate_exclusive_maximum(&0, 4u16).is_ok());
+        assert!(ValidateExclusiveMaximum::validate_exclusive_maximum(&0, 6u32).is_ok());
     }
 }

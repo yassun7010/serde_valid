@@ -7,13 +7,13 @@ pub trait ValidateMaximum<T>
 where
     T: PartialOrd + PartialEq,
 {
-    fn validate(&self, maximum: T) -> Result<(), MaximumErrorParams>;
+    fn validate_maximum(&self, maximum: T) -> Result<(), MaximumErrorParams>;
 }
 
 macro_rules! impl_validate_numeric_maximum {
     ($ty:ty) => {
         impl ValidateMaximum<$ty> for $ty {
-            fn validate(&self, maximum: $ty) -> Result<(), MaximumErrorParams> {
+            fn validate_maximum(&self, maximum: $ty) -> Result<(), MaximumErrorParams> {
                 if *self <= maximum {
                     Ok(())
                 } else {
@@ -46,20 +46,20 @@ mod tests {
     #[test]
     fn test_validate_numeric_maximum_is_true() {
         // Unspecified generic type:
-        assert!(ValidateMaximum::validate(&10, 11).is_ok());
-        assert!(ValidateMaximum::validate(&10, 10).is_ok());
+        assert!(ValidateMaximum::validate_maximum(&10, 11).is_ok());
+        assert!(ValidateMaximum::validate_maximum(&10, 10).is_ok());
     }
 
     #[test]
     fn test_validate_numeric_maximum_is_false() {
-        assert!(ValidateMaximum::validate(&5, 4).is_err());
+        assert!(ValidateMaximum::validate_maximum(&5, 4).is_err());
     }
 
     #[test]
     fn test_validate_numeric_maximum_specified_type() {
-        assert!(ValidateMaximum::validate(&0.2, 0.5).is_ok());
-        assert!(ValidateMaximum::validate(&0, 5u8).is_ok());
-        assert!(ValidateMaximum::validate(&0, 4u16).is_ok());
-        assert!(ValidateMaximum::validate(&0, 6u32).is_ok());
+        assert!(ValidateMaximum::validate_maximum(&0.2, 0.5).is_ok());
+        assert!(ValidateMaximum::validate_maximum(&0, 5u8).is_ok());
+        assert!(ValidateMaximum::validate_maximum(&0, 4u16).is_ok());
+        assert!(ValidateMaximum::validate_maximum(&0, 6u32).is_ok());
     }
 }

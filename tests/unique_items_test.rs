@@ -117,8 +117,8 @@ fn unique_items_trait() {
     struct MyType(Vec<i32>);
 
     impl ValidateUniqueItems for MyType {
-        fn validate(&self) -> Result<(), serde_valid::UniqueItemsErrorParams> {
-            self.0.validate()
+        fn validate_unique_items(&self) -> Result<(), serde_valid::UniqueItemsErrorParams> {
+            self.0.validate_unique_items()
         }
     }
 

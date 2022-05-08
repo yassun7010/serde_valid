@@ -7,13 +7,19 @@ pub trait ValidateExclusiveMinimum<T>
 where
     T: PartialOrd + PartialEq,
 {
-    fn validate(&self, exclusive_minimum: T) -> Result<(), ExclusiveMinimumErrorParams>;
+    fn validate_exclusive_minimum(
+        &self,
+        exclusive_minimum: T,
+    ) -> Result<(), ExclusiveMinimumErrorParams>;
 }
 
 macro_rules! impl_validate_numeric_exclusive_minimum {
     ($ty:ty) => {
         impl ValidateExclusiveMinimum<$ty> for $ty {
-            fn validate(&self, exclusive_minimum: $ty) -> Result<(), ExclusiveMinimumErrorParams> {
+            fn validate_exclusive_minimum(
+                &self,
+                exclusive_minimum: $ty,
+            ) -> Result<(), ExclusiveMinimumErrorParams> {
                 if *self > exclusive_minimum {
                     Ok(())
                 } else {
@@ -46,20 +52,20 @@ mod tests {
     #[test]
     fn test_validate_numeric_exclusive_minimum_is_true() {
         // Unspecified generic type:
-        assert!(ValidateExclusiveMinimum::validate(&10, 9).is_ok());
+        assert!(ValidateExclusiveMinimum::validate_exclusive_minimum(&10, 9).is_ok());
     }
 
     #[test]
     fn test_validate_numeric_exclusive_minimum_is_false() {
-        assert!(ValidateExclusiveMinimum::validate(&5, 6).is_err());
-        assert!(ValidateExclusiveMinimum::validate(&5, 5).is_err());
+        assert!(ValidateExclusiveMinimum::validate_exclusive_minimum(&5, 6).is_err());
+        assert!(ValidateExclusiveMinimum::validate_exclusive_minimum(&5, 5).is_err());
     }
 
     #[test]
     fn test_validate_numeric_exclusive_minimum_specified_type() {
-        assert!(ValidateExclusiveMinimum::validate(&0.5, 0.2).is_ok());
-        assert!(ValidateExclusiveMinimum::validate(&5u8, 0).is_ok());
-        assert!(ValidateExclusiveMinimum::validate(&4u16, 0).is_ok());
-        assert!(ValidateExclusiveMinimum::validate(&6u32, 0).is_ok());
+        assert!(ValidateExclusiveMinimum::validate_exclusive_minimum(&0.5, 0.2).is_ok());
+        assert!(ValidateExclusiveMinimum::validate_exclusive_minimum(&5u8, 0).is_ok());
+        assert!(ValidateExclusiveMinimum::validate_exclusive_minimum(&4u16, 0).is_ok());
+        assert!(ValidateExclusiveMinimum::validate_exclusive_minimum(&6u32, 0).is_ok());
     }
 }

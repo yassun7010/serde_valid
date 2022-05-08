@@ -205,8 +205,11 @@ fn enumerate_trait() {
     }
 
     impl ValidateEnumerate<i32> for MyType {
-        fn validate(&self, enumerate: &[i32]) -> Result<(), serde_valid::EnumerateErrorParams> {
-            self.0.validate(enumerate)
+        fn validate_enumerate(
+            &self,
+            enumerate: &[i32],
+        ) -> Result<(), serde_valid::EnumerateErrorParams> {
+            self.0.validate_enumerate(enumerate)
         }
     }
 

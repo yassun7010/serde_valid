@@ -333,32 +333,32 @@ fn range_trait() {
     struct MyType(i32);
 
     impl ValidateMinimum<i32> for MyType {
-        fn validate(&self, minimum: i32) -> Result<(), serde_valid::MinimumErrorParams> {
-            ValidateMinimum::validate(&self.0, minimum)
+        fn validate_minimum(&self, minimum: i32) -> Result<(), serde_valid::MinimumErrorParams> {
+            self.0.validate_minimum(minimum)
         }
     }
 
     impl ValidateMaximum<i32> for MyType {
-        fn validate(&self, maximum: i32) -> Result<(), serde_valid::MaximumErrorParams> {
-            ValidateMaximum::validate(&self.0, maximum)
+        fn validate_maximum(&self, maximum: i32) -> Result<(), serde_valid::MaximumErrorParams> {
+            self.0.validate_maximum(maximum)
         }
     }
 
     impl ValidateExclusiveMinimum<i32> for MyType {
-        fn validate(
+        fn validate_exclusive_minimum(
             &self,
             exclusive_minimum: i32,
         ) -> Result<(), serde_valid::ExclusiveMinimumErrorParams> {
-            ValidateExclusiveMinimum::validate(&self.0, exclusive_minimum)
+            self.0.validate_exclusive_minimum(exclusive_minimum)
         }
     }
 
     impl ValidateExclusiveMaximum<i32> for MyType {
-        fn validate(
+        fn validate_exclusive_maximum(
             &self,
             exclusive_maximum: i32,
         ) -> Result<(), serde_valid::ExclusiveMaximumErrorParams> {
-            ValidateExclusiveMaximum::validate(&self.0, exclusive_maximum)
+            self.0.validate_exclusive_maximum(exclusive_maximum)
         }
     }
 

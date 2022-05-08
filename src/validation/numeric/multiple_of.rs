@@ -5,13 +5,16 @@ pub trait ValidateMultipleOf<T>
 where
     T: std::cmp::PartialEq + std::ops::Rem<Output = T> + num_traits::Zero,
 {
-    fn validate(&self, multiple_of: T) -> Result<(), crate::MultipleOfErrorParams>;
+    fn validate_multiple_of(&self, multiple_of: T) -> Result<(), crate::MultipleOfErrorParams>;
 }
 
 macro_rules! impl_validate_numeric_multiple_of {
     ($ty:ty) => {
         impl ValidateMultipleOf<$ty> for $ty {
-            fn validate(&self, multiple_of: $ty) -> Result<(), crate::MultipleOfErrorParams> {
+            fn validate_multiple_of(
+                &self,
+                multiple_of: $ty,
+            ) -> Result<(), crate::MultipleOfErrorParams> {
                 if std::cmp::PartialEq::<$ty>::eq(&(*self % multiple_of), &num_traits::Zero::zero())
                 {
                     Ok(())
@@ -43,9 +46,9 @@ where
     T: std::cmp::PartialEq + std::ops::Rem<Output = T> + num_traits::Zero + Copy,
     U: ValidateMultipleOf<T>,
 {
-    fn validate(&self, multiple_of: T) -> Result<(), crate::MultipleOfErrorParams> {
+    fn validate_multiple_of(&self, multiple_of: T) -> Result<(), crate::MultipleOfErrorParams> {
         for item in self {
-            item.validate(multiple_of)?
+            item.validate_multiple_of(multiple_of)?
         }
 
         Ok(())
@@ -57,9 +60,9 @@ where
     T: std::cmp::PartialEq + std::ops::Rem<Output = T> + num_traits::Zero + Copy,
     U: ValidateMultipleOf<T>,
 {
-    fn validate(&self, multiple_of: T) -> Result<(), crate::MultipleOfErrorParams> {
+    fn validate_multiple_of(&self, multiple_of: T) -> Result<(), crate::MultipleOfErrorParams> {
         for item in self {
-            item.validate(multiple_of)?
+            item.validate_multiple_of(multiple_of)?
         }
 
         Ok(())
@@ -71,9 +74,9 @@ where
     T: std::cmp::PartialEq + std::ops::Rem<Output = T> + num_traits::Zero,
     U: ValidateMultipleOf<T>,
 {
-    fn validate(&self, multiple_of: T) -> Result<(), crate::MultipleOfErrorParams> {
+    fn validate_multiple_of(&self, multiple_of: T) -> Result<(), crate::MultipleOfErrorParams> {
         if let Some(value) = self {
-            value.validate(multiple_of)
+            value.validate_multiple_of(multiple_of)
         } else {
             Ok(())
         }
@@ -86,57 +89,57 @@ mod tests {
 
     #[test]
     fn test_validate_numeric_multiple_of_integer_is_true() {
-        assert!(ValidateMultipleOf::validate(&10, 5).is_ok());
+        assert!(ValidateMultipleOf::validate_multiple_of(&10, 5).is_ok());
     }
 
     #[test]
     fn test_validate_numeric_multiple_of_integer_is_false() {
-        assert!(ValidateMultipleOf::validate(&10, 3).is_err());
+        assert!(ValidateMultipleOf::validate_multiple_of(&10, 3).is_err());
     }
 
     #[test]
     fn test_validate_numeric_multiple_of_float_is_true() {
-        assert!(ValidateMultipleOf::validate(&12.0, 1.0).is_ok());
-        assert!(ValidateMultipleOf::validate(&12.5, 0.5).is_ok());
+        assert!(ValidateMultipleOf::validate_multiple_of(&12.0, 1.0).is_ok());
+        assert!(ValidateMultipleOf::validate_multiple_of(&12.5, 0.5).is_ok());
     }
     #[test]
     fn test_validate_numeric_multiple_of_float_is_false() {
-        assert!(ValidateMultipleOf::validate(&12.0, 5.0).is_err());
-        assert!(ValidateMultipleOf::validate(&12.5, 0.3).is_err());
+        assert!(ValidateMultipleOf::validate_multiple_of(&12.0, 5.0).is_err());
+        assert!(ValidateMultipleOf::validate_multiple_of(&12.5, 0.3).is_err());
     }
 
     #[test]
     fn test_validate_numeric_multiple_of_vec_is_true() {
-        assert!(ValidateMultipleOf::validate(&vec![12.0], 1.0).is_ok());
+        assert!(ValidateMultipleOf::validate_multiple_of(&vec![12.0], 1.0).is_ok());
     }
 
     #[test]
     fn test_validate_numeric_multiple_of_vec_is_false() {
-        assert!(ValidateMultipleOf::validate(&vec![10], 3).is_err());
+        assert!(ValidateMultipleOf::validate_multiple_of(&vec![10], 3).is_err());
     }
 
     #[test]
     fn test_validate_numeric_multiple_of_array_is_true() {
-        assert!(ValidateMultipleOf::validate(&[12.0], 1.0).is_ok());
+        assert!(ValidateMultipleOf::validate_multiple_of(&[12.0], 1.0).is_ok());
     }
 
     #[test]
     fn test_validate_numeric_multiple_of_array_is_false() {
-        assert!(ValidateMultipleOf::validate(&[10], 3).is_err());
+        assert!(ValidateMultipleOf::validate_multiple_of(&[10], 3).is_err());
     }
 
     #[test]
     fn test_validate_numeric_multiple_of_option_is_true() {
-        assert!(ValidateMultipleOf::validate(&Some(12.0), 1.0).is_ok());
+        assert!(ValidateMultipleOf::validate_multiple_of(&Some(12.0), 1.0).is_ok());
     }
 
     #[test]
     fn test_validate_numeric_multiple_of_none_is_true() {
-        assert!(ValidateMultipleOf::validate(&Option::<f32>::None, 1.0).is_ok());
+        assert!(ValidateMultipleOf::validate_multiple_of(&Option::<f32>::None, 1.0).is_ok());
     }
 
     #[test]
     fn test_validate_numeric_multiple_of_option_is_false() {
-        assert!(ValidateMultipleOf::validate(&Some(10), 3).is_err());
+        assert!(ValidateMultipleOf::validate_multiple_of(&Some(10), 3).is_err());
     }
 }

@@ -29,7 +29,7 @@ fn inner_extract_array_unique_items_validator(
     ));
 
     quote!(
-        if let Err(error_params) = ::serde_valid::ValidateUniqueItems::validate(
+        if let Err(error_params) = ::serde_valid::ValidateUniqueItems::validate_unique_items(
             #field_ident
         ) {
             use ::serde_valid::error::ToDefaultMessage;

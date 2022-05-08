@@ -187,14 +187,14 @@ By implementing the validation trait, Your original type can uses Serde Valid va
 struct MyType(String);
 
 impl ValidateMaxLength for MyType {
-    fn validate(&self, max_length: usize) -> Result<(), serde_valid::MaxLengthErrorParams> {
-        ValidateMaxLength::validate(&self.0, max_length)
+    fn validate_max_length(&self, max_length: usize) -> Result<(), serde_valid::MaxLengthErrorParams> {
+        self.0.validate_max_length(max_length)
     }
 }
 
 impl ValidateMinLength for MyType {
-    fn validate(&self, min_length: usize) -> Result<(), serde_valid::MinLengthErrorParams> {
-        ValidateMinLength::validate(&self.0, min_length)
+    fn validate_min_length(&self, min_length: usize) -> Result<(), serde_valid::MinLengthErrorParams> {
+        self.0.validate_min_length(min_length)
     }
 }
 

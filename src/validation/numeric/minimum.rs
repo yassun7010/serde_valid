@@ -7,13 +7,13 @@ pub trait ValidateMinimum<T>
 where
     T: PartialOrd + PartialEq,
 {
-    fn validate(&self, minimum: T) -> Result<(), MinimumErrorParams>;
+    fn validate_minimum(&self, minimum: T) -> Result<(), MinimumErrorParams>;
 }
 
 macro_rules! impl_validate_numeric_minimum {
     ($ty:ty) => {
         impl ValidateMinimum<$ty> for $ty {
-            fn validate(&self, minimum: $ty) -> Result<(), MinimumErrorParams> {
+            fn validate_minimum(&self, minimum: $ty) -> Result<(), MinimumErrorParams> {
                 if *self >= minimum {
                     Ok(())
                 } else {
@@ -45,50 +45,50 @@ mod tests {
 
     #[test]
     fn test_validate_numeric_minimum_is_true() {
-        assert!(ValidateMinimum::validate(&10, 9).is_ok());
-        assert!(ValidateMinimum::validate(&10, 10).is_ok());
+        assert!(ValidateMinimum::validate_minimum(&10, 9).is_ok());
+        assert!(ValidateMinimum::validate_minimum(&10, 10).is_ok());
     }
 
     #[test]
     fn test_validate_numeric_minimum_is_false() {
-        assert!(ValidateMinimum::validate(&5, 6).is_err());
+        assert!(ValidateMinimum::validate_minimum(&5, 6).is_err());
     }
 
     #[test]
     fn test_validate_numeric_minimum_vec_is_true() {
-        assert!(ValidateMinimum::validate(&vec![5], 3).is_ok());
+        assert!(ValidateMinimum::validate_minimum(&vec![5], 3).is_ok());
     }
 
     #[test]
     fn test_validate_numeric_minimum_vec_is_false() {
-        assert!(ValidateMinimum::validate(&vec![5], 7).is_err());
+        assert!(ValidateMinimum::validate_minimum(&vec![5], 7).is_err());
     }
 
     #[test]
     fn test_validate_numeric_minimum_array_is_true() {
-        assert!(ValidateMinimum::validate(&[5, 6, 7], 3).is_ok());
+        assert!(ValidateMinimum::validate_minimum(&[5, 6, 7], 3).is_ok());
     }
 
     #[test]
     fn test_validate_numeric_minimum_array_is_false() {
-        assert!(ValidateMinimum::validate(&vec![5], 7).is_err());
+        assert!(ValidateMinimum::validate_minimum(&vec![5], 7).is_err());
     }
 
     #[test]
     fn test_validate_numeric_minimum_option_is_true() {
-        assert!(ValidateMinimum::validate(&Some(5), 3).is_ok());
+        assert!(ValidateMinimum::validate_minimum(&Some(5), 3).is_ok());
     }
 
     #[test]
     fn test_validate_numeric_minimum_option_is_false() {
-        assert!(ValidateMinimum::validate(&Some(5), 7).is_err());
+        assert!(ValidateMinimum::validate_minimum(&Some(5), 7).is_err());
     }
 
     #[test]
     fn test_validate_numeric_minimum_specified_type() {
-        assert!(ValidateMinimum::validate(&0.5, 0.2).is_ok());
-        assert!(ValidateMinimum::validate(&5u8, 0).is_ok());
-        assert!(ValidateMinimum::validate(&4u16, 0).is_ok());
-        assert!(ValidateMinimum::validate(&6u32, 0).is_ok());
+        assert!(ValidateMinimum::validate_minimum(&0.5, 0.2).is_ok());
+        assert!(ValidateMinimum::validate_minimum(&5u8, 0).is_ok());
+        assert!(ValidateMinimum::validate_minimum(&4u16, 0).is_ok());
+        assert!(ValidateMinimum::validate_minimum(&6u32, 0).is_ok());
     }
 }

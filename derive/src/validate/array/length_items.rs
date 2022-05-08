@@ -14,7 +14,8 @@ macro_rules! extract_array_length_validator{
         $limit:tt,
         $function_name:ident,
         $inner_function_name:ident,
-        $ValidateTrait:ident
+        $ValidateTrait:ident,
+        $validation_method:ident
     ) => {
         pub fn $function_name(
             field: &impl Field,
@@ -42,7 +43,7 @@ macro_rules! extract_array_length_validator{
                 message_fn.unwrap_or(quote!(::serde_valid::$ErrorParams::to_default_message));
 
             Ok(quote!(
-                if let Err(error_params) = ::serde_valid::$ValidateTrait::validate(
+                if let Err(error_params) = ::serde_valid::$ValidateTrait::$validation_method(
                     #field_ident,
                     #$limit,
                 ) {
@@ -68,7 +69,8 @@ extract_array_length_validator!(
     max_items,
     extract_array_max_items_validator,
     inner_extract_array_max_items_validator,
-    ValidateMaxItems
+    ValidateMaxItems,
+    validate_max_items
 );
 
 extract_array_length_validator!(
@@ -77,5 +79,6 @@ extract_array_length_validator!(
     min_items,
     extract_array_min_items_validator,
     inner_extract_array_min_items_validator,
-    ValidateMinItems
+    ValidateMinItems,
+    validate_min_items
 );

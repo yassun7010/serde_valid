@@ -268,8 +268,11 @@ fn pattern_trait() {
     struct MyType(String);
 
     impl ValidatePattern for MyType {
-        fn validate(&self, pattern: &regex::Regex) -> Result<(), serde_valid::PatternErrorParams> {
-            ValidatePattern::validate(&self.0, pattern)
+        fn validate_pattern(
+            &self,
+            pattern: &regex::Regex,
+        ) -> Result<(), serde_valid::PatternErrorParams> {
+            self.0.validate_pattern(pattern)
         }
     }
 

@@ -14,7 +14,8 @@ macro_rules! extract_numeric_range_validator{
         $limit:tt,
         $function_name:ident,
         $inner_function_name:ident,
-        $ValidateTrait:ident
+        $ValidateTrait:ident,
+        $validation_method:ident
     ) => {
         pub fn $function_name(
             field: &impl Field,
@@ -48,7 +49,7 @@ macro_rules! extract_numeric_range_validator{
                 message_fn.unwrap_or(quote!(::serde_valid::$ErrorParams::to_default_message));
 
             Ok(quote!(
-                if let Err(error_params) = ::serde_valid::$ValidateTrait::validate(
+                if let Err(error_params) = ::serde_valid::$ValidateTrait::$validation_method(
                     #field_ident,
                     #$limit,
                 ) {
@@ -74,7 +75,8 @@ extract_numeric_range_validator!(
     maximum,
     extract_numeric_maximum_validator,
     inner_extract_numeric_maximum_validator,
-    ValidateMaximum
+    ValidateMaximum,
+    validate_maximum
 );
 
 extract_numeric_range_validator!(
@@ -83,7 +85,8 @@ extract_numeric_range_validator!(
     minimum,
     extract_numeric_minimum_validator,
     inner_extract_numeric_minimum_validator,
-    ValidateMinimum
+    ValidateMinimum,
+    validate_minimum
 );
 
 extract_numeric_range_validator!(
@@ -92,7 +95,8 @@ extract_numeric_range_validator!(
     exclusive_maximum,
     extract_numeric_exclusive_maximum_validator,
     inner_extract_numeric_exclusive_maximum_validator,
-    ValidateExclusiveMaximum
+    ValidateExclusiveMaximum,
+    validate_exclusive_maximum
 );
 
 extract_numeric_range_validator!(
@@ -101,5 +105,6 @@ extract_numeric_range_validator!(
     exclusive_minimum,
     extract_numeric_exclusive_minimum_validator,
     inner_extract_numeric_exclusive_minimum_validator,
-    ValidateExclusiveMinimum
+    ValidateExclusiveMinimum,
+    validate_exclusive_minimum
 );

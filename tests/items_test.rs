@@ -221,14 +221,20 @@ fn items_trait() {
     struct MyType(Vec<i32>);
 
     impl ValidateMinItems for MyType {
-        fn validate(&self, min_items: usize) -> Result<(), serde_valid::MinItemsErrorParams> {
-            ValidateMinItems::validate(&self.0, min_items)
+        fn validate_min_items(
+            &self,
+            min_items: usize,
+        ) -> Result<(), serde_valid::MinItemsErrorParams> {
+            self.0.validate_min_items(min_items)
         }
     }
 
     impl ValidateMaxItems for MyType {
-        fn validate(&self, max_items: usize) -> Result<(), serde_valid::MaxItemsErrorParams> {
-            ValidateMaxItems::validate(&self.0, max_items)
+        fn validate_max_items(
+            &self,
+            max_items: usize,
+        ) -> Result<(), serde_valid::MaxItemsErrorParams> {
+            self.0.validate_max_items(max_items)
         }
     }
 

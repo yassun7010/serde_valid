@@ -15,15 +15,15 @@ use crate::{
 };
 
 macro_rules! impl_validate_numeric_range {
-    ($ValidateTrait:tt, $ErrorParams:tt) => {
+    ($ValidateTrait:tt, $ErrorParams:tt, $validation_method:ident) => {
         impl<T, U> $ValidateTrait<T> for Vec<U>
         where
             T: PartialOrd + PartialEq + Copy,
             U: $ValidateTrait<T>,
         {
-            fn validate(&self, limit: T) -> Result<(), $ErrorParams> {
+            fn $validation_method(&self, limit: T) -> Result<(), $ErrorParams> {
                 for item in self {
-                    item.validate(limit)?
+                    item.$validation_method(limit)?
                 }
 
                 Ok(())
@@ -35,9 +35,9 @@ macro_rules! impl_validate_numeric_range {
             T: PartialOrd + PartialEq + Copy,
             U: $ValidateTrait<T>,
         {
-            fn validate(&self, limit: T) -> Result<(), $ErrorParams> {
+            fn $validation_method(&self, limit: T) -> Result<(), $ErrorParams> {
                 for item in self {
-                    item.validate(limit)?
+                    item.$validation_method(limit)?
                 }
 
                 Ok(())
@@ -49,9 +49,9 @@ macro_rules! impl_validate_numeric_range {
             T: PartialOrd + PartialEq,
             U: $ValidateTrait<T>,
         {
-            fn validate(&self, limit: T) -> Result<(), $ErrorParams> {
+            fn $validation_method(&self, limit: T) -> Result<(), $ErrorParams> {
                 match self {
-                    Some(value) => value.validate(limit),
+                    Some(value) => value.$validation_method(limit),
                     None => Ok(()),
                 }
             }
@@ -59,7 +59,15 @@ macro_rules! impl_validate_numeric_range {
     };
 }
 
-impl_validate_numeric_range!(ValidateMaximum, MaximumErrorParams);
-impl_validate_numeric_range!(ValidateMinimum, MinimumErrorParams);
-impl_validate_numeric_range!(ValidateExclusiveMaximum, ExclusiveMaximumErrorParams);
-impl_validate_numeric_range!(ValidateExclusiveMinimum, ExclusiveMinimumErrorParams);
+impl_validate_numeric_range!(ValidateMaximum, MaximumErrorParams, validate_maximum);
+impl_validate_numeric_range!(ValidateMinimum, MinimumErrorParams, validate_minimum);
+impl_validate_numeric_range!(
+    ValidateExclusiveMaximum,
+    ExclusiveMaximumErrorParams,
+    validate_exclusive_maximum
+);
+impl_validate_numeric_range!(
+    ValidateExclusiveMinimum,
+    ExclusiveMinimumErrorParams,
+    validate_exclusive_minimum
+);

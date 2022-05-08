@@ -228,20 +228,20 @@ fn properties_trait() {
     struct MyType(HashMap<String, String>);
 
     impl ValidateMaxProperties for MyType {
-        fn validate(
+        fn validate_max_properties(
             &self,
             max_properties: usize,
         ) -> Result<(), serde_valid::MaxPropertiesErrorParams> {
-            ValidateMaxProperties::validate(&self.0, max_properties)
+            self.0.validate_max_properties(max_properties)
         }
     }
 
     impl ValidateMinProperties for MyType {
-        fn validate(
+        fn validate_min_properties(
             &self,
             min_properties: usize,
         ) -> Result<(), serde_valid::MinPropertiesErrorParams> {
-            ValidateMinProperties::validate(&self.0, min_properties)
+            self.0.validate_min_properties(min_properties)
         }
     }
 

@@ -14,7 +14,8 @@ macro_rules! extract_string_length_validator{
         $field:tt,
         $function_name:ident,
         $inner_function_name:ident,
-        $ValidateTrait:ident
+        $ValidateTrait:ident,
+        $validation_method:ident
     ) => {
         pub fn $function_name(
             field: &impl Field,
@@ -60,7 +61,7 @@ macro_rules! extract_string_length_validator{
                 message_fn.unwrap_or(quote!(::serde_valid::$ErrorParams::to_default_message));
 
             Ok(quote!(
-                if let Err(error_params) = ::serde_valid::$ValidateTrait::validate(
+                if let Err(error_params) = ::serde_valid::$ValidateTrait::$validation_method(
                     #field_ident,
                     #$field,
                 ) {
@@ -86,7 +87,8 @@ extract_string_length_validator!(
     max_length,
     extract_string_max_length_validator,
     inner_extract_string_max_length_validator,
-    ValidateMaxLength
+    ValidateMaxLength,
+    validate_max_length
 );
 extract_string_length_validator!(
     MinLengthErrorParams,
@@ -94,5 +96,6 @@ extract_string_length_validator!(
     min_length,
     extract_string_min_length_validator,
     inner_extract_string_min_length_validator,
-    ValidateMinLength
+    ValidateMinLength,
+    validate_min_length
 );
