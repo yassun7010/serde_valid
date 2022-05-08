@@ -16,9 +16,9 @@ macro_rules! impl_validate_numeric_range {
             T: PartialOrd + PartialEq + Copy,
             U: $tt<T>,
         {
-            fn validate(&self, minimum: T) -> bool {
+            fn validate(&self, limit: T) -> bool {
                 for item in self {
-                    if !item.validate(minimum) {
+                    if !item.validate(limit) {
                         return false;
                     }
                 }
@@ -32,9 +32,9 @@ macro_rules! impl_validate_numeric_range {
             T: PartialOrd + PartialEq + Copy,
             U: $tt<T>,
         {
-            fn validate(&self, minimum: T) -> bool {
+            fn validate(&self, limit: T) -> bool {
                 for item in self {
-                    if !item.validate(minimum) {
+                    if !item.validate(limit) {
                         return false;
                     }
                 }
@@ -48,9 +48,9 @@ macro_rules! impl_validate_numeric_range {
             T: PartialOrd + PartialEq,
             U: $tt<T>,
         {
-            fn validate(&self, minimum: T) -> bool {
+            fn validate(&self, limit: T) -> bool {
                 match self {
-                    Some(value) => value.validate(minimum),
+                    Some(value) => value.validate(limit),
                     None => true,
                 }
             }
