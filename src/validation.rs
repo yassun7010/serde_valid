@@ -12,5 +12,5 @@ pub use numeric::{
     ValidateNumericExclusiveMaximum, ValidateNumericExclusiveMinimum, ValidateNumericMaximum,
     ValidateNumericMinimum, ValidateNumericMultipleOf,
 };
-pub use object::{validate_object_max_properties, validate_object_min_properties};
+pub use object::{ValidateObjectMaxProperties, ValidateObjectMinProperties};
 pub use string::{ValidateStringMaxLength, ValidateStringMinLength, ValidateStringPattern};
