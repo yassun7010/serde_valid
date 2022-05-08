@@ -67,7 +67,7 @@ struct SampleStruct {
     val: i32,
 }
 
-// Deserializing and Validation 🚀 !!
+// Deserializing and Validation!! 🚀
 let err = serde_valid::from_value::<SampleStruct, _>(json!({ "val": 1234 })).unwrap_err();
 
 assert_eq!(
