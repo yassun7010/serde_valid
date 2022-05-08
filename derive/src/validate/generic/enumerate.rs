@@ -40,7 +40,7 @@ fn inner_extract_generic_enumerate_validator(
     ));
 
     Ok(quote!(
-        if !::serde_valid::validate_generic_enumerate(
+        if !::serde_valid::ValidateGenericEnumerate::check(
             #field_ident,
             &[#enumerate],
         ) {

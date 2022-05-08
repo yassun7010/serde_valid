@@ -64,6 +64,34 @@ fn enumerate_vec_type() {
 }
 
 #[test]
+fn enumerate_vec_str_type() {
+    #[derive(Validate)]
+    struct TestStruct {
+        #[validate(enumerate("1", "2", "3", "4", "5"))]
+        val: Vec<&'static str>,
+    }
+
+    let s = TestStruct {
+        val: vec!["3", "4"],
+    };
+    assert!(s.validate().is_ok());
+}
+
+#[test]
+fn enumerate_vec_string_type() {
+    #[derive(Validate)]
+    struct TestStruct {
+        #[validate(enumerate("1", "2", "3", "4", "5"))]
+        val: Vec<String>,
+    }
+
+    let s = TestStruct {
+        val: vec!["3".to_owned(), "4".to_owned()],
+    };
+    assert!(s.validate().is_ok());
+}
+
+#[test]
 fn enumerate_option_type() {
     #[derive(Validate)]
     struct TestStruct {
