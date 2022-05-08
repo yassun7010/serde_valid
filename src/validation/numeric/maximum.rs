@@ -1,12 +1,37 @@
 /// Range validation.
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/numeric.html#range>
-pub fn validate_numeric_maximum<T>(value: T, maximum: T) -> bool
+pub trait ValidateNumericMaximum<T>
 where
     T: PartialOrd + PartialEq,
 {
-    value <= maximum
+    fn validate(&self, maximum: T) -> bool;
 }
+
+macro_rules! impl_validate_numeric_maximum {
+    ($ty:ty) => {
+        impl ValidateNumericMaximum<$ty> for $ty {
+            fn validate(&self, maximum: $ty) -> bool {
+                *self <= maximum
+            }
+        }
+    };
+}
+
+impl_validate_numeric_maximum!(i8);
+impl_validate_numeric_maximum!(i16);
+impl_validate_numeric_maximum!(i32);
+impl_validate_numeric_maximum!(i64);
+impl_validate_numeric_maximum!(i128);
+impl_validate_numeric_maximum!(isize);
+impl_validate_numeric_maximum!(u8);
+impl_validate_numeric_maximum!(u16);
+impl_validate_numeric_maximum!(u32);
+impl_validate_numeric_maximum!(u64);
+impl_validate_numeric_maximum!(u128);
+impl_validate_numeric_maximum!(usize);
+impl_validate_numeric_maximum!(f32);
+impl_validate_numeric_maximum!(f64);
 
 #[cfg(test)]
 mod tests {
@@ -15,20 +40,20 @@ mod tests {
     #[test]
     fn test_validate_numeric_maximum_is_true() {
         // Unspecified generic type:
-        assert!(validate_numeric_maximum(10, 11));
-        assert!(validate_numeric_maximum(10, 10));
+        assert!(ValidateNumericMaximum::validate(&10, 11));
+        assert!(ValidateNumericMaximum::validate(&10, 10));
     }
 
     #[test]
     fn test_validate_numeric_maximum_is_false() {
-        assert!(!validate_numeric_maximum(5, 4));
+        assert!(!ValidateNumericMaximum::validate(&5, 4));
     }
 
     #[test]
     fn test_validate_numeric_maximum_specified_type() {
-        assert!(validate_numeric_maximum(0.2, 0.5));
-        assert!(validate_numeric_maximum(0, 5u8));
-        assert!(validate_numeric_maximum(0, 4u16));
-        assert!(validate_numeric_maximum(0, 6u32));
+        assert!(ValidateNumericMaximum::validate(&0.2, 0.5));
+        assert!(ValidateNumericMaximum::validate(&0, 5u8));
+        assert!(ValidateNumericMaximum::validate(&0, 4u16));
+        assert!(ValidateNumericMaximum::validate(&0, 6u32));
     }
 }

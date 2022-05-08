@@ -48,8 +48,8 @@ macro_rules! extract_numeric_range_validator{
                 message_fn.unwrap_or(quote!(::serde_valid::$ErrorParams::to_default_message));
 
             Ok(quote!(
-                if !::serde_valid::$validate_function(
-                    *#field_ident,
+                if !::serde_valid::$validate_function::validate(
+                    #field_ident,
                     #$limit,
                 ) {
                     use ::serde_valid::error::ToDefaultMessage;
@@ -72,30 +72,21 @@ macro_rules! extract_numeric_range_validator{
 }
 
 extract_numeric_range_validator!(
-    MinimumErrorParams,
-    Minimum,
-    minimum,
-    extract_numeric_minimum_validator,
-    inner_extract_numeric_minimum_validator,
-    validate_numeric_minimum
-);
-
-extract_numeric_range_validator!(
     MaximumErrorParams,
     Maximum,
     maximum,
     extract_numeric_maximum_validator,
     inner_extract_numeric_maximum_validator,
-    validate_numeric_maximum
+    ValidateNumericMaximum
 );
 
 extract_numeric_range_validator!(
-    ExclusiveMinimumErrorParams,
-    ExclusiveMinimum,
-    exclusive_minimum,
-    extract_numeric_exclusive_minimum_validator,
-    inner_extract_numeric_exclusive_minimum_validator,
-    validate_numeric_exclusive_minimum
+    MinimumErrorParams,
+    Minimum,
+    minimum,
+    extract_numeric_minimum_validator,
+    inner_extract_numeric_minimum_validator,
+    ValidateNumericMinimum
 );
 
 extract_numeric_range_validator!(
@@ -104,5 +95,14 @@ extract_numeric_range_validator!(
     exclusive_maximum,
     extract_numeric_exclusive_maximum_validator,
     inner_extract_numeric_exclusive_maximum_validator,
-    validate_numeric_exclusive_maximum
+    ValidateNumericExclusiveMaximum
+);
+
+extract_numeric_range_validator!(
+    ExclusiveMinimumErrorParams,
+    ExclusiveMinimum,
+    exclusive_minimum,
+    extract_numeric_exclusive_minimum_validator,
+    inner_extract_numeric_exclusive_minimum_validator,
+    ValidateNumericExclusiveMinimum
 );
