@@ -67,7 +67,7 @@ struct SampleStruct {
     val: i32,
 }
 
-// Deserializing and Validation !!
+// Deserializing and Validation 🚀 !!
 let err = serde_valid::from_value::<SampleStruct, _>(json!({ "val": 1234 })).unwrap_err();
 
 assert_eq!(
@@ -75,6 +75,9 @@ assert_eq!(
     json!({"val": ["the number must be `<= 1000`."]})
 );
 ```
+
+You can force validation by only deserializing through `serde_valid`, and removing `serde_json` from `Cargo.toml` of your project.
+
 
 ## Custom Message
 
