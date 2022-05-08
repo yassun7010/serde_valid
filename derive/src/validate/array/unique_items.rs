@@ -29,7 +29,7 @@ fn inner_extract_array_unique_items_validator(
     ));
 
     quote!(
-        if !::serde_valid::validate_array_unique_items(
+        if !::serde_valid::ValidateArrayUniqueItems::check(
             #field_ident
         ) {
             use ::serde_valid::error::ToDefaultMessage;

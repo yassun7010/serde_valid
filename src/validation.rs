@@ -5,7 +5,7 @@ mod numeric;
 mod object;
 mod string;
 
-pub use array::{validate_array_unique_items, ValidateArrayMaxItems, ValidateArrayMinItems};
+pub use array::{ValidateArrayMaxItems, ValidateArrayMinItems, ValidateArrayUniqueItems};
 pub use error::{Error, Errors, MapErrors, VecErrors};
 pub use generic::ValidateGenericEnumerate;
 pub use numeric::{

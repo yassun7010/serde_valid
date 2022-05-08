@@ -4,4 +4,4 @@ mod unique_items;
 
 pub use max_items::ValidateArrayMaxItems;
 pub use min_items::ValidateArrayMinItems;
-pub use unique_items::validate_array_unique_items;
+pub use unique_items::ValidateArrayUniqueItems;

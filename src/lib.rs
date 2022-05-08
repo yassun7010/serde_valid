@@ -12,7 +12,7 @@ pub use error::{
 };
 pub use traits::*;
 pub use validation::{
-    validate_array_unique_items, ValidateArrayMaxItems, ValidateArrayMinItems,
+    ValidateArrayMaxItems, ValidateArrayMinItems, ValidateArrayUniqueItems,
     ValidateGenericEnumerate, ValidateNumericExclusiveMaximum, ValidateNumericExclusiveMinimum,
     ValidateNumericMaximum, ValidateNumericMinimum, ValidateNumericMultipleOf,
     ValidateObjectMaxProperties, ValidateObjectMinProperties, ValidateStringMaxLength,
