@@ -19,7 +19,7 @@ pub fn collect_rules_from_unnamed_struct(
         .filter_map(|attribute| match attribute.parse_meta() {
             Ok(syn::Meta::List(list)) => match collect_rule(&list) {
                 Ok((field_ident, stream)) => {
-                    rule_fields.insert(field_ident);
+                    rule_fields.extend(field_ident);
                     Some(stream)
                 }
                 Err(rule_errors) => {
@@ -51,7 +51,7 @@ fn collect_rule(
     syn::MetaList {
         path, ref nested, ..
     }: &syn::MetaList,
-) -> Result<(syn::Ident, TokenStream), crate::Errors> {
+) -> Result<(HashSet<syn::Ident>, TokenStream), crate::Errors> {
     let mut errors = vec![];
 
     match nested.len() {
@@ -91,14 +91,14 @@ fn extract_rule_from_meta_list(
         ref nested,
         ..
     }: &syn::MetaList,
-) -> Result<(syn::Ident, TokenStream), crate::Errors> {
+) -> Result<(HashSet<syn::Ident>, TokenStream), crate::Errors> {
     let mut errors = vec![];
 
     if nested.is_empty() {
         errors.push(crate::Error::rule_need_arguments(rule_fn_name));
     }
 
-    let mut first_arg = None;
+    let mut arg_idents = HashSet::new();
     let rule_fn_args = nested
         .iter()
         .filter_map(|nested_meta| {
@@ -106,7 +106,7 @@ fn extract_rule_from_meta_list(
                 syn::NestedMeta::Lit(lit) => match lit {
                     syn::Lit::Int(int) => {
                         let index = syn::Ident::new(&format!("__{}", int), int.span());
-                        first_arg = Some(index.clone());
+                        arg_idents.insert(index.clone());
                         Some(quote!(#index))
                     }
                     _ => None,
@@ -123,15 +123,16 @@ fn extract_rule_from_meta_list(
         })
         .collect::<CommaSeparatedTokenStreams>();
 
-    match first_arg {
-        Some(field_ident) => {
+    match nested.first() {
+        Some(field) => {
             if errors.len() > 0 {
                 return Err(errors);
             }
 
-            let field_name = nested[0].to_token_stream().to_string();
+            let field_name = field.to_token_stream().to_string();
+
             Ok((
-                field_ident,
+                arg_idents,
                 quote!(
                     if let Err(__error) = #rule_fn_name(#rule_fn_args) {
                         __errors

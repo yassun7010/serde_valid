@@ -19,7 +19,7 @@ pub fn collect_rules_from_named_struct(
         .filter_map(|attribute| match attribute.parse_meta() {
             Ok(syn::Meta::List(list)) => match collect_rule(&list) {
                 Ok((field_ident, stream)) => {
-                    rule_fields.insert(field_ident);
+                    rule_fields.extend(field_ident);
                     Some(stream)
                 }
                 Err(rule_errors) => {
@@ -51,7 +51,7 @@ fn collect_rule(
     syn::MetaList {
         path, ref nested, ..
     }: &syn::MetaList,
-) -> Result<(syn::Ident, TokenStream), crate::Errors> {
+) -> Result<(HashSet<syn::Ident>, TokenStream), crate::Errors> {
     let mut errors = vec![];
 
     match nested.len() {
@@ -91,19 +91,26 @@ fn extract_rule_from_meta_list(
         ref nested,
         ..
     }: &syn::MetaList,
-) -> Result<(syn::Ident, TokenStream), crate::Errors> {
+) -> Result<(HashSet<syn::Ident>, TokenStream), crate::Errors> {
     let mut errors = vec![];
 
     if nested.is_empty() {
         errors.push(crate::Error::rule_need_arguments(rule_fn_name));
     }
 
+    let mut arg_idents = HashSet::new();
     let rule_fn_args = nested
         .iter()
         .filter_map(|nested_meta| {
             let arg = match nested_meta {
                 syn::NestedMeta::Meta(meta) => match meta {
-                    syn::Meta::Path(path) => Some(quote!(#path)),
+                    syn::Meta::Path(path) => {
+                        arg_idents.insert(syn::Ident::new(
+                            &path.to_token_stream().to_string(),
+                            path.span(),
+                        ));
+                        Some(quote!(#path))
+                    }
                     _ => None,
                 },
                 _ => None,
@@ -127,7 +134,7 @@ fn extract_rule_from_meta_list(
             let field_name = field.to_token_stream().to_string();
 
             Ok((
-                syn::Ident::new(&field_name, field.span()),
+                arg_idents,
                 quote!(
                     if let Err(__error) = #rule_fn_name(#rule_fn_args) {
                         __errors
