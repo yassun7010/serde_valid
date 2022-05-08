@@ -33,6 +33,52 @@ impl_validate_numeric_multiple_of!(usize);
 impl_validate_numeric_multiple_of!(f32);
 impl_validate_numeric_multiple_of!(f64);
 
+impl<T, U> ValidateNumericMultipleOf<T> for Vec<U>
+where
+    T: std::cmp::PartialEq + std::ops::Rem<Output = T> + num_traits::Zero + Copy,
+    U: ValidateNumericMultipleOf<T>,
+{
+    fn check(&self, multiple_of: T) -> bool {
+        for item in self {
+            if !item.check(multiple_of) {
+                return false;
+            }
+        }
+
+        true
+    }
+}
+
+impl<T, U, const N: usize> ValidateNumericMultipleOf<T> for [U; N]
+where
+    T: std::cmp::PartialEq + std::ops::Rem<Output = T> + num_traits::Zero + Copy,
+    U: ValidateNumericMultipleOf<T>,
+{
+    fn check(&self, multiple_of: T) -> bool {
+        for item in self {
+            if !item.check(multiple_of) {
+                return false;
+            }
+        }
+
+        true
+    }
+}
+
+impl<T, U> ValidateNumericMultipleOf<T> for Option<U>
+where
+    T: std::cmp::PartialEq + std::ops::Rem<Output = T> + num_traits::Zero,
+    U: ValidateNumericMultipleOf<T>,
+{
+    fn check(&self, multiple_of: T) -> bool {
+        if let Some(value) = self {
+            value.check(multiple_of)
+        } else {
+            true
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -43,19 +89,48 @@ mod tests {
     }
 
     #[test]
-    fn test_validate_numeric_multiple_of_float_is_true() {
-        assert!(ValidateNumericMultipleOf::check(&12.0, 1.0));
-        assert!(ValidateNumericMultipleOf::check(&12.5, 0.5));
-    }
-
-    #[test]
     fn test_validate_numeric_multiple_of_integer_is_false() {
         assert!(!ValidateNumericMultipleOf::check(&10, 3));
     }
 
     #[test]
+    fn test_validate_numeric_multiple_of_float_is_true() {
+        assert!(ValidateNumericMultipleOf::check(&12.0, 1.0));
+        assert!(ValidateNumericMultipleOf::check(&12.5, 0.5));
+    }
+    #[test]
     fn test_validate_numeric_multiple_of_float_is_false() {
         assert!(!ValidateNumericMultipleOf::check(&12.0, 5.0));
         assert!(!ValidateNumericMultipleOf::check(&12.5, 0.3));
+    }
+
+    #[test]
+    fn test_validate_numeric_multiple_of_vec_is_true() {
+        assert!(ValidateNumericMultipleOf::check(&vec![12.0], 1.0));
+    }
+
+    #[test]
+    fn test_validate_numeric_multiple_of_vec_is_false() {
+        assert!(!ValidateNumericMultipleOf::check(&vec![10], 3));
+    }
+
+    #[test]
+    fn test_validate_numeric_multiple_of_array_is_true() {
+        assert!(ValidateNumericMultipleOf::check(&[12.0], 1.0));
+    }
+
+    #[test]
+    fn test_validate_numeric_multiple_of_array_is_false() {
+        assert!(!ValidateNumericMultipleOf::check(&[10], 3));
+    }
+
+    #[test]
+    fn test_validate_numeric_multiple_of_option_is_true() {
+        assert!(ValidateNumericMultipleOf::check(&Some(12.0), 1.0));
+    }
+
+    #[test]
+    fn test_validate_numeric_multiple_of_option_is_false() {
+        assert!(!ValidateNumericMultipleOf::check(&Some(10), 3));
     }
 }
