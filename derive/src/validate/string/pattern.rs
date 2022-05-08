@@ -44,8 +44,8 @@ fn inner_extract_string_pattern_validator(
     );
 
     Ok(quote!(
-        static #pattern_ident : once_cell::sync::OnceCell<regex::Regex> = once_cell::sync::OnceCell::new();
-        let __pattern = #pattern_ident.get_or_init(|| regex::Regex::new(#pattern).unwrap());
+        static #pattern_ident : ::once_cell::sync::OnceCell<::regex::Regex> = ::once_cell::sync::OnceCell::new();
+        let __pattern = #pattern_ident.get_or_init(|| ::regex::Regex::new(#pattern).unwrap());
         if !::serde_valid::validate_string_pattern(
             #field_ident,
             __pattern,
