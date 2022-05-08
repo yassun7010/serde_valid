@@ -1,6 +1,6 @@
 # Serde Valid
 
-This is [JSON Schema](https://json-schema.org/) based validation tool using by [serde](https://github.com/serde-rs/serde).
+This is [JSON Schema](https://json-schema.org/) based validation tool using with [serde](https://github.com/serde-rs/serde).
 
 ## Usage
 
