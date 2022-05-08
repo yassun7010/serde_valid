@@ -179,7 +179,7 @@ let s = SampleStruct(0, "1".to_owned());
 assert!(s.validate().is_ok());
 ```
 
-## Validate Trait
+## Validate Traits
 
 By implementing the validation trait, Your original type can uses Serde Valid validations.
 
