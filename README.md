@@ -85,7 +85,7 @@ For user custom message, Serde Valid provides `message_fn` or `message`.
 
 ```rust
 fn min_error_message(_params: &serde_valid::MinItemsErrorParams) -> String {
-    "this is min custom message.".to_string()
+    "this is min custom message_fn.".to_string()
 }
 
 #[derive(Validate)]
@@ -101,7 +101,7 @@ assert_eq!(
     serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
     serde_json::to_string(&json!({
         "val": [
-            "this is min custom message.",
+            "this is min custom message_fn.",
             "this is max custom message."
         ]
     }))
