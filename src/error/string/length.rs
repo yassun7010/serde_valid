@@ -7,29 +7,12 @@ macro_rules! struct_string_length_params {
     ($Params:tt, $limit:tt, $message:tt) => {
         #[derive(Debug, serde::Serialize)]
         pub struct $Params {
-            value: String,
             $limit: usize,
         }
 
         impl $Params {
-            pub fn new<T>(value: T, $limit: usize) -> Self
-            where
-                T: PartialOrd + PartialEq + std::fmt::Debug,
-            {
-                Self {
-                    value: format!("{:?}", value),
-                    $limit,
-                }
-            }
-
-            #[allow(dead_code)]
-            pub fn value(&self) -> &str {
-                &self.value
-            }
-
-            #[allow(dead_code)]
-            pub fn length(&self) -> usize {
-                self.value.len()
+            pub fn new($limit: usize) -> Self {
+                Self { $limit }
             }
 
             #[allow(dead_code)]

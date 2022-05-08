@@ -2,18 +2,26 @@
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/array.html#length>
 pub trait ValidateArrayMinItems {
-    fn check(&self, min_items: usize) -> bool;
+    fn validate(&self, min_items: usize) -> Result<(), crate::MinItemsErrorParams>;
 }
 
 impl<T> ValidateArrayMinItems for Vec<T> {
-    fn check(&self, min_items: usize) -> bool {
-        min_items <= self.len()
+    fn validate(&self, min_items: usize) -> Result<(), crate::MinItemsErrorParams> {
+        if min_items <= self.len() {
+            Ok(())
+        } else {
+            Err(crate::MinItemsErrorParams::new(min_items))
+        }
     }
 }
 
 impl<T, const N: usize> ValidateArrayMinItems for [T; N] {
-    fn check(&self, min_items: usize) -> bool {
-        min_items <= self.len()
+    fn validate(&self, min_items: usize) -> Result<(), crate::MinItemsErrorParams> {
+        if min_items <= self.len() {
+            Ok(())
+        } else {
+            Err(crate::MinItemsErrorParams::new(min_items))
+        }
     }
 }
 
@@ -23,21 +31,21 @@ mod tests {
 
     #[test]
     fn test_validate_array_min_items_is_true() {
-        assert!(ValidateArrayMinItems::check(&[1, 2, 3], 3));
+        assert!(ValidateArrayMinItems::validate(&[1, 2, 3], 3).is_ok());
     }
 
     #[test]
     fn test_validate_array_min_items_is_false() {
-        assert!(!ValidateArrayMinItems::check(&[1, 2, 3], 4));
+        assert!(ValidateArrayMinItems::validate(&[1, 2, 3], 4).is_err());
     }
 
     #[test]
     fn test_validate_array_min_items_vec_is_true() {
-        assert!(ValidateArrayMinItems::check(&vec!['a', 'b', 'c'], 3));
+        assert!(ValidateArrayMinItems::validate(&vec!['a', 'b', 'c'], 3).is_ok());
     }
 
     #[test]
     fn test_validate_array_min_items_array_is_true() {
-        assert!(ValidateArrayMinItems::check(&['a', 'b', 'c'], 3));
+        assert!(ValidateArrayMinItems::validate(&['a', 'b', 'c'], 3).is_ok());
     }
 }

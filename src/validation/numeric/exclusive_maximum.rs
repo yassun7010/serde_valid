@@ -5,14 +5,21 @@ pub trait ValidateNumericExclusiveMaximum<T>
 where
     T: PartialOrd + PartialEq,
 {
-    fn check(&self, exclusive_maximum: T) -> bool;
+    fn validate(&self, exclusive_maximum: T) -> Result<(), crate::ExclusiveMaximumErrorParams>;
 }
 
 macro_rules! impl_validate_numeric_exclusive_maximum {
     ($ty:ty) => {
         impl ValidateNumericExclusiveMaximum<$ty> for $ty {
-            fn check(&self, exclusive_maximum: $ty) -> bool {
-                *self < exclusive_maximum
+            fn validate(
+                &self,
+                exclusive_maximum: $ty,
+            ) -> Result<(), crate::ExclusiveMaximumErrorParams> {
+                if *self < exclusive_maximum {
+                    Ok(())
+                } else {
+                    Err(crate::ExclusiveMaximumErrorParams::new(exclusive_maximum))
+                }
             }
         }
     };
@@ -40,20 +47,20 @@ mod tests {
     #[test]
     fn test_validate_numeric_exclusive_maximum_is_true() {
         // Unspecified generic type:
-        assert!(ValidateNumericExclusiveMaximum::check(&10, 11));
+        assert!(ValidateNumericExclusiveMaximum::validate(&10, 11).is_ok());
     }
 
     #[test]
     fn test_validate_numeric_exclusive_maximum_is_false() {
-        assert!(!ValidateNumericExclusiveMaximum::check(&5, 4));
-        assert!(!ValidateNumericExclusiveMaximum::check(&10, 10));
+        assert!(ValidateNumericExclusiveMaximum::validate(&5, 4).is_err());
+        assert!(ValidateNumericExclusiveMaximum::validate(&10, 10).is_err());
     }
 
     #[test]
     fn test_validate_numeric_exclusive_maximum_specified_type() {
-        assert!(ValidateNumericExclusiveMaximum::check(&0.2, 0.5));
-        assert!(ValidateNumericExclusiveMaximum::check(&0, 5u8));
-        assert!(ValidateNumericExclusiveMaximum::check(&0, 4u16));
-        assert!(ValidateNumericExclusiveMaximum::check(&0, 6u32));
+        assert!(ValidateNumericExclusiveMaximum::validate(&0.2, 0.5).is_ok());
+        assert!(ValidateNumericExclusiveMaximum::validate(&0, 5u8).is_ok());
+        assert!(ValidateNumericExclusiveMaximum::validate(&0, 4u16).is_ok());
+        assert!(ValidateNumericExclusiveMaximum::validate(&0, 6u32).is_ok());
     }
 }

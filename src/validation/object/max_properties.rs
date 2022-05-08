@@ -1,18 +1,22 @@
-use crate::traits::Size;
+use crate::{traits::Size, MaxPropertiesErrorParams};
 
 /// Size validation.
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/object.html#size>
 pub trait ValidateObjectMaxProperties {
-    fn check(&self, max_properties: usize) -> bool;
+    fn validate(&self, max_properties: usize) -> Result<(), MaxPropertiesErrorParams>;
 }
 
 impl<T> ValidateObjectMaxProperties for T
 where
     T: Size,
 {
-    fn check(&self, max_properties: usize) -> bool {
-        max_properties >= self.size()
+    fn validate(&self, max_properties: usize) -> Result<(), MaxPropertiesErrorParams> {
+        if max_properties >= self.size() {
+            Ok(())
+        } else {
+            Err(MaxPropertiesErrorParams::new(max_properties))
+        }
     }
 }
 
@@ -29,7 +33,7 @@ mod tests {
         map.insert("key1".to_string(), "value1".to_string());
         map.insert("key2".to_string(), "value2".to_string());
         map.insert("key3".to_string(), "value3".to_string());
-        assert!(ValidateObjectMaxProperties::check(&map, 3));
+        assert!(ValidateObjectMaxProperties::validate(&map, 3).is_ok());
     }
 
     #[test]
@@ -38,7 +42,7 @@ mod tests {
         map.insert("key1".to_string(), "value1".to_string());
         map.insert("key2".to_string(), "value2".to_string());
         map.insert("key3".to_string(), "value3".to_string());
-        assert!(ValidateObjectMaxProperties::check(&map, 3));
+        assert!(ValidateObjectMaxProperties::validate(&map, 3).is_ok());
     }
 
     #[test]
@@ -50,8 +54,8 @@ mod tests {
         });
         let map = value.as_object().unwrap();
 
-        assert!(ValidateObjectMaxProperties::check(map, 4));
-        assert!(ValidateObjectMaxProperties::check(map, 3));
+        assert!(ValidateObjectMaxProperties::validate(map, 4).is_ok());
+        assert!(ValidateObjectMaxProperties::validate(map, 3).is_ok());
     }
 
     #[test]
@@ -63,6 +67,6 @@ mod tests {
         });
         let map = value.as_object().unwrap();
 
-        assert!(!ValidateObjectMaxProperties::check(map, 2));
+        assert!(ValidateObjectMaxProperties::validate(map, 2).is_err());
     }
 }

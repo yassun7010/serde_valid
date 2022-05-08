@@ -9,56 +9,57 @@ pub use maximum::ValidateNumericMaximum;
 pub use minimum::ValidateNumericMinimum;
 pub use multiple_of::ValidateNumericMultipleOf;
 
+use crate::{
+    ExclusiveMaximumErrorParams, ExclusiveMinimumErrorParams, MaximumErrorParams,
+    MinimumErrorParams,
+};
+
 macro_rules! impl_validate_numeric_range {
-    ($tt:tt) => {
-        impl<T, U> $tt<T> for Vec<U>
+    ($ValidateTrait:tt, $ErrorParams:tt) => {
+        impl<T, U> $ValidateTrait<T> for Vec<U>
         where
             T: PartialOrd + PartialEq + Copy,
-            U: $tt<T>,
+            U: $ValidateTrait<T>,
         {
-            fn check(&self, limit: T) -> bool {
+            fn validate(&self, limit: T) -> Result<(), $ErrorParams> {
                 for item in self {
-                    if !item.check(limit) {
-                        return false;
-                    }
+                    item.validate(limit)?
                 }
 
-                true
+                Ok(())
             }
         }
 
-        impl<T, U, const N: usize> $tt<T> for [U; N]
+        impl<T, U, const N: usize> $ValidateTrait<T> for [U; N]
         where
             T: PartialOrd + PartialEq + Copy,
-            U: $tt<T>,
+            U: $ValidateTrait<T>,
         {
-            fn check(&self, limit: T) -> bool {
+            fn validate(&self, limit: T) -> Result<(), $ErrorParams> {
                 for item in self {
-                    if !item.check(limit) {
-                        return false;
-                    }
+                    item.validate(limit)?
                 }
 
-                true
+                Ok(())
             }
         }
 
-        impl<T, U> $tt<T> for Option<U>
+        impl<T, U> $ValidateTrait<T> for Option<U>
         where
             T: PartialOrd + PartialEq,
-            U: $tt<T>,
+            U: $ValidateTrait<T>,
         {
-            fn check(&self, limit: T) -> bool {
+            fn validate(&self, limit: T) -> Result<(), $ErrorParams> {
                 match self {
-                    Some(value) => value.check(limit),
-                    None => true,
+                    Some(value) => value.validate(limit),
+                    None => Ok(()),
                 }
             }
         }
     };
 }
 
-impl_validate_numeric_range!(ValidateNumericMaximum);
-impl_validate_numeric_range!(ValidateNumericMinimum);
-impl_validate_numeric_range!(ValidateNumericExclusiveMaximum);
-impl_validate_numeric_range!(ValidateNumericExclusiveMinimum);
+impl_validate_numeric_range!(ValidateNumericMaximum, MaximumErrorParams);
+impl_validate_numeric_range!(ValidateNumericMinimum, MinimumErrorParams);
+impl_validate_numeric_range!(ValidateNumericExclusiveMaximum, ExclusiveMaximumErrorParams);
+impl_validate_numeric_range!(ValidateNumericExclusiveMinimum, ExclusiveMinimumErrorParams);

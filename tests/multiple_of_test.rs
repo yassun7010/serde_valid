@@ -129,7 +129,7 @@ fn multiple_of_err_message() {
         serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
         serde_json::to_string(&json!({
             "val": [
-                "`14` must be multiple of `5`, but not."
+                "value must be multiple of `5`."
             ]
         }))
         .unwrap()

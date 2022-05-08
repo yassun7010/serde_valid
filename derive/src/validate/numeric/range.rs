@@ -48,7 +48,7 @@ macro_rules! extract_numeric_range_validator{
                 message_fn.unwrap_or(quote!(::serde_valid::$ErrorParams::to_default_message));
 
             Ok(quote!(
-                if !::serde_valid::$ValidateTrait::check(
+                if let Err(error_params) = ::serde_valid::$ValidateTrait::validate(
                     #field_ident,
                     #$limit,
                 ) {
@@ -58,10 +58,7 @@ macro_rules! extract_numeric_range_validator{
                         .or_default()
                         .push(::serde_valid::validation::Error::$ErrorType(
                             ::serde_valid::error::Message::new(
-                                ::serde_valid::$ErrorParams::new(
-                                    *#field_ident,
-                                    #$limit,
-                                ),
+                                error_params,
                                 #message
                             )
                         ));

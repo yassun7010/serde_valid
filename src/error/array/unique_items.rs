@@ -1,31 +1,16 @@
 use crate::error::ToDefaultMessage;
 
 #[derive(Debug, serde::Serialize)]
-pub struct UniqueItemsErrorParams {
-    items: Vec<String>,
-}
+pub struct UniqueItemsErrorParams {}
 
 impl UniqueItemsErrorParams {
-    pub fn new<T>(items: &[T]) -> Self
-    where
-        T: std::fmt::Debug,
-    {
-        Self {
-            items: items.iter().map(|i| format!("{:?}", i)).collect(),
-        }
-    }
-
-    #[allow(dead_code)]
-    pub fn items(&self) -> &Vec<String> {
-        &self.items
+    pub fn new() -> Self {
+        Self {}
     }
 }
 
 impl ToDefaultMessage for UniqueItemsErrorParams {
     fn to_default_message(&self) -> String {
-        format!(
-            "item of [{}] must be unique, but not.",
-            self.items.join(", ")
-        )
+        format!("items must be unique.")
     }
 }

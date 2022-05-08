@@ -5,16 +5,20 @@ pub trait ValidateGenericEnumerate<T>
 where
     Self: std::cmp::PartialEq<T>,
 {
-    fn check(&self, enumerate: &[T]) -> bool;
+    fn validate(&self, enumerate: &[T]) -> Result<(), crate::EnumerateErrorParams>;
 }
 
 impl<T, U> ValidateGenericEnumerate<U> for T
 where
     T: std::cmp::PartialEq<U>,
-    U: std::cmp::PartialEq<T>,
+    U: std::cmp::PartialEq<T> + std::fmt::Debug,
 {
-    fn check(&self, enumerate: &[U]) -> bool {
-        enumerate.iter().any(|candidate| candidate == self)
+    fn validate(&self, enumerate: &[U]) -> Result<(), crate::EnumerateErrorParams> {
+        if enumerate.iter().any(|candidate| candidate == self) {
+            Ok(())
+        } else {
+            Err(crate::EnumerateErrorParams::new(enumerate))
+        }
     }
 }
 
@@ -24,39 +28,39 @@ mod tests {
 
     #[test]
     fn test_validate_integer_vec_type_is_true() {
-        assert!(ValidateGenericEnumerate::check(&1, &[1, 2, 3]));
+        assert!(ValidateGenericEnumerate::validate(&1, &[1, 2, 3]).is_ok());
     }
 
     #[test]
     fn test_validate_integer_vec_type_is_false() {
-        assert!(!ValidateGenericEnumerate::check(&1, &[2, 3, 4]));
+        assert!(ValidateGenericEnumerate::validate(&1, &[2, 3, 4]).is_err());
     }
 
     #[test]
     fn test_validate_float_type_is_true() {
-        assert!(ValidateGenericEnumerate::check(&0.9, &[0.9, 2.3, -3.0]));
+        assert!(ValidateGenericEnumerate::validate(&0.9, &[0.9, 2.3, -3.0]).is_ok());
     }
 
     #[test]
     fn test_validate_float_type_is_false() {
-        assert!(!ValidateGenericEnumerate::check(&0.9, &[0.8, 2.3, -3.0]));
+        assert!(ValidateGenericEnumerate::validate(&0.9, &[0.8, 2.3, -3.0]).is_err());
     }
 
     #[test]
     fn test_validate_str_type() {
-        assert!(ValidateGenericEnumerate::check(&'a', &['a', 'b', 'c']));
+        assert!(ValidateGenericEnumerate::validate(&'a', &['a', 'b', 'c']).is_ok());
     }
 
     #[test]
     fn test_validate_string_type() {
-        assert!(ValidateGenericEnumerate::check(&"a", &["a", "b", "c"]));
+        assert!(ValidateGenericEnumerate::validate(&"a", &["a", "b", "c"]).is_ok());
     }
 
     #[test]
     fn test_validate_vec_type() {
-        assert!(ValidateGenericEnumerate::check(
-            &vec!["a"],
-            &[vec!["a"], vec!["b"], vec!["c"]]
-        ));
+        assert!(
+            ValidateGenericEnumerate::validate(&vec!["a"], &[vec!["a"], vec!["b"], vec!["c"]])
+                .is_ok()
+        );
     }
 }

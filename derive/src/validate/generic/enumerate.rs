@@ -40,7 +40,7 @@ fn inner_extract_generic_enumerate_validator(
     ));
 
     Ok(quote!(
-        if !::serde_valid::ValidateGenericEnumerate::check(
+        if let Err(error_params) = ::serde_valid::ValidateGenericEnumerate::validate(
             #field_ident,
             &[#enumerate],
         ) {
@@ -50,10 +50,7 @@ fn inner_extract_generic_enumerate_validator(
                 .or_default()
                 .push(::serde_valid::validation::Error::Enumerate(
                     ::serde_valid::error::Message::new(
-                        ::serde_valid::EnumerateErrorParams::new(
-                            #field_ident,
-                            &[#enumerate],
-                        ),
+                        error_params,
                         #message
                 )
                 ));

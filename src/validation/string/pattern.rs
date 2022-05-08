@@ -1,19 +1,23 @@
-use crate::traits::IsMatch;
+use crate::{traits::IsMatch, PatternErrorParams};
 use regex::Regex;
 
 /// RegularExpressions validation.
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/string.html#regular-expressions>
 pub trait ValidateStringPattern {
-    fn check(&self, pattern: &Regex) -> bool;
+    fn validate(&self, pattern: &Regex) -> Result<(), PatternErrorParams>;
 }
 
 impl<T> ValidateStringPattern for T
 where
     T: IsMatch + ?Sized,
 {
-    fn check(&self, pattern: &Regex) -> bool {
-        self.is_match(pattern)
+    fn validate(&self, pattern: &Regex) -> Result<(), PatternErrorParams> {
+        if self.is_match(pattern) {
+            Ok(())
+        } else {
+            Err(PatternErrorParams::new(pattern))
+        }
     }
 }
 
@@ -26,65 +30,73 @@ mod tests {
 
     #[test]
     fn test_validate_string_pattern_str_type() {
-        assert!(ValidateStringPattern::check(
+        assert!(ValidateStringPattern::validate(
             "2020-09-10",
             &Regex::new(r"^\d{4}-\d{2}-\d{2}$").unwrap()
-        ));
+        )
+        .is_ok());
     }
 
     #[test]
     fn test_validate_string_pattern_string_type() {
-        assert!(ValidateStringPattern::check(
+        assert!(ValidateStringPattern::validate(
             &String::from("2020-09-10"),
             &Regex::new(r"^\d{4}-\d{2}-\d{2}$").unwrap()
-        ));
+        )
+        .is_ok());
     }
 
     #[test]
     fn test_validate_string_pattern_cow_str_type() {
-        assert!(ValidateStringPattern::check(
+        assert!(ValidateStringPattern::validate(
             &Cow::from("2020-09-10"),
             &Regex::new(r"^\d{4}-\d{2}-\d{2}$").unwrap()
-        ));
+        )
+        .is_ok());
     }
 
     #[test]
     fn test_validate_string_pattern_os_str_type() {
-        assert!(ValidateStringPattern::check(
+        assert!(ValidateStringPattern::validate(
             OsStr::new("2020-09-10"),
             &Regex::new(r"^\d{4}-\d{2}-\d{2}$").unwrap()
-        ));
+        )
+        .is_ok());
     }
 
     #[test]
     fn test_validate_string_pattern_os_string_type() {
-        assert!(ValidateStringPattern::check(
+        assert!(ValidateStringPattern::validate(
             &OsString::from("2020-09-10"),
             &Regex::new(r"^\d{4}-\d{2}-\d{2}$").unwrap()
-        ));
+        )
+        .is_ok());
     }
 
     #[test]
     fn test_validate_string_pattern_path_type() {
-        assert!(ValidateStringPattern::check(
+        assert!(ValidateStringPattern::validate(
             Path::new("./foo/bar.txt"),
             &Regex::new(r"^*.txt$").unwrap()
-        ));
+        )
+        .is_ok());
     }
 
     #[test]
     fn test_validate_string_pattern_path_buf_type() {
-        assert!(ValidateStringPattern::check(
+        assert!(ValidateStringPattern::validate(
             &PathBuf::from("./foo/bar.txt"),
             &Regex::new(r"^*.txt$").unwrap()
-        ));
+        )
+        .is_ok());
     }
 
     #[test]
     fn test_validate_string_pattern_is_false() {
-        assert!(!ValidateStringPattern::check(
+        assert!(ValidateStringPattern::validate(
             "2020/09/10",
             &Regex::new(r"^\d{4}-\d{2}-\d{2}$").unwrap()
-        ));
+        )
+        .is_err());
     }
 }

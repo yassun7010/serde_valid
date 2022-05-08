@@ -1,5 +1,8 @@
 use serde_json::json;
-use serde_valid::Validate;
+use serde_valid::{
+    Validate, ValidateNumericExclusiveMaximum, ValidateNumericExclusiveMinimum,
+    ValidateNumericMaximum, ValidateNumericMinimum,
+};
 
 #[test]
 fn range_integer() {
@@ -324,4 +327,50 @@ fn range_custom_err_message() {
         }))
         .unwrap()
     );
+}
+
+#[test]
+fn range_trait() {
+    struct MyType(i32);
+
+    impl ValidateNumericMinimum<i32> for MyType {
+        fn validate(&self, minimum: i32) -> Result<(), serde_valid::MinimumErrorParams> {
+            ValidateNumericMinimum::validate(&self.0, minimum)
+        }
+    }
+
+    impl ValidateNumericMaximum<i32> for MyType {
+        fn validate(&self, maximum: i32) -> Result<(), serde_valid::MaximumErrorParams> {
+            ValidateNumericMaximum::validate(&self.0, maximum)
+        }
+    }
+
+    impl ValidateNumericExclusiveMinimum<i32> for MyType {
+        fn validate(
+            &self,
+            exclusive_minimum: i32,
+        ) -> Result<(), serde_valid::ExclusiveMinimumErrorParams> {
+            ValidateNumericExclusiveMinimum::validate(&self.0, exclusive_minimum)
+        }
+    }
+
+    impl ValidateNumericExclusiveMaximum<i32> for MyType {
+        fn validate(
+            &self,
+            exclusive_maximum: i32,
+        ) -> Result<(), serde_valid::ExclusiveMaximumErrorParams> {
+            ValidateNumericExclusiveMaximum::validate(&self.0, exclusive_maximum)
+        }
+    }
+
+    #[derive(Validate)]
+    struct TestStruct {
+        #[validate(minimum = 3)]
+        #[validate(maximum = 5)]
+        val: MyType,
+    }
+
+    let s = TestStruct { val: MyType(4) };
+
+    assert!(s.validate().is_ok());
 }

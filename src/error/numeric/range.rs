@@ -4,24 +4,17 @@ macro_rules! struct_numeric_range_params {
     ($Params:tt, $limit:tt, $message:tt) => {
         #[derive(Debug)]
         pub struct $Params {
-            value: String,
             $limit: String,
         }
 
         impl $Params {
-            pub fn new<T>(value: T, $limit: T) -> Self
+            pub fn new<T>($limit: T) -> Self
             where
                 T: PartialOrd + PartialEq + ToString,
             {
                 Self {
-                    value: value.to_string(),
                     $limit: $limit.to_string(),
                 }
-            }
-
-            #[allow(dead_code)]
-            pub fn value(&self) -> &str {
-                &self.value
             }
 
             #[allow(dead_code)]

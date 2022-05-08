@@ -1,5 +1,5 @@
 use serde_json::json;
-use serde_valid::Validate;
+use serde_valid::{Validate, ValidateStringPattern};
 use std::borrow::Cow;
 use std::ffi::{OsStr, OsString};
 
@@ -206,7 +206,7 @@ fn pattern_err_message() {
         serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
         serde_json::to_string(&json!({
             "val": [
-                "\"2020/09/10\" must match the pattern of \"^\\d{4}-\\d{2}-\\d{2}$\", but not."
+                "the value must match the pattern of \"^\\d{4}-\\d{2}-\\d{2}$\"."
             ]
         }))
         .unwrap()
@@ -261,4 +261,27 @@ fn pattern_custom_err_message() {
         }))
         .unwrap()
     );
+}
+
+#[test]
+fn pattern_trait() {
+    struct MyType(String);
+
+    impl ValidateStringPattern for MyType {
+        fn validate(&self, pattern: &regex::Regex) -> Result<(), serde_valid::PatternErrorParams> {
+            ValidateStringPattern::validate(&self.0, pattern)
+        }
+    }
+
+    #[derive(Validate)]
+    struct TestStruct {
+        #[validate(pattern = r"^\d{4}-\d{2}-\d{2}$")]
+        val: MyType,
+    }
+
+    let s = TestStruct {
+        val: MyType(String::from("2020-09-10")),
+    };
+
+    assert!(s.validate().is_ok());
 }

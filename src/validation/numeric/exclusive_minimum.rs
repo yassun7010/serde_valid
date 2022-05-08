@@ -1,3 +1,5 @@
+use crate::ExclusiveMinimumErrorParams;
+
 /// Range validation.
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/numeric.html#range>
@@ -5,14 +7,18 @@ pub trait ValidateNumericExclusiveMinimum<T>
 where
     T: PartialOrd + PartialEq,
 {
-    fn check(&self, exclusive_minimum: T) -> bool;
+    fn validate(&self, exclusive_minimum: T) -> Result<(), ExclusiveMinimumErrorParams>;
 }
 
 macro_rules! impl_validate_numeric_exclusive_minimum {
     ($ty:ty) => {
         impl ValidateNumericExclusiveMinimum<$ty> for $ty {
-            fn check(&self, exclusive_minimum: $ty) -> bool {
-                *self > exclusive_minimum
+            fn validate(&self, exclusive_minimum: $ty) -> Result<(), ExclusiveMinimumErrorParams> {
+                if *self > exclusive_minimum {
+                    Ok(())
+                } else {
+                    Err(ExclusiveMinimumErrorParams::new(exclusive_minimum))
+                }
             }
         }
     };
@@ -40,20 +46,20 @@ mod tests {
     #[test]
     fn test_validate_numeric_exclusive_minimum_is_true() {
         // Unspecified generic type:
-        assert!(ValidateNumericExclusiveMinimum::check(&10, 9));
+        assert!(ValidateNumericExclusiveMinimum::validate(&10, 9).is_ok());
     }
 
     #[test]
     fn test_validate_numeric_exclusive_minimum_is_false() {
-        assert!(!ValidateNumericExclusiveMinimum::check(&5, 6));
-        assert!(!ValidateNumericExclusiveMinimum::check(&5, 5));
+        assert!(ValidateNumericExclusiveMinimum::validate(&5, 6).is_err());
+        assert!(ValidateNumericExclusiveMinimum::validate(&5, 5).is_err());
     }
 
     #[test]
     fn test_validate_numeric_exclusive_minimum_specified_type() {
-        assert!(ValidateNumericExclusiveMinimum::check(&0.5, 0.2));
-        assert!(ValidateNumericExclusiveMinimum::check(&5u8, 0));
-        assert!(ValidateNumericExclusiveMinimum::check(&4u16, 0));
-        assert!(ValidateNumericExclusiveMinimum::check(&6u32, 0));
+        assert!(ValidateNumericExclusiveMinimum::validate(&0.5, 0.2).is_ok());
+        assert!(ValidateNumericExclusiveMinimum::validate(&5u8, 0).is_ok());
+        assert!(ValidateNumericExclusiveMinimum::validate(&4u16, 0).is_ok());
+        assert!(ValidateNumericExclusiveMinimum::validate(&6u32, 0).is_ok());
     }
 }

@@ -1,3 +1,5 @@
+use crate::MaximumErrorParams;
+
 /// Range validation.
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/numeric.html#range>
@@ -5,14 +7,18 @@ pub trait ValidateNumericMaximum<T>
 where
     T: PartialOrd + PartialEq,
 {
-    fn check(&self, maximum: T) -> bool;
+    fn validate(&self, maximum: T) -> Result<(), MaximumErrorParams>;
 }
 
 macro_rules! impl_validate_numeric_maximum {
     ($ty:ty) => {
         impl ValidateNumericMaximum<$ty> for $ty {
-            fn check(&self, maximum: $ty) -> bool {
-                *self <= maximum
+            fn validate(&self, maximum: $ty) -> Result<(), MaximumErrorParams> {
+                if *self <= maximum {
+                    Ok(())
+                } else {
+                    Err(MaximumErrorParams::new(maximum))
+                }
             }
         }
     };
@@ -40,20 +46,20 @@ mod tests {
     #[test]
     fn test_validate_numeric_maximum_is_true() {
         // Unspecified generic type:
-        assert!(ValidateNumericMaximum::check(&10, 11));
-        assert!(ValidateNumericMaximum::check(&10, 10));
+        assert!(ValidateNumericMaximum::validate(&10, 11).is_ok());
+        assert!(ValidateNumericMaximum::validate(&10, 10).is_ok());
     }
 
     #[test]
     fn test_validate_numeric_maximum_is_false() {
-        assert!(!ValidateNumericMaximum::check(&5, 4));
+        assert!(ValidateNumericMaximum::validate(&5, 4).is_err());
     }
 
     #[test]
     fn test_validate_numeric_maximum_specified_type() {
-        assert!(ValidateNumericMaximum::check(&0.2, 0.5));
-        assert!(ValidateNumericMaximum::check(&0, 5u8));
-        assert!(ValidateNumericMaximum::check(&0, 4u16));
-        assert!(ValidateNumericMaximum::check(&0, 6u32));
+        assert!(ValidateNumericMaximum::validate(&0.2, 0.5).is_ok());
+        assert!(ValidateNumericMaximum::validate(&0, 5u8).is_ok());
+        assert!(ValidateNumericMaximum::validate(&0, 4u16).is_ok());
+        assert!(ValidateNumericMaximum::validate(&0, 6u32).is_ok());
     }
 }

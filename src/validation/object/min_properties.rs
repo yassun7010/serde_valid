@@ -1,18 +1,22 @@
-use crate::traits::Size;
+use crate::{traits::Size, MinPropertiesErrorParams};
 
 /// Size validation.
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/object.html#size>
 pub trait ValidateObjectMinProperties {
-    fn check(&self, min_properties: usize) -> bool;
+    fn validate(&self, min_properties: usize) -> Result<(), MinPropertiesErrorParams>;
 }
 
 impl<T> ValidateObjectMinProperties for T
 where
     T: Size,
 {
-    fn check(&self, min_properties: usize) -> bool {
-        min_properties <= self.size()
+    fn validate(&self, min_properties: usize) -> Result<(), MinPropertiesErrorParams> {
+        if min_properties <= self.size() {
+            Ok(())
+        } else {
+            Err(MinPropertiesErrorParams::new(min_properties))
+        }
     }
 }
 
@@ -29,7 +33,7 @@ mod tests {
         map.insert("key1".to_string(), "value1".to_string());
         map.insert("key2".to_string(), "value2".to_string());
         map.insert("key3".to_string(), "value3".to_string());
-        assert!(ValidateObjectMinProperties::check(&map, 3));
+        assert!(ValidateObjectMinProperties::validate(&map, 3).is_ok());
     }
 
     #[test]
@@ -38,7 +42,7 @@ mod tests {
         map.insert("key1".to_string(), "value1".to_string());
         map.insert("key2".to_string(), "value2".to_string());
         map.insert("key3".to_string(), "value3".to_string());
-        assert!(ValidateObjectMinProperties::check(&map, 3));
+        assert!(ValidateObjectMinProperties::validate(&map, 3).is_ok());
     }
 
     #[test]
@@ -50,8 +54,8 @@ mod tests {
         });
         let map = value.as_object().unwrap();
 
-        assert!(ValidateObjectMinProperties::check(map, 2));
-        assert!(ValidateObjectMinProperties::check(map, 3));
+        assert!(ValidateObjectMinProperties::validate(map, 2).is_ok());
+        assert!(ValidateObjectMinProperties::validate(map, 3).is_ok());
     }
 
     #[test]
@@ -63,6 +67,6 @@ mod tests {
         });
         let map = value.as_object().unwrap();
 
-        assert!(!ValidateObjectMinProperties::check(map, 4));
+        assert!(ValidateObjectMinProperties::validate(map, 4).is_err());
     }
 }

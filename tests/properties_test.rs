@@ -2,6 +2,8 @@ use serde_valid::Validate;
 
 use serde::Deserialize;
 use serde_json::json;
+use serde_valid::ValidateObjectMaxProperties;
+use serde_valid::ValidateObjectMinProperties;
 use std::collections::BTreeMap;
 use std::collections::HashMap;
 
@@ -219,4 +221,42 @@ fn range_custom_err_message() {
         }))
         .unwrap()
     );
+}
+
+#[test]
+fn properties_trait() {
+    struct MyType(HashMap<String, String>);
+
+    impl ValidateObjectMaxProperties for MyType {
+        fn validate(
+            &self,
+            max_properties: usize,
+        ) -> Result<(), serde_valid::MaxPropertiesErrorParams> {
+            ValidateObjectMaxProperties::validate(&self.0, max_properties)
+        }
+    }
+
+    impl ValidateObjectMinProperties for MyType {
+        fn validate(
+            &self,
+            min_properties: usize,
+        ) -> Result<(), serde_valid::MinPropertiesErrorParams> {
+            ValidateObjectMinProperties::validate(&self.0, min_properties)
+        }
+    }
+
+    #[derive(Validate)]
+    struct TestStruct {
+        #[validate(min_properties = 3)]
+        #[validate(max_properties = 3)]
+        val: MyType,
+    }
+
+    let mut map = HashMap::new();
+    map.insert("key1".to_string(), "value1".to_string());
+    map.insert("key2".to_string(), "value2".to_string());
+    map.insert("key3".to_string(), "value3".to_string());
+
+    let s = TestStruct { val: MyType(map) };
+    assert!(s.validate().is_ok());
 }

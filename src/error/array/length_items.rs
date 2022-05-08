@@ -7,24 +7,12 @@ macro_rules! struct_array_length_params {
     ($Params:tt, $limit:tt, $message:tt) => {
         #[derive(Debug)]
         pub struct $Params {
-            items: Vec<String>,
             $limit: usize,
         }
 
         impl $Params {
-            pub fn new<T>(items: &[T], $limit: usize) -> Self
-            where
-                T: std::fmt::Debug,
-            {
-                Self {
-                    items: items.iter().map(|i| format!("{:?}", i)).collect(),
-                    $limit,
-                }
-            }
-
-            #[allow(dead_code)]
-            pub fn items(&self) -> &Vec<String> {
-                &self.items
+            pub fn new($limit: usize) -> Self {
+                Self { $limit }
             }
 
             #[allow(dead_code)]

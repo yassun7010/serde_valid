@@ -1,5 +1,5 @@
 use serde_json::json;
-use serde_valid::Validate;
+use serde_valid::{Validate, ValidateGenericEnumerate};
 
 #[test]
 fn enumerate_integer_type() {
@@ -141,7 +141,7 @@ fn enumerate_err_message() {
         serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
         serde_json::to_string(&json!({
             "val": [
-                "`4` must be in [1, 2, 3], but not."
+                "value must be in [1, 2, 3]."
             ]
         }))
         .unwrap()
@@ -182,6 +182,41 @@ fn enumerate_custom_err_message() {
     }
 
     let s = TestStruct { val: 4 };
+
+    assert_eq!(
+        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
+        serde_json::to_string(&json!({
+            "val": [
+                "this is custom message."
+            ]
+        }))
+        .unwrap()
+    );
+}
+
+#[test]
+fn enumerate_trait() {
+    struct MyType(i32);
+
+    impl PartialEq<i32> for MyType {
+        fn eq(&self, other: &i32) -> bool {
+            self.0.eq(other)
+        }
+    }
+
+    impl ValidateGenericEnumerate<i32> for MyType {
+        fn validate(&self, enumerate: &[i32]) -> Result<(), serde_valid::EnumerateErrorParams> {
+            self.0.validate(enumerate)
+        }
+    }
+
+    #[derive(Validate)]
+    struct TestStruct {
+        #[validate(enumerate(1, 2, 3), message = "this is custom message.")]
+        val: MyType,
+    }
+
+    let s = TestStruct { val: MyType(4) };
 
     assert_eq!(
         serde_json::to_string(&s.validate().unwrap_err()).unwrap(),

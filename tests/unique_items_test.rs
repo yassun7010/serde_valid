@@ -1,5 +1,5 @@
 use serde_json::json;
-use serde_valid::Validate;
+use serde_valid::{Validate, ValidateArrayUniqueItems};
 
 #[test]
 fn unique_items_vec_type() {
@@ -55,7 +55,7 @@ fn unique_items_err_message() {
         serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
         serde_json::to_string(&json!({
             "val": [
-                "item of [1, 2, 3, 2] must be unique, but not."
+                "items must be unique."
             ]
         }))
         .unwrap()
@@ -110,4 +110,27 @@ fn unique_items_custom_err_message() {
         }))
         .unwrap()
     );
+}
+
+#[test]
+fn unique_items_trait() {
+    struct MyType(Vec<i32>);
+
+    impl ValidateArrayUniqueItems for MyType {
+        fn validate(&self) -> Result<(), serde_valid::UniqueItemsErrorParams> {
+            self.0.validate()
+        }
+    }
+
+    #[derive(Validate)]
+    struct TestStruct {
+        #[validate(unique_items)]
+        val: MyType,
+    }
+
+    let s = TestStruct {
+        val: MyType(vec![1, 2, 3]),
+    };
+
+    assert!(s.validate().is_ok());
 }

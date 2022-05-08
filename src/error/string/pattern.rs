@@ -1,27 +1,16 @@
 use crate::error::ToDefaultMessage;
-use crate::traits::IsMatch;
 use regex::Regex;
 
 #[derive(Debug, serde::Serialize)]
 pub struct PatternErrorParams {
-    value: String,
     pattern: String,
 }
 
 impl PatternErrorParams {
-    pub fn new<T>(value: &T, pattern: &Regex) -> Self
-    where
-        T: IsMatch + ?Sized + std::fmt::Debug,
-    {
+    pub fn new(pattern: &Regex) -> Self {
         Self {
-            value: format!("{:?}", value),
             pattern: format!("{:?}", pattern),
         }
-    }
-
-    #[allow(dead_code)]
-    pub fn value(&self) -> &String {
-        &self.value
     }
 
     #[allow(dead_code)]
@@ -32,9 +21,6 @@ impl PatternErrorParams {
 
 impl ToDefaultMessage for PatternErrorParams {
     fn to_default_message(&self) -> String {
-        format!(
-            "{} must match the pattern of \"{}\", but not.",
-            self.value, self.pattern
-        )
+        format!("the value must match the pattern of \"{}\".", self.pattern)
     }
 }
