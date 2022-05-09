@@ -1,5 +1,6 @@
+use serde::Deserialize;
 use serde_json::json;
-use serde_valid::{Deserialize, Validate};
+use serde_valid::Validate;
 
 #[test]
 fn deserialize_with_validation_from_value_is_ok() {

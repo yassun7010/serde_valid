@@ -1,7 +1,8 @@
 use serde_valid::Validate;
 
+use serde::Deserialize;
 use serde_json::json;
-use serde_valid::{Deserialize, ValidateMaxProperties, ValidateMinProperties};
+use serde_valid::{ValidateMaxProperties, ValidateMinProperties};
 use std::collections::BTreeMap;
 use std::collections::HashMap;
 
