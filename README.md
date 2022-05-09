@@ -111,7 +111,7 @@ assert_eq!(
 
 ## Custom method
 
-You can use your custom validation using by `#[validate(custom)]` validation.
+You can use your custom validation using by `#[validate(custom)]`.
 
 ```rust
 fn user_validation(_val: &Vec<i32>) -> Result<(), serde_valid::validation::Error> {
