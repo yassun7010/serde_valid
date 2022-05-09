@@ -1,20 +1,19 @@
-pub trait DeserializeWithValidationFromStr<T>
+pub trait DeserializeWithValidationFromStr<V, E>
 where
-    Self::Error: std::error::Error,
+    Self: Sized,
+    E: std::error::Error,
 {
-    type Error;
-
-    fn deserialize_with_validation_from_str(str: &str) -> Result<T, crate::Error<Self::Error>>;
+    fn deserialize_with_validation_from_str(str: &str) -> Result<Self, crate::Error<E>>;
 }
 
-impl<T> DeserializeWithValidationFromStr<T> for serde_json::Value
+impl<T> DeserializeWithValidationFromStr<serde_json::Value, serde_json::Error> for T
 where
     T: serde::de::DeserializeOwned + crate::Validate,
 {
-    type Error = serde_json::Error;
-
-    fn deserialize_with_validation_from_str(str: &str) -> Result<T, crate::Error<Self::Error>> {
-        let model: T = serde_json::from_str(str)?;
+    fn deserialize_with_validation_from_str(
+        str: &str,
+    ) -> Result<Self, crate::Error<serde_json::Error>> {
+        let model: Self = serde_json::from_str(str)?;
         model
             .validate()
             .map_err(|err| crate::Error::ValidationError(err))?;

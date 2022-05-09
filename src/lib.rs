@@ -62,7 +62,7 @@
 //! Serde Valid support complete constructor method using by [`serde_valid::from_value`][from_value] / [`serde_valid::from_str`][from_str] / [`serde_valid::from_slice`][from_slice] / [`serde_valid::from_reader`][from_reader].
 //!
 //! ```rust
-//! use serde_json::json;
+//! use serde_valid::json::{json, FromJson};
 //!
 //! #[derive(Debug, serde::Deserialize, serde_valid::Validate)]
 //! struct SampleStruct {
@@ -72,13 +72,15 @@
 //! }
 //!
 //! // Deserializing and Validation!! 🚀
-//! let err = serde_valid::from_value::<SampleStruct, _>(json!({ "val": 1234 })).unwrap_err();
+//! let err = SampleStruct::from_json_value(json!({ "val": 1234 })).unwrap_err();
 //!
 //! assert_eq!(
 //!     serde_json::to_value(err.as_validation_errors().unwrap()).unwrap(),
 //!     json!({"val": ["the number must be `<= 1000`."]})
 //! );
 //! ```
+//!
+//! You can force validation by only deserializing through `serde_valid`, and removing `serde_json` from `Cargo.toml` of your project.
 //!
 //! ## Custom Message
 //!
@@ -226,12 +228,11 @@
 //! assert!(s.validate().is_ok());
 //! ```
 
-mod deserialize;
 pub mod error;
+pub mod json;
 mod traits;
 pub mod validation;
 
-pub use deserialize::*;
 pub use error::{
     EnumerateErrorParams, Error, ExclusiveMaximumErrorParams, ExclusiveMinimumErrorParams,
     MaxItemsErrorParams, MaxLengthErrorParams, MaxPropertiesErrorParams, MaximumErrorParams,

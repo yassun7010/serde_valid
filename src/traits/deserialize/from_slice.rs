@@ -1,20 +1,18 @@
-pub trait DeserializeWithValidationFromSlice<T>
+pub trait DeserializeWithValidationFromSlice<V, E>
 where
-    T: serde::de::DeserializeOwned + crate::Validate,
-    Self::Error: std::error::Error,
+    Self: Sized,
+    E: std::error::Error,
 {
-    type Error;
-
-    fn deserialize_with_validation_from_slice(v: &[u8]) -> Result<T, crate::Error<Self::Error>>;
+    fn deserialize_with_validation_from_slice(v: &[u8]) -> Result<Self, crate::Error<E>>;
 }
 
-impl<T> DeserializeWithValidationFromSlice<T> for serde_json::Value
+impl<T> DeserializeWithValidationFromSlice<serde_json::Value, serde_json::Error> for T
 where
     T: serde::de::DeserializeOwned + crate::Validate,
 {
-    type Error = serde_json::Error;
-
-    fn deserialize_with_validation_from_slice(v: &[u8]) -> Result<T, crate::Error<Self::Error>> {
+    fn deserialize_with_validation_from_slice(
+        v: &[u8],
+    ) -> Result<T, crate::Error<serde_json::Error>> {
         let model: T = serde_json::from_slice(v)?;
         model
             .validate()
