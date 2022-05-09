@@ -4,7 +4,7 @@ use serde_valid::json::FromJson;
 use serde_valid::Validate;
 
 #[test]
-fn deserialize_validation_err_to_string() {
+fn json_error_to_string() {
     #[derive(Debug, Validate, Deserialize)]
     struct TestStruct {
         #[validate(minimum = 0)]
@@ -21,7 +21,7 @@ fn deserialize_validation_err_to_string() {
 }
 
 #[test]
-fn deserialize_validation_err_to_json_value() {
+fn json_error_to_json_value() {
     #[derive(Debug, Validate, Deserialize)]
     struct TestStruct {
         #[validate(minimum = 0)]
@@ -34,5 +34,26 @@ fn deserialize_validation_err_to_json_value() {
     assert_eq!(
         serde_json::to_value(err.as_validation_errors().unwrap()).unwrap(),
         json!({"val": ["the number must be `<= 1000`."]})
+    );
+}
+
+#[cfg(feature = "yaml")]
+#[test]
+fn yaml_error_to_json_value() {
+    use serde::Deserialize;
+    use serde_valid::yaml::FromYaml;
+    use serde_valid::Validate;
+
+    #[derive(Debug, Validate, Deserialize)]
+    struct TestStruct {
+        #[validate(maximum = 10)]
+        val: i32,
+    }
+
+    let err = TestStruct::from_yaml_value(serde_yaml::from_str("val: 15").unwrap()).unwrap_err();
+
+    assert_eq!(
+        serde_json::to_value(err.as_validation_errors().unwrap()).unwrap(),
+        json!({"val": ["the number must be `<= 10`."]})
     );
 }

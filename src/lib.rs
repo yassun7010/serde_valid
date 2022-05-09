@@ -232,6 +232,8 @@ pub mod error;
 pub mod json;
 mod traits;
 pub mod validation;
+#[cfg(feature = "yaml")]
+pub mod yaml;
 
 pub use error::{
     EnumerateErrorParams, Error, ExclusiveMaximumErrorParams, ExclusiveMinimumErrorParams,

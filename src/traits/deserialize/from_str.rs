@@ -22,13 +22,13 @@ where
 }
 
 #[cfg(feature = "yaml")]
-impl<T> DeserializeWithValidationFromStr<T> for serde_yaml::Value
+impl<T> DeserializeWithValidationFromStr<serde_yaml::Value, serde_yaml::Error> for T
 where
     T: serde::de::DeserializeOwned + crate::Validate,
 {
-    type Error = serde_yaml::Error;
-
-    fn deserialize_with_validation_from_str(str: &str) -> Result<T, crate::Error<Self::Error>> {
+    fn deserialize_with_validation_from_str(
+        str: &str,
+    ) -> Result<T, crate::Error<serde_yaml::Error>> {
         let model: T = serde_yaml::from_str(str)?;
         model
             .validate()
@@ -38,13 +38,13 @@ where
 }
 
 #[cfg(feature = "toml")]
-impl<T> DeserializeWithValidationFromStr<T> for serde_toml::Value
+impl<T> DeserializeWithValidationFromStr<serde_toml::Value, serde_toml::de::Error> for T
 where
     T: serde::de::DeserializeOwned + crate::Validate,
 {
-    type Error = serde_toml::de::Error;
-
-    fn deserialize_with_validation_from_str(str: &str) -> Result<T, crate::Error<Self::Error>> {
+    fn deserialize_with_validation_from_str(
+        str: &str,
+    ) -> Result<T, crate::Error<serde_toml::de::Error>> {
         let model: T = serde_toml::from_str(str)?;
         model
             .validate()

@@ -22,14 +22,14 @@ where
 }
 
 #[cfg(feature = "yaml")]
-impl<T> DeserializeWithValidationFromValue<T> for serde_yaml::Value
+impl<T> DeserializeWithValidationFromValue<serde_yaml::Value, serde_yaml::Error> for T
 where
     T: serde::de::DeserializeOwned + crate::Validate,
 {
-    type Error = serde_yaml::Error;
-
-    fn deserialize_with_validation_from_value(self) -> Result<T, crate::Error<Self::Error>> {
-        let model: T = serde_yaml::from_value(self)?;
+    fn deserialize_with_validation_from_value(
+        value: serde_yaml::Value,
+    ) -> Result<T, crate::Error<serde_yaml::Error>> {
+        let model: T = serde_yaml::from_value(value)?;
         model
             .validate()
             .map_err(|err| crate::Error::ValidationError(err))?;
@@ -38,14 +38,14 @@ where
 }
 
 #[cfg(feature = "toml")]
-impl<T> DeserializeWithValidationFromValue<T> for serde_toml::Value
+impl<T> DeserializeWithValidationFromValue<serde_toml::Value, serde_toml::de::Error> for T
 where
     T: serde::de::DeserializeOwned + crate::Validate,
 {
-    type Error = serde_toml::de::Error;
-
-    fn deserialize_with_validation_from_value(self) -> Result<T, crate::Error<Self::Error>> {
-        let model: T = serde::Deserialize::deserialize(self)?;
+    fn deserialize_with_validation_from_value(
+        value: serde_toml::Value,
+    ) -> Result<T, crate::Error<serde_toml::de::Error>> {
+        let model: T = serde::Deserialize::deserialize(value)?;
         model
             .validate()
             .map_err(|err| crate::Error::ValidationError(err))?;
