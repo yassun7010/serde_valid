@@ -10,6 +10,7 @@ pub use error::{
     MinItemsErrorParams, MinLengthErrorParams, MinPropertiesErrorParams, MinimumErrorParams,
     MultipleOfErrorParams, PatternErrorParams, UniqueItemsErrorParams,
 };
+pub use serde::{de, ser, Deserialize, Deserializer, Serialize, Serializer};
 pub use traits::*;
 pub use validation::{
     ValidateEnumerate, ValidateExclusiveMaximum, ValidateExclusiveMinimum, ValidateMaxItems,
