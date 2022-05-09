@@ -230,6 +230,8 @@
 
 pub mod error;
 pub mod json;
+#[cfg(feature = "toml")]
+pub mod toml;
 mod traits;
 pub mod validation;
 #[cfg(feature = "yaml")]

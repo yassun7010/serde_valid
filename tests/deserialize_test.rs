@@ -57,3 +57,24 @@ fn yaml_error_to_json_value() {
         json!({"val": ["the number must be `<= 10`."]})
     );
 }
+
+#[cfg(feature = "toml")]
+#[test]
+fn toml_error_to_json_value() {
+    use serde::Deserialize;
+    use serde_valid::toml::FromToml;
+    use serde_valid::Validate;
+
+    #[derive(Debug, Validate, Deserialize)]
+    struct TestStruct {
+        #[validate(maximum = 10)]
+        val: i32,
+    }
+
+    let err = TestStruct::from_toml_value(serde_toml::from_str("val = 15").unwrap()).unwrap_err();
+
+    assert_eq!(
+        serde_json::to_value(err.as_validation_errors().unwrap()).unwrap(),
+        json!({"val": ["the number must be `<= 10`."]})
+    );
+}
