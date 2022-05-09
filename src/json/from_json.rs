@@ -11,10 +11,58 @@ where
     where
         R: std::io::Read;
 
+    /// Convert from json slice.
+    ///
+    /// ```rust
+    /// use serde::Deserialize;
+    /// use serde_valid::Validate;
+    /// use serde_valid::json::FromJson;
+    ///
+    /// #[derive(Debug, Validate, Deserialize)]
+    /// struct TestStruct {
+    ///     #[validate(minimum = 0)]
+    ///     #[validate(maximum = 2000)]
+    ///     val: i32,
+    /// }
+    ///
+    /// let s = TestStruct::from_json_slice(b"{ \"val\": 1234 }");
+    /// assert!(s.is_ok())
+    /// ```
     fn from_json_slice(slice: &[u8]) -> Result<Self, crate::Error<serde_json::Error>>;
 
+    /// Convert from json str.
+    ///
+    /// ```rust
+    /// use serde::Deserialize;
+    /// use serde_valid::Validate;
+    /// use serde_valid::json::{json, FromJson};
+    /// #[derive(Debug, Validate, Deserialize)]
+    /// struct TestStruct {
+    ///     #[validate(minimum = 0)]
+    ///     #[validate(maximum = 2000)]
+    ///     val: i32,
+    /// }
+    /// let s = TestStruct::from_json_str(&serde_json::to_string(&json!({ "val": 1234 })).unwrap());
+    ///
+    /// assert!(s.is_ok())
+    /// ```
     fn from_json_str(str: &str) -> Result<Self, crate::Error<serde_json::Error>>;
 
+    /// Convert from [`serde_json::Value`](serde_json::Value).
+    ///
+    /// ```rust
+    /// use serde::Deserialize;
+    /// use serde_valid::Validate;
+    /// use serde_valid::json::{json, FromJson};
+    ///
+    /// #[derive(Debug, Validate, Deserialize)]
+    /// struct TestStruct {
+    ///     #[validate(maximum = 2000)]
+    ///     val: i32,
+    /// }
+    /// let s = TestStruct::from_json_value(json!({ "val": 1234 }));
+    /// assert!(s.is_ok())
+    /// ```
     fn from_json_value(value: serde_json::Value) -> Result<Self, crate::Error<serde_json::Error>>;
 }
 
