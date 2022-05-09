@@ -20,7 +20,6 @@ where
     ///
     /// #[derive(Debug, Validate, Deserialize)]
     /// struct TestStruct {
-    ///     #[validate(minimum = 0)]
     ///     #[validate(maximum = 2000)]
     ///     val: i32,
     /// }
@@ -38,7 +37,6 @@ where
     /// use serde_valid::json::{json, FromJson};
     /// #[derive(Debug, Validate, Deserialize)]
     /// struct TestStruct {
-    ///     #[validate(minimum = 0)]
     ///     #[validate(maximum = 2000)]
     ///     val: i32,
     /// }
