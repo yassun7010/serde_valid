@@ -60,7 +60,7 @@ Serde Valid support standard validation based JSON Schema.
 Serde Valid support complete constructor method using by `serde_valid::from_value`/ `serde_valid::from_str` / `serde_valid::from_slice` / `serde_valid::from_reader`.
 
 ```rust
-#[derive(Debug, serde_valid::Validate, serde_valid::Deserialize)]
+#[derive(Debug, serde::Deserialize, serde_valid::Validate)]
 struct SampleStruct {
     #[validate(minimum = 0)]
     #[validate(maximum = 1000)]
@@ -75,9 +75,6 @@ assert_eq!(
     json!({"val": ["the number must be `<= 1000`."]})
 );
 ```
-
-You can force validation by only deserializing through `serde_valid`, and removing `serde_json` from `Cargo.toml` of your project.
-
 
 ## Custom Message
 
