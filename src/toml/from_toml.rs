@@ -53,7 +53,7 @@ where
     /// ```rust
     /// use serde::Deserialize;
     /// use serde_valid::Validate;
-    /// use serde_valid::toml::{FromToml};
+    /// use serde_valid::toml::FromToml;
     ///
     /// #[derive(Debug, Validate, Deserialize)]
     /// struct TestStruct {
