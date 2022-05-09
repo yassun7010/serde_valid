@@ -11,7 +11,8 @@ fn deserialize_with_validation_from_value_is_ok() {
         val: i32,
     }
 
-    serde_valid::from_value::<TestStruct, _>(json!({ "val": 1234 })).unwrap();
+    let s: Result<TestStruct, _> = serde_valid::from_value(json!({ "val": 1234 }));
+    assert!(s.is_ok())
 }
 
 #[test]
@@ -23,10 +24,11 @@ fn deserialize_with_validation_from_str_is_ok() {
         val: i32,
     }
 
-    serde_valid::from_str::<TestStruct, serde_json::Value>(
+    let s = serde_valid::from_str::<TestStruct, serde_json::Value>(
         &serde_json::to_string(&json!({ "val": 1234 })).unwrap(),
-    )
-    .unwrap();
+    );
+
+    assert!(s.is_ok())
 }
 
 #[test]

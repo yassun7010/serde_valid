@@ -7,14 +7,16 @@
 //! You derive `Validate` trait, and write validations.
 //!
 //! ```rust
-//! #[derive(serde_valid::Validate)]
+//! use serde_valid::Validate;
+//!
+//! #[derive(Validate)]
 //! struct SampleStruct {
 //!     #[validate(minimum = 0)]
 //!     #[validate(maximum = 10)]
 //!     val: i32,
 //! }
 //!
-//! #[derive(serde_valid::Validate)]
+//! #[derive(Validate)]
 //! enum SampleEnum {
 //!     Named {
 //!         #[validate]
@@ -60,6 +62,8 @@
 //! Serde Valid support complete constructor method using by [`serde_valid::from_value`][from_value] / [`serde_valid::from_str`][from_str] / [`serde_valid::from_slice`][from_slice] / [`serde_valid::from_reader`][from_reader].
 //!
 //! ```rust
+//! use serde_json::json;
+//!
 //! #[derive(Debug, serde::Deserialize, serde_valid::Validate)]
 //! struct SampleStruct {
 //!     #[validate(minimum = 0)]
@@ -81,11 +85,14 @@
 //! For user custom message, Serde Valid provides `message_fn` or `message`.
 //!
 //! ```rust
+//! use serde_json::json;
+//! use serde_valid::Validate;
+//!
 //! fn min_error_message(_params: &serde_valid::MinItemsErrorParams) -> String {
 //!     "this is min custom message_fn.".to_string()
 //! }
 //!
-//! #[derive(serde_valid::Validate)]
+//! #[derive(Validate)]
 //! struct SampleStruct {
 //!     #[validate(min_items = 4, message_fn(min_error_message))]
 //!     #[validate(max_items = 2, message = "this is max custom message.")]
@@ -111,11 +118,13 @@
 //! You can use your custom validation using by `#[validate(custom)]`.
 //!
 //! ```rust
-//! fn user_validation(_val: &Vec<i32>) -> Result<(), serde_valid::validation::Error> {
+//! use serde_valid::Validate;
+//!
+//! fn user_validation(_val: &i32) -> Result<(), serde_valid::validation::Error> {
 //!     Ok(())
 //! }
 //!
-//! #[derive(serde_valid::Validate)]
+//! #[derive(Validate)]
 //! struct SampleStruct {
 //!     #[validate(custom(user_validation))]
 //!     val: i32,
@@ -131,13 +140,16 @@
 //! If you want to check multi fields validation, you can use `#[rule]`.
 //!
 //! ```rust
+//! use serde_json::json;
+//! use serde_valid::Validate;
+//!
 //! fn sample_rule(_val1: &i32, _val2: &str) -> Result<(), serde_valid::validation::Error> {
 //!     Err(serde_valid::validation::Error::Custom(
 //!         "Rule error is added to the first arg of the rule_method.".to_owned(),
 //!     ))
 //! }
 //!
-//! #[derive(serde_valid::Validate)]
+//! #[derive(Validate)]
 //! #[rule(sample_rule(val2, val1))]
 //! struct SampleStruct {
 //!     val1: String,
@@ -163,11 +175,14 @@
 //! If you want to use rule to unnamed fields struct, just like this,
 //!
 //! ```rust
+//! use serde_json::json;
+//! use serde_valid::Validate;
+//!
 //! fn sample_rule(_val1: &i32, _val2: &str) -> Result<(), serde_valid::validation::Error> {
 //!     Ok(())
 //! }
 //!
-//! #[derive(serde_valid::Validate)]
+//! #[derive(Validate)]
 //! #[rule(sample_rule(0, 1))]
 //! struct SampleStruct(i32, String);
 //!
@@ -181,6 +196,8 @@
 //! By implementing the validation trait, Your original type can uses Serde Valid validations.
 //!
 //! ```rust
+//! use serde_valid::Validate;
+//!
 //! struct MyType(String);
 //!
 //! impl serde_valid::ValidateMaxLength for MyType {
@@ -195,7 +212,7 @@
 //!     }
 //! }
 //!
-//! #[derive(serde_valid::Validate)]
+//! #[derive(Validate)]
 //! struct SampleStruct {
 //!     #[validate(min_length = 5)]
 //!     #[validate(max_length = 5)]
