@@ -243,7 +243,6 @@ pub use error::{
     MinItemsErrorParams, MinLengthErrorParams, MinPropertiesErrorParams, MinimumErrorParams,
     MultipleOfErrorParams, PatternErrorParams, UniqueItemsErrorParams,
 };
-pub use traits::*;
 pub use validation::{
     ValidateEnumerate, ValidateExclusiveMaximum, ValidateExclusiveMinimum, ValidateMaxItems,
     ValidateMaxLength, ValidateMaxProperties, ValidateMaximum, ValidateMinItems, ValidateMinLength,

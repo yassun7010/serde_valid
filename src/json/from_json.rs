@@ -1,4 +1,4 @@
-use crate::{
+use crate::traits::{
     DeserializeWithValidationFromReader, DeserializeWithValidationFromSlice,
     DeserializeWithValidationFromStr, DeserializeWithValidationFromValue,
 };
