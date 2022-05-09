@@ -57,7 +57,7 @@ Serde Valid support standard validation based JSON Schema.
 
 ## Complete Constructor
 
-Serde Valid support complete constructor method using by `serde_valid::from_value`/ `serde_valid::from_str` / `serde_valid::from_slice` / `serde_valid::from_reader`.
+Serde Valid support complete constructor method using by [`serde_valid::from_value`][from_value] / [`serde_valid::from_str`][from_str] / [`serde_valid::from_slice`][from_slice] / [`serde_valid::from_reader`][from_reader].
 
 ```rust
 #[derive(Debug, serde::Deserialize, serde_valid::Validate)]
