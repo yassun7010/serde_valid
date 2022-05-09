@@ -43,7 +43,7 @@ Serde Valid support standard validation based JSON Schema.
 | String | `#[validate(max_length = 5)]` | `ValidateMaxLength` | [maxLength](https://json-schema.org/understanding-json-schema/reference/string.html#length) |
 | String | `#[validate(min_length = 5)]` | `ValidateMinLength` | [minLength](https://json-schema.org/understanding-json-schema/reference/string.html#length) |
 | String | `#[validate(pattern = r"^\d{5}$")]` | `ValidatePattern` | [pattern](https://json-schema.org/understanding-json-schema/reference/string.html#regular-expressions) |
-| Numeric | `#[validate(maximum = 5)]` | `ValidateExclusiveMaximum` | [maximum](https://json-schema.org/understanding-json-schema/reference/numeric.html#range) |
+| Numeric | `#[validate(maximum = 5)]` | `ValidateMaximum` | [maximum](https://json-schema.org/understanding-json-schema/reference/numeric.html#range) |
 | Numeric | `#[validate(minimum = 5)]` | `ValidateMinimum` | [minimum](https://json-schema.org/understanding-json-schema/reference/numeric.html#range) |
 | Numeric | `#[validate(exclusive_maximum = 5)]` | `ValidateExclusiveMaximum` | [exclusiveMaximum](https://json-schema.org/understanding-json-schema/reference/numeric.html#range) |
 | Numeric | `#[validate(exclusive_minimum = 5)]` | `ValidateExclusiveMinimum` | [exclusiveMinimum](https://json-schema.org/understanding-json-schema/reference/numeric.html#range) |
