@@ -1,8 +1,3 @@
-use crate::traits::{
-    DeserializeWithValidationFromReader, DeserializeWithValidationFromSlice,
-    DeserializeWithValidationFromStr, DeserializeWithValidationFromValue,
-};
-
 pub trait FromJson
 where
     Self: Sized,
@@ -89,28 +84,40 @@ where
 
 impl<T> FromJson for T
 where
-    T: crate::Validate
-        + DeserializeWithValidationFromReader<serde_json::Value, serde_json::Error>
-        + DeserializeWithValidationFromSlice<serde_json::Value, serde_json::Error>
-        + DeserializeWithValidationFromStr<serde_json::Value, serde_json::Error>
-        + DeserializeWithValidationFromValue<serde_json::Value, serde_json::Error>,
+    T: serde::de::DeserializeOwned + crate::Validate,
 {
     fn from_json_reader<R>(reader: R) -> Result<Self, crate::Error<serde_json::Error>>
     where
         R: std::io::Read,
     {
-        T::deserialize_with_validation_from_reader(reader)
+        let model: T = serde_json::from_reader(reader)?;
+        model
+            .validate()
+            .map_err(|err| crate::Error::ValidationError(err))?;
+        Ok(model)
     }
 
     fn from_json_slice(slice: &[u8]) -> Result<Self, crate::Error<serde_json::Error>> {
-        T::deserialize_with_validation_from_slice(slice)
+        let model: T = serde_json::from_slice(slice)?;
+        model
+            .validate()
+            .map_err(|err| crate::Error::ValidationError(err))?;
+        Ok(model)
     }
 
     fn from_json_str(str: &str) -> Result<Self, crate::Error<serde_json::Error>> {
-        T::deserialize_with_validation_from_str(str)
+        let model: Self = serde_json::from_str(str)?;
+        model
+            .validate()
+            .map_err(|err| crate::Error::ValidationError(err))?;
+        Ok(model)
     }
 
     fn from_json_value(value: serde_json::Value) -> Result<Self, crate::Error<serde_json::Error>> {
-        T::deserialize_with_validation_from_value(value)
+        let model: T = serde_json::from_value(value)?;
+        model
+            .validate()
+            .map_err(|err| crate::Error::ValidationError(err))?;
+        Ok(model)
     }
 }

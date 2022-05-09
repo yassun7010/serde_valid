@@ -1,8 +1,3 @@
-use crate::traits::{
-    DeserializeWithValidationFromReader, DeserializeWithValidationFromSlice,
-    DeserializeWithValidationFromStr, DeserializeWithValidationFromValue,
-};
-
 pub trait FromToml
 where
     Self: Sized,
@@ -91,30 +86,50 @@ where
 
 impl<T> FromToml for T
 where
-    T: crate::Validate
-        + DeserializeWithValidationFromReader<serde_toml::Value, serde_toml::de::Error>
-        + DeserializeWithValidationFromSlice<serde_toml::Value, serde_toml::de::Error>
-        + DeserializeWithValidationFromStr<serde_toml::Value, serde_toml::de::Error>
-        + DeserializeWithValidationFromValue<serde_toml::Value, serde_toml::de::Error>,
+    T: serde::de::DeserializeOwned + crate::Validate,
 {
     fn from_toml_reader<R>(reader: R) -> Result<Self, crate::Error<serde_toml::de::Error>>
     where
         R: std::io::Read,
     {
-        T::deserialize_with_validation_from_reader(reader)
+        use serde::de::Error;
+
+        let mut buffer = String::new();
+        let mut reader = reader;
+        reader
+            .read_to_string(&mut buffer)
+            .map_err(|err| serde_toml::de::Error::custom(err))?;
+
+        let model: T = serde_toml::from_str(&buffer)?;
+        model
+            .validate()
+            .map_err(|err| crate::Error::ValidationError(err))?;
+        Ok(model)
     }
 
     fn from_toml_slice(slice: &[u8]) -> Result<Self, crate::Error<serde_toml::de::Error>> {
-        T::deserialize_with_validation_from_slice(slice)
+        let model: T = serde_toml::from_slice(slice)?;
+        model
+            .validate()
+            .map_err(|err| crate::Error::ValidationError(err))?;
+        Ok(model)
     }
 
     fn from_toml_str(str: &str) -> Result<Self, crate::Error<serde_toml::de::Error>> {
-        T::deserialize_with_validation_from_str(str)
+        let model: T = serde_toml::from_str(str)?;
+        model
+            .validate()
+            .map_err(|err| crate::Error::ValidationError(err))?;
+        Ok(model)
     }
 
     fn from_toml_value(
         value: serde_toml::Value,
     ) -> Result<Self, crate::Error<serde_toml::de::Error>> {
-        T::deserialize_with_validation_from_value(value)
+        let model: T = serde::Deserialize::deserialize(value)?;
+        model
+            .validate()
+            .map_err(|err| crate::Error::ValidationError(err))?;
+        Ok(model)
     }
 }
