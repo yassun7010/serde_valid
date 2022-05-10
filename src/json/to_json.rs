@@ -1,7 +1,4 @@
-pub trait ToJson
-where
-    Self: Sized,
-{
+pub trait ToJson {
     fn to_json_string(&self) -> Result<String, serde_json::Error>;
 
     fn to_json_string_pretty(&self) -> Result<String, serde_json::Error>;

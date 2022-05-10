@@ -1,7 +1,4 @@
-pub trait ToYaml
-where
-    Self: Sized,
-{
+pub trait ToYaml {
     fn to_yaml_string(&self) -> Result<String, serde_yaml::Error>;
 
     fn to_yaml_value(&self) -> Result<serde_yaml::Value, serde_yaml::Error>;

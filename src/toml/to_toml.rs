@@ -1,9 +1,6 @@
 use serde::ser::Error;
 
-pub trait ToToml
-where
-    Self: Sized,
-{
+pub trait ToToml {
     fn to_toml_string(&self) -> Result<String, serde_toml::ser::Error>;
 
     fn to_toml_string_pretty(&self) -> Result<String, serde_toml::ser::Error>;

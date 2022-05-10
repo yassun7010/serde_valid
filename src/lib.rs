@@ -229,13 +229,8 @@
 //! ```
 
 pub mod error;
-pub mod json;
-#[cfg(feature = "toml")]
-pub mod toml;
 mod traits;
 pub mod validation;
-#[cfg(feature = "yaml")]
-pub mod yaml;
 
 pub use error::{
     EnumerateErrorParams, Error, ExclusiveMaximumErrorParams, ExclusiveMinimumErrorParams,
@@ -255,3 +250,9 @@ pub trait Validate {
 }
 
 pub use serde_valid_derive::Validate;
+
+pub mod json;
+#[cfg(feature = "toml")]
+pub mod toml;
+#[cfg(feature = "yaml")]
+pub mod yaml;
