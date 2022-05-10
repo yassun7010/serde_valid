@@ -5,7 +5,6 @@ authors = ["yassun4dev <yassun4dev@outlook.com>"]
 edition = "2021"
 license = "MIT"
 repository = "https://github.com/yassun4dev/serde_valid"
-readme = "README.md"
 categories = ["validation"]
 keywords = ["validation", "serde", "json_schema"]
 
