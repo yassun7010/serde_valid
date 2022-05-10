@@ -85,7 +85,7 @@ You can force validation by only deserialization through `serde_valid`, and remo
 
 ## Serialization
 
-For serialization, provides [serde_valid::json::ToJson](ToJson) trait.
+For serialization, provides [`serde_valid::json::ToJson`](ToJson) trait.
 
 ```rust
 use serde::Serialize;
