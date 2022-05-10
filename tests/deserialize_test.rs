@@ -21,7 +21,7 @@ fn json_error_to_string() {
 }
 
 #[test]
-fn json_error_to_json_value() {
+fn json_error_as_validation_errors() {
     #[derive(Debug, Validate, Deserialize)]
     struct TestStruct {
         #[validate(minimum = 0)]
@@ -39,7 +39,7 @@ fn json_error_to_json_value() {
 
 #[cfg(feature = "yaml")]
 #[test]
-fn yaml_error_to_json_value() {
+fn yaml_error_as_validation_errors() {
     use serde::Deserialize;
     use serde_valid::yaml::FromYaml;
     use serde_valid::Validate;
@@ -60,7 +60,7 @@ fn yaml_error_to_json_value() {
 
 #[cfg(feature = "toml")]
 #[test]
-fn toml_error_to_json_value() {
+fn toml_error_as_validation_errors() {
     use serde::Deserialize;
     use serde_valid::toml::FromToml;
     use serde_valid::Validate;
