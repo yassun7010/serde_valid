@@ -7,7 +7,7 @@ license = "MIT"
 repository = "https://github.com/yassun4dev/serde_valid.git"
 description = "JSON Schema based validation tool using with serde."
 readme = "README.md"
-categories = ["validation"]
+categories = ["encoding"]
 keywords = ["validation", "serde", "json_schema"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
