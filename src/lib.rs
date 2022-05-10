@@ -57,9 +57,9 @@
 //! | Array | `#[validate(unique_items)]` | `ValidateUniqueItems` | [uniqueItems](https://json-schema.org/understanding-json-schema/reference/array.html#unique_items) |
 //! | Generic | `#[validate(enumerate(5, 10, 15))]` | `ValidateEnumerate` | [enum](https://json-schema.org/understanding-json-schema/reference/generic.html#enumerated-values) |
 //!
-//! ## Complete Constructor
+//! ## Complete Constructor Deserialization
 //!
-//! Serde Valid support complete constructor method using by [`serde_valid::from_value`][from_value] / [`serde_valid::from_str`][from_str] / [`serde_valid::from_slice`][from_slice] / [`serde_valid::from_reader`][from_reader].
+//! Serde Valid support complete constructor method using by [`serde_valid::json::FromJson`][FromJson] trait.
 //!
 //! ```rust
 //! use serde_valid::json::{json, FromJson};
