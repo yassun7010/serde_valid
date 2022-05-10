@@ -57,30 +57,52 @@
 //! | Array | `#[validate(unique_items)]` | `ValidateUniqueItems` | [uniqueItems](https://json-schema.org/understanding-json-schema/reference/array.html#unique_items) |
 //! | Generic | `#[validate(enumerate(5, 10, 15))]` | `ValidateEnumerate` | [enum](https://json-schema.org/understanding-json-schema/reference/generic.html#enumerated-values) |
 //!
-//! ## Complete Constructor Deserialization
+//! ## Complete Constructor (Deserialization)
 //!
 //! Serde Valid support complete constructor method using by [`serde_valid::json::FromJson`][FromJson] trait.
 //!
 //! ```rust
+//! use serde::Deserialize;
+//! use serde_valid::Validate;
 //! use serde_valid::json::{json, FromJson};
 //!
-//! #[derive(Debug, serde::Deserialize, serde_valid::Validate)]
+//! #[derive(Debug, Deserialize, Validate)]
 //! struct SampleStruct {
-//!     #[validate(minimum = 0)]
-//!     #[validate(maximum = 1000)]
+//!     #[validate(maximum = 100)]
 //!     val: i32,
 //! }
 //!
-//! // Deserializing and Validation!! 🚀
-//! let err = SampleStruct::from_json_value(json!({ "val": 1234 })).unwrap_err();
+//! // Deserialization and Validation!! 🚀
+//! let err = SampleStruct::from_json_value(json!({ "val": 123 })).unwrap_err();
 //!
 //! assert_eq!(
 //!     serde_json::to_value(err.as_validation_errors().unwrap()).unwrap(),
-//!     json!({"val": ["the number must be `<= 1000`."]})
+//!     json!({ "val": [ "the number must be `<= 100`." ] })
 //! );
 //! ```
 //!
-//! You can force validation by only deserializing through `serde_valid`, and removing `serde_json` from `Cargo.toml` of your project.
+//! You can force validation by only deserialization through `serde_valid`, and removing `serde_json` from `Cargo.toml` of your project.
+//!
+//! ## Serialization
+//!
+//! For serialization, provides [serde_valid::json::ToJson](ToJson) trait.
+//!
+//! ```rust
+//! use serde::Serialize;
+//! use serde_valid::Validate;
+//! use serde_valid::json::{json, ToJson};
+//!
+//! #[derive(Debug, Serialize, Validate)]
+//! struct SampleStruct {
+//!     #[validate(maximum = 100)]
+//!     val: i32,
+//! }
+//!
+//! assert_eq!(
+//!     SampleStruct{ val: 12i32 }.to_json_string().unwrap(),
+//!     json!({ "val": 12i32 }).to_json_string().unwrap()
+//! );
+//! ```
 //!
 //! ## Custom Message
 //!
