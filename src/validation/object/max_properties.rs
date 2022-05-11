@@ -1,6 +1,6 @@
 use crate::{traits::Size, MaxPropertiesErrorParams};
 
-/// Size validation.
+/// Max size of the object properties validation.
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/object.html#size>
 pub trait ValidateMaxProperties {

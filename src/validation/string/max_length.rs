@@ -1,6 +1,6 @@
 use crate::{traits::Length, MaxLengthErrorParams};
 
-/// Length validation.
+/// Max length of the string validation.
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/string.html#length>
 pub trait ValidateMaxLength {

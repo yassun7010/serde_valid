@@ -1,6 +1,6 @@
 use crate::MinimumErrorParams;
 
-/// Range validation.
+/// Minimum of the number validation.
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/numeric.html#range>
 pub trait ValidateMinimum<T>

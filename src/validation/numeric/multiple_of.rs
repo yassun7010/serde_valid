@@ -1,4 +1,4 @@
-/// MultipleOf validation.
+/// Multipl of the number validation.
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/numeric.html#multiples>
 pub trait ValidateMultipleOf<T>

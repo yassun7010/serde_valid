@@ -1,6 +1,6 @@
 use crate::{traits::Length, MinLengthErrorParams};
 
-/// Length validation.
+/// Min length of the string validation.
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/string.html#length>
 pub trait ValidateMinLength {

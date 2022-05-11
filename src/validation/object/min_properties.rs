@@ -1,6 +1,6 @@
 use crate::{traits::Size, MinPropertiesErrorParams};
 
-/// Size validation.
+/// Min size of the object properties validation.
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/object.html#size>
 pub trait ValidateMinProperties {

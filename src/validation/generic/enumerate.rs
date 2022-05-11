@@ -1,4 +1,4 @@
-/// EnumeratedValues validation.
+/// Enumerate validation.
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/generic.html#enumerated-values>
 pub trait ValidateEnumerate<T>

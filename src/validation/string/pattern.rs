@@ -1,7 +1,7 @@
 use crate::{traits::IsMatch, PatternErrorParams};
 use regex::Regex;
 
-/// RegularExpressions validation.
+/// Pattern of the string validation.
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/string.html#regular-expressions>
 pub trait ValidatePattern {

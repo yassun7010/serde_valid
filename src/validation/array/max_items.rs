@@ -1,4 +1,4 @@
-/// Length validation.
+/// Max length of the array items validation.
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/array.html#length>
 pub trait ValidateMaxItems {
