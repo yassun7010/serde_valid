@@ -59,7 +59,7 @@
 //!
 //! ## Complete Constructor (Deserialization)
 //!
-//! Serde Valid support complete constructor method using by [`serde_valid::json::FromJson`][json::FromJson] trait.
+//! Serde Valid support complete constructor method using by [`serde_valid::json::FromJson`](json::FromJson) trait.
 //!
 //! ```rust
 //! use serde::Deserialize;
