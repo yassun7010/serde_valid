@@ -59,7 +59,7 @@ Serde Valid support standard validation based JSON Schema.
 
 ## Complete Constructor (Deserialization)
 
-Serde Valid support complete constructor method using by [`serde_valid::json::FromJson`](json::FromJson) trait.
+Serde Valid support complete constructor method using by [`serde_valid::json::FromJson`](https://docs.rs/serde_valid/latest/serde_valid/json/trait.FromJson.html) trait.
 
 ```rust
 use serde::Deserialize;
@@ -85,7 +85,7 @@ You can force validation by only deserialization through `serde_valid`, and remo
 
 ## Serialization
 
-For serialization, provides [`serde_valid::json::ToJson`](json::ToJson) trait.
+For serialization, provides [`serde_valid::json::ToJson`](https://docs.rs/serde_valid/latest/serde_valid/json/trait.ToJson.html) trait.
 
 ```rust
 use serde::Serialize;
