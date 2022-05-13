@@ -1,4 +1,7 @@
-# Serde Valid
+# Serde Valid &emsp; [![Latest Version]][crates.io]
+
+[Latest Version]: https://img.shields.io/crates/v/serde_valid.svg
+[crates.io]: https://crates.io/crates/serde_valid
 
 This is [JSON Schema](https://json-schema.org/) based validation tool using with [serde](https://github.com/serde-rs/serde).
 
@@ -59,7 +62,7 @@ Serde Valid support standard validation based JSON Schema.
 
 ## Complete Constructor (Deserialization)
 
-Serde Valid support complete constructor method using by [`serde_valid::json::FromJson`](https://docs.rs/serde_valid/latest/serde_valid/json/trait.FromJson.html) trait.
+Serde Valid support complete constructor method using by [`serde_valid::json::FromJson`](json::FromJson) trait.
 
 ```rust
 use serde::Deserialize;
@@ -85,7 +88,7 @@ You can force validation by only deserialization through `serde_valid`, and remo
 
 ## Serialization
 
-For serialization, provides [`serde_valid::json::ToJson`](https://docs.rs/serde_valid/latest/serde_valid/json/trait.ToJson.html) trait.
+For serialization, provides [`serde_valid::json::ToJson`](json::ToJson) trait.
 
 ```rust
 use serde::Serialize;
@@ -137,7 +140,7 @@ assert_eq!(
 );
 ```
 
-## Custom Validation
+## Custom method
 
 You can use your custom validation using by `#[validate(custom)]`.
 

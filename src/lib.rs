@@ -1,4 +1,7 @@
-//! # Serde Valid
+//! # Serde Valid &emsp; [![Latest Version]][crates.io]
+//!
+//! [Latest Version]: https://img.shields.io/crates/v/serde_valid.svg
+//! [crates.io]: https://crates.io/crates/serde_valid
 //!
 //! This is [JSON Schema](https://json-schema.org/) based validation tool using with [serde](https://github.com/serde-rs/serde).
 //!
