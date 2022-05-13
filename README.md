@@ -1,7 +1,7 @@
-# Serde Valid &emsp; [![Latest Version]][crates.io]
+# Serde Valid
 
-[Latest Version]: https://img.shields.io/crates/v/serde_valid.svg
-[crates.io]: https://crates.io/crates/serde_valid
+[![Latest Version](https://img.shields.io/crates/v/serde_valid.svg?style=flat-square)](https://crates.io/crates/serde_valid)
+[![GitHub license](https://badgen.net/github/license/Naereen/Strapdown.js?style=flat-square)](https://github.com/Naereen/StrapDown.js/blob/master/LICENSE)
 
 This is [JSON Schema](https://json-schema.org/) based validation tool using with [serde](https://github.com/serde-rs/serde).
 
@@ -252,5 +252,3 @@ let s = SampleStruct {
 
 assert!(s.validate().is_ok());
 ```
-
-License: MIT
