@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use super::nested_meta_list::extract_validator_from_nested_meta_list;
 use super::nested_meta_name_value::extract_validator_from_nested_meta_name_value;
 use super::nested_meta_path::extract_validator_from_nested_meta_path;
@@ -9,6 +11,7 @@ pub fn extract_validator_from_meta_list(
     field: &impl Field,
     attribute: &syn::Attribute,
     syn::MetaList { nested, .. }: &syn::MetaList,
+    rename_map: &HashMap<String, String>,
 ) -> Result<Validator, crate::Errors> {
     let mut errors = vec![];
     let messaeg_fn = match nested.len() {
@@ -33,13 +36,13 @@ pub fn extract_validator_from_meta_list(
         match meta_item {
             syn::NestedMeta::Meta(meta) => match meta {
                 syn::Meta::Path(path) => {
-                    extract_validator_from_nested_meta_path(field, path, messaeg_fn)
+                    extract_validator_from_nested_meta_path(field, path, messaeg_fn, rename_map)
                 }
-                syn::Meta::List(list) => {
-                    extract_validator_from_nested_meta_list(field, attribute, list, messaeg_fn)
-                }
+                syn::Meta::List(list) => extract_validator_from_nested_meta_list(
+                    field, attribute, list, messaeg_fn, rename_map,
+                ),
                 syn::Meta::NameValue(name_value) => extract_validator_from_nested_meta_name_value(
-                    field, attribute, name_value, messaeg_fn,
+                    field, attribute, name_value, messaeg_fn, rename_map,
                 ),
             }
             .map_err(|validator_errors| {

@@ -2,6 +2,7 @@ use super::named_struct_derive::collect_named_fields_validators_list;
 use super::unnamed_struct_derive::collect_unnamed_fields_validators_list;
 use crate::error::{fields_errors_tokens, new_type_errors_tokens};
 use crate::rule::{collect_rules_from_named_struct, collect_rules_from_unnamed_struct};
+use crate::serde::rename::collect_serde_rename_map;
 use crate::types::CommaSeparatedTokenStreams;
 use proc_macro2::TokenStream;
 use quote::quote;
@@ -75,8 +76,9 @@ fn expand_enum_variant_named_fields(
     let variant_ident = &variant.ident;
     let mut fields_idents = CommaSeparatedTokenStreams::new();
     let else_token = make_else_token(index);
+    let rename_map = collect_serde_rename_map(named_fields);
 
-    let (rule_fields, rules) = match collect_rules_from_named_struct(&variant.attrs) {
+    let (rule_fields, rules) = match collect_rules_from_named_struct(&variant.attrs, &rename_map) {
         Ok(field_rules) => field_rules,
         Err(variant_errors) => {
             errors.extend(variant_errors.into_iter());
@@ -84,7 +86,7 @@ fn expand_enum_variant_named_fields(
         }
     };
 
-    let validates = match collect_named_fields_validators_list(named_fields) {
+    let validates = match collect_named_fields_validators_list(named_fields, &rename_map) {
         Ok(field_validators_list) => {
             TokenStream::from_iter(field_validators_list.iter().map(|validators| {
                 let field_ident = validators.ident();

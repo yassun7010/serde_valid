@@ -3,6 +3,7 @@ use crate::validate::common::get_numeric;
 use crate::validate::Validator;
 use proc_macro2::TokenStream;
 use quote::quote;
+use std::collections::HashMap;
 
 /// Length validation.
 ///
@@ -22,14 +23,15 @@ macro_rules! extract_object_size_validator{
             field: &impl Field,
             validation_value: &syn::Lit,
             message_fn: Option<TokenStream>,
+            rename_map: &HashMap<String, String>,
         ) -> Result<Validator, crate::Errors> {
             if let Some(option_field) = field.option_field() {
                 Ok(Validator::Option(Box::new(
-                    $function_name(&option_field, validation_value, message_fn)?
+                    $function_name(&option_field, validation_value, message_fn, rename_map)?
                 )))
             } else {
                 Ok(Validator::Normal(
-                    $inner_function_name(field, validation_value, message_fn)?
+                    $inner_function_name(field, validation_value, message_fn, rename_map)?
                 ))
             }
         }
@@ -38,9 +40,11 @@ macro_rules! extract_object_size_validator{
             field: &impl Field,
             validation_value: &syn::Lit,
             message_fn: Option<TokenStream>,
+            rename_map: &HashMap<String, String>,
         ) -> Result<TokenStream, crate::Errors> {
             let field_name = field.name();
             let field_ident = field.ident();
+            let rename = rename_map.get(field_name).unwrap_or(field_name);
             let $limit = get_numeric(validation_value)?;
             let message =
                 message_fn.unwrap_or(quote!(::serde_valid::$ErrorParams::to_default_message));
@@ -52,7 +56,7 @@ macro_rules! extract_object_size_validator{
                 ) {
                     use ::serde_valid::error::ToDefaultMessage;
                     __errors
-                        .entry(#field_name)
+                        .entry(#rename)
                         .or_default()
                         .push(::serde_valid::validation::Error::$ErrorType(
                             ::serde_valid::error::Message::new(

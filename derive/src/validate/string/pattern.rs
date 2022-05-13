@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::{
     types::Field,
     validate::{common::get_str, Validator},
@@ -9,20 +11,32 @@ pub fn extract_string_pattern_validator(
     field: &impl Field,
     validation_value: &syn::Lit,
     message_fn: Option<TokenStream>,
+    rename_map: &HashMap<String, String>,
 ) -> Result<Validator, crate::Errors> {
     if let Some(array_field) = field.array_field() {
         Ok(Validator::Array(Box::new(
-            extract_string_pattern_validator(&array_field, validation_value, message_fn)?,
+            extract_string_pattern_validator(
+                &array_field,
+                validation_value,
+                message_fn,
+                rename_map,
+            )?,
         )))
     } else if let Some(option_field) = field.option_field() {
         Ok(Validator::Option(Box::new(
-            extract_string_pattern_validator(&option_field, validation_value, message_fn)?,
+            extract_string_pattern_validator(
+                &option_field,
+                validation_value,
+                message_fn,
+                rename_map,
+            )?,
         )))
     } else {
         Ok(Validator::Normal(inner_extract_string_pattern_validator(
             field,
             validation_value,
             message_fn,
+            rename_map,
         )?))
     }
 }
@@ -31,9 +45,11 @@ fn inner_extract_string_pattern_validator(
     field: &impl Field,
     validation_value: &syn::Lit,
     message_fn: Option<TokenStream>,
+    rename_map: &HashMap<String, String>,
 ) -> Result<TokenStream, crate::Errors> {
     let field_name = field.name();
     let field_ident = field.ident();
+    let rename = rename_map.get(field_name).unwrap_or(field_name);
     let pattern = get_str(validation_value)?;
     let message = message_fn.unwrap_or(quote!(
         ::serde_valid::PatternErrorParams::to_default_message
@@ -52,7 +68,7 @@ fn inner_extract_string_pattern_validator(
         ) {
             use ::serde_valid::error::ToDefaultMessage;
             __errors
-                .entry(#field_name)
+                .entry(#rename)
                 .or_default()
                 .push(::serde_valid::validation::Error::Pattern(
                     ::serde_valid::error::Message::new(

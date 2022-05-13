@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::types::Field;
 use crate::validate::Validator;
 use proc_macro2::TokenStream;
@@ -10,18 +12,31 @@ pub fn extract_generic_enumerate_validator(
     attribute: &syn::Attribute,
     item_list: &syn::MetaList,
     message_fn: Option<TokenStream>,
+    rename_map: &HashMap<String, String>,
 ) -> Result<Validator, crate::Errors> {
     if let Some(array_field) = field.array_field() {
         Ok(Validator::Array(Box::new(
-            extract_generic_enumerate_validator(&array_field, attribute, item_list, message_fn)?,
+            extract_generic_enumerate_validator(
+                &array_field,
+                attribute,
+                item_list,
+                message_fn,
+                rename_map,
+            )?,
         )))
     } else if let Some(option_field) = field.option_field() {
         Ok(Validator::Option(Box::new(
-            extract_generic_enumerate_validator(&option_field, attribute, item_list, message_fn)?,
+            extract_generic_enumerate_validator(
+                &option_field,
+                attribute,
+                item_list,
+                message_fn,
+                rename_map,
+            )?,
         )))
     } else {
         Ok(Validator::Normal(
-            inner_extract_generic_enumerate_validator(field, item_list, message_fn)?,
+            inner_extract_generic_enumerate_validator(field, item_list, message_fn, rename_map)?,
         ))
     }
 }
@@ -30,10 +45,11 @@ fn inner_extract_generic_enumerate_validator(
     field: &impl Field,
     item_list: &syn::MetaList,
     message_fn: Option<TokenStream>,
+    rename_map: &HashMap<String, String>,
 ) -> Result<TokenStream, crate::Errors> {
     let field_name = field.name();
     let field_ident = field.ident();
-
+    let rename = rename_map.get(field_name).unwrap_or(field_name);
     let enumerate = get_enumerate(item_list)?;
     let message = message_fn.unwrap_or(quote!(
         ::serde_valid::EnumerateErrorParams::to_default_message
@@ -46,7 +62,7 @@ fn inner_extract_generic_enumerate_validator(
         ) {
             use ::serde_valid::error::ToDefaultMessage;
             __errors
-                .entry(#field_name)
+                .entry(#rename)
                 .or_default()
                 .push(::serde_valid::validation::Error::Enumerate(
                     ::serde_valid::error::Message::new(

@@ -5,7 +5,7 @@ use crate::validate::{extract_meta_validator, FieldValidators};
 use proc_macro2::TokenStream;
 use quote::quote;
 use std::borrow::Cow;
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::iter::FromIterator;
 use syn::parse_quote;
 
@@ -103,15 +103,15 @@ fn collect_unnamed_field_validators<'a>(
         .attrs()
         .iter()
         .filter(|attribute| attribute.path == parse_quote!(validate))
-        .filter_map(
-            |attribute| match extract_meta_validator(&unnamed_field, attribute) {
+        .filter_map(|attribute| {
+            match extract_meta_validator(&unnamed_field, attribute, &HashMap::new()) {
                 Ok(validator) => Some(validator),
                 Err(validator_errors) => {
                     errors.extend(validator_errors);
                     None
                 }
-            },
-        )
+            }
+        })
         .collect::<Vec<_>>();
 
     if !errors.is_empty() {
