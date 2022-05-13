@@ -140,7 +140,7 @@ assert_eq!(
 );
 ```
 
-## Custom method
+## Custom Validation
 
 You can use your custom validation using by `#[validate(custom)]`.
 
