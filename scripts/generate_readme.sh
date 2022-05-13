@@ -4,4 +4,4 @@ set -e
 
 cd "$(dirname "$0")/.."
 
-cargo readme --no-indent-headings --no-title > README.md
+cargo readme --no-indent-headings --no-title --no-license > README.md
