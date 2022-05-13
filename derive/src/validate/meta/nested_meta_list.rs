@@ -5,6 +5,7 @@ use crate::validate::generic::{
 };
 use crate::validate::Validator;
 use proc_macro2::TokenStream;
+use std::collections::HashMap;
 use std::str::FromStr;
 
 pub fn extract_validator_from_nested_meta_list(
@@ -12,6 +13,7 @@ pub fn extract_validator_from_nested_meta_list(
     attribute: &syn::Attribute,
     validation_list: &syn::MetaList,
     message_fn: Option<TokenStream>,
+    rename_map: &HashMap<String, String>,
 ) -> Result<Validator, crate::Errors> {
     let syn::MetaList {
         path: validation_name,
@@ -20,10 +22,16 @@ pub fn extract_validator_from_nested_meta_list(
     let validation_ident = SingleIdentPath::new(&validation_name).ident();
 
     match MetaListValidation::from_str(&validation_ident.to_string()) {
-        Ok(MetaListValidation::Enumerate) => {
-            extract_generic_enumerate_validator(field, attribute, validation_list, message_fn)
+        Ok(MetaListValidation::Enumerate) => extract_generic_enumerate_validator(
+            field,
+            attribute,
+            validation_list,
+            message_fn,
+            rename_map,
+        ),
+        Ok(MetaListValidation::Custom) => {
+            extract_generic_custom_validator(field, validation_list, rename_map)
         }
-        Ok(MetaListValidation::Custom) => extract_generic_custom_validator(field, validation_list),
         Err(unknown) => Err(vec![crate::Error::validate_unknown_type(
             validation_name,
             &unknown,

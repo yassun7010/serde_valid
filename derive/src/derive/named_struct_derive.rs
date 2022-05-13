@@ -1,11 +1,12 @@
 use crate::error::fields_errors_tokens;
 use crate::rule::collect_rules_from_named_struct;
+use crate::serde::rename::collect_serde_rename_map;
 use crate::types::{Field, NamedField};
 use crate::validate::{extract_meta_validator, FieldValidators};
 use proc_macro2::TokenStream;
 use quote::quote;
 use std::borrow::Cow;
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::iter::FromIterator;
 use syn::parse_quote;
 
@@ -15,10 +16,11 @@ pub fn expand_named_struct_derive(
 ) -> Result<TokenStream, crate::Errors> {
     let ident = &input.ident;
     let (impl_generics, type_generics, where_clause) = input.generics.split_for_impl();
+    let rename_map = collect_serde_rename_map(fields);
 
     let mut errors = vec![];
 
-    let (rule_fields, rules) = match collect_rules_from_named_struct(&input.attrs) {
+    let (rule_fields, rules) = match collect_rules_from_named_struct(&input.attrs, &rename_map) {
         Ok((rule_fields, rules)) => (rule_fields, TokenStream::from_iter(rules)),
         Err(rule_errors) => {
             errors.extend(rule_errors);
@@ -26,7 +28,7 @@ pub fn expand_named_struct_derive(
         }
     };
 
-    let validates = match collect_named_fields_validators_list(fields) {
+    let validates = match collect_named_fields_validators_list(fields, &rename_map) {
         Ok(field_validators) => TokenStream::from_iter(field_validators.iter().map(|validator| {
             if validator.is_empty() && rule_fields.contains(validator.ident()) {
                 validator.get_field_variable_token()
@@ -66,19 +68,22 @@ pub fn expand_named_struct_derive(
 
 pub fn collect_named_fields_validators_list<'a>(
     fields: &'a syn::FieldsNamed,
+    rename_map: &HashMap<String, String>,
 ) -> Result<Vec<FieldValidators<'a, NamedField<'a>>>, crate::Errors> {
     let mut errors = vec![];
 
     let validators = fields
         .named
         .iter()
-        .filter_map(|field| match collect_named_field_validators(field) {
-            Ok(validators) => Some(validators),
-            Err(ref mut error) => {
-                errors.append(error);
-                None
-            }
-        })
+        .filter_map(
+            |field| match collect_named_field_validators(field, rename_map) {
+                Ok(validators) => Some(validators),
+                Err(ref mut error) => {
+                    errors.append(error);
+                    None
+                }
+            },
+        )
         .collect();
 
     if errors.is_empty() {
@@ -90,6 +95,7 @@ pub fn collect_named_fields_validators_list<'a>(
 
 fn collect_named_field_validators<'a>(
     field: &'a syn::Field,
+    rename_map: &HashMap<String, String>,
 ) -> Result<FieldValidators<'a, NamedField<'a>>, crate::Errors> {
     let mut errors = vec![];
 
@@ -99,7 +105,7 @@ fn collect_named_field_validators<'a>(
         .iter()
         .filter(|attribute| attribute.path == parse_quote!(validate))
         .filter_map(
-            |attribute| match extract_meta_validator(&named_field, attribute) {
+            |attribute| match extract_meta_validator(&named_field, attribute, rename_map) {
                 Ok(validator) => Some(validator),
                 Err(validator_error) => {
                     errors.extend(validator_error);

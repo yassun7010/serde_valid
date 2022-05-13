@@ -1,6 +1,7 @@
 mod derive;
 mod error;
 mod rule;
+mod serde;
 mod types;
 mod validate;
 
