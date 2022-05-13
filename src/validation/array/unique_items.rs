@@ -1,6 +1,6 @@
 use crate::traits::IsUnique;
 
-/// Uniqueness of the array items validation.
+/// Uniqueness validation of the array items.
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/array.html#unique_items>
 pub trait ValidateUniqueItems {

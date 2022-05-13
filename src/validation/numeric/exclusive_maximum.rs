@@ -1,4 +1,4 @@
-/// Exclusive maximum of the number validation.
+/// Exclusive maximum validation of the number.
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/numeric.html#range>
 pub trait ValidateExclusiveMaximum<T>
