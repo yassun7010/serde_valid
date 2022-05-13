@@ -14,7 +14,7 @@ impl PatternErrorParams {
     }
 
     #[allow(dead_code)]
-    pub fn pattern(&self) -> &String {
+    pub fn pattern(&self) -> &str {
         &self.pattern
     }
 }

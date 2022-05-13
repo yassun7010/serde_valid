@@ -16,7 +16,7 @@ impl MultipleOfErrorParams {
     }
 
     #[allow(dead_code)]
-    pub fn multiple_of(&self) -> &String {
+    pub fn multiple_of(&self) -> &str {
         &self.multiple_of
     }
 }
