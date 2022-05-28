@@ -8,39 +8,39 @@ impl ToDefaultMessage for String {
     }
 }
 
-pub struct Message<P>
+pub struct Message<Params>
 where
-    P: ToDefaultMessage,
+    Params: ToDefaultMessage,
 {
-    params: P,
-    format_fn: for<'a> fn(&'a P) -> String,
+    params: Params,
+    format_fn: for<'a> fn(&'a Params) -> String,
 }
 
-impl<P> Message<P>
+impl<Params> Message<Params>
 where
-    P: ToDefaultMessage,
+    Params: ToDefaultMessage,
 {
-    pub fn new(params: P, format_fn: fn(&P) -> String) -> Self {
+    pub fn new(params: Params, format_fn: fn(&Params) -> String) -> Self {
         Self { params, format_fn }
     }
 
-    pub fn params(&self) -> &P {
+    pub fn params(&self) -> &Params {
         &self.params
     }
 }
 
-impl<P> std::fmt::Debug for Message<P>
+impl<Params> std::fmt::Debug for Message<Params>
 where
-    P: ToDefaultMessage + std::fmt::Debug,
+    Params: ToDefaultMessage + std::fmt::Debug,
 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "Message {{ params: {:?} }}", &self.params)
     }
 }
 
-impl<P> std::fmt::Display for Message<P>
+impl<Params> std::fmt::Display for Message<Params>
 where
-    P: ToDefaultMessage,
+    Params: ToDefaultMessage,
 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", { self.format_fn }(&self.params))
