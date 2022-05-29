@@ -9,9 +9,7 @@ pub fn extract_validator_from_meta_path(
     field: &impl Field,
     rename_map: &HashMap<String, String>,
 ) -> Result<Validator, crate::Errors> {
-    Ok(Validator::Normal(inner_extract_validator_from_meta_path(
-        field, rename_map,
-    )))
+    Ok(inner_extract_validator_from_meta_path(field, rename_map))
 }
 
 fn inner_extract_validator_from_meta_path(

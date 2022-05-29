@@ -13,9 +13,9 @@ pub fn extract_generic_enumerate_validator(
     message_fn: Option<TokenStream>,
     rename_map: &HashMap<String, String>,
 ) -> Result<Validator, crate::Errors> {
-    Ok(Validator::Normal(
-        inner_extract_generic_enumerate_validator(field, item_list, message_fn, rename_map)?,
-    ))
+    Ok(inner_extract_generic_enumerate_validator(
+        field, item_list, message_fn, rename_map,
+    )?)
 }
 
 fn inner_extract_generic_enumerate_validator(

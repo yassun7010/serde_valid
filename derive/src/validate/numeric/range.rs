@@ -24,9 +24,7 @@ macro_rules! extract_numeric_range_validator{
             message_fn: Option<TokenStream>,
             rename_map: &HashMap<String, String>,
         ) -> Result<Validator, crate::Errors> {
-            Ok(Validator::Normal(
-                $inner_function_name(field, validation_value, message_fn, rename_map)?
-            ))
+            Ok($inner_function_name(field, validation_value, message_fn, rename_map)?)
         }
 
         fn $inner_function_name(

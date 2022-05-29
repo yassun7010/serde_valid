@@ -13,12 +13,12 @@ pub fn extract_string_pattern_validator(
     message_fn: Option<TokenStream>,
     rename_map: &HashMap<String, String>,
 ) -> Result<Validator, crate::Errors> {
-    Ok(Validator::Normal(inner_extract_string_pattern_validator(
+    Ok(inner_extract_string_pattern_validator(
         field,
         validation_value,
         message_fn,
         rename_map,
-    )?))
+    )?)
 }
 
 fn inner_extract_string_pattern_validator(

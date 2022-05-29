@@ -9,9 +9,7 @@ pub fn extract_array_unique_items_validator(
     message_fn: Option<TokenStream>,
     rename_map: &HashMap<String, String>,
 ) -> Validator {
-    Validator::Normal(inner_extract_array_unique_items_validator(
-        field, message_fn, rename_map,
-    ))
+    inner_extract_array_unique_items_validator(field, message_fn, rename_map)
 }
 
 fn inner_extract_array_unique_items_validator(
