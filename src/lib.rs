@@ -274,6 +274,58 @@ pub trait Validate {
     fn validate(&self) -> std::result::Result<(), self::validation::Errors>;
 }
 
+impl<T> Validate for Vec<T>
+where
+    T: Validate,
+{
+    fn validate(&self) -> std::result::Result<(), self::validation::Errors> {
+        let mut errors = vec![];
+        for item in self {
+            if let Err(error) = item.validate() {
+                errors.push(self::validation::Error::Nested(error))
+            }
+        }
+
+        if errors.len() == 0 {
+            Ok(())
+        } else {
+            Err(self::validation::Errors::NewType(errors))
+        }
+    }
+}
+
+impl<T, const N: usize> Validate for [T; N]
+where
+    T: Validate,
+{
+    fn validate(&self) -> std::result::Result<(), self::validation::Errors> {
+        let mut errors = vec![];
+        for item in self {
+            if let Err(error) = item.validate() {
+                errors.push(self::validation::Error::Nested(error))
+            }
+        }
+
+        if errors.len() == 0 {
+            Ok(())
+        } else {
+            Err(self::validation::Errors::NewType(errors))
+        }
+    }
+}
+
+impl<T> Validate for Option<T>
+where
+    T: Validate,
+{
+    fn validate(&self) -> std::result::Result<(), self::validation::Errors> {
+        match self {
+            Some(value) => value.validate(),
+            None => Ok(()),
+        }
+    }
+}
+
 pub use serde_valid_derive::Validate;
 
 pub mod json;
