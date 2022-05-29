@@ -9,17 +9,9 @@ pub fn extract_array_unique_items_validator(
     message_fn: Option<TokenStream>,
     rename_map: &HashMap<String, String>,
 ) -> Validator {
-    if let Some(option_field) = field.option_field() {
-        Validator::Option(Box::new(extract_array_unique_items_validator(
-            &option_field,
-            message_fn,
-            rename_map,
-        )))
-    } else {
-        Validator::Normal(inner_extract_array_unique_items_validator(
-            field, message_fn, rename_map,
-        ))
-    }
+    Validator::Normal(inner_extract_array_unique_items_validator(
+        field, message_fn, rename_map,
+    ))
 }
 
 fn inner_extract_array_unique_items_validator(
