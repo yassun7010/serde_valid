@@ -9,36 +9,13 @@ type Lits<'a> = syn::punctuated::Punctuated<&'a syn::Lit, syn::token::Comma>;
 
 pub fn extract_generic_enumerate_validator(
     field: &impl Field,
-    attribute: &syn::Attribute,
     item_list: &syn::MetaList,
     message_fn: Option<TokenStream>,
     rename_map: &HashMap<String, String>,
 ) -> Result<Validator, crate::Errors> {
-    if let Some(array_field) = field.array_field() {
-        Ok(Validator::Array(Box::new(
-            extract_generic_enumerate_validator(
-                &array_field,
-                attribute,
-                item_list,
-                message_fn,
-                rename_map,
-            )?,
-        )))
-    } else if let Some(option_field) = field.option_field() {
-        Ok(Validator::Option(Box::new(
-            extract_generic_enumerate_validator(
-                &option_field,
-                attribute,
-                item_list,
-                message_fn,
-                rename_map,
-            )?,
-        )))
-    } else {
-        Ok(Validator::Normal(
-            inner_extract_generic_enumerate_validator(field, item_list, message_fn, rename_map)?,
-        ))
-    }
+    Ok(Validator::Normal(
+        inner_extract_generic_enumerate_validator(field, item_list, message_fn, rename_map)?,
+    ))
 }
 
 fn inner_extract_generic_enumerate_validator(

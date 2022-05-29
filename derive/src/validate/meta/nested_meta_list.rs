@@ -10,7 +10,6 @@ use std::str::FromStr;
 
 pub fn extract_validator_from_nested_meta_list(
     field: &impl Field,
-    attribute: &syn::Attribute,
     validation_list: &syn::MetaList,
     message_fn: Option<TokenStream>,
     rename_map: &HashMap<String, String>,
@@ -22,13 +21,9 @@ pub fn extract_validator_from_nested_meta_list(
     let validation_ident = SingleIdentPath::new(&validation_name).ident();
 
     match MetaListValidation::from_str(&validation_ident.to_string()) {
-        Ok(MetaListValidation::Enumerate) => extract_generic_enumerate_validator(
-            field,
-            attribute,
-            validation_list,
-            message_fn,
-            rename_map,
-        ),
+        Ok(MetaListValidation::Enumerate) => {
+            extract_generic_enumerate_validator(field, validation_list, message_fn, rename_map)
+        }
         Ok(MetaListValidation::Custom) => {
             extract_generic_custom_validator(field, validation_list, rename_map)
         }
