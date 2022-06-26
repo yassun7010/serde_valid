@@ -30,7 +30,7 @@ fn inner_extract_validator_from_meta_path(
                     );
                 }
                 __property_errors @ ::serde_valid::validation::Errors::Array(_) => {
-                    // TODO
+                    unimplemented!();
                 }
                 ::serde_valid::validation::Errors::NewType(__new_type_errors) => {
                     __properties_errors.insert(#rename, __new_type_errors);
