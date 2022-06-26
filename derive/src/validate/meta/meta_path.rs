@@ -23,14 +23,17 @@ fn inner_extract_validator_from_meta_path(
     quote!(
         if let Err(__inner_errors) = #field_ident.validate() {
             match __inner_errors {
-                __fields_errors @ ::serde_valid::validation::Errors::Fields(_) => {
-                    __errors.insert(
+                __property_errors @ ::serde_valid::validation::Errors::Object(_) => {
+                    __properties_errors.insert(
                         #rename,
-                        vec![::serde_valid::validation::Error::Nested(__fields_errors)]
+                        vec![::serde_valid::validation::Error::Nested(__property_errors)]
                     );
                 }
+                __property_errors @ ::serde_valid::validation::Errors::Array(_) => {
+                    // TODO
+                }
                 ::serde_valid::validation::Errors::NewType(__new_type_errors) => {
-                    __errors.insert(#rename, __new_type_errors);
+                    __properties_errors.insert(#rename, __new_type_errors);
                 }
             }
         }

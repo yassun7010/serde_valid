@@ -6,7 +6,7 @@ mod object;
 mod string;
 
 pub use array::{ValidateMaxItems, ValidateMinItems, ValidateUniqueItems};
-pub use error::{Error, Errors, MapErrors, VecErrors};
+pub use error::{ArrayErrors, Error, Errors, MapErrors, ObjectErrors, VecErrors};
 pub use generic::ValidateEnumerate;
 pub use numeric::{
     ValidateExclusiveMaximum, ValidateExclusiveMinimum, ValidateMaximum, ValidateMinimum,

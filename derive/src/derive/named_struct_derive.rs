@@ -1,4 +1,4 @@
-use crate::error::fields_errors_tokens;
+use crate::error::object_errors_tokens;
 use crate::rule::collect_rules_from_named_struct;
 use crate::serde::rename::collect_serde_rename_map;
 use crate::types::{Field, NamedField};
@@ -30,7 +30,7 @@ pub fn expand_named_struct_derive(
 
     let validates = match collect_named_fields_validators_list(fields, &rename_map) {
         Ok(field_validators) => TokenStream::from_iter(field_validators.iter().map(|validator| {
-            if validator.is_empty() && rule_fields.contains(validator.ident()) {
+            if validator.is_empty() {
                 validator.get_field_variable_token()
             } else {
                 validator.generate_tokens()
@@ -42,18 +42,19 @@ pub fn expand_named_struct_derive(
         }
     };
 
-    let fields_errors = fields_errors_tokens();
+    let fields_errors = object_errors_tokens();
 
     if errors.is_empty() {
         Ok(quote!(
             impl #impl_generics ::serde_valid::Validate for #ident #type_generics #where_clause {
                 fn validate(&self) -> std::result::Result<(), ::serde_valid::validation::Errors> {
-                    let mut __errors = ::serde_valid::validation::MapErrors::new();
+                    let mut __errors = ::serde_valid::validation::VecErrors::new();
+                    let mut __properties_errors = ::serde_valid::validation::MapErrors::new();
 
                     #validates
                     #rules
 
-                    if __errors.is_empty() {
+                    if __errors.is_empty() && __properties_errors.is_empty() {
                         Ok(())
                     } else {
                         Err(#fields_errors)

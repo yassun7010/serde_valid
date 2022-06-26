@@ -33,21 +33,21 @@ fn inner_extract_generic_enumerate_validator(
     ));
 
     Ok(quote!(
-        if let Err(error_params) = ::serde_valid::ValidateEnumerate::validate_enumerate(
-            #field_ident,
-            &[#enumerate],
-        ) {
-            use ::serde_valid::error::ToDefaultMessage;
-            __errors
-                .entry(#rename)
-                .or_default()
-                .push(::serde_valid::validation::Error::Enumerate(
-                    ::serde_valid::error::Message::new(
-                        error_params,
-                        #message
-                )
-                ));
-        }
+        // if let Err(error_params) = ::serde_valid::ValidateEnumerate::validate_enumerate(
+        //     #field_ident,
+        //     &[#enumerate],
+        // ) {
+        //     use ::serde_valid::error::ToDefaultMessage;
+        //     __properties_errors
+        //         .entry(#rename)
+        //         .or_default()
+        //         .push(::serde_valid::validation::Error::Enumerate(
+        //             ::serde_valid::error::Message::new(
+        //                 error_params,
+        //                 #message
+        //         )
+        //         ));
+        // }
     ))
 }
 

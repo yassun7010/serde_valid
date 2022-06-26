@@ -4,13 +4,19 @@ use syn::spanned::Spanned;
 
 use crate::types::CommaSeparatedNestedMetas;
 
-pub fn fields_errors_tokens() -> TokenStream {
-    quote!(::serde_valid::validation::Errors::Fields(__errors))
+// pub fn fields_errors_tokens() -> TokenStream {
+//     quote!(::serde_valid::validation::Errors::Fields(__errors))
+// }
+
+pub fn object_errors_tokens() -> TokenStream {
+    quote!(::serde_valid::validation::Errors::Object(
+        ::serde_valid::validation::ObjectErrors::new(__errors, __properties_errors)
+    ))
 }
 
 pub fn new_type_errors_tokens() -> TokenStream {
     quote!(::serde_valid::validation::Errors::NewType(
-        __errors.remove("0").unwrap()
+        __properties_errors.remove("0").unwrap()
     ))
 }
 

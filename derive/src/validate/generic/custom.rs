@@ -23,7 +23,7 @@ pub fn extract_generic_custom_validator(
 
     Ok(quote!(
         if let Err(__error) = #custom_fn_name(#field_ident) {
-            __errors
+            __properties_errors
                 .entry(#rename)
                 .or_default()
                 .push(__error);

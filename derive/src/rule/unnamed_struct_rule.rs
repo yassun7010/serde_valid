@@ -134,7 +134,7 @@ fn extract_rule_from_meta_list(
                 arg_idents,
                 quote!(
                     if let Err(__error) = #rule_fn_name(#rule_fn_args) {
-                        __errors
+                        __properties_errors
                             .entry(#field_name)
                             .or_default()
                             .push(__error);

@@ -85,33 +85,58 @@ pub type VecErrors = Vec<Error>;
 pub type MapErrors = HashMap<&'static str, VecErrors>;
 
 #[derive(Debug, serde::Serialize, thiserror::Error)]
+pub struct ArrayErrors {
+    errors: VecErrors,
+    items: HashMap<usize, Errors>,
+}
+
+#[derive(Debug, serde::Serialize, thiserror::Error)]
+pub struct ObjectErrors {
+    errors: VecErrors,
+    properties: MapErrors,
+}
+
+impl ObjectErrors {
+    pub fn new(errors: VecErrors, properties: MapErrors) -> Self {
+        Self { errors, properties }
+    }
+}
+
+#[derive(Debug, serde::Serialize, thiserror::Error)]
 #[serde(untagged)]
 pub enum Errors {
-    Fields(MapErrors),
+    Array(ArrayErrors),
+    Object(ObjectErrors),
     NewType(VecErrors),
+}
+
+impl std::fmt::Display for ArrayErrors {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match serde_json::to_string(&self) {
+            Ok(json_string) => {
+                write!(f, "{}", json_string)
+            }
+            Err(_) => Err(std::fmt::Error),
+        }
+    }
+}
+
+impl std::fmt::Display for ObjectErrors {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match serde_json::to_string(&self) {
+            Ok(json_string) => {
+                write!(f, "{}", json_string)
+            }
+            Err(_) => Err(std::fmt::Error),
+        }
+    }
 }
 
 impl std::fmt::Display for Errors {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Self::Fields(map_errors) => {
-                let mut fields_errors = HashMap::new();
-                for (key, errors) in map_errors {
-                    fields_errors.insert(
-                        key,
-                        errors
-                            .iter()
-                            .map(ToString::to_string)
-                            .collect::<Vec<String>>(),
-                    );
-                }
-                match serde_json::to_string(&fields_errors) {
-                    Ok(json_string) => {
-                        write!(f, "{}", json_string)
-                    }
-                    Err(_) => Err(std::fmt::Error),
-                }
-            }
+            Self::Array(errors) => std::fmt::Display::fmt(errors, f),
+            Self::Object(errors) => std::fmt::Display::fmt(errors, f),
             Self::NewType(vec_errors) => {
                 match serde_json::to_string(
                     &vec_errors
@@ -119,7 +144,7 @@ impl std::fmt::Display for Errors {
                         .map(ToString::to_string)
                         .collect::<Vec<String>>(),
                 ) {
-                    Ok(json_string) => write!(f, "{}", json_string),
+                    Ok(json_string) => write!(f, "{{\"errors\": {}}}", json_string),
                     Err(_) => Err(std::fmt::Error),
                 }
             }

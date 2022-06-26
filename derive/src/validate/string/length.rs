@@ -41,21 +41,21 @@ macro_rules! extract_string_length_validator{
                 message_fn.unwrap_or(quote!(::serde_valid::$ErrorParams::to_default_message));
 
             Ok(quote!(
-                if let Err(error_params) = ::serde_valid::$ValidateTrait::$validation_method(
-                    #field_ident,
-                    #$field,
-                ) {
-                    use ::serde_valid::error::ToDefaultMessage;
-                    __errors
-                        .entry(#rename)
-                        .or_default()
-                        .push(::serde_valid::validation::Error::$ErrorType(
-                            ::serde_valid::error::Message::new(
-                                error_params,
-                                #message
-                            )
-                        ));
-                }
+                // if let Err(error_params) = ::serde_valid::$ValidateTrait::$validation_method(
+                //     #field_ident,
+                //     #$field,
+                // ) {
+                //     use ::serde_valid::error::ToDefaultMessage;
+                //     __properties_errors
+                //         .entry(#rename)
+                //         .or_default()
+                //         .push(::serde_valid::validation::Error::$ErrorType(
+                //             ::serde_valid::error::Message::new(
+                //                 error_params,
+                //                 #message
+                //             )
+                //         ));
+                // }
             ))
         }
     }
