@@ -8,6 +8,12 @@ pub struct ArrayErrors {
     items: IndexMap<usize, Errors>,
 }
 
+impl ArrayErrors {
+    pub fn new(errors: VecErrors, items: IndexMap<usize, Errors>) -> Self {
+        Self { errors, items }
+    }
+}
+
 impl std::fmt::Display for ArrayErrors {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match serde_json::to_string(&self) {

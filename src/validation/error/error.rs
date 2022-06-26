@@ -71,7 +71,10 @@ pub enum Error {
     Custom(String),
 
     #[error(transparent)]
-    Nested(Errors),
+    Items(Errors),
+
+    #[error(transparent)]
+    Properties(Errors),
 }
 
 fn serialize_error_message<T, S>(message: &T, serializer: S) -> Result<S::Ok, S::Error>

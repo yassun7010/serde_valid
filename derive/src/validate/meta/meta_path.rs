@@ -26,7 +26,7 @@ fn inner_extract_validator_from_meta_path(
                 __property_errors @ ::serde_valid::validation::Errors::Object(_) => {
                     __properties_errors.insert(
                         #rename,
-                        vec![::serde_valid::validation::Error::Nested(__property_errors)]
+                        vec![::serde_valid::validation::Error::Properties(__property_errors)]
                     );
                 }
                 __property_errors @ ::serde_valid::validation::Errors::Array(_) => {

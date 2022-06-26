@@ -280,6 +280,8 @@ pub use error::{
     MinItemsErrorParams, MinLengthErrorParams, MinPropertiesErrorParams, MinimumErrorParams,
     MultipleOfErrorParams, PatternErrorParams, UniqueItemsErrorParams,
 };
+use indexmap::IndexMap;
+use validation::ArrayErrors;
 pub use validation::{
     ValidateEnumerate, ValidateExclusiveMaximum, ValidateExclusiveMinimum, ValidateMaxItems,
     ValidateMaxLength, ValidateMaxProperties, ValidateMaximum, ValidateMinItems, ValidateMinLength,
@@ -296,17 +298,20 @@ where
     T: Validate,
 {
     fn validate(&self) -> std::result::Result<(), self::validation::Errors> {
-        let mut errors = vec![];
-        for item in self {
-            if let Err(error) = item.validate() {
-                errors.push(self::validation::Error::Nested(error))
+        let mut items = IndexMap::new();
+        for (index, item) in self.iter().enumerate() {
+            if let Err(errors) = item.validate() {
+                items.insert(index, errors);
             }
         }
 
-        if errors.len() == 0 {
+        if items.len() == 0 {
             Ok(())
         } else {
-            Err(self::validation::Errors::NewType(errors))
+            Err(self::validation::Errors::Array(ArrayErrors::new(
+                vec![],
+                items,
+            )))
         }
     }
 }
@@ -316,17 +321,20 @@ where
     T: Validate,
 {
     fn validate(&self) -> std::result::Result<(), self::validation::Errors> {
-        let mut errors = vec![];
-        for item in self {
-            if let Err(error) = item.validate() {
-                errors.push(self::validation::Error::Nested(error))
+        let mut items = IndexMap::new();
+        for (index, item) in self.iter().enumerate() {
+            if let Err(errors) = item.validate() {
+                items.insert(index, errors);
             }
         }
 
-        if errors.len() == 0 {
+        if items.len() == 0 {
             Ok(())
         } else {
-            Err(self::validation::Errors::NewType(errors))
+            Err(self::validation::Errors::Array(ArrayErrors::new(
+                vec![],
+                items,
+            )))
         }
     }
 }
