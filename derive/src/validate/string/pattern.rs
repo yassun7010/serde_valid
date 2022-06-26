@@ -46,16 +46,16 @@ fn inner_extract_string_pattern_validator(
             #field_ident,
             __pattern,
         ) {
-            // use ::serde_valid::error::ToDefaultMessage;
-            // __properties_errors
-            //     .entry(#rename)
-            //     .or_default()
-            //     .push(::serde_valid::validation::Error::Pattern(
-            //         ::serde_valid::error::Message::new(
-            //             error_params,
-            //             #message
-            //         )
-            //     ));
+            use ::serde_valid::error::ToDefaultMessage;
+            __properties_errors
+                .entry(#rename)
+                .or_default()
+                .push(::serde_valid::validation::Error::Pattern(
+                    ::serde_valid::error::Message::new(
+                        error_params,
+                        #message
+                    )
+                ));
         }
     ))
 }
