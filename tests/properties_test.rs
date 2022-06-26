@@ -157,7 +157,7 @@ fn properties_json_map_type_err_message() {
 }
 
 #[test]
-fn range_custom_err_message_fn() {
+fn properties_custom_err_message_fn() {
     fn min_custom_error_message(_params: &serde_valid::MinPropertiesErrorParams) -> String {
         "this is min custom message.".to_string()
     }
@@ -194,7 +194,7 @@ fn range_custom_err_message_fn() {
 }
 
 #[test]
-fn range_custom_err_message() {
+fn properties_custom_err_message() {
     #[derive(Deserialize, Validate)]
     struct TestStruct {
         #[validate(min_properties = 3, message = "this is min custom message.")]
