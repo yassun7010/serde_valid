@@ -59,9 +59,14 @@ fn rule_struct_named_fields_is_err() {
     assert_eq!(
         serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
         serde_json::to_string(&json!({
-            "val2": [
-                "Rule error is added to the first arg of the rule_method."
-            ]
+            "errors": [],
+            "properties": {
+                "val2": {
+                    "errors": [
+                        "Rule error is added to the first arg of the rule_method."
+                    ]
+                }
+            }
         }))
         .unwrap()
     );

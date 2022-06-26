@@ -30,7 +30,7 @@ pub fn expand_named_struct_derive(
 
     let validates = match collect_named_fields_validators_list(fields, &rename_map) {
         Ok(field_validators) => TokenStream::from_iter(field_validators.iter().map(|validator| {
-            if validator.is_empty() {
+            if validator.is_empty() && rule_fields.contains(validator.ident()) {
                 validator.get_field_variable_token()
             } else {
                 validator.generate_tokens()

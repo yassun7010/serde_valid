@@ -121,7 +121,7 @@ fn expand_enum_variant_named_fields(
                 #validates
                 #rules
 
-                if !__errors.is_empty() {
+                if !(__errors.is_empty() && __properties_errors.is_empty()) {
                     Err(#variant_errors)?
                 }
             }
@@ -190,7 +190,7 @@ fn expand_enum_variant_unnamed_fields_varidation(
                 #validates
                 #rules
 
-                if !__errors.is_empty() {
+                if !(__errors.is_empty() && __properties_errors.is_empty()) {
                     Err(#variant_errors)?
                 }
             }

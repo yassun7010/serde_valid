@@ -80,7 +80,14 @@
 //!
 //! assert_eq!(
 //!     serde_json::to_value(err.as_validation_errors().unwrap()).unwrap(),
-//!     json!({ "val": [ "the number must be `<= 100`." ] })
+//!     json!({
+//!         "errors": [],
+//!         "properties": {
+//!             "val": {
+//!                 "errors": ["the number must be `<= 100`."]
+//!             }
+//!         }
+//!     })
 //! );
 //! ```
 //!
@@ -131,10 +138,15 @@
 //! assert_eq!(
 //!     serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
 //!     serde_json::to_string(&json!({
-//!         "val": [
-//!             "this is min custom message_fn.",
-//!             "this is max custom message."
-//!         ]
+//!         "errors": [],
+//!         "properties": {
+//!             "val": {
+//!                 "errors": [
+//!                     "this is min custom message_fn.",
+//!                     "this is max custom message."
+//!                 ]
+//!             }
+//!         }
 //!     }))
 //!     .unwrap()
 //! );
@@ -191,9 +203,14 @@
 //! assert_eq!(
 //!     serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
 //!     serde_json::to_string(&json!({
-//!         "val2": [
-//!             "Rule error is added to the first arg of the rule_method."
-//!         ]
+//!         "errors": [],
+//!         "properties": {
+//!             "val2": {
+//!                 "errors": [
+//!                     "Rule error is added to the first arg of the rule_method."
+//!                 ]
+//!             }
+//!         }
 //!     }))
 //!     .unwrap()
 //! );
