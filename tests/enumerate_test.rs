@@ -140,9 +140,14 @@ fn enumerate_err_message() {
     assert_eq!(
         serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
         serde_json::to_string(&json!({
-            "val": [
-                "the value must be in [1, 2, 3]."
-            ]
+            "errors": [],
+            "properties": {
+                "val": {
+                    "errors": [
+                        "the value must be in [1, 2, 3]."
+                    ]
+                }
+            }
         }))
         .unwrap()
     );
@@ -165,9 +170,14 @@ fn enumerate_custom_err_message_fn() {
     assert_eq!(
         serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
         serde_json::to_string(&json!({
-            "val": [
-                "this is custom message."
-            ]
+            "errors": [],
+            "properties": {
+                "val": {
+                    "errors": [
+                    "this is custom message."
+                    ]
+                }
+            }
         }))
         .unwrap()
     );
@@ -186,9 +196,14 @@ fn enumerate_custom_err_message() {
     assert_eq!(
         serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
         serde_json::to_string(&json!({
-            "val": [
-                "this is custom message."
-            ]
+            "errors": [],
+            "properties": {
+                "val": {
+                    "errors": [
+                    "this is custom message."
+                    ]
+                }
+            }
         }))
         .unwrap()
     );
@@ -224,9 +239,14 @@ fn enumerate_trait() {
     assert_eq!(
         serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
         serde_json::to_string(&json!({
-            "val": [
-                "this is custom message."
-            ]
+            "errors": [],
+            "properties": {
+                "val": {
+                    "errors": [
+                    "this is custom message."
+                    ]
+                }
+            }
         }))
         .unwrap()
     );
