@@ -10,7 +10,15 @@ use crate::types::CommaSeparatedNestedMetas;
 
 pub fn object_errors_tokens() -> TokenStream {
     quote!(::serde_valid::validation::Errors::Object(
-        ::serde_valid::validation::ObjectErrors::new(__errors, __properties_errors)
+        ::serde_valid::validation::ObjectErrors::new(
+            __errors,
+            __properties_errors
+                .into_iter()
+                .map(|(field, errors)| {
+                    (field, ::serde_valid::validation::Errors::NewType(errors))
+                })
+                .collect()
+        )
     ))
 }
 
