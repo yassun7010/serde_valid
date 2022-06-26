@@ -39,18 +39,18 @@ fn inner_extract_numeric_multiple_of_validator(
             #field_ident,
             #multiple_of,
         ) {
-            // use ::serde_valid::error::ToDefaultMessage;
-            // __properties_errors
-            //     .entry(#rename)
-            //     .or_default()
-            //     .push(
-            //         ::serde_valid::validation::Error::MultipleOf(
-            //             ::serde_valid::error::Message::new(
-            //                 error_params,
-            //                 #message
-            //             )
-            //         )
-            //     );
+            use ::serde_valid::error::ToDefaultMessage;
+            __properties_errors
+                .entry(#rename)
+                .or_default()
+                .push(
+                    ::serde_valid::validation::Error::MultipleOf(
+                        ::serde_valid::error::Message::new(
+                            error_params,
+                            #message
+                        )
+                    )
+                );
         }
     ))
 }
