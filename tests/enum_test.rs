@@ -2,11 +2,17 @@ use serde_valid::Validate;
 
 #[test]
 fn enum_named_variant_validation_is_ok() {
+    fn ok_rule(_a: &TestStruct, _b: &TestStruct) -> Result<(), serde_valid::validation::Error> {
+        Ok(())
+    }
     #[derive(Validate)]
     enum TestEnum {
+        #[rule(ok_rule(a, b))]
         Named {
             #[validate]
             a: TestStruct,
+            #[validate]
+            b: TestStruct,
         },
     }
 
@@ -19,6 +25,7 @@ fn enum_named_variant_validation_is_ok() {
 
     let s = TestEnum::Named {
         a: TestStruct { val: 12 },
+        b: TestStruct { val: 12 },
     };
     assert!(s.validate().is_err());
 }
