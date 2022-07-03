@@ -1,3 +1,4 @@
+use serde_json::json;
 use serde_valid::Validate;
 
 #[test]
@@ -27,7 +28,39 @@ fn enum_named_variant_validation_is_ok() {
         a: TestStruct { val: 12 },
         b: TestStruct { val: 12 },
     };
-    assert!(s.validate().is_err());
+    assert_eq!(
+        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
+        serde_json::to_string(&json!({
+            "errors": [],
+            "properties": {
+                "a": {
+                    "errors": [
+                        {
+                            "errors": [],
+                            "properties": {
+                                "val": {
+                                    "errors": ["the number must be `<= 10`."]
+                                }
+                            }
+                        }
+                    ]
+                },
+                "b": {
+                    "errors": [
+                        {
+                            "errors": [],
+                            "properties": {
+                                "val": {
+                                    "errors": ["the number must be `<= 10`."]
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        }))
+        .unwrap()
+    );
 }
 
 #[test]
