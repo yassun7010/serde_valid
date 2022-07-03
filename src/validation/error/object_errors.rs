@@ -4,8 +4,8 @@ use super::{Errors, VecErrors};
 
 #[derive(Debug, serde::Serialize, thiserror::Error)]
 pub struct ObjectErrors {
-    errors: VecErrors,
-    properties: IndexMap<&'static str, Errors>,
+    pub errors: VecErrors,
+    pub properties: IndexMap<&'static str, Errors>,
 }
 
 impl ObjectErrors {

@@ -15,7 +15,36 @@ pub fn object_errors_tokens() -> TokenStream {
             __properties_errors
                 .into_iter()
                 .map(|(field, errors)| {
-                    (field, ::serde_valid::validation::Errors::NewType(errors))
+                    let mut __field_properties_errors = None;
+                    let mut __field_errors: ::serde_valid::validation::VecErrors = errors
+                        .into_iter()
+                        .filter_map(|error| match error {
+                            ::serde_valid::validation::Error::Properties(__object_errors) => {
+                                __field_properties_errors = Some(__object_errors);
+                                None
+                            }
+                            _ => Some(error),
+                        })
+                        .collect();
+
+                    if let Some(__object_errors) = __field_properties_errors {
+                        __field_errors.extend(__object_errors.errors);
+
+                        (
+                            field,
+                            ::serde_valid::validation::Errors::Object(
+                                ::serde_valid::validation::ObjectErrors::new(
+                                    __field_errors,
+                                    __object_errors.properties,
+                                ),
+                            ),
+                        )
+                    } else {
+                        (
+                            field,
+                            ::serde_valid::validation::Errors::NewType(__field_errors),
+                        )
+                    }
                 })
                 .collect()
         )

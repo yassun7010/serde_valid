@@ -34,28 +34,20 @@ fn enum_named_variant_validation_is_ok() {
             "errors": [],
             "properties": {
                 "a": {
-                    "errors": [
-                        {
-                            "errors": [],
-                            "properties": {
-                                "val": {
-                                    "errors": ["the number must be `<= 10`."]
-                                }
-                            }
+                    "errors": [],
+                    "properties": {
+                        "val": {
+                            "errors": ["the number must be `<= 10`."]
                         }
-                    ]
+                    }
                 },
                 "b": {
-                    "errors": [
-                        {
-                            "errors": [],
-                            "properties": {
-                                "val": {
-                                    "errors": ["the number must be `<= 10`."]
-                                }
-                            }
+                    "errors": [],
+                    "properties": {
+                        "val": {
+                            "errors": ["the number must be `<= 10`."]
                         }
-                    ]
+                    }
                 }
             }
         }))

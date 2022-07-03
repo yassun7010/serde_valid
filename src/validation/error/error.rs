@@ -5,7 +5,7 @@ pub use crate::error::{
     MinimumErrorParams, MultipleOfErrorParams, PatternErrorParams, UniqueItemsErrorParams,
 };
 
-use super::Errors;
+use super::{Errors, ObjectErrors};
 
 #[derive(Debug, serde::Serialize, thiserror::Error)]
 #[serde(untagged)]
@@ -74,7 +74,7 @@ pub enum Error {
     Items(Errors),
 
     #[error(transparent)]
-    Properties(Errors),
+    Properties(ObjectErrors),
 }
 
 fn serialize_error_message<T, S>(message: &T, serializer: S) -> Result<S::Ok, S::Error>
