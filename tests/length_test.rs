@@ -47,66 +47,6 @@ fn length_cow_str_type() {
 }
 
 #[test]
-fn length_vec_u8_type() {
-    #[derive(Validate)]
-    struct TestStruct {
-        #[validate(min_length = 4)]
-        #[validate(max_length = 4)]
-        val: Vec<u8>,
-    }
-
-    let s = TestStruct {
-        val: "test".as_bytes().to_vec(),
-    };
-    assert!(s.validate().is_ok());
-}
-
-#[test]
-fn length_vec_char_type() {
-    #[derive(Validate)]
-    struct TestStruct {
-        #[validate(min_length = 4)]
-        #[validate(max_length = 4)]
-        val: Vec<char>,
-    }
-
-    let s = TestStruct {
-        val: vec!['t', 'e', 's', 't'],
-    };
-    assert!(s.validate().is_ok());
-}
-
-#[test]
-fn length_u8_array_type() {
-    #[derive(Validate)]
-    struct TestStruct {
-        #[validate(min_length = 4)]
-        #[validate(max_length = 4)]
-        val: [u8; 4],
-    }
-
-    let s = TestStruct {
-        val: [0x74, 0x65, 0x73, 0x74],
-    };
-    assert!(s.validate().is_ok());
-}
-
-#[test]
-fn length_char_array_type() {
-    #[derive(Validate)]
-    struct TestStruct {
-        #[validate(min_length = 4)]
-        #[validate(max_length = 4)]
-        val: [char; 4],
-    }
-
-    let s = TestStruct {
-        val: ['t', 'e', 's', 't'],
-    };
-    assert!(s.validate().is_ok());
-}
-
-#[test]
 fn length_os_str_type() {
     #[derive(Validate)]
     struct TestStruct<'a> {
@@ -316,9 +256,14 @@ fn length_err_message() {
     assert_eq!(
         serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
         serde_json::to_string(&json!({
-            "val": [
-                "the length of the value must be `<= 3`."
-            ]
+            "errors": [],
+            "properties": {
+                "val": {
+                    "errors": [
+                        "the length of the value must be `<= 3`."
+                    ]
+                }
+            }
         }))
         .unwrap()
     );
@@ -348,10 +293,15 @@ fn length_custom_err_message_fn() {
     assert_eq!(
         serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
         serde_json::to_string(&json!({
-            "val": [
-                "this is min custom message.",
-                "this is max custom message."
-            ]
+            "errors": [],
+            "properties": {
+                "val": {
+                    "errors": [
+                        "this is min custom message.",
+                        "this is max custom message."
+                    ]
+                }
+            }
         }))
         .unwrap()
     );
@@ -373,10 +323,15 @@ fn length_custom_err_message() {
     assert_eq!(
         serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
         serde_json::to_string(&json!({
-            "val": [
-                "this is min custom message.",
-                "this is max custom message."
-            ]
+            "errors": [],
+            "properties": {
+                "val": {
+                    "errors": [
+                        "this is min custom message.",
+                        "this is max custom message."
+                    ]
+                }
+            }
         }))
         .unwrap()
     );

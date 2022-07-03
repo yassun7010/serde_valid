@@ -59,9 +59,14 @@ fn custom_validation_error() {
     assert_eq!(
         serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
         serde_json::to_string(&json!({
-            "val": [
-                "this is custom message."
-            ]
+            "errors": [],
+            "properties": {
+                "val": {
+                    "errors": [
+                        "this is custom message."
+                    ]
+                }
+            }
         }))
         .unwrap()
     );

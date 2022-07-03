@@ -24,31 +24,7 @@ macro_rules! extract_string_length_validator{
             message_fn: Option<TokenStream>,
             rename_map: &HashMap<String, String>,
         ) -> Result<Validator, crate::Errors> {
-            if let Some(array_field) = field.array_field() {
-                match array_field.ty() {
-                    syn::Type::Path(element_type) => {
-                        if let Some(element_type_ident) = element_type.path.get_ident() {
-                            if ["u8", "char"].contains(&element_type_ident.to_string().as_str()) {
-                                return Ok(Validator::Normal(
-                                    $inner_function_name(field, validation_value, message_fn, rename_map)?
-                                ));
-                            }
-                        }
-                    }
-                    _ => (),
-                }
-                Ok(Validator::Array(Box::new(
-                    $function_name(&array_field, validation_value, message_fn, rename_map)?
-                )))
-            } else if let Some(option_field) = field.option_field() {
-                Ok(Validator::Option(Box::new(
-                    $function_name(&option_field, validation_value, message_fn, rename_map)?
-                )))
-            } else {
-                Ok(Validator::Normal(
-                    $inner_function_name(field, validation_value, message_fn, rename_map)?
-                ))
-            }
+            Ok($inner_function_name(field, validation_value, message_fn, rename_map)?)
         }
 
         fn $inner_function_name(
@@ -70,7 +46,7 @@ macro_rules! extract_string_length_validator{
                     #$field,
                 ) {
                     use ::serde_valid::error::ToDefaultMessage;
-                    __errors
+                    __properties_errors
                         .entry(#rename)
                         .or_default()
                         .push(::serde_valid::validation::Error::$ErrorType(

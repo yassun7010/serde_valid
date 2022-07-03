@@ -244,9 +244,14 @@ fn range_inclusive_err_message() {
     assert_eq!(
         serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
         serde_json::to_string(&json!({
-            "val": [
-                "the number must be `>= 1`."
-            ]
+            "errors": [],
+            "properties": {
+                "val": {
+                    "errors": [
+                        "the number must be `>= 1`."
+                    ]
+                }
+            }
         }))
         .unwrap()
     );
@@ -266,9 +271,14 @@ fn range_exclusive_err_message() {
     assert_eq!(
         serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
         serde_json::to_string(&json!({
-            "val": [
-                "the number must be `> 1`."
-            ]
+            "errors": [],
+            "properties": {
+                "val": {
+                    "errors": [
+                        "the number must be `> 1`."
+                    ]
+                }
+            }
         }))
         .unwrap()
     );
@@ -296,10 +306,15 @@ fn range_custom_err_message_fn() {
     assert_eq!(
         serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
         serde_json::to_string(&json!({
-            "val": [
-                "this is min custom message.",
-                "this is max custom message."
-            ]
+            "errors": [],
+            "properties": {
+                "val": {
+                    "errors": [
+                        "this is min custom message.",
+                        "this is max custom message."
+                    ]
+                }
+            }
         }))
         .unwrap()
     );
@@ -315,14 +330,20 @@ fn range_custom_err_message() {
     }
 
     let s = TestStruct { val: 4 };
+    let result = s.validate().unwrap_err();
 
     assert_eq!(
-        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
+        serde_json::to_string(&result).unwrap(),
         serde_json::to_string(&json!({
-            "val": [
-                "this is min custom message.",
-                "this is max custom message."
-            ]
+            "errors": [],
+            "properties": {
+                "val": {
+                    "errors": [
+                        "this is min custom message.",
+                        "this is max custom message."
+                    ]
+                }
+            }
         }))
         .unwrap()
     );

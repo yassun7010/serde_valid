@@ -80,7 +80,14 @@
 //!
 //! assert_eq!(
 //!     serde_json::to_value(err.as_validation_errors().unwrap()).unwrap(),
-//!     json!({ "val": [ "the number must be `<= 100`." ] })
+//!     json!({
+//!         "errors": [],
+//!         "properties": {
+//!             "val": {
+//!                 "errors": ["the number must be `<= 100`."]
+//!             }
+//!         }
+//!     })
 //! );
 //! ```
 //!
@@ -131,10 +138,15 @@
 //! assert_eq!(
 //!     serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
 //!     serde_json::to_string(&json!({
-//!         "val": [
-//!             "this is min custom message_fn.",
-//!             "this is max custom message."
-//!         ]
+//!         "errors": [],
+//!         "properties": {
+//!             "val": {
+//!                 "errors": [
+//!                     "this is min custom message_fn.",
+//!                     "this is max custom message."
+//!                 ]
+//!             }
+//!         }
 //!     }))
 //!     .unwrap()
 //! );
@@ -172,7 +184,7 @@
 //!
 //! fn sample_rule(_val1: &i32, _val2: &str) -> Result<(), serde_valid::validation::Error> {
 //!     Err(serde_valid::validation::Error::Custom(
-//!         "Rule error is added to the first arg of the rule_method.".to_owned(),
+//!         "Rule error.".to_owned(),
 //!     ))
 //! }
 //!
@@ -191,9 +203,8 @@
 //! assert_eq!(
 //!     serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
 //!     serde_json::to_string(&json!({
-//!         "val2": [
-//!             "Rule error is added to the first arg of the rule_method."
-//!         ]
+//!         "errors": ["Rule error."],
+//!         "properties": {}
 //!     }))
 //!     .unwrap()
 //! );
@@ -263,6 +274,8 @@ pub use error::{
     MinItemsErrorParams, MinLengthErrorParams, MinPropertiesErrorParams, MinimumErrorParams,
     MultipleOfErrorParams, PatternErrorParams, UniqueItemsErrorParams,
 };
+use indexmap::IndexMap;
+use validation::ArrayErrors;
 pub use validation::{
     ValidateEnumerate, ValidateExclusiveMaximum, ValidateExclusiveMinimum, ValidateMaxItems,
     ValidateMaxLength, ValidateMaxProperties, ValidateMaximum, ValidateMinItems, ValidateMinLength,
@@ -272,6 +285,64 @@ pub use validation::{
 
 pub trait Validate {
     fn validate(&self) -> std::result::Result<(), self::validation::Errors>;
+}
+
+impl<T> Validate for Vec<T>
+where
+    T: Validate,
+{
+    fn validate(&self) -> std::result::Result<(), self::validation::Errors> {
+        let mut items = IndexMap::new();
+        for (index, item) in self.iter().enumerate() {
+            if let Err(errors) = item.validate() {
+                items.insert(index, errors);
+            }
+        }
+
+        if items.len() == 0 {
+            Ok(())
+        } else {
+            Err(self::validation::Errors::Array(ArrayErrors::new(
+                vec![],
+                items,
+            )))
+        }
+    }
+}
+
+impl<T, const N: usize> Validate for [T; N]
+where
+    T: Validate,
+{
+    fn validate(&self) -> std::result::Result<(), self::validation::Errors> {
+        let mut items = IndexMap::new();
+        for (index, item) in self.iter().enumerate() {
+            if let Err(errors) = item.validate() {
+                items.insert(index, errors);
+            }
+        }
+
+        if items.len() == 0 {
+            Ok(())
+        } else {
+            Err(self::validation::Errors::Array(ArrayErrors::new(
+                vec![],
+                items,
+            )))
+        }
+    }
+}
+
+impl<T> Validate for Option<T>
+where
+    T: Validate,
+{
+    fn validate(&self) -> std::result::Result<(), self::validation::Errors> {
+        match self {
+            Some(value) => value.validate(),
+            None => Ok(()),
+        }
+    }
 }
 
 pub use serde_valid_derive::Validate;

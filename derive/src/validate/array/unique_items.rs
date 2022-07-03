@@ -9,17 +9,7 @@ pub fn extract_array_unique_items_validator(
     message_fn: Option<TokenStream>,
     rename_map: &HashMap<String, String>,
 ) -> Validator {
-    if let Some(option_field) = field.option_field() {
-        Validator::Option(Box::new(extract_array_unique_items_validator(
-            &option_field,
-            message_fn,
-            rename_map,
-        )))
-    } else {
-        Validator::Normal(inner_extract_array_unique_items_validator(
-            field, message_fn, rename_map,
-        ))
-    }
+    inner_extract_array_unique_items_validator(field, message_fn, rename_map)
 }
 
 fn inner_extract_array_unique_items_validator(
@@ -39,7 +29,7 @@ fn inner_extract_array_unique_items_validator(
             #field_ident
         ) {
             use ::serde_valid::error::ToDefaultMessage;
-            __errors
+            __properties_errors
                 .entry(#rename)
                 .or_default()
                 .push(::serde_valid::validation::Error::UniqueItems(

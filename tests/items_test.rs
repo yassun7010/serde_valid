@@ -155,9 +155,12 @@ fn items_err_message() {
     assert_eq!(
         serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
         serde_json::to_string(&json!({
-            "val": [
-                "the length of the items must be `>= 4`."
-            ]
+            "errors": [],
+            "properties": {
+                "val": {
+                    "errors": ["the length of the items must be `>= 4`."]
+                }
+            }
         }))
         .unwrap()
     );
@@ -184,10 +187,15 @@ fn items_custom_err_message_fn() {
     assert_eq!(
         serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
         serde_json::to_string(&json!({
-            "val": [
-                "this is min custom message.",
-                "this is max custom message."
-            ]
+        "errors": [],
+        "properties": {
+            "val": {
+                "errors": [
+                    "this is min custom message.",
+                    "this is max custom message."
+                ]
+            }
+        }
         }))
         .unwrap()
     );
@@ -207,10 +215,15 @@ fn items_custom_err_message() {
     assert_eq!(
         serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
         serde_json::to_string(&json!({
-            "val": [
-                "this is min custom message.",
-                "this is max custom message."
-            ]
+            "errors": [],
+            "properties": {
+                "val": {
+                    "errors": [
+                        "this is min custom message.",
+                        "this is max custom message."
+                    ]
+                }
+            }
         }))
         .unwrap()
     );

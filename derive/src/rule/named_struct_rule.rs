@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 
 use proc_macro2::TokenStream;
 use quote::{quote, ToTokens};
@@ -9,7 +9,6 @@ use crate::types::CommaSeparatedTokenStreams;
 
 pub fn collect_rules_from_named_struct(
     attributes: &Vec<syn::Attribute>,
-    rename_map: &HashMap<String, String>,
 ) -> Result<(HashSet<syn::Ident>, TokenStream), crate::Errors> {
     let mut errors = vec![];
 
@@ -18,7 +17,7 @@ pub fn collect_rules_from_named_struct(
         .iter()
         .filter(|attribute| attribute.path == parse_quote!(rule))
         .filter_map(|attribute| match attribute.parse_meta() {
-            Ok(syn::Meta::List(list)) => match collect_rule(&list, rename_map) {
+            Ok(syn::Meta::List(list)) => match collect_rule(&list) {
                 Ok((field_ident, stream)) => {
                     rule_fields.extend(field_ident);
                     Some(stream)
@@ -52,7 +51,6 @@ fn collect_rule(
     syn::MetaList {
         path, ref nested, ..
     }: &syn::MetaList,
-    rename_map: &HashMap<String, String>,
 ) -> Result<(HashSet<syn::Ident>, TokenStream), crate::Errors> {
     let mut errors = vec![];
 
@@ -66,7 +64,7 @@ fn collect_rule(
 
     let rule = match &nested[0] {
         syn::NestedMeta::Meta(meta) => match meta {
-            syn::Meta::List(list) => extract_rule_from_meta_list(&list, rename_map),
+            syn::Meta::List(list) => extract_rule_from_meta_list(&list),
             syn::Meta::NameValue(name_value) => {
                 Err(vec![crate::Error::meta_name_value_not_support(&name_value)])
             }
@@ -93,7 +91,6 @@ fn extract_rule_from_meta_list(
         ref nested,
         ..
     }: &syn::MetaList,
-    rename_map: &HashMap<String, String>,
 ) -> Result<(HashSet<syn::Ident>, TokenStream), crate::Errors> {
     let mut errors = vec![];
 
@@ -128,27 +125,16 @@ fn extract_rule_from_meta_list(
         })
         .collect::<CommaSeparatedTokenStreams>();
 
-    match nested.first() {
-        Some(field) => {
-            if errors.len() > 0 {
-                return Err(errors);
-            }
-
-            let field_name = field.to_token_stream().to_string();
-            let rename = rename_map.get(&field_name).unwrap_or(&field_name);
-
-            Ok((
-                arg_idents,
-                quote!(
-                    if let Err(__error) = #rule_fn_name(#rule_fn_args) {
-                        __errors
-                            .entry(#rename)
-                            .or_default()
-                            .push(__error);
-                    };
-                ),
-            ))
-        }
-        None => Err(errors),
+    if errors.len() > 0 {
+        return Err(errors);
     }
+
+    Ok((
+        arg_idents,
+        quote!(
+            if let Err(__error) = #rule_fn_name(#rule_fn_args) {
+                __errors.push(__error);
+            };
+        ),
+    ))
 }

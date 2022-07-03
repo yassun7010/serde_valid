@@ -13,6 +13,7 @@ keywords = ["validation", "serde", "json_schema"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+indexmap = { version = "1.9.1", features = ["serde"] }
 itertools = "^0.10"
 num-traits = "^0.2"
 once_cell = "^1.7"

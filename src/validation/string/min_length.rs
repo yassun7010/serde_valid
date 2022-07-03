@@ -59,26 +59,6 @@ mod tests {
     }
 
     #[test]
-    fn test_validate_string_min_length_vec_u8_type() {
-        assert!(ValidateMinLength::validate_min_length(&"abcde".as_bytes().to_vec(), 5).is_ok());
-    }
-
-    #[test]
-    fn test_validate_string_min_length_vec_char_type() {
-        assert!(ValidateMinLength::validate_min_length(&vec!['a', 'b', 'c'], 3).is_ok());
-    }
-
-    #[test]
-    fn test_validate_string_min_length_u8_array_type() {
-        assert!(ValidateMinLength::validate_min_length("abcde".as_bytes(), 5).is_ok());
-    }
-
-    #[test]
-    fn test_validate_string_min_length_char_array_type() {
-        assert!(ValidateMinLength::validate_min_length(&['a', 'b', 'c'], 3).is_ok());
-    }
-
-    #[test]
     fn test_validate_string_min_length_os_str_type() {
         assert!(ValidateMinLength::validate_min_length(&OsStr::new("fo�o"), 4).is_ok());
     }

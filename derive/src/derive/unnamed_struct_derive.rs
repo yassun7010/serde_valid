@@ -1,4 +1,4 @@
-use crate::error::{fields_errors_tokens, new_type_errors_tokens};
+use crate::error::{new_type_errors_tokens, object_errors_tokens};
 use crate::rule::collect_rules_from_unnamed_struct;
 use crate::types::{Field, UnnamedField};
 use crate::validate::{extract_meta_validator, FieldValidators};
@@ -41,7 +41,7 @@ pub fn expand_unnamed_struct_derive(
     };
 
     let fields_errors = if fields.unnamed.len() != 1 {
-        fields_errors_tokens()
+        object_errors_tokens()
     } else {
         new_type_errors_tokens()
     };
@@ -50,12 +50,13 @@ pub fn expand_unnamed_struct_derive(
         Ok(quote!(
             impl #impl_generics ::serde_valid::Validate for #ident #type_generics #where_clause {
                 fn validate(&self) -> std::result::Result<(), ::serde_valid::validation::Errors> {
-                    let mut __errors = ::serde_valid::validation::MapErrors::new();
+                    let mut __errors = ::serde_valid::validation::VecErrors::new();
+                    let mut __properties_errors = ::serde_valid::validation::MapErrors::new();
 
                     #validates
                     #rules
 
-                    if __errors.is_empty() {
+                    if __errors.is_empty() && __properties_errors.is_empty() {
                         Ok(())
                     } else {
                         Err(#fields_errors)

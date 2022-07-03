@@ -30,7 +30,16 @@ fn serde_rename_is_err() {
 
     assert_eq!(
         serde_json::from_str::<serde_json::Value>(&err.to_string()).unwrap(),
-        json!({"value": ["the number must be `<= 100`."]})
+        json!({
+            "errors": [],
+            "properties": {
+                "value": {
+                    "errors": [
+                        "the number must be `<= 100`."
+                    ]
+                }
+            }
+        })
     );
 }
 
@@ -61,7 +70,14 @@ fn serde_rename_deserialize_is_err() {
 
     assert_eq!(
         serde_json::from_str::<serde_json::Value>(&err.to_string()).unwrap(),
-        json!({"value": ["the number must be `<= 100`."]})
+        json!({
+            "errors": [],
+            "properties": {
+                "value": {
+                    "errors": ["the number must be `<= 100`."]
+                }
+            }
+        })
     );
 }
 
@@ -96,6 +112,13 @@ fn serde_rename_enume_is_err() {
 
     assert_eq!(
         serde_json::from_str::<serde_json::Value>(&err.to_string()).unwrap(),
-        json!({"value": ["the number must be `<= 100`."]})
+        json!({
+            "errors": [],
+            "properties": {
+                "value": {
+                    "errors": ["the number must be `<= 100`."]
+                }
+            }
+        })
     );
 }

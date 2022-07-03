@@ -38,9 +38,9 @@ pub fn extract_validator_from_meta_list(
                 syn::Meta::Path(path) => {
                     extract_validator_from_nested_meta_path(field, path, messaeg_fn, rename_map)
                 }
-                syn::Meta::List(list) => extract_validator_from_nested_meta_list(
-                    field, attribute, list, messaeg_fn, rename_map,
-                ),
+                syn::Meta::List(list) => {
+                    extract_validator_from_nested_meta_list(field, list, messaeg_fn, rename_map)
+                }
                 syn::Meta::NameValue(name_value) => extract_validator_from_nested_meta_name_value(
                     field, attribute, name_value, messaeg_fn, rename_map,
                 ),

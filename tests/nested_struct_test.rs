@@ -137,34 +137,57 @@ fn nested_validate_err_message() {
     assert_eq!(
         serde_json::to_value(&s.validate().unwrap_err()).unwrap(),
         json!({
-            "named_fields_struct": [{
-                "val": [
-                    "the number must be `<= 0`."
-                ]
-            }],
-            "unnamed_fields_struct": [{
-                "0": [
-                    "the number must be `<= 0`."
-                ],
-                "1": [
-                    "the number must be `<= 0`."
-                ]
-            }],
-            "single_unnamed_fields_struct": ["the number must be `<= 0`."],
-            "named_fields_enum": [{
-                "val": [
-                    "the number must be `<= 0`."
-                ]
-            }],
-            "unnamed_fields_enum": [{
-                "0": [
-                    "the number must be `<= 0`."
-                ],
-                "1": [
-                    "the number must be `<= 0`."
-                ]
-            }],
-            "single_unnamed_fields_enum": ["the number must be `<= 0`."],
+            "errors": [],
+            "properties": {
+                "named_fields_struct": {
+                    "errors": [],
+                    "properties": {
+                        "val": {
+                            "errors": ["the number must be `<= 0`."]
+                        }
+                    }
+                },
+                "unnamed_fields_struct": {
+                    "errors": [],
+                    "properties": {
+                        "0": {
+                            "errors": ["the number must be `<= 0`."]
+                        },
+                        "1": {
+                            "errors": ["the number must be `<= 0`."]
+                        }
+                    }
+                },
+                "single_unnamed_fields_struct": {
+                    "errors": [
+                        "the number must be `<= 0`."
+                    ]
+                },
+                "named_fields_enum": {
+                    "errors": [],
+                    "properties": {
+                        "val": {
+                            "errors": ["the number must be `<= 0`."]
+                        }
+                    }
+                },
+                "unnamed_fields_enum": {
+                    "errors": [],
+                    "properties": {
+                        "0": {
+                            "errors": ["the number must be `<= 0`."]
+                        },
+                        "1": {
+                            "errors": ["the number must be `<= 0`."]
+                        }
+                    }
+                },
+                "single_unnamed_fields_enum": {
+                    "errors": [
+                        "the number must be `<= 0`."
+                    ]
+                }
+            }
         })
     );
 }

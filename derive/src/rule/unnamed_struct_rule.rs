@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 
 use proc_macro2::TokenStream;
-use quote::{quote, ToTokens};
+use quote::quote;
 use syn::parse_quote;
 
 use crate::types::CommaSeparatedTokenStreams;
@@ -122,26 +122,17 @@ fn extract_rule_from_meta_list(
         })
         .collect::<CommaSeparatedTokenStreams>();
 
-    match nested.first() {
-        Some(field) => {
-            if errors.len() > 0 {
-                return Err(errors);
-            }
-
-            let field_name = field.to_token_stream().to_string();
-
-            Ok((
-                arg_idents,
-                quote!(
-                    if let Err(__error) = #rule_fn_name(#rule_fn_args) {
-                        __errors
-                            .entry(#field_name)
-                            .or_default()
-                            .push(__error);
-                    };
-                ),
-            ))
-        }
-        None => Err(errors),
+    if errors.len() > 0 {
+        return Err(errors);
     }
+
+    Ok((
+        arg_idents,
+        quote!(
+            if let Err(__error) = #rule_fn_name(#rule_fn_args) {
+                __errors
+                    .push(__error);
+            };
+        ),
+    ))
 }

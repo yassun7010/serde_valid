@@ -48,27 +48,3 @@ impl_for_path!(std::path::Path);
 impl_for_path!(&std::path::Path);
 impl_for_path!(std::path::PathBuf);
 impl_for_os_str!(std::borrow::Cow<'_, std::path::Path>);
-
-macro_rules! impl_for_bytes {
-    ($ty:ty) => {
-        impl Length for $ty {
-            fn length(&self) -> usize {
-                self.len()
-            }
-        }
-    };
-    ($ty:ty, $size:tt) => {
-        impl<const $size: usize> Length for [$ty; $size] {
-            fn length(&self) -> usize {
-                self.len()
-            }
-        }
-    };
-}
-
-impl_for_bytes!(Vec<u8>);
-impl_for_bytes!(Vec<char>);
-impl_for_bytes!([u8]);
-impl_for_bytes!([char]);
-impl_for_bytes!(u8, N);
-impl_for_bytes!(char, N);

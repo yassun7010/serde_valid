@@ -36,6 +36,18 @@ impl_validate_numeric_minimum!(u32);
 impl_validate_numeric_minimum!(u64);
 impl_validate_numeric_minimum!(u128);
 impl_validate_numeric_minimum!(usize);
+impl_validate_numeric_minimum!(std::num::NonZeroI8);
+impl_validate_numeric_minimum!(std::num::NonZeroI16);
+impl_validate_numeric_minimum!(std::num::NonZeroI32);
+impl_validate_numeric_minimum!(std::num::NonZeroI64);
+impl_validate_numeric_minimum!(std::num::NonZeroI128);
+impl_validate_numeric_minimum!(std::num::NonZeroIsize);
+impl_validate_numeric_minimum!(std::num::NonZeroU8);
+impl_validate_numeric_minimum!(std::num::NonZeroU16);
+impl_validate_numeric_minimum!(std::num::NonZeroU32);
+impl_validate_numeric_minimum!(std::num::NonZeroU64);
+impl_validate_numeric_minimum!(std::num::NonZeroU128);
+impl_validate_numeric_minimum!(std::num::NonZeroUsize);
 impl_validate_numeric_minimum!(f32);
 impl_validate_numeric_minimum!(f64);
 

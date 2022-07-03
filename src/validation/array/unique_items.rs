@@ -33,6 +33,18 @@ where
     }
 }
 
+impl<T> ValidateUniqueItems for Option<T>
+where
+    T: ValidateUniqueItems,
+{
+    fn validate_unique_items(&self) -> Result<(), crate::UniqueItemsErrorParams> {
+        match self {
+            Some(value) => value.validate_unique_items(),
+            None => Ok(()),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

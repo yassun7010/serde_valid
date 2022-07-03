@@ -1,6 +1,6 @@
 use super::named_struct_derive::collect_named_fields_validators_list;
 use super::unnamed_struct_derive::collect_unnamed_fields_validators_list;
-use crate::error::{fields_errors_tokens, new_type_errors_tokens};
+use crate::error::{new_type_errors_tokens, object_errors_tokens};
 use crate::rule::{collect_rules_from_named_struct, collect_rules_from_unnamed_struct};
 use crate::serde::rename::collect_serde_rename_map;
 use crate::types::CommaSeparatedTokenStreams;
@@ -78,7 +78,7 @@ fn expand_enum_variant_named_fields(
     let else_token = make_else_token(index);
     let rename_map = collect_serde_rename_map(named_fields);
 
-    let (rule_fields, rules) = match collect_rules_from_named_struct(&variant.attrs, &rename_map) {
+    let (rule_fields, rules) = match collect_rules_from_named_struct(&variant.attrs) {
         Ok(field_rules) => field_rules,
         Err(variant_errors) => {
             errors.extend(variant_errors.into_iter());
@@ -110,17 +110,18 @@ fn expand_enum_variant_named_fields(
         }
     };
 
-    let variant_errors = fields_errors_tokens();
+    let variant_errors = object_errors_tokens();
 
     if errors.is_empty() {
         Ok(quote!(
             #else_token if let #ident::#variant_ident{#fields_idents} = &self {
-                let mut __errors = ::serde_valid::validation::MapErrors::new();
+                let mut __errors = ::serde_valid::validation::VecErrors::new();
+                let mut __properties_errors = ::serde_valid::validation::MapErrors::new();
 
                 #validates
                 #rules
 
-                if !__errors.is_empty() {
+                if !(__errors.is_empty() && __properties_errors.is_empty()) {
                     Err(#variant_errors)?
                 }
             }
@@ -175,7 +176,7 @@ fn expand_enum_variant_unnamed_fields_varidation(
     };
 
     let variant_errors = if unnamed_fields.unnamed.len() != 1 {
-        fields_errors_tokens()
+        object_errors_tokens()
     } else {
         new_type_errors_tokens()
     };
@@ -183,12 +184,13 @@ fn expand_enum_variant_unnamed_fields_varidation(
     if errors.is_empty() {
         Ok(quote!(
             #else_token if let #ident::#variant_ident(#fields_idents) = &self {
-                let mut __errors = ::serde_valid::validation::MapErrors::new();
+                let mut __errors = ::serde_valid::validation::VecErrors::new();
+                let mut __properties_errors = ::serde_valid::validation::MapErrors::new();
 
                 #validates
                 #rules
 
-                if !__errors.is_empty() {
+                if !(__errors.is_empty() && __properties_errors.is_empty()) {
                     Err(#variant_errors)?
                 }
             }

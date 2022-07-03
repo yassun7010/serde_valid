@@ -24,19 +24,7 @@ macro_rules! extract_numeric_range_validator{
             message_fn: Option<TokenStream>,
             rename_map: &HashMap<String, String>,
         ) -> Result<Validator, crate::Errors> {
-            if let Some(array_field) = field.array_field() {
-                Ok(Validator::Array(Box::new(
-                    $function_name(&array_field, validation_value, message_fn, rename_map)?
-                )))
-            } else if let Some(option_field) = field.option_field() {
-                Ok(Validator::Option(Box::new(
-                    $function_name(&option_field, validation_value, message_fn, rename_map)?
-                )))
-            } else {
-                Ok(Validator::Normal(
-                    $inner_function_name(field, validation_value, message_fn, rename_map)?
-                ))
-            }
+            Ok($inner_function_name(field, validation_value, message_fn, rename_map)?)
         }
 
         fn $inner_function_name(
@@ -58,7 +46,7 @@ macro_rules! extract_numeric_range_validator{
                     #$limit,
                 ) {
                     use ::serde_valid::error::ToDefaultMessage;
-                    __errors
+                    __properties_errors
                         .entry(#rename)
                         .or_default()
                         .push(::serde_valid::validation::Error::$ErrorType(

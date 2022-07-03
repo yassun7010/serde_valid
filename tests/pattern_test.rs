@@ -205,9 +205,14 @@ fn pattern_err_message() {
     assert_eq!(
         serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
         serde_json::to_string(&json!({
-            "val": [
-                "the value must match the pattern of \"^\\d{4}-\\d{2}-\\d{2}$\"."
-            ]
+            "errors": [],
+            "properties": {
+                "val": {
+                    "errors": [
+                        "the value must match the pattern of \"^\\d{4}-\\d{2}-\\d{2}$\"."
+                    ]
+                }
+            }
         }))
         .unwrap()
     );
@@ -232,9 +237,14 @@ fn pattern_custom_err_message_fn() {
     assert_eq!(
         serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
         serde_json::to_string(&json!({
-            "val": [
-                "this is custom message."
-            ]
+            "errors": [],
+            "properties": {
+                "val": {
+                    "errors": [
+                        "this is custom message."
+                    ]
+                }
+            }
         }))
         .unwrap()
     );
@@ -255,9 +265,14 @@ fn pattern_custom_err_message() {
     assert_eq!(
         serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
         serde_json::to_string(&json!({
-            "val": [
-                "this is custom message."
-            ]
+            "errors": [],
+            "properties": {
+                "val": {
+                    "errors": [
+                        "this is custom message."
+                    ]
+                }
+            }
         }))
         .unwrap()
     );
