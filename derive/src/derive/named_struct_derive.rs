@@ -20,7 +20,7 @@ pub fn expand_named_struct_derive(
 
     let mut errors = vec![];
 
-    let (rule_fields, rules) = match collect_rules_from_named_struct(&input.attrs, &rename_map) {
+    let (rule_fields, rules) = match collect_rules_from_named_struct(&input.attrs) {
         Ok((rule_fields, rules)) => (rule_fields, TokenStream::from_iter(rules)),
         Err(rule_errors) => {
             errors.extend(rule_errors);

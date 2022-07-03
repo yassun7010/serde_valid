@@ -78,7 +78,7 @@ fn expand_enum_variant_named_fields(
     let else_token = make_else_token(index);
     let rename_map = collect_serde_rename_map(named_fields);
 
-    let (rule_fields, rules) = match collect_rules_from_named_struct(&variant.attrs, &rename_map) {
+    let (rule_fields, rules) = match collect_rules_from_named_struct(&variant.attrs) {
         Ok(field_rules) => field_rules,
         Err(variant_errors) => {
             errors.extend(variant_errors.into_iter());
