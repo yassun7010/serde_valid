@@ -158,9 +158,7 @@ fn items_err_message() {
             "errors": [],
             "properties": {
                 "val": {
-                    "errors": [
-                        "the length of the items must be `>= 4`."
-                    ]
+                    "errors": ["the length of the items must be `>= 4`."]
                 }
             }
         }))
@@ -193,8 +191,8 @@ fn items_custom_err_message_fn() {
         "properties": {
             "val": {
                 "errors": [
-                "this is min custom message.",
-                "this is max custom message."
+                    "this is min custom message.",
+                    "this is max custom message."
                 ]
             }
         }
