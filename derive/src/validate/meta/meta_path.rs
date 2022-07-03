@@ -29,7 +29,7 @@ fn inner_extract_validator_from_meta_path(
                         vec![::serde_valid::validation::Error::Properties(__object_errors)]
                     );
                 }
-                __property_errors @ ::serde_valid::validation::Errors::Array(_) => {
+                __array_errors @ ::serde_valid::validation::Errors::Array(_) => {
                     unimplemented!();
                 }
                 ::serde_valid::validation::Errors::NewType(__new_type_errors) => {
