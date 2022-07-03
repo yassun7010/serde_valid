@@ -28,8 +28,10 @@ fn inner_extract_validator_from_meta_path(
                         ::serde_valid::validation::Error::Properties(__object_errors)
                     );
                 }
-                __array_errors @ ::serde_valid::validation::Errors::Array(_) => {
-                    unimplemented!();
+                ::serde_valid::validation::Errors::Array(__array_errors) => {
+                    __properties_errors.entry(#rename).or_default().push(
+                        ::serde_valid::validation::Error::Items(__array_errors)
+                    );
                 }
                 ::serde_valid::validation::Errors::NewType(__new_type_errors) => {
                     __properties_errors.entry(#rename).or_default().extend(__new_type_errors);

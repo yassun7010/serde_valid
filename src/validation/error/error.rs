@@ -5,7 +5,7 @@ pub use crate::error::{
     MinimumErrorParams, MultipleOfErrorParams, PatternErrorParams, UniqueItemsErrorParams,
 };
 
-use super::{Errors, ObjectErrors};
+use super::{ArrayErrors, ObjectErrors};
 
 #[derive(Debug, serde::Serialize, thiserror::Error)]
 #[serde(untagged)]
@@ -71,7 +71,7 @@ pub enum Error {
     Custom(String),
 
     #[error(transparent)]
-    Items(Errors),
+    Items(ArrayErrors),
 
     #[error(transparent)]
     Properties(ObjectErrors),

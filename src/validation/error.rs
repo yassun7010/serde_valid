@@ -1,4 +1,4 @@
-mod array_errros;
+mod array_erros;
 mod error;
 mod errors;
 mod object_errors;
@@ -9,7 +9,7 @@ pub use crate::error::{
     Message, MinItemsErrorParams, MinLengthErrorParams, MinPropertiesErrorParams,
     MinimumErrorParams, MultipleOfErrorParams, PatternErrorParams, UniqueItemsErrorParams,
 };
-pub use array_errros::ArrayErrors;
+pub use array_erros::ArrayErrors;
 pub use error::Error;
 pub use errors::Errors;
 use indexmap::IndexMap;

@@ -4,8 +4,8 @@ use super::{Errors, VecErrors};
 
 #[derive(Debug, serde::Serialize, thiserror::Error)]
 pub struct ArrayErrors {
-    errors: VecErrors,
-    items: IndexMap<usize, Errors>,
+    pub errors: VecErrors,
+    pub items: IndexMap<usize, Errors>,
 }
 
 impl ArrayErrors {
