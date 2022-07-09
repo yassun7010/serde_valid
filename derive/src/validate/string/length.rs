@@ -41,34 +41,34 @@ macro_rules! extract_string_length_validator{
                 message_fn.unwrap_or(quote!(::serde_valid::$ErrorParams::to_default_message));
 
             Ok(quote!(
-                if let Err(meta_error_params) = ::serde_valid::validation::$ValidateTrait::$validation_method(
+                if let Err(__multi_error_params) = ::serde_valid::validation::$ValidateTrait::$validation_method(
                     #field_ident,
                     #$limit,
                 ) {
                     use ::serde_valid::error::ToDefaultMessage;
-                    match meta_error_params {
-                        ::serde_valid::validation::Multiple::Single(error_params) => {
+                    match __multi_error_params {
+                        ::serde_valid::validation::Multiple::Single(__single_error_params) => {
                             __properties_errors
                                 .entry(#rename)
                                 .or_default()
                                 .push(::serde_valid::validation::Error::$ErrorType(
                                     ::serde_valid::error::Message::new(
-                                        error_params,
+                                        __single_error_params,
                                         #message
                                     )
                                 ));
                             },
-                        ::serde_valid::validation::Multiple::Array(vec_error_params) => vec_error_params
+                        ::serde_valid::validation::Multiple::Array(__vec_error_params) => __vec_error_params
                             .into_iter()
-                            .for_each(|error_params| {
-                                match error_params {
-                                    ::serde_valid::validation::Multiple::Single(error) =>
+                            .for_each(|__error_params| {
+                                match __error_params {
+                                    ::serde_valid::validation::Multiple::Single(__single_error_params) =>
                                         __properties_errors
                                             .entry(#rename)
                                             .or_default()
                                             .push(::serde_valid::validation::Error::$ErrorType(
                                                 ::serde_valid::error::Message::new(
-                                                    error,
+                                                    __single_error_params,
                                                     #message
                                                 )
                                             )),

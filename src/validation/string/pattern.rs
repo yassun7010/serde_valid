@@ -21,44 +21,6 @@ where
     }
 }
 
-impl<T> ValidatePattern for Vec<T>
-where
-    T: ValidatePattern,
-{
-    fn validate_pattern(&self, pattern: &Regex) -> Result<(), PatternErrorParams> {
-        for item in self {
-            item.validate_pattern(pattern)?
-        }
-
-        Ok(())
-    }
-}
-
-impl<T, const N: usize> ValidatePattern for [T; N]
-where
-    T: ValidatePattern,
-{
-    fn validate_pattern(&self, pattern: &Regex) -> Result<(), PatternErrorParams> {
-        for item in self {
-            item.validate_pattern(pattern)?
-        }
-
-        Ok(())
-    }
-}
-
-impl<T> ValidatePattern for Option<T>
-where
-    T: ValidatePattern,
-{
-    fn validate_pattern(&self, pattern: &Regex) -> Result<(), PatternErrorParams> {
-        match self {
-            Some(value) => value.validate_pattern(pattern),
-            None => Ok(()),
-        }
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;

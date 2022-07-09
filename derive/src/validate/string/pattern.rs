@@ -42,20 +42,45 @@ fn inner_extract_string_pattern_validator(
     Ok(quote!(
         static #pattern_ident : ::once_cell::sync::OnceCell<::regex::Regex> = ::once_cell::sync::OnceCell::new();
         let __pattern = #pattern_ident.get_or_init(|| ::regex::Regex::new(#pattern).unwrap());
-        if let Err(error_params) = ::serde_valid::ValidatePattern::validate_pattern(
+        if let Err(__multi_error_params) = ::serde_valid::validation::ValidatePatterns::validate_patterns(
             #field_ident,
             __pattern,
         ) {
+
             use ::serde_valid::error::ToDefaultMessage;
-            __properties_errors
-                .entry(#rename)
-                .or_default()
-                .push(::serde_valid::validation::Error::Pattern(
-                    ::serde_valid::error::Message::new(
-                        error_params,
-                        #message
-                    )
-                ));
+            match __multi_error_params {
+                ::serde_valid::validation::Multiple::Single(__single_error_params) => {
+                    __properties_errors
+                            .entry(#rename)
+                            .or_default()
+                            .push(::serde_valid::validation::Error::Pattern(
+                                ::serde_valid::error::Message::new(
+                                    __single_error_params,
+                                    #message
+                                )
+                            ));
+                },
+                ::serde_valid::validation::Multiple::Array(__vec_error_params) => {
+                    __vec_error_params
+                        .into_iter()
+                        .for_each(|__error_params| {
+                            match __error_params {
+                                ::serde_valid::validation::Multiple::Single(__single_error_params) => {
+                                    __properties_errors
+                                        .entry(#rename)
+                                        .or_default()
+                                        .push(::serde_valid::validation::Error::Pattern(
+                                            ::serde_valid::error::Message::new(
+                                                __single_error_params,
+                                                #message
+                                            )
+                                        ));
+                                }
+                                _ => (),
+                            }
+                        });
+                },
+            }
         }
     ))
 }

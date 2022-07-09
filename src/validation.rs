@@ -15,7 +15,7 @@ pub use numeric::{
 pub use object::{ValidateMaxProperties, ValidateMinProperties};
 pub use string::{ValidateMaxLength, ValidateMinLength, ValidatePattern};
 
-use crate::{MaxLengthErrorParams, MinLengthErrorParams};
+use crate::{MaxLengthErrorParams, MinLengthErrorParams, PatternErrorParams};
 
 #[derive(Debug)]
 pub enum Multiple<ErrorParams> {
@@ -23,13 +23,13 @@ pub enum Multiple<ErrorParams> {
     Array(Vec<Multiple<ErrorParams>>),
 }
 
-macro_rules! impl_validate_object_size {
-    ($ValidateTrait:ident, $ErrorParams:tt, $validation_method:ident) => {
+macro_rules! impl_multi_validation1 {
+    ($ValidateTrait:ident, $ErrorParams:tt, $validation_method:ident, $limit_type:ty) => {
         paste::item! {
             pub trait [< $ValidateTrait s >] {
                 fn [< $validation_method s >](
                     &self,
-                    limit: usize,
+                    limit: $limit_type,
                 ) -> Result<(), crate::validation::Multiple<$ErrorParams>>;
             }
 
@@ -39,7 +39,7 @@ macro_rules! impl_validate_object_size {
             {
                 fn [< $validation_method s >](
                     &self,
-                    limit: usize,
+                    limit: $limit_type,
                 ) -> Result<(), crate::validation::Multiple<$ErrorParams>> {
                     self.$validation_method(limit)
                         .map_err(|error| crate::validation::Multiple::Single(error))
@@ -52,7 +52,7 @@ macro_rules! impl_validate_object_size {
             {
                 fn [< $validation_method s >](
                     &self,
-                    limit: usize,
+                    limit: $limit_type,
                 ) -> Result<(), crate::validation::Multiple<$ErrorParams>> {
                     let mut errors = vec![];
                     self.iter().for_each(|item| {
@@ -75,7 +75,7 @@ macro_rules! impl_validate_object_size {
             {
                 fn [< $validation_method s >](
                     &self,
-                    limit: usize,
+                    limit: $limit_type,
                 ) -> Result<(), crate::validation::Multiple<$ErrorParams>> {
                     let mut errors = vec![];
                     self.iter().for_each(|item| {
@@ -98,7 +98,7 @@ macro_rules! impl_validate_object_size {
             {
                 fn [< $validation_method s >](
                     &self,
-                    limit: usize,
+                    limit: $limit_type,
                 ) -> Result<(), crate::validation::Multiple<$ErrorParams>> {
                     match self {
                         Some(value) => value.[< $validation_method s >](limit),
@@ -110,5 +110,21 @@ macro_rules! impl_validate_object_size {
     };
 }
 
-impl_validate_object_size!(ValidateMaxLength, MaxLengthErrorParams, validate_max_length);
-impl_validate_object_size!(ValidateMinLength, MinLengthErrorParams, validate_min_length);
+impl_multi_validation1!(
+    ValidateMaxLength,
+    MaxLengthErrorParams,
+    validate_max_length,
+    usize
+);
+impl_multi_validation1!(
+    ValidateMinLength,
+    MinLengthErrorParams,
+    validate_min_length,
+    usize
+);
+impl_multi_validation1!(
+    ValidatePattern,
+    PatternErrorParams,
+    validate_pattern,
+    &regex::Regex
+);
