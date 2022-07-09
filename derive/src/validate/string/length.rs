@@ -88,8 +88,8 @@ extract_string_length_validator!(
     max_length,
     extract_string_max_length_validator,
     inner_extract_string_max_length_validator,
-    ValidateMaxLengths,
-    validate_max_lengths
+    ValidateMultiMaxLength,
+    validate_multi_max_length
 );
 extract_string_length_validator!(
     MinLengthErrorParams,
@@ -97,6 +97,6 @@ extract_string_length_validator!(
     min_length,
     extract_string_min_length_validator,
     inner_extract_string_min_length_validator,
-    ValidateMinLengths,
-    validate_min_lengths
+    ValidateMultiMinLength,
+    validate_multi_min_length
 );
