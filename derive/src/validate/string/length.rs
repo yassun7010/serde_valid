@@ -12,7 +12,7 @@ macro_rules! extract_string_length_validator{
     (
         $ErrorParams:tt,
         $ErrorType:tt,
-        $field:tt,
+        $limit:tt,
         $function_name:ident,
         $inner_function_name:ident,
         $ValidateTrait:ident,
@@ -36,25 +36,46 @@ macro_rules! extract_string_length_validator{
             let field_name = field.name();
             let field_ident = field.ident();
             let rename = rename_map.get(field_name).unwrap_or(field_name);
-            let $field = get_numeric(validation_value)?;
+            let $limit = get_numeric(validation_value)?;
             let message =
                 message_fn.unwrap_or(quote!(::serde_valid::$ErrorParams::to_default_message));
 
             Ok(quote!(
-                if let Err(error_params) = ::serde_valid::$ValidateTrait::$validation_method(
+                if let Err(meta_error_params) = ::serde_valid::validation::$ValidateTrait::$validation_method(
                     #field_ident,
-                    #$field,
+                    #$limit,
                 ) {
                     use ::serde_valid::error::ToDefaultMessage;
-                    __properties_errors
-                        .entry(#rename)
-                        .or_default()
-                        .push(::serde_valid::validation::Error::$ErrorType(
-                            ::serde_valid::error::Message::new(
-                                error_params,
-                                #message
-                            )
-                        ));
+                    match meta_error_params {
+                        ::serde_valid::validation::Multiple::Single(error_params) => {
+                            __properties_errors
+                                .entry(#rename)
+                                .or_default()
+                                .push(::serde_valid::validation::Error::$ErrorType(
+                                    ::serde_valid::error::Message::new(
+                                        error_params,
+                                        #message
+                                    )
+                                ));
+                            },
+                        ::serde_valid::validation::Multiple::Array(vec_error_params) => vec_error_params
+                            .into_iter()
+                            .for_each(|error_params| {
+                                match error_params {
+                                    ::serde_valid::validation::Multiple::Single(error) =>
+                                        __properties_errors
+                                            .entry(#rename)
+                                            .or_default()
+                                            .push(::serde_valid::validation::Error::$ErrorType(
+                                                ::serde_valid::error::Message::new(
+                                                    error,
+                                                    #message
+                                                )
+                                            )),
+                                    _ => (),
+                                }
+                            }),
+                    }
                 }
             ))
         }
@@ -67,8 +88,8 @@ extract_string_length_validator!(
     max_length,
     extract_string_max_length_validator,
     inner_extract_string_max_length_validator,
-    ValidateMaxLength,
-    validate_max_length
+    ValidateMaxLengths,
+    validate_max_lengths
 );
 extract_string_length_validator!(
     MinLengthErrorParams,
@@ -76,6 +97,6 @@ extract_string_length_validator!(
     min_length,
     extract_string_min_length_validator,
     inner_extract_string_min_length_validator,
-    ValidateMinLength,
-    validate_min_length
+    ValidateMinLengths,
+    validate_min_lengths
 );
