@@ -42,13 +42,13 @@ fn inner_extract_string_pattern_validator(
     Ok(quote!(
         static #pattern_ident : ::once_cell::sync::OnceCell<::regex::Regex> = ::once_cell::sync::OnceCell::new();
         let __pattern = #pattern_ident.get_or_init(|| ::regex::Regex::new(#pattern).unwrap());
-        if let Err(__multi_error_params) = ::serde_valid::validation::ValidateMultiPattern::validate_multi_pattern(
+        if let Err(__composited_error_params) = ::serde_valid::validation::ValidateCompositedPattern::validate_composited_pattern(
             #field_ident,
             __pattern,
         ) {
 
             use ::serde_valid::error::ToDefaultMessage;
-            match __multi_error_params {
+            match __composited_error_params {
                 ::serde_valid::validation::Multiple::Single(__single_error_params) => {
                     __properties_errors
                             .entry(#rename)

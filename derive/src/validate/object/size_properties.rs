@@ -42,12 +42,12 @@ macro_rules! extract_object_size_validator{
                 message_fn.unwrap_or(quote!(::serde_valid::$ErrorParams::to_default_message));
 
             Ok(quote!(
-                if let Err(__multi_error_params) = ::serde_valid::validation::$ValidateTrait::$validation_method(
+                if let Err(__composited_error_params) = ::serde_valid::validation::$ValidateTrait::$validation_method(
                     #field_ident,
                     #$limit
                 ) {
                     use ::serde_valid::error::ToDefaultMessage;
-                    match __multi_error_params {
+                    match __composited_error_params {
                         ::serde_valid::validation::Multiple::Single(__single_error_params) => {
                             __properties_errors
                                     .entry(#rename)
@@ -92,8 +92,8 @@ extract_object_size_validator!(
     max_properties,
     extract_object_max_properties_validator,
     inner_extract_object_max_properties_validator,
-    ValidateMultiMaxProperties,
-    validate_multi_max_properties
+    ValidateCompositedMaxProperties,
+    validate_composited_max_properties
 );
 
 extract_object_size_validator!(
@@ -102,6 +102,6 @@ extract_object_size_validator!(
     min_properties,
     extract_object_min_properties_validator,
     inner_extract_object_min_properties_validator,
-    ValidateMultiMinProperties,
-    validate_multi_min_properties
+    ValidateCompositedMinProperties,
+    validate_composited_min_properties
 );

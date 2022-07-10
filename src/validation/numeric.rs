@@ -18,20 +18,20 @@ use crate::{
     MinimumErrorParams,
 };
 
-macro_rules! impl_literal_multi_validation {
+macro_rules! impl_literal_composited_validation {
     (
-        $MultiValidateTrait:ident,
+        $CompositedValidateTrait:ident,
         $ValidateTrait:ident,
         $ErrorParams:tt,
-        $multi_validation_method:ident,
+        $composited_validation_method:ident,
         $validation_method:ident,
         $type:tt
     ) => {
-        impl<T> $MultiValidateTrait<$type> for T
+        impl<T> $CompositedValidateTrait<$type> for T
         where
             T: $ValidateTrait<$type>,
         {
-            fn $multi_validation_method(
+            fn $composited_validation_method(
                 &self,
                 limit: $type,
             ) -> Result<(), crate::validation::Multiple<$ErrorParams>> {
@@ -42,236 +42,236 @@ macro_rules! impl_literal_multi_validation {
     };
 }
 
-macro_rules! impl_multi_validation1 {
-    ($MultiValidateTrait:ident, $ValidateTrait:ident, $ErrorParams:tt, $multi_validation_method:ident, $validation_method:ident) => {
-        pub trait $MultiValidateTrait<T> {
-            fn $multi_validation_method(
+macro_rules! impl_composited_validation1 {
+    ($CompositedValidateTrait:ident, $ValidateTrait:ident, $ErrorParams:tt, $composited_validation_method:ident, $validation_method:ident) => {
+        pub trait $CompositedValidateTrait<T> {
+            fn $composited_validation_method(
                 &self,
                 limit: T,
             ) -> Result<(), crate::validation::Multiple<$ErrorParams>>;
         }
 
-        impl_literal_multi_validation!(
-            $MultiValidateTrait,
+        impl_literal_composited_validation!(
+            $CompositedValidateTrait,
             $ValidateTrait,
             $ErrorParams,
-            $multi_validation_method,
+            $composited_validation_method,
             $validation_method,
             i8
         );
-        impl_literal_multi_validation!(
-            $MultiValidateTrait,
+        impl_literal_composited_validation!(
+            $CompositedValidateTrait,
             $ValidateTrait,
             $ErrorParams,
-            $multi_validation_method,
+            $composited_validation_method,
             $validation_method,
             i16
         );
-        impl_literal_multi_validation!(
-            $MultiValidateTrait,
+        impl_literal_composited_validation!(
+            $CompositedValidateTrait,
             $ValidateTrait,
             $ErrorParams,
-            $multi_validation_method,
+            $composited_validation_method,
             $validation_method,
             i32
         );
-        impl_literal_multi_validation!(
-            $MultiValidateTrait,
+        impl_literal_composited_validation!(
+            $CompositedValidateTrait,
             $ValidateTrait,
             $ErrorParams,
-            $multi_validation_method,
+            $composited_validation_method,
             $validation_method,
             i64
         );
-        impl_literal_multi_validation!(
-            $MultiValidateTrait,
+        impl_literal_composited_validation!(
+            $CompositedValidateTrait,
             $ValidateTrait,
             $ErrorParams,
-            $multi_validation_method,
+            $composited_validation_method,
             $validation_method,
             i128
         );
-        impl_literal_multi_validation!(
-            $MultiValidateTrait,
+        impl_literal_composited_validation!(
+            $CompositedValidateTrait,
             $ValidateTrait,
             $ErrorParams,
-            $multi_validation_method,
+            $composited_validation_method,
             $validation_method,
             isize
         );
-        impl_literal_multi_validation!(
-            $MultiValidateTrait,
+        impl_literal_composited_validation!(
+            $CompositedValidateTrait,
             $ValidateTrait,
             $ErrorParams,
-            $multi_validation_method,
+            $composited_validation_method,
             $validation_method,
             u8
         );
-        impl_literal_multi_validation!(
-            $MultiValidateTrait,
+        impl_literal_composited_validation!(
+            $CompositedValidateTrait,
             $ValidateTrait,
             $ErrorParams,
-            $multi_validation_method,
+            $composited_validation_method,
             $validation_method,
             u16
         );
-        impl_literal_multi_validation!(
-            $MultiValidateTrait,
+        impl_literal_composited_validation!(
+            $CompositedValidateTrait,
             $ValidateTrait,
             $ErrorParams,
-            $multi_validation_method,
+            $composited_validation_method,
             $validation_method,
             u32
         );
-        impl_literal_multi_validation!(
-            $MultiValidateTrait,
+        impl_literal_composited_validation!(
+            $CompositedValidateTrait,
             $ValidateTrait,
             $ErrorParams,
-            $multi_validation_method,
+            $composited_validation_method,
             $validation_method,
             u64
         );
-        impl_literal_multi_validation!(
-            $MultiValidateTrait,
+        impl_literal_composited_validation!(
+            $CompositedValidateTrait,
             $ValidateTrait,
             $ErrorParams,
-            $multi_validation_method,
+            $composited_validation_method,
             $validation_method,
             u128
         );
-        impl_literal_multi_validation!(
-            $MultiValidateTrait,
+        impl_literal_composited_validation!(
+            $CompositedValidateTrait,
             $ValidateTrait,
             $ErrorParams,
-            $multi_validation_method,
+            $composited_validation_method,
             $validation_method,
             usize
         );
-        impl_literal_multi_validation!(
-            $MultiValidateTrait,
+        impl_literal_composited_validation!(
+            $CompositedValidateTrait,
             $ValidateTrait,
             $ErrorParams,
-            $multi_validation_method,
+            $composited_validation_method,
             $validation_method,
             NonZeroI8
         );
-        impl_literal_multi_validation!(
-            $MultiValidateTrait,
+        impl_literal_composited_validation!(
+            $CompositedValidateTrait,
             $ValidateTrait,
             $ErrorParams,
-            $multi_validation_method,
+            $composited_validation_method,
             $validation_method,
             NonZeroI16
         );
-        impl_literal_multi_validation!(
-            $MultiValidateTrait,
+        impl_literal_composited_validation!(
+            $CompositedValidateTrait,
             $ValidateTrait,
             $ErrorParams,
-            $multi_validation_method,
+            $composited_validation_method,
             $validation_method,
             NonZeroI32
         );
-        impl_literal_multi_validation!(
-            $MultiValidateTrait,
+        impl_literal_composited_validation!(
+            $CompositedValidateTrait,
             $ValidateTrait,
             $ErrorParams,
-            $multi_validation_method,
+            $composited_validation_method,
             $validation_method,
             NonZeroI64
         );
-        impl_literal_multi_validation!(
-            $MultiValidateTrait,
+        impl_literal_composited_validation!(
+            $CompositedValidateTrait,
             $ValidateTrait,
             $ErrorParams,
-            $multi_validation_method,
+            $composited_validation_method,
             $validation_method,
             NonZeroI128
         );
-        impl_literal_multi_validation!(
-            $MultiValidateTrait,
+        impl_literal_composited_validation!(
+            $CompositedValidateTrait,
             $ValidateTrait,
             $ErrorParams,
-            $multi_validation_method,
+            $composited_validation_method,
             $validation_method,
             NonZeroIsize
         );
-        impl_literal_multi_validation!(
-            $MultiValidateTrait,
+        impl_literal_composited_validation!(
+            $CompositedValidateTrait,
             $ValidateTrait,
             $ErrorParams,
-            $multi_validation_method,
+            $composited_validation_method,
             $validation_method,
             NonZeroU8
         );
-        impl_literal_multi_validation!(
-            $MultiValidateTrait,
+        impl_literal_composited_validation!(
+            $CompositedValidateTrait,
             $ValidateTrait,
             $ErrorParams,
-            $multi_validation_method,
+            $composited_validation_method,
             $validation_method,
             NonZeroU16
         );
-        impl_literal_multi_validation!(
-            $MultiValidateTrait,
+        impl_literal_composited_validation!(
+            $CompositedValidateTrait,
             $ValidateTrait,
             $ErrorParams,
-            $multi_validation_method,
+            $composited_validation_method,
             $validation_method,
             NonZeroU32
         );
-        impl_literal_multi_validation!(
-            $MultiValidateTrait,
+        impl_literal_composited_validation!(
+            $CompositedValidateTrait,
             $ValidateTrait,
             $ErrorParams,
-            $multi_validation_method,
+            $composited_validation_method,
             $validation_method,
             NonZeroU64
         );
-        impl_literal_multi_validation!(
-            $MultiValidateTrait,
+        impl_literal_composited_validation!(
+            $CompositedValidateTrait,
             $ValidateTrait,
             $ErrorParams,
-            $multi_validation_method,
+            $composited_validation_method,
             $validation_method,
             NonZeroU128
         );
-        impl_literal_multi_validation!(
-            $MultiValidateTrait,
+        impl_literal_composited_validation!(
+            $CompositedValidateTrait,
             $ValidateTrait,
             $ErrorParams,
-            $multi_validation_method,
+            $composited_validation_method,
             $validation_method,
             NonZeroUsize
         );
-        impl_literal_multi_validation!(
-            $MultiValidateTrait,
+        impl_literal_composited_validation!(
+            $CompositedValidateTrait,
             $ValidateTrait,
             $ErrorParams,
-            $multi_validation_method,
+            $composited_validation_method,
             $validation_method,
             f32
         );
-        impl_literal_multi_validation!(
-            $MultiValidateTrait,
+        impl_literal_composited_validation!(
+            $CompositedValidateTrait,
             $ValidateTrait,
             $ErrorParams,
-            $multi_validation_method,
+            $composited_validation_method,
             $validation_method,
             f64
         );
 
-        impl<T, U> $MultiValidateTrait<T> for Vec<U>
+        impl<T, U> $CompositedValidateTrait<T> for Vec<U>
         where
             T: Copy,
-            U: $MultiValidateTrait<T>,
+            U: $CompositedValidateTrait<T>,
         {
-            fn $multi_validation_method(
+            fn $composited_validation_method(
                 &self,
                 limit: T,
             ) -> Result<(), crate::validation::Multiple<$ErrorParams>> {
                 let mut errors = vec![];
                 self.iter().for_each(|item| {
-                    item.$multi_validation_method(limit)
+                    item.$composited_validation_method(limit)
                         .map_err(|error| errors.push(error))
                         .ok();
                 });
@@ -284,18 +284,18 @@ macro_rules! impl_multi_validation1 {
             }
         }
 
-        impl<T, U, const N: usize> $MultiValidateTrait<T> for [U; N]
+        impl<T, U, const N: usize> $CompositedValidateTrait<T> for [U; N]
         where
             T: Copy,
-            U: $MultiValidateTrait<T>,
+            U: $CompositedValidateTrait<T>,
         {
-            fn $multi_validation_method(
+            fn $composited_validation_method(
                 &self,
                 limit: T,
             ) -> Result<(), crate::validation::Multiple<$ErrorParams>> {
                 let mut errors = vec![];
                 self.iter().for_each(|item| {
-                    item.$multi_validation_method(limit)
+                    item.$composited_validation_method(limit)
                         .map_err(|error| errors.push(error))
                         .ok();
                 });
@@ -308,17 +308,17 @@ macro_rules! impl_multi_validation1 {
             }
         }
 
-        impl<T, U> $MultiValidateTrait<T> for Option<U>
+        impl<T, U> $CompositedValidateTrait<T> for Option<U>
         where
             T: Copy,
-            U: $MultiValidateTrait<T>,
+            U: $CompositedValidateTrait<T>,
         {
-            fn $multi_validation_method(
+            fn $composited_validation_method(
                 &self,
                 limit: T,
             ) -> Result<(), crate::validation::Multiple<$ErrorParams>> {
                 match self {
-                    Some(value) => value.$multi_validation_method(limit),
+                    Some(value) => value.$composited_validation_method(limit),
                     None => Ok(()),
                 }
             }
@@ -326,34 +326,34 @@ macro_rules! impl_multi_validation1 {
     };
 }
 
-impl_multi_validation1!(
-    ValidateMultiMaximum,
+impl_composited_validation1!(
+    ValidateCompositedMaximum,
     ValidateMaximum,
     MaximumErrorParams,
-    validate_multi_maximum,
+    validate_composited_maximum,
     validate_maximum
 );
 
-impl_multi_validation1!(
-    ValidateMultiMinimum,
+impl_composited_validation1!(
+    ValidateCompositedMinimum,
     ValidateMinimum,
     MinimumErrorParams,
-    validate_multi_minimum,
+    validate_composited_minimum,
     validate_minimum
 );
 
-impl_multi_validation1!(
-    ValidateMultiExclusiveMaximum,
+impl_composited_validation1!(
+    ValidateCompositedExclusiveMaximum,
     ValidateExclusiveMaximum,
     ExclusiveMaximumErrorParams,
-    validate_multi_exclusive_maximum,
+    validate_composited_exclusive_maximum,
     validate_exclusive_maximum
 );
 
-impl_multi_validation1!(
-    ValidateMultiExclusiveMinimum,
+impl_composited_validation1!(
+    ValidateCompositedExclusiveMinimum,
     ValidateExclusiveMinimum,
     ExclusiveMinimumErrorParams,
-    validate_multi_exclusive_minimum,
+    validate_composited_exclusive_minimum,
     validate_exclusive_minimum
 );

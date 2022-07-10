@@ -9,9 +9,9 @@ pub use array::{ValidateMaxItems, ValidateMinItems, ValidateUniqueItems};
 pub use error::{ArrayErrors, Error, Errors, MapErrors, ObjectErrors, VecErrors};
 pub use generic::ValidateEnumerate;
 pub use numeric::{
-    ValidateExclusiveMaximum, ValidateExclusiveMinimum, ValidateMaximum, ValidateMinimum,
-    ValidateMultiExclusiveMaximum, ValidateMultiExclusiveMinimum, ValidateMultiMaximum,
-    ValidateMultiMinimum, ValidateMultipleOf,
+    ValidateCompositedExclusiveMaximum, ValidateCompositedExclusiveMinimum,
+    ValidateCompositedMaximum, ValidateCompositedMinimum, ValidateExclusiveMaximum,
+    ValidateExclusiveMinimum, ValidateMaximum, ValidateMinimum, ValidateMultipleOf,
 };
 pub use object::{ValidateMaxProperties, ValidateMinProperties};
 pub use string::{ValidateMaxLength, ValidateMinLength, ValidatePattern};
@@ -27,20 +27,20 @@ pub enum Multiple<ErrorParams> {
     Array(Vec<Multiple<ErrorParams>>),
 }
 
-macro_rules! impl_multi_validation1 {
-    ($MultiValidateTrait:ident, $ValidateTrait:ident, $ErrorParams:tt, $multi_validation_method:ident, $validation_method:ident, $limit_type:ty) => {
-        pub trait $MultiValidateTrait {
-            fn $multi_validation_method(
+macro_rules! impl_composited_validation1 {
+    ($CompositedValidateTrait:ident, $ValidateTrait:ident, $ErrorParams:tt, $composited_validation_method:ident, $validation_method:ident, $limit_type:ty) => {
+        pub trait $CompositedValidateTrait {
+            fn $composited_validation_method(
                 &self,
                 limit: $limit_type,
             ) -> Result<(), crate::validation::Multiple<$ErrorParams>>;
         }
 
-        impl<T> $MultiValidateTrait for T
+        impl<T> $CompositedValidateTrait for T
         where
             T: $ValidateTrait,
         {
-            fn $multi_validation_method(
+            fn $composited_validation_method(
                 &self,
                 limit: $limit_type,
             ) -> Result<(), crate::validation::Multiple<$ErrorParams>> {
@@ -49,17 +49,17 @@ macro_rules! impl_multi_validation1 {
             }
         }
 
-        impl<T> $MultiValidateTrait for Vec<T>
+        impl<T> $CompositedValidateTrait for Vec<T>
         where
-            T: $MultiValidateTrait,
+            T: $CompositedValidateTrait,
         {
-            fn $multi_validation_method(
+            fn $composited_validation_method(
                 &self,
                 limit: $limit_type,
             ) -> Result<(), crate::validation::Multiple<$ErrorParams>> {
                 let mut errors = vec![];
                 self.iter().for_each(|item| {
-                    item.$multi_validation_method(limit)
+                    item.$composited_validation_method(limit)
                         .map_err(|error| errors.push(error))
                         .ok();
                 });
@@ -72,17 +72,17 @@ macro_rules! impl_multi_validation1 {
             }
         }
 
-        impl<T, const N: usize> $MultiValidateTrait for [T; N]
+        impl<T, const N: usize> $CompositedValidateTrait for [T; N]
         where
-            T: $MultiValidateTrait,
+            T: $CompositedValidateTrait,
         {
-            fn $multi_validation_method(
+            fn $composited_validation_method(
                 &self,
                 limit: $limit_type,
             ) -> Result<(), crate::validation::Multiple<$ErrorParams>> {
                 let mut errors = vec![];
                 self.iter().for_each(|item| {
-                    item.$multi_validation_method(limit)
+                    item.$composited_validation_method(limit)
                         .map_err(|error| errors.push(error))
                         .ok();
                 });
@@ -95,16 +95,16 @@ macro_rules! impl_multi_validation1 {
             }
         }
 
-        impl<T> $MultiValidateTrait for Option<T>
+        impl<T> $CompositedValidateTrait for Option<T>
         where
-            T: $MultiValidateTrait,
+            T: $CompositedValidateTrait,
         {
-            fn $multi_validation_method(
+            fn $composited_validation_method(
                 &self,
                 limit: $limit_type,
             ) -> Result<(), crate::validation::Multiple<$ErrorParams>> {
                 match self {
-                    Some(value) => value.$multi_validation_method(limit),
+                    Some(value) => value.$composited_validation_method(limit),
                     None => Ok(()),
                 }
             }
@@ -113,45 +113,45 @@ macro_rules! impl_multi_validation1 {
 }
 
 // String
-impl_multi_validation1!(
-    ValidateMultiMaxLength,
+impl_composited_validation1!(
+    ValidateCompositedMaxLength,
     ValidateMaxLength,
     MaxLengthErrorParams,
-    validate_multi_max_length,
+    validate_composited_max_length,
     validate_max_length,
     usize
 );
-impl_multi_validation1!(
-    ValidateMultiMinLength,
+impl_composited_validation1!(
+    ValidateCompositedMinLength,
     ValidateMinLength,
     MinLengthErrorParams,
-    validate_multi_min_length,
+    validate_composited_min_length,
     validate_min_length,
     usize
 );
-impl_multi_validation1!(
-    ValidateMultiPattern,
+impl_composited_validation1!(
+    ValidateCompositedPattern,
     ValidatePattern,
     PatternErrorParams,
-    validate_multi_pattern,
+    validate_composited_pattern,
     validate_pattern,
     &regex::Regex
 );
 
 // Object
-impl_multi_validation1!(
-    ValidateMultiMaxProperties,
+impl_composited_validation1!(
+    ValidateCompositedMaxProperties,
     ValidateMaxProperties,
     MaxPropertiesErrorParams,
-    validate_multi_max_properties,
+    validate_composited_max_properties,
     validate_max_properties,
     usize
 );
-impl_multi_validation1!(
-    ValidateMultiMinProperties,
+impl_composited_validation1!(
+    ValidateCompositedMinProperties,
     ValidateMinProperties,
     MinPropertiesErrorParams,
-    validate_multi_min_properties,
+    validate_composited_min_properties,
     validate_min_properties,
     usize
 );
