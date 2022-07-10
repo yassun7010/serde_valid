@@ -63,3 +63,18 @@ impl_into_error!(Maximum);
 impl_into_error!(Minimum);
 impl_into_error!(ExclusiveMaximum);
 impl_into_error!(ExclusiveMinimum);
+impl_into_error!(MultipleOf);
+
+// String
+impl_into_error!(MaxLength);
+impl_into_error!(MinLength);
+impl_into_error!(Pattern);
+
+// Array
+impl_into_error!(MaxItems);
+impl_into_error!(MinItems);
+impl_into_error!(UniqueItems);
+
+// Object
+impl_into_error!(MaxProperties);
+impl_into_error!(MinProperties);
