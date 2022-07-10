@@ -17,3 +17,9 @@ pub use object_errors::ObjectErrors;
 
 pub type VecErrors = Vec<Error>;
 pub type MapErrors = IndexMap<&'static str, VecErrors>;
+
+#[derive(Debug)]
+pub enum Composited<ErrorParams> {
+    Single(ErrorParams),
+    Array(Vec<Composited<ErrorParams>>),
+}

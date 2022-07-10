@@ -6,7 +6,7 @@ mod object;
 mod string;
 
 pub use array::{ValidateMaxItems, ValidateMinItems, ValidateUniqueItems};
-pub use error::{ArrayErrors, Error, Errors, MapErrors, ObjectErrors, VecErrors};
+pub use error::{ArrayErrors, Composited, Error, Errors, MapErrors, ObjectErrors, VecErrors};
 pub use generic::{ValidateCompositedEnumerate, ValidateEnumerate};
 pub use numeric::{
     ValidateCompositedExclusiveMaximum, ValidateCompositedExclusiveMinimum,
@@ -21,12 +21,6 @@ use crate::{
     MaxLengthErrorParams, MaxPropertiesErrorParams, MinLengthErrorParams, MinPropertiesErrorParams,
     PatternErrorParams,
 };
-
-#[derive(Debug)]
-pub enum Composited<ErrorParams> {
-    Single(ErrorParams),
-    Array(Vec<Composited<ErrorParams>>),
-}
 
 macro_rules! impl_composited_validation1 {
     ($CompositedValidateTrait:ident, $ValidateTrait:ident, $ErrorParams:tt, $composited_validation_method:ident, $validation_method:ident, $limit_type:ty) => {
