@@ -49,7 +49,7 @@ pub trait ValidateCompositedMultipleOf<T> {
     fn validate_composited_multiple_of(
         &self,
         limit: T,
-    ) -> Result<(), crate::validation::Multiple<MultipleOfErrorParams>>;
+    ) -> Result<(), crate::validation::Composited<MultipleOfErrorParams>>;
 }
 
 macro_rules! impl_literal_composited_validate_multiple_of {
@@ -88,7 +88,7 @@ where
     fn validate_composited_multiple_of(
         &self,
         limit: T,
-    ) -> Result<(), crate::validation::Multiple<MultipleOfErrorParams>> {
+    ) -> Result<(), crate::validation::Composited<MultipleOfErrorParams>> {
         let mut errors = vec![];
         self.iter().for_each(|item| {
             item.validate_composited_multiple_of(limit)
@@ -99,7 +99,7 @@ where
         if errors.is_empty() {
             Ok(())
         } else {
-            Err(crate::validation::Multiple::Array(errors))
+            Err(crate::validation::Composited::Array(errors))
         }
     }
 }
@@ -112,7 +112,7 @@ where
     fn validate_composited_multiple_of(
         &self,
         limit: T,
-    ) -> Result<(), crate::validation::Multiple<MultipleOfErrorParams>> {
+    ) -> Result<(), crate::validation::Composited<MultipleOfErrorParams>> {
         let mut errors = vec![];
         self.iter().for_each(|item| {
             item.validate_composited_multiple_of(limit)
@@ -123,7 +123,7 @@ where
         if errors.is_empty() {
             Ok(())
         } else {
-            Err(crate::validation::Multiple::Array(errors))
+            Err(crate::validation::Composited::Array(errors))
         }
     }
 }
@@ -136,7 +136,7 @@ where
     fn validate_composited_multiple_of(
         &self,
         limit: T,
-    ) -> Result<(), crate::validation::Multiple<MultipleOfErrorParams>> {
+    ) -> Result<(), crate::validation::Composited<MultipleOfErrorParams>> {
         match self {
             Some(value) => value.validate_composited_multiple_of(limit),
             None => Ok(()),

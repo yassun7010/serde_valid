@@ -49,7 +49,7 @@ fn inner_extract_string_pattern_validator(
 
             use ::serde_valid::error::ToDefaultMessage;
             match __composited_error_params {
-                ::serde_valid::validation::Multiple::Single(__single_error_params) => {
+                ::serde_valid::validation::Composited::Single(__single_error_params) => {
                     __properties_errors
                             .entry(#rename)
                             .or_default()
@@ -60,12 +60,12 @@ fn inner_extract_string_pattern_validator(
                                 )
                             ));
                 },
-                ::serde_valid::validation::Multiple::Array(__vec_error_params) => {
+                ::serde_valid::validation::Composited::Array(__vec_error_params) => {
                     __vec_error_params
                         .into_iter()
                         .for_each(|__error_params| {
                             match __error_params {
-                                ::serde_valid::validation::Multiple::Single(__single_error_params) => {
+                                ::serde_valid::validation::Composited::Single(__single_error_params) => {
                                     __properties_errors
                                         .entry(#rename)
                                         .or_default()

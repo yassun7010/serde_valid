@@ -23,9 +23,9 @@ use crate::{
 };
 
 #[derive(Debug)]
-pub enum Multiple<ErrorParams> {
+pub enum Composited<ErrorParams> {
     Single(ErrorParams),
-    Array(Vec<Multiple<ErrorParams>>),
+    Array(Vec<Composited<ErrorParams>>),
 }
 
 macro_rules! impl_composited_validation1 {
@@ -34,7 +34,7 @@ macro_rules! impl_composited_validation1 {
             fn $composited_validation_method(
                 &self,
                 limit: $limit_type,
-            ) -> Result<(), crate::validation::Multiple<$ErrorParams>>;
+            ) -> Result<(), crate::validation::Composited<$ErrorParams>>;
         }
 
         impl<T> $CompositedValidateTrait for T
@@ -44,9 +44,9 @@ macro_rules! impl_composited_validation1 {
             fn $composited_validation_method(
                 &self,
                 limit: $limit_type,
-            ) -> Result<(), crate::validation::Multiple<$ErrorParams>> {
+            ) -> Result<(), crate::validation::Composited<$ErrorParams>> {
                 self.$validation_method(limit)
-                    .map_err(|error| crate::validation::Multiple::Single(error))
+                    .map_err(|error| crate::validation::Composited::Single(error))
             }
         }
 
@@ -57,7 +57,7 @@ macro_rules! impl_composited_validation1 {
             fn $composited_validation_method(
                 &self,
                 limit: $limit_type,
-            ) -> Result<(), crate::validation::Multiple<$ErrorParams>> {
+            ) -> Result<(), crate::validation::Composited<$ErrorParams>> {
                 let mut errors = vec![];
                 self.iter().for_each(|item| {
                     item.$composited_validation_method(limit)
@@ -68,7 +68,7 @@ macro_rules! impl_composited_validation1 {
                 if errors.is_empty() {
                     Ok(())
                 } else {
-                    Err(crate::validation::Multiple::Array(errors))
+                    Err(crate::validation::Composited::Array(errors))
                 }
             }
         }
@@ -80,7 +80,7 @@ macro_rules! impl_composited_validation1 {
             fn $composited_validation_method(
                 &self,
                 limit: $limit_type,
-            ) -> Result<(), crate::validation::Multiple<$ErrorParams>> {
+            ) -> Result<(), crate::validation::Composited<$ErrorParams>> {
                 let mut errors = vec![];
                 self.iter().for_each(|item| {
                     item.$composited_validation_method(limit)
@@ -91,7 +91,7 @@ macro_rules! impl_composited_validation1 {
                 if errors.is_empty() {
                     Ok(())
                 } else {
-                    Err(crate::validation::Multiple::Array(errors))
+                    Err(crate::validation::Composited::Array(errors))
                 }
             }
         }
@@ -103,7 +103,7 @@ macro_rules! impl_composited_validation1 {
             fn $composited_validation_method(
                 &self,
                 limit: $limit_type,
-            ) -> Result<(), crate::validation::Multiple<$ErrorParams>> {
+            ) -> Result<(), crate::validation::Composited<$ErrorParams>> {
                 match self {
                     Some(value) => value.$composited_validation_method(limit),
                     None => Ok(()),

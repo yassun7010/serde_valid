@@ -34,9 +34,9 @@ macro_rules! impl_validate_generic_enumerate_literal {
             fn validate_composited_enumerate(
                 &self,
                 limit: &[$type],
-            ) -> Result<(), crate::validation::Multiple<EnumerateErrorParams>> {
+            ) -> Result<(), crate::validation::Composited<EnumerateErrorParams>> {
                 self.validate_enumerate(limit)
-                    .map_err(|error| crate::validation::Multiple::Single(error))
+                    .map_err(|error| crate::validation::Composited::Single(error))
             }
         }
     };
@@ -117,9 +117,9 @@ where
     fn validate_composited_enumerate(
         &self,
         limit: &[&'static str],
-    ) -> Result<(), crate::validation::Multiple<EnumerateErrorParams>> {
+    ) -> Result<(), crate::validation::Composited<EnumerateErrorParams>> {
         self.validate_enumerate(limit)
-            .map_err(|error| crate::validation::Multiple::Single(error))
+            .map_err(|error| crate::validation::Composited::Single(error))
     }
 }
 
