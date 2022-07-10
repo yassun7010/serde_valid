@@ -41,20 +41,41 @@ macro_rules! extract_numeric_range_validator{
                 message_fn.unwrap_or(quote!(::serde_valid::$ErrorParams::to_default_message));
 
             Ok(quote!(
-                if let Err(error_params) = ::serde_valid::$ValidateTrait::$validation_method(
+                if let Err(__multi_error_params) = ::serde_valid::validation::$ValidateTrait::$validation_method(
                     #field_ident,
                     #$limit,
                 ) {
                     use ::serde_valid::error::ToDefaultMessage;
-                    __properties_errors
-                        .entry(#rename)
-                        .or_default()
-                        .push(::serde_valid::validation::Error::$ErrorType(
-                            ::serde_valid::error::Message::new(
-                                error_params,
-                                #message
-                            )
-                        ));
+                    match __multi_error_params {
+                        ::serde_valid::validation::Multiple::Single(__single_error_params) => {
+                            __properties_errors
+                                .entry(#rename)
+                                .or_default()
+                                .push(::serde_valid::validation::Error::$ErrorType(
+                                    ::serde_valid::error::Message::new(
+                                        __single_error_params,
+                                        #message
+                                    )
+                                ));
+                            },
+                        ::serde_valid::validation::Multiple::Array(__vec_error_params) => __vec_error_params
+                            .into_iter()
+                            .for_each(|__error_params| {
+                                match __error_params {
+                                    ::serde_valid::validation::Multiple::Single(__single_error_params) =>
+                                        __properties_errors
+                                            .entry(#rename)
+                                            .or_default()
+                                            .push(::serde_valid::validation::Error::$ErrorType(
+                                                ::serde_valid::error::Message::new(
+                                                    __single_error_params,
+                                                    #message
+                                                )
+                                            )),
+                                    _ => (),
+                                }
+                            }),
+                    }
                 }
             ))
         }
@@ -67,8 +88,8 @@ extract_numeric_range_validator!(
     maximum,
     extract_numeric_maximum_validator,
     inner_extract_numeric_maximum_validator,
-    ValidateMaximum,
-    validate_maximum
+    ValidateMultiMaximum,
+    validate_multi_maximum
 );
 
 extract_numeric_range_validator!(
@@ -77,8 +98,8 @@ extract_numeric_range_validator!(
     minimum,
     extract_numeric_minimum_validator,
     inner_extract_numeric_minimum_validator,
-    ValidateMinimum,
-    validate_minimum
+    ValidateMultiMinimum,
+    validate_multi_minimum
 );
 
 extract_numeric_range_validator!(
@@ -87,8 +108,8 @@ extract_numeric_range_validator!(
     exclusive_maximum,
     extract_numeric_exclusive_maximum_validator,
     inner_extract_numeric_exclusive_maximum_validator,
-    ValidateExclusiveMaximum,
-    validate_exclusive_maximum
+    ValidateMultiExclusiveMaximum,
+    validate_multi_exclusive_maximum
 );
 
 extract_numeric_range_validator!(
@@ -97,6 +118,6 @@ extract_numeric_range_validator!(
     exclusive_minimum,
     extract_numeric_exclusive_minimum_validator,
     inner_extract_numeric_exclusive_minimum_validator,
-    ValidateExclusiveMinimum,
-    validate_exclusive_minimum
+    ValidateMultiExclusiveMinimum,
+    validate_multi_exclusive_minimum
 );

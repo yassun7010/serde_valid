@@ -67,36 +67,6 @@ mod tests {
     }
 
     #[test]
-    fn test_validate_numeric_minimum_vec_is_true() {
-        assert!(ValidateMinimum::validate_minimum(&vec![5], 3).is_ok());
-    }
-
-    #[test]
-    fn test_validate_numeric_minimum_vec_is_false() {
-        assert!(ValidateMinimum::validate_minimum(&vec![5], 7).is_err());
-    }
-
-    #[test]
-    fn test_validate_numeric_minimum_array_is_true() {
-        assert!(ValidateMinimum::validate_minimum(&[5, 6, 7], 3).is_ok());
-    }
-
-    #[test]
-    fn test_validate_numeric_minimum_array_is_false() {
-        assert!(ValidateMinimum::validate_minimum(&vec![5], 7).is_err());
-    }
-
-    #[test]
-    fn test_validate_numeric_minimum_option_is_true() {
-        assert!(ValidateMinimum::validate_minimum(&Some(5), 3).is_ok());
-    }
-
-    #[test]
-    fn test_validate_numeric_minimum_option_is_false() {
-        assert!(ValidateMinimum::validate_minimum(&Some(5), 7).is_err());
-    }
-
-    #[test]
     fn test_validate_numeric_minimum_specified_type() {
         assert!(ValidateMinimum::validate_minimum(&0.5, 0.2).is_ok());
         assert!(ValidateMinimum::validate_minimum(&5u8, 0).is_ok());

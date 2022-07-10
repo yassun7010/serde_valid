@@ -10,7 +10,8 @@ pub use error::{ArrayErrors, Error, Errors, MapErrors, ObjectErrors, VecErrors};
 pub use generic::ValidateEnumerate;
 pub use numeric::{
     ValidateExclusiveMaximum, ValidateExclusiveMinimum, ValidateMaximum, ValidateMinimum,
-    ValidateMultipleOf,
+    ValidateMultiExclusiveMaximum, ValidateMultiExclusiveMinimum, ValidateMultiMaximum,
+    ValidateMultiMinimum, ValidateMultipleOf,
 };
 pub use object::{ValidateMaxProperties, ValidateMinProperties};
 pub use string::{ValidateMaxLength, ValidateMinLength, ValidatePattern};
@@ -111,6 +112,7 @@ macro_rules! impl_multi_validation1 {
     };
 }
 
+// String
 impl_multi_validation1!(
     ValidateMultiMaxLength,
     ValidateMaxLength,
