@@ -1,22 +1,42 @@
+use crate::{validation::numeric::impl_composited_validation1, EnumerateErrorParams};
+
 /// Enumerate validation.
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/generic.html#enumerated-values>
 pub trait ValidateEnumerate<T> {
-    fn validate_enumerate(&self, enumerate: &[T]) -> Result<(), crate::EnumerateErrorParams>;
+    fn validate_enumerate(&self, enumerate: &[T]) -> Result<(), EnumerateErrorParams>;
 }
 
+impl_composited_validation1!(
+    ValidateCompositedEnumerate,
+    ValidateEnumerate,
+    EnumerateErrorParams,
+    validate_composited_enumerate,
+    validate_enumerate
+);
+
 macro_rules! impl_validate_generic_enumerate_literal {
-    ($ty:ty) => {
-        impl ValidateEnumerate<$ty> for $ty {
-            fn validate_enumerate(
-                &self,
-                enumerate: &[$ty],
-            ) -> Result<(), crate::EnumerateErrorParams> {
+    ($type:ty) => {
+        impl ValidateEnumerate<$type> for $type {
+            fn validate_enumerate(&self, enumerate: &[$type]) -> Result<(), EnumerateErrorParams> {
                 if enumerate.iter().any(|candidate| candidate == self) {
                     Ok(())
                 } else {
-                    Err(crate::EnumerateErrorParams::new(enumerate))
+                    Err(EnumerateErrorParams::new(enumerate))
                 }
+            }
+        }
+
+        impl<T> ValidateCompositedEnumerate<&[$type]> for T
+        where
+            T: ValidateEnumerate<$type>,
+        {
+            fn validate_composited_enumerate(
+                &self,
+                limit: &[$type],
+            ) -> Result<(), crate::validation::Multiple<EnumerateErrorParams>> {
+                self.validate_enumerate(limit)
+                    .map_err(|error| crate::validation::Multiple::Single(error))
             }
         }
     };
@@ -51,16 +71,13 @@ impl_validate_generic_enumerate_literal!(f64);
 impl_validate_generic_enumerate_literal!(char);
 
 macro_rules! impl_validate_generic_enumerate_str {
-    ($ty:ty) => {
-        impl ValidateEnumerate<&str> for $ty {
-            fn validate_enumerate(
-                &self,
-                enumerate: &[&str],
-            ) -> Result<(), crate::EnumerateErrorParams> {
+    ($type:ty) => {
+        impl ValidateEnumerate<&str> for $type {
+            fn validate_enumerate(&self, enumerate: &[&str]) -> Result<(), EnumerateErrorParams> {
                 if enumerate.iter().any(|candidate| candidate == self) {
                     Ok(())
                 } else {
-                    Err(crate::EnumerateErrorParams::new(enumerate))
+                    Err(EnumerateErrorParams::new(enumerate))
                 }
             }
         }
@@ -74,19 +91,16 @@ impl_validate_generic_enumerate_str!(&std::ffi::OsStr);
 impl_validate_generic_enumerate_str!(std::ffi::OsString);
 
 macro_rules! impl_validate_generic_enumerate_path {
-    ($ty:ty) => {
-        impl ValidateEnumerate<&str> for $ty {
-            fn validate_enumerate(
-                &self,
-                enumerate: &[&str],
-            ) -> Result<(), crate::EnumerateErrorParams> {
+    ($type:ty) => {
+        impl ValidateEnumerate<&str> for $type {
+            fn validate_enumerate(&self, enumerate: &[&str]) -> Result<(), EnumerateErrorParams> {
                 if enumerate
                     .iter()
                     .any(|candidate| &std::path::Path::new(candidate) == self)
                 {
                     Ok(())
                 } else {
-                    Err(crate::EnumerateErrorParams::new(enumerate))
+                    Err(EnumerateErrorParams::new(enumerate))
                 }
             }
         }
@@ -96,42 +110,16 @@ macro_rules! impl_validate_generic_enumerate_path {
 impl_validate_generic_enumerate_path!(&std::path::Path);
 impl_validate_generic_enumerate_path!(std::path::PathBuf);
 
-impl<T, U> ValidateEnumerate<U> for Vec<T>
+impl<T> ValidateCompositedEnumerate<&[&'static str]> for T
 where
-    T: ValidateEnumerate<U>,
+    T: ValidateEnumerate<&'static str>,
 {
-    fn validate_enumerate(&self, enumerate: &[U]) -> Result<(), crate::EnumerateErrorParams> {
-        for item in self {
-            item.validate_enumerate(enumerate)?
-        }
-
-        Ok(())
-    }
-}
-
-impl<T, U, const N: usize> ValidateEnumerate<U> for [T; N]
-where
-    T: ValidateEnumerate<U>,
-{
-    fn validate_enumerate(&self, enumerate: &[U]) -> Result<(), crate::EnumerateErrorParams> {
-        for item in self {
-            item.validate_enumerate(enumerate)?
-        }
-
-        Ok(())
-    }
-}
-
-impl<T, U> ValidateEnumerate<U> for Option<T>
-where
-    T: ValidateEnumerate<U>,
-    U: std::cmp::PartialEq<U>,
-{
-    fn validate_enumerate(&self, enumerate: &[U]) -> Result<(), crate::EnumerateErrorParams> {
-        match self {
-            Some(value) => value.validate_enumerate(enumerate),
-            None => Ok(()),
-        }
+    fn validate_composited_enumerate(
+        &self,
+        limit: &[&'static str],
+    ) -> Result<(), crate::validation::Multiple<EnumerateErrorParams>> {
+        self.validate_enumerate(limit)
+            .map_err(|error| crate::validation::Multiple::Single(error))
     }
 }
 
@@ -208,10 +196,5 @@ mod tests {
             &["a", "b", "c"]
         )
         .is_ok());
-    }
-
-    #[test]
-    fn test_validate_vec_type() {
-        assert!(ValidateEnumerate::validate_enumerate(&vec!["a"], &["a", "b", "c"]).is_ok());
     }
 }

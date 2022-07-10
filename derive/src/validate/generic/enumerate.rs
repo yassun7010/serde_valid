@@ -33,20 +33,41 @@ fn inner_extract_generic_enumerate_validator(
     ));
 
     Ok(quote!(
-        if let Err(error_params) = ::serde_valid::ValidateEnumerate::validate_enumerate(
+        if let Err(__composited_error_params) = ::serde_valid::validation::ValidateCompositedEnumerate::validate_composited_enumerate(
             #field_ident,
             &[#enumerate],
         ) {
             use ::serde_valid::error::ToDefaultMessage;
-            __properties_errors
-                .entry(#rename)
-                .or_default()
-                .push(::serde_valid::validation::Error::Enumerate(
-                    ::serde_valid::error::Message::new(
-                        error_params,
-                        #message
-                )
-                ));
+            match __composited_error_params {
+                ::serde_valid::validation::Multiple::Single(__single_error_params) => {
+                    __properties_errors
+                        .entry(#rename)
+                        .or_default()
+                        .push(::serde_valid::validation::Error::Enumerate(
+                            ::serde_valid::error::Message::new(
+                                __single_error_params,
+                                #message
+                            )
+                        ));
+                    },
+                ::serde_valid::validation::Multiple::Array(__vec_error_params) => __vec_error_params
+                    .into_iter()
+                    .for_each(|__error_params| {
+                        match __error_params {
+                            ::serde_valid::validation::Multiple::Single(__single_error_params) =>
+                                __properties_errors
+                                    .entry(#rename)
+                                    .or_default()
+                                    .push(::serde_valid::validation::Error::Enumerate(
+                                        ::serde_valid::error::Message::new(
+                                            __single_error_params,
+                                            #message
+                                        )
+                                    )),
+                            _ => (),
+                        }
+                    }),
+            }
         }
     ))
 }

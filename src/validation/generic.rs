@@ -1,2 +1,2 @@
 mod enumerate;
-pub use enumerate::ValidateEnumerate;
+pub use enumerate::{ValidateCompositedEnumerate, ValidateEnumerate};

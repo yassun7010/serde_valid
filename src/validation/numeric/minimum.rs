@@ -1,5 +1,5 @@
 use super::impl_composited_validation1;
-use super::impl_numeric_composited_validation;
+use super::impl_literal_composited_validation;
 use crate::MinimumErrorParams;
 
 /// Minimum validation of the number.
@@ -32,7 +32,7 @@ macro_rules! impl_validate_numeric_minimum {
             }
         }
 
-        impl_numeric_composited_validation!(
+        impl_literal_composited_validation!(
             ValidateCompositedMinimum,
             ValidateMinimum,
             MinimumErrorParams,

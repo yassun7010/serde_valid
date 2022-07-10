@@ -1,6 +1,6 @@
 use crate::MultipleOfErrorParams;
 
-use super::impl_numeric_composited_validation;
+use super::impl_literal_composited_validation;
 
 /// Multipl validation of the number.
 ///
@@ -54,7 +54,7 @@ pub trait ValidateCompositedMultipleOf<T> {
 
 macro_rules! impl_literal_composited_validate_multiple_of {
     ($type:tt) => {
-        impl_numeric_composited_validation!(
+        impl_literal_composited_validation!(
             ValidateCompositedMultipleOf,
             ValidateMultipleOf,
             MultipleOfErrorParams,

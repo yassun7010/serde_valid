@@ -1,7 +1,7 @@
 use crate::ExclusiveMaximumErrorParams;
 
 use super::impl_composited_validation1;
-use super::impl_numeric_composited_validation;
+use super::impl_literal_composited_validation;
 
 /// Exclusive maximum validation of the number.
 ///
@@ -39,7 +39,7 @@ macro_rules! impl_validate_numeric_exclusive_maximum {
             }
         }
 
-        impl_numeric_composited_validation!(
+        impl_literal_composited_validation!(
             ValidateCompositedExclusiveMaximum,
             ValidateExclusiveMaximum,
             ExclusiveMaximumErrorParams,

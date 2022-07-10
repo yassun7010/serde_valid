@@ -9,7 +9,7 @@ pub use maximum::{ValidateCompositedMaximum, ValidateMaximum};
 pub use minimum::{ValidateCompositedMinimum, ValidateMinimum};
 pub use multiple_of::{ValidateCompositedMultipleOf, ValidateMultipleOf};
 
-macro_rules! impl_numeric_composited_validation {
+macro_rules! impl_literal_composited_validation {
     (
         $CompositedValidateTrait:ident,
         $ValidateTrait:ident,
@@ -109,4 +109,4 @@ macro_rules! impl_composited_validation1 {
 }
 
 pub(crate) use impl_composited_validation1;
-pub(crate) use impl_numeric_composited_validation;
+pub(crate) use impl_literal_composited_validation;
