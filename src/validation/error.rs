@@ -25,17 +25,17 @@ pub enum Composited<ErrorParams> {
     Array(Vec<Composited<ErrorParams>>),
 }
 
-pub trait IntoError {
+pub trait ConvertIntoError {
     type Params;
-    fn into_error(self, format_fn: fn(&Self::Params) -> String) -> Error;
+    fn convert_into_error(self, format_fn: fn(&Self::Params) -> String) -> Error;
 }
 
-macro_rules! impl_into_error {
+macro_rules! impl_convert_into_error {
     ($ErrorType:ident) => {
         paste! {
-            impl IntoError for Composited<[<$ErrorType ErrorParams>]> {
+            impl ConvertIntoError for Composited<[<$ErrorType ErrorParams>]> {
                 type Params = [<$ErrorType ErrorParams>];
-                fn into_error(self, format_fn: fn(&Self::Params) -> String) -> Error {
+                fn convert_into_error(self, format_fn: fn(&Self::Params) -> String) -> Error {
                     match self {
                         Composited::Single(single) => Error::$ErrorType(Message::new(single, format_fn)),
                         Composited::Array(array) => Error::Items(ArrayErrors::new(
@@ -44,7 +44,7 @@ macro_rules! impl_into_error {
                                 .into_iter()
                                 .enumerate()
                                 .map(|(index, params)| {
-                                    (index, Errors::NewType(vec![params.into_error(format_fn)]))
+                                    (index, Errors::NewType(vec![params.convert_into_error(format_fn)]))
                                 })
                                 .collect::<IndexMap<_, _>>(),
                         )),
@@ -56,25 +56,25 @@ macro_rules! impl_into_error {
 }
 
 // Global
-impl_into_error!(Enumerate);
+impl_convert_into_error!(Enumerate);
 
 // Numeric
-impl_into_error!(Maximum);
-impl_into_error!(Minimum);
-impl_into_error!(ExclusiveMaximum);
-impl_into_error!(ExclusiveMinimum);
-impl_into_error!(MultipleOf);
+impl_convert_into_error!(Maximum);
+impl_convert_into_error!(Minimum);
+impl_convert_into_error!(ExclusiveMaximum);
+impl_convert_into_error!(ExclusiveMinimum);
+impl_convert_into_error!(MultipleOf);
 
 // String
-impl_into_error!(MaxLength);
-impl_into_error!(MinLength);
-impl_into_error!(Pattern);
+impl_convert_into_error!(MaxLength);
+impl_convert_into_error!(MinLength);
+impl_convert_into_error!(Pattern);
 
 // Array
-impl_into_error!(MaxItems);
-impl_into_error!(MinItems);
-impl_into_error!(UniqueItems);
+impl_convert_into_error!(MaxItems);
+impl_convert_into_error!(MinItems);
+impl_convert_into_error!(UniqueItems);
 
 // Object
-impl_into_error!(MaxProperties);
-impl_into_error!(MinProperties);
+impl_convert_into_error!(MaxProperties);
+impl_convert_into_error!(MinProperties);

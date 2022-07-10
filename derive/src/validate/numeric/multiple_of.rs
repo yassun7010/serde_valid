@@ -40,12 +40,12 @@ fn inner_extract_numeric_multiple_of_validator(
             #multiple_of,
         ) {
             use ::serde_valid::error::ToDefaultMessage;
-            use ::serde_valid::validation::IntoError;
+            use ::serde_valid::validation::ConvertIntoError;
 
             __properties_errors
                 .entry(#rename)
                 .or_default()
-                .push(__composited_error_params.into_error(#message)
+                .push(__composited_error_params.convert_into_error(#message)
             );
         }
     ))
