@@ -3,29 +3,20 @@ mod exclusive_minimum;
 mod maximum;
 mod minimum;
 mod multiple_of;
-pub use exclusive_maximum::ValidateExclusiveMaximum;
-pub use exclusive_minimum::ValidateExclusiveMinimum;
-pub use maximum::ValidateMaximum;
-pub use minimum::ValidateMinimum;
-pub use multiple_of::ValidateMultipleOf;
-use std::num::{
-    NonZeroI128, NonZeroI16, NonZeroI32, NonZeroI64, NonZeroI8, NonZeroIsize, NonZeroU128,
-    NonZeroU16, NonZeroU32, NonZeroU64, NonZeroU8, NonZeroUsize,
-};
+pub use exclusive_maximum::{ValidateCompositedExclusiveMaximum, ValidateExclusiveMaximum};
+pub use exclusive_minimum::{ValidateCompositedExclusiveMinimum, ValidateExclusiveMinimum};
+pub use maximum::{ValidateCompositedMaximum, ValidateMaximum};
+pub use minimum::{ValidateCompositedMinimum, ValidateMinimum};
+pub use multiple_of::{ValidateCompositedMultipleOf, ValidateMultipleOf};
 
-use crate::{
-    ExclusiveMaximumErrorParams, ExclusiveMinimumErrorParams, MaximumErrorParams,
-    MinimumErrorParams,
-};
-
-macro_rules! impl_literal_composited_validation {
+macro_rules! impl_numeric_composited_validation {
     (
         $CompositedValidateTrait:ident,
         $ValidateTrait:ident,
         $ErrorParams:tt,
         $composited_validation_method:ident,
         $validation_method:ident,
-        $type:tt
+        $type:ty
     ) => {
         impl<T> $CompositedValidateTrait<$type> for T
         where
@@ -50,215 +41,6 @@ macro_rules! impl_composited_validation1 {
                 limit: T,
             ) -> Result<(), crate::validation::Multiple<$ErrorParams>>;
         }
-
-        impl_literal_composited_validation!(
-            $CompositedValidateTrait,
-            $ValidateTrait,
-            $ErrorParams,
-            $composited_validation_method,
-            $validation_method,
-            i8
-        );
-        impl_literal_composited_validation!(
-            $CompositedValidateTrait,
-            $ValidateTrait,
-            $ErrorParams,
-            $composited_validation_method,
-            $validation_method,
-            i16
-        );
-        impl_literal_composited_validation!(
-            $CompositedValidateTrait,
-            $ValidateTrait,
-            $ErrorParams,
-            $composited_validation_method,
-            $validation_method,
-            i32
-        );
-        impl_literal_composited_validation!(
-            $CompositedValidateTrait,
-            $ValidateTrait,
-            $ErrorParams,
-            $composited_validation_method,
-            $validation_method,
-            i64
-        );
-        impl_literal_composited_validation!(
-            $CompositedValidateTrait,
-            $ValidateTrait,
-            $ErrorParams,
-            $composited_validation_method,
-            $validation_method,
-            i128
-        );
-        impl_literal_composited_validation!(
-            $CompositedValidateTrait,
-            $ValidateTrait,
-            $ErrorParams,
-            $composited_validation_method,
-            $validation_method,
-            isize
-        );
-        impl_literal_composited_validation!(
-            $CompositedValidateTrait,
-            $ValidateTrait,
-            $ErrorParams,
-            $composited_validation_method,
-            $validation_method,
-            u8
-        );
-        impl_literal_composited_validation!(
-            $CompositedValidateTrait,
-            $ValidateTrait,
-            $ErrorParams,
-            $composited_validation_method,
-            $validation_method,
-            u16
-        );
-        impl_literal_composited_validation!(
-            $CompositedValidateTrait,
-            $ValidateTrait,
-            $ErrorParams,
-            $composited_validation_method,
-            $validation_method,
-            u32
-        );
-        impl_literal_composited_validation!(
-            $CompositedValidateTrait,
-            $ValidateTrait,
-            $ErrorParams,
-            $composited_validation_method,
-            $validation_method,
-            u64
-        );
-        impl_literal_composited_validation!(
-            $CompositedValidateTrait,
-            $ValidateTrait,
-            $ErrorParams,
-            $composited_validation_method,
-            $validation_method,
-            u128
-        );
-        impl_literal_composited_validation!(
-            $CompositedValidateTrait,
-            $ValidateTrait,
-            $ErrorParams,
-            $composited_validation_method,
-            $validation_method,
-            usize
-        );
-        impl_literal_composited_validation!(
-            $CompositedValidateTrait,
-            $ValidateTrait,
-            $ErrorParams,
-            $composited_validation_method,
-            $validation_method,
-            NonZeroI8
-        );
-        impl_literal_composited_validation!(
-            $CompositedValidateTrait,
-            $ValidateTrait,
-            $ErrorParams,
-            $composited_validation_method,
-            $validation_method,
-            NonZeroI16
-        );
-        impl_literal_composited_validation!(
-            $CompositedValidateTrait,
-            $ValidateTrait,
-            $ErrorParams,
-            $composited_validation_method,
-            $validation_method,
-            NonZeroI32
-        );
-        impl_literal_composited_validation!(
-            $CompositedValidateTrait,
-            $ValidateTrait,
-            $ErrorParams,
-            $composited_validation_method,
-            $validation_method,
-            NonZeroI64
-        );
-        impl_literal_composited_validation!(
-            $CompositedValidateTrait,
-            $ValidateTrait,
-            $ErrorParams,
-            $composited_validation_method,
-            $validation_method,
-            NonZeroI128
-        );
-        impl_literal_composited_validation!(
-            $CompositedValidateTrait,
-            $ValidateTrait,
-            $ErrorParams,
-            $composited_validation_method,
-            $validation_method,
-            NonZeroIsize
-        );
-        impl_literal_composited_validation!(
-            $CompositedValidateTrait,
-            $ValidateTrait,
-            $ErrorParams,
-            $composited_validation_method,
-            $validation_method,
-            NonZeroU8
-        );
-        impl_literal_composited_validation!(
-            $CompositedValidateTrait,
-            $ValidateTrait,
-            $ErrorParams,
-            $composited_validation_method,
-            $validation_method,
-            NonZeroU16
-        );
-        impl_literal_composited_validation!(
-            $CompositedValidateTrait,
-            $ValidateTrait,
-            $ErrorParams,
-            $composited_validation_method,
-            $validation_method,
-            NonZeroU32
-        );
-        impl_literal_composited_validation!(
-            $CompositedValidateTrait,
-            $ValidateTrait,
-            $ErrorParams,
-            $composited_validation_method,
-            $validation_method,
-            NonZeroU64
-        );
-        impl_literal_composited_validation!(
-            $CompositedValidateTrait,
-            $ValidateTrait,
-            $ErrorParams,
-            $composited_validation_method,
-            $validation_method,
-            NonZeroU128
-        );
-        impl_literal_composited_validation!(
-            $CompositedValidateTrait,
-            $ValidateTrait,
-            $ErrorParams,
-            $composited_validation_method,
-            $validation_method,
-            NonZeroUsize
-        );
-        impl_literal_composited_validation!(
-            $CompositedValidateTrait,
-            $ValidateTrait,
-            $ErrorParams,
-            $composited_validation_method,
-            $validation_method,
-            f32
-        );
-        impl_literal_composited_validation!(
-            $CompositedValidateTrait,
-            $ValidateTrait,
-            $ErrorParams,
-            $composited_validation_method,
-            $validation_method,
-            f64
-        );
 
         impl<T, U> $CompositedValidateTrait<T> for Vec<U>
         where
@@ -326,34 +108,5 @@ macro_rules! impl_composited_validation1 {
     };
 }
 
-impl_composited_validation1!(
-    ValidateCompositedMaximum,
-    ValidateMaximum,
-    MaximumErrorParams,
-    validate_composited_maximum,
-    validate_maximum
-);
-
-impl_composited_validation1!(
-    ValidateCompositedMinimum,
-    ValidateMinimum,
-    MinimumErrorParams,
-    validate_composited_minimum,
-    validate_minimum
-);
-
-impl_composited_validation1!(
-    ValidateCompositedExclusiveMaximum,
-    ValidateExclusiveMaximum,
-    ExclusiveMaximumErrorParams,
-    validate_composited_exclusive_maximum,
-    validate_exclusive_maximum
-);
-
-impl_composited_validation1!(
-    ValidateCompositedExclusiveMinimum,
-    ValidateExclusiveMinimum,
-    ExclusiveMinimumErrorParams,
-    validate_composited_exclusive_minimum,
-    validate_exclusive_minimum
-);
+pub(crate) use impl_composited_validation1;
+pub(crate) use impl_numeric_composited_validation;

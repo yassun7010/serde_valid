@@ -1,3 +1,7 @@
+use crate::MultipleOfErrorParams;
+
+use super::impl_numeric_composited_validation;
+
 /// Multipl validation of the number.
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/numeric.html#multiples>
@@ -41,44 +45,101 @@ impl_validate_numeric_multiple_of!(usize);
 impl_validate_numeric_multiple_of!(f32);
 impl_validate_numeric_multiple_of!(f64);
 
-impl<T, U> ValidateMultipleOf<T> for Vec<U>
-where
-    T: std::cmp::PartialEq + std::ops::Rem<Output = T> + num_traits::Zero + Copy,
-    U: ValidateMultipleOf<T>,
-{
-    fn validate_multiple_of(&self, multiple_of: T) -> Result<(), crate::MultipleOfErrorParams> {
-        for item in self {
-            item.validate_multiple_of(multiple_of)?
-        }
-
-        Ok(())
-    }
+pub trait ValidateCompositedMultipleOf<T> {
+    fn validate_composited_multiple_of(
+        &self,
+        limit: T,
+    ) -> Result<(), crate::validation::Multiple<MultipleOfErrorParams>>;
 }
 
-impl<T, U, const N: usize> ValidateMultipleOf<T> for [U; N]
-where
-    T: std::cmp::PartialEq + std::ops::Rem<Output = T> + num_traits::Zero + Copy,
-    U: ValidateMultipleOf<T>,
-{
-    fn validate_multiple_of(&self, multiple_of: T) -> Result<(), crate::MultipleOfErrorParams> {
-        for item in self {
-            item.validate_multiple_of(multiple_of)?
-        }
-
-        Ok(())
-    }
+macro_rules! impl_literal_composited_validate_multiple_of {
+    ($type:tt) => {
+        impl_numeric_composited_validation!(
+            ValidateCompositedMultipleOf,
+            ValidateMultipleOf,
+            MultipleOfErrorParams,
+            validate_composited_multiple_of,
+            validate_multiple_of,
+            $type
+        );
+    };
 }
 
-impl<T, U> ValidateMultipleOf<T> for Option<U>
+impl_literal_composited_validate_multiple_of!(i8);
+impl_literal_composited_validate_multiple_of!(i16);
+impl_literal_composited_validate_multiple_of!(i32);
+impl_literal_composited_validate_multiple_of!(i64);
+impl_literal_composited_validate_multiple_of!(i128);
+impl_literal_composited_validate_multiple_of!(isize);
+impl_literal_composited_validate_multiple_of!(u8);
+impl_literal_composited_validate_multiple_of!(u16);
+impl_literal_composited_validate_multiple_of!(u32);
+impl_literal_composited_validate_multiple_of!(u64);
+impl_literal_composited_validate_multiple_of!(u128);
+impl_literal_composited_validate_multiple_of!(usize);
+impl_literal_composited_validate_multiple_of!(f32);
+impl_literal_composited_validate_multiple_of!(f64);
+
+impl<T, U> ValidateCompositedMultipleOf<T> for Vec<U>
 where
-    T: std::cmp::PartialEq + std::ops::Rem<Output = T> + num_traits::Zero,
-    U: ValidateMultipleOf<T>,
+    T: Copy,
+    U: ValidateCompositedMultipleOf<T>,
 {
-    fn validate_multiple_of(&self, multiple_of: T) -> Result<(), crate::MultipleOfErrorParams> {
-        if let Some(value) = self {
-            value.validate_multiple_of(multiple_of)
-        } else {
+    fn validate_composited_multiple_of(
+        &self,
+        limit: T,
+    ) -> Result<(), crate::validation::Multiple<MultipleOfErrorParams>> {
+        let mut errors = vec![];
+        self.iter().for_each(|item| {
+            item.validate_composited_multiple_of(limit)
+                .map_err(|error| errors.push(error))
+                .ok();
+        });
+
+        if errors.is_empty() {
             Ok(())
+        } else {
+            Err(crate::validation::Multiple::Array(errors))
+        }
+    }
+}
+
+impl<T, U, const N: usize> ValidateCompositedMultipleOf<T> for [U; N]
+where
+    T: Copy,
+    U: ValidateCompositedMultipleOf<T>,
+{
+    fn validate_composited_multiple_of(
+        &self,
+        limit: T,
+    ) -> Result<(), crate::validation::Multiple<MultipleOfErrorParams>> {
+        let mut errors = vec![];
+        self.iter().for_each(|item| {
+            item.validate_composited_multiple_of(limit)
+                .map_err(|error| errors.push(error))
+                .ok();
+        });
+
+        if errors.is_empty() {
+            Ok(())
+        } else {
+            Err(crate::validation::Multiple::Array(errors))
+        }
+    }
+}
+
+impl<T, U> ValidateCompositedMultipleOf<T> for Option<U>
+where
+    T: Copy,
+    U: ValidateCompositedMultipleOf<T>,
+{
+    fn validate_composited_multiple_of(
+        &self,
+        limit: T,
+    ) -> Result<(), crate::validation::Multiple<MultipleOfErrorParams>> {
+        match self {
+            Some(value) => value.validate_composited_multiple_of(limit),
+            None => Ok(()),
         }
     }
 }
@@ -106,40 +167,5 @@ mod tests {
     fn test_validate_numeric_multiple_of_float_is_false() {
         assert!(ValidateMultipleOf::validate_multiple_of(&12.0, 5.0).is_err());
         assert!(ValidateMultipleOf::validate_multiple_of(&12.5, 0.3).is_err());
-    }
-
-    #[test]
-    fn test_validate_numeric_multiple_of_vec_is_true() {
-        assert!(ValidateMultipleOf::validate_multiple_of(&vec![12.0], 1.0).is_ok());
-    }
-
-    #[test]
-    fn test_validate_numeric_multiple_of_vec_is_false() {
-        assert!(ValidateMultipleOf::validate_multiple_of(&vec![10], 3).is_err());
-    }
-
-    #[test]
-    fn test_validate_numeric_multiple_of_array_is_true() {
-        assert!(ValidateMultipleOf::validate_multiple_of(&[12.0], 1.0).is_ok());
-    }
-
-    #[test]
-    fn test_validate_numeric_multiple_of_array_is_false() {
-        assert!(ValidateMultipleOf::validate_multiple_of(&[10], 3).is_err());
-    }
-
-    #[test]
-    fn test_validate_numeric_multiple_of_option_is_true() {
-        assert!(ValidateMultipleOf::validate_multiple_of(&Some(12.0), 1.0).is_ok());
-    }
-
-    #[test]
-    fn test_validate_numeric_multiple_of_none_is_true() {
-        assert!(ValidateMultipleOf::validate_multiple_of(&Option::<f32>::None, 1.0).is_ok());
-    }
-
-    #[test]
-    fn test_validate_numeric_multiple_of_option_is_false() {
-        assert!(ValidateMultipleOf::validate_multiple_of(&Some(10), 3).is_err());
     }
 }

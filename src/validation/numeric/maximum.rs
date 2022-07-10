@@ -1,5 +1,8 @@
 use crate::MaximumErrorParams;
 
+use super::impl_composited_validation1;
+use super::impl_numeric_composited_validation;
+
 /// Maximum validation of the number.
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/numeric.html#range>
@@ -10,10 +13,18 @@ where
     fn validate_maximum(&self, maximum: T) -> Result<(), MaximumErrorParams>;
 }
 
+impl_composited_validation1!(
+    ValidateCompositedMaximum,
+    ValidateMaximum,
+    MaximumErrorParams,
+    validate_composited_maximum,
+    validate_maximum
+);
+
 macro_rules! impl_validate_numeric_maximum {
-    ($ty:ty) => {
-        impl ValidateMaximum<$ty> for $ty {
-            fn validate_maximum(&self, maximum: $ty) -> Result<(), MaximumErrorParams> {
+    ($type:ty) => {
+        impl ValidateMaximum<$type> for $type {
+            fn validate_maximum(&self, maximum: $type) -> Result<(), MaximumErrorParams> {
                 if *self <= maximum {
                     Ok(())
                 } else {
@@ -21,6 +32,15 @@ macro_rules! impl_validate_numeric_maximum {
                 }
             }
         }
+
+        impl_numeric_composited_validation!(
+            ValidateCompositedMaximum,
+            ValidateMaximum,
+            MaximumErrorParams,
+            validate_composited_maximum,
+            validate_maximum,
+            $type
+        );
     };
 }
 

@@ -1,3 +1,8 @@
+use crate::ExclusiveMaximumErrorParams;
+
+use super::impl_composited_validation1;
+use super::impl_numeric_composited_validation;
+
 /// Exclusive maximum validation of the number.
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/numeric.html#range>
@@ -8,15 +13,23 @@ where
     fn validate_exclusive_maximum(
         &self,
         exclusive_maximum: T,
-    ) -> Result<(), crate::ExclusiveMaximumErrorParams>;
+    ) -> Result<(), ExclusiveMaximumErrorParams>;
 }
 
+impl_composited_validation1!(
+    ValidateCompositedExclusiveMaximum,
+    ValidateExclusiveMaximum,
+    ExclusiveMaximumErrorParams,
+    validate_composited_exclusive_maximum,
+    validate_exclusive_maximum
+);
+
 macro_rules! impl_validate_numeric_exclusive_maximum {
-    ($ty:ty) => {
-        impl ValidateExclusiveMaximum<$ty> for $ty {
+    ($type:ty) => {
+        impl ValidateExclusiveMaximum<$type> for $type {
             fn validate_exclusive_maximum(
                 &self,
-                exclusive_maximum: $ty,
+                exclusive_maximum: $type,
             ) -> Result<(), crate::ExclusiveMaximumErrorParams> {
                 if *self < exclusive_maximum {
                     Ok(())
@@ -25,6 +38,15 @@ macro_rules! impl_validate_numeric_exclusive_maximum {
                 }
             }
         }
+
+        impl_numeric_composited_validation!(
+            ValidateCompositedExclusiveMaximum,
+            ValidateExclusiveMaximum,
+            ExclusiveMaximumErrorParams,
+            validate_composited_exclusive_maximum,
+            validate_exclusive_maximum,
+            $type
+        );
     };
 }
 

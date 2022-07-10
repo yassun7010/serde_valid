@@ -10,8 +10,9 @@ pub use error::{ArrayErrors, Error, Errors, MapErrors, ObjectErrors, VecErrors};
 pub use generic::ValidateEnumerate;
 pub use numeric::{
     ValidateCompositedExclusiveMaximum, ValidateCompositedExclusiveMinimum,
-    ValidateCompositedMaximum, ValidateCompositedMinimum, ValidateExclusiveMaximum,
-    ValidateExclusiveMinimum, ValidateMaximum, ValidateMinimum, ValidateMultipleOf,
+    ValidateCompositedMaximum, ValidateCompositedMinimum, ValidateCompositedMultipleOf,
+    ValidateExclusiveMaximum, ValidateExclusiveMinimum, ValidateMaximum, ValidateMinimum,
+    ValidateMultipleOf,
 };
 pub use object::{ValidateMaxProperties, ValidateMinProperties};
 pub use string::{ValidateMaxLength, ValidateMinLength, ValidatePattern};
