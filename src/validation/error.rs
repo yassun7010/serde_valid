@@ -3,6 +3,7 @@ mod error;
 mod errors;
 mod object_errors;
 
+use crate::error::ToDefaultMessage;
 pub use crate::error::{
     EnumerateErrorParams, ExclusiveMaximumErrorParams, ExclusiveMinimumErrorParams,
     MaxItemsErrorParams, MaxLengthErrorParams, MaxPropertiesErrorParams, MaximumErrorParams,
@@ -25,17 +26,22 @@ pub enum Composited<ErrorParams> {
     Array(Vec<Composited<ErrorParams>>),
 }
 
-pub trait ConvertIntoError {
-    type Params;
-    fn convert_into_error(self, format_fn: fn(&Self::Params) -> String) -> Error;
+pub trait IntoError<Params>: Sized
+where
+    Params: ToDefaultMessage,
+{
+    fn into_error(self) -> Error {
+        self.into_error_by(Params::to_default_message)
+    }
+
+    fn into_error_by(self, format_fn: fn(&Params) -> String) -> Error;
 }
 
-macro_rules! impl_convert_into_error {
+macro_rules! impl_into_error {
     ($ErrorType:ident) => {
         paste! {
-            impl ConvertIntoError for Composited<[<$ErrorType ErrorParams>]> {
-                type Params = [<$ErrorType ErrorParams>];
-                fn convert_into_error(self, format_fn: fn(&Self::Params) -> String) -> Error {
+            impl IntoError<[<$ErrorType ErrorParams>]> for Composited<[<$ErrorType ErrorParams>]> {
+                fn into_error_by(self, format_fn: fn(&[<$ErrorType ErrorParams>]) -> String) -> Error {
                     match self {
                         Composited::Single(single) => Error::$ErrorType(Message::new(single, format_fn)),
                         Composited::Array(array) => Error::Items(ArrayErrors::new(
@@ -44,7 +50,7 @@ macro_rules! impl_convert_into_error {
                                 .into_iter()
                                 .enumerate()
                                 .map(|(index, params)| {
-                                    (index, Errors::NewType(vec![params.convert_into_error(format_fn)]))
+                                    (index, Errors::NewType(vec![params.into_error_by(format_fn)]))
                                 })
                                 .collect::<IndexMap<_, _>>(),
                         )),
@@ -56,25 +62,25 @@ macro_rules! impl_convert_into_error {
 }
 
 // Global
-impl_convert_into_error!(Enumerate);
+impl_into_error!(Enumerate);
 
 // Numeric
-impl_convert_into_error!(Maximum);
-impl_convert_into_error!(Minimum);
-impl_convert_into_error!(ExclusiveMaximum);
-impl_convert_into_error!(ExclusiveMinimum);
-impl_convert_into_error!(MultipleOf);
+impl_into_error!(Maximum);
+impl_into_error!(Minimum);
+impl_into_error!(ExclusiveMaximum);
+impl_into_error!(ExclusiveMinimum);
+impl_into_error!(MultipleOf);
 
 // String
-impl_convert_into_error!(MaxLength);
-impl_convert_into_error!(MinLength);
-impl_convert_into_error!(Pattern);
+impl_into_error!(MaxLength);
+impl_into_error!(MinLength);
+impl_into_error!(Pattern);
 
 // Array
-impl_convert_into_error!(MaxItems);
-impl_convert_into_error!(MinItems);
-impl_convert_into_error!(UniqueItems);
+impl_into_error!(MaxItems);
+impl_into_error!(MinItems);
+impl_into_error!(UniqueItems);
 
 // Object
-impl_convert_into_error!(MaxProperties);
-impl_convert_into_error!(MinProperties);
+impl_into_error!(MaxProperties);
+impl_into_error!(MinProperties);
