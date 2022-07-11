@@ -2,7 +2,7 @@ use crate::error::ToDefaultMessage;
 
 macro_rules! struct_numeric_range_params {
     ($Params:tt, $limit:tt, $message:tt) => {
-        #[derive(Debug)]
+        #[derive(Debug, Clone)]
         pub struct $Params {
             $limit: String,
         }

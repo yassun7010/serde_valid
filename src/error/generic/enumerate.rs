@@ -1,6 +1,6 @@
 use crate::error::ToDefaultMessage;
 
-#[derive(Debug, serde::Serialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 pub struct EnumerateErrorParams {
     enumerate: String,
 }

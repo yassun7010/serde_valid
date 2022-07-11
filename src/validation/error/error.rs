@@ -7,7 +7,7 @@ pub use crate::error::{
 
 use super::{ArrayErrors, ObjectErrors};
 
-#[derive(Debug, serde::Serialize, thiserror::Error)]
+#[derive(Debug, Clone, serde::Serialize, thiserror::Error)]
 #[serde(untagged)]
 pub enum Error {
     #[error("{0}")]

@@ -5,7 +5,7 @@ use crate::error::ToDefaultMessage;
 /// See <https://json-schema.org/understanding-json-schema/reference/array.html#length>
 macro_rules! struct_array_length_params {
     ($Params:tt, $limit:tt, $message:tt) => {
-        #[derive(Debug)]
+        #[derive(Debug, Clone)]
         pub struct $Params {
             $limit: usize,
         }

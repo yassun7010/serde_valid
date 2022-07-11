@@ -2,7 +2,7 @@ use indexmap::IndexMap;
 
 use super::{Errors, VecErrors};
 
-#[derive(Debug, serde::Serialize, thiserror::Error)]
+#[derive(Debug, Clone, serde::Serialize, thiserror::Error)]
 pub struct ObjectErrors {
     pub errors: VecErrors,
     pub properties: IndexMap<&'static str, Errors>,

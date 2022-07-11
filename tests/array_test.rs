@@ -51,12 +51,12 @@ fn items_err_message() {
                                     "errors": ["the number must be `>= 1`."]
                                 }
                             }
-                        }
-                        ,"1": {
+                        },
+                        "1": {
                             "errors": ["Rule error."],
                             "properties": {}
-                        }
-                        ,"2": {
+                        },
+                        "2": {
                             "errors": ["Rule error."],
                             "properties": {
                                 "val": {

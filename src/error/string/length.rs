@@ -5,7 +5,7 @@ use crate::error::ToDefaultMessage;
 /// See <https://json-schema.org/understanding-json-schema/reference/string.html#length>
 macro_rules! struct_string_length_params {
     ($Params:tt, $limit:tt, $message:tt) => {
-        #[derive(Debug, serde::Serialize)]
+        #[derive(Debug, Clone, serde::Serialize)]
         pub struct $Params {
             $limit: usize,
         }

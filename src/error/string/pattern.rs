@@ -1,7 +1,7 @@
 use crate::error::ToDefaultMessage;
 use regex::Regex;
 
-#[derive(Debug, serde::Serialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 pub struct PatternErrorParams {
     pattern: String,
 }
