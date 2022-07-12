@@ -1,13 +1,19 @@
 use crate::error::ToDefaultMessage;
 
-macro_rules! struct_numeric_range_params {
-    ($Params:tt, $limit:tt, $message:tt) => {
+macro_rules! struct_numeric_range_error_params {
+    (
         #[derive(Debug, Clone)]
-        pub struct $Params {
+        #[default_message=$default_message:literal]
+        pub struct $ErrorParams:ident {
+            $limit:ident: String,
+        }
+    ) => {
+        #[derive(Debug, Clone)]
+        pub struct $ErrorParams {
             $limit: String,
         }
 
-        impl $Params {
+        impl $ErrorParams {
             pub fn new<T>($limit: T) -> Self
             where
                 T: PartialOrd + PartialEq + ToString,
@@ -23,23 +29,42 @@ macro_rules! struct_numeric_range_params {
             }
         }
 
-        impl ToDefaultMessage for $Params {
+        impl ToDefaultMessage for $ErrorParams {
             fn to_default_message(&self) -> String {
-                format!($message, self.$limit)
+                format!($default_message, self.$limit)
             }
         }
     };
 }
 
-struct_numeric_range_params!(MinimumErrorParams, minimum, "the number must be `>= {}`.");
-struct_numeric_range_params!(MaximumErrorParams, maximum, "the number must be `<= {}`.");
-struct_numeric_range_params!(
-    ExclusiveMinimumErrorParams,
-    exclusive_minimum,
-    "the number must be `> {}`."
+struct_numeric_range_error_params!(
+    #[derive(Debug, Clone)]
+    #[default_message = "the number must be `>= {}`."]
+    pub struct MinimumErrorParams {
+        minimum: String,
+    }
 );
-struct_numeric_range_params!(
-    ExclusiveMaximumErrorParams,
-    exclusive_maximum,
-    "the number must be `< {}`."
+
+struct_numeric_range_error_params!(
+    #[derive(Debug, Clone)]
+    #[default_message = "the number must be `<= {}`."]
+    pub struct MaximumErrorParams {
+        maximum: String,
+    }
+);
+
+struct_numeric_range_error_params!(
+    #[derive(Debug, Clone)]
+    #[default_message = "the number must be `> {}`."]
+    pub struct ExclusiveMinimumErrorParams {
+        exclusive_minimum: String,
+    }
+);
+
+struct_numeric_range_error_params!(
+    #[derive(Debug, Clone)]
+    #[default_message = "the number must be `< {}`."]
+    pub struct ExclusiveMaximumErrorParams {
+        exclusive_maximum: String,
+    }
 );

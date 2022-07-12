@@ -15,7 +15,6 @@ pub use error::Error;
 pub use errors::Errors;
 use indexmap::IndexMap;
 pub use object_errors::ObjectErrors;
-use paste::paste;
 
 pub type VecErrors = Vec<Error>;
 pub type MapErrors = IndexMap<&'static str, VecErrors>;
@@ -39,7 +38,7 @@ where
 
 macro_rules! impl_into_error {
     ($ErrorType:ident) => {
-        paste! {
+        paste::paste! {
             impl IntoError<[<$ErrorType ErrorParams>]> for Composited<[<$ErrorType ErrorParams>]> {
                 fn into_error_by(self, format_fn: fn(&[<$ErrorType ErrorParams>]) -> String) -> Error {
                     match self {

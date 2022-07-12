@@ -15,6 +15,7 @@ keywords = ["validation", "serde", "json_schema"]
 proc-macro = true
 
 [dependencies]
+paste = "1.0.7"
 proc-macro-error = "1.0"
 proc-macro2 = "^1.0"
 quote = "^1.0"

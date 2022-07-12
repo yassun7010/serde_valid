@@ -4,13 +4,19 @@ use crate::error::ToDefaultMessage;
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/string.html#length>
 macro_rules! struct_string_length_params {
-    ($Params:tt, $limit:tt, $message:tt) => {
-        #[derive(Debug, Clone, serde::Serialize)]
-        pub struct $Params {
+    (
+        #[derive(Debug, Clone)]
+        #[default_message=$default_message:literal]
+        pub struct $ErrorParams:ident {
+            $limit:ident: usize,
+        }
+    ) => {
+        #[derive(Debug, Clone)]
+        pub struct $ErrorParams {
             $limit: usize,
         }
 
-        impl $Params {
+        impl $ErrorParams {
             pub fn new($limit: usize) -> Self {
                 Self { $limit }
             }
@@ -21,21 +27,25 @@ macro_rules! struct_string_length_params {
             }
         }
 
-        impl ToDefaultMessage for $Params {
+        impl ToDefaultMessage for $ErrorParams {
             fn to_default_message(&self) -> String {
-                format!($message, self.$limit)
+                format!($default_message, self.$limit)
             }
         }
     };
 }
 
 struct_string_length_params!(
-    MinLengthErrorParams,
-    min_length,
-    "the length of the value must be `>= {}`."
+    #[derive(Debug, Clone)]
+    #[default_message = "the length of the value must be `>= {}`."]
+    pub struct MinLengthErrorParams {
+        min_length: usize,
+    }
 );
 struct_string_length_params!(
-    MaxLengthErrorParams,
-    max_length,
-    "the length of the value must be `<= {}`."
+    #[derive(Debug, Clone)]
+    #[default_message = "the length of the value must be `<= {}`."]
+    pub struct MaxLengthErrorParams {
+        max_length: usize,
+    }
 );

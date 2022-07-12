@@ -4,38 +4,32 @@ use crate::error::ToDefaultMessage;
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/array.html#length>
 macro_rules! struct_array_length_params {
-    ($Params:tt, $limit:tt, $message:tt) => {
-        #[derive(Debug, Clone)]
-        pub struct $Params {
-            $limit: usize,
-        }
-
-        impl $Params {
-            pub fn new($limit: usize) -> Self {
-                Self { $limit }
+    ($ErrorType:ident, $message:tt) => {
+        paste::paste! {
+            #[derive(Debug, Clone)]
+            pub struct [<$ErrorType ErrorParams>] {
+                [<$ErrorType:snake>]: usize,
             }
 
-            #[allow(dead_code)]
-            pub fn $limit(&self) -> usize {
-                self.$limit
-            }
-        }
+            impl [<$ErrorType ErrorParams>] {
+                pub fn new([<$ErrorType:snake>]: usize) -> Self {
+                    Self { [<$ErrorType:snake>] }
+                }
 
-        impl ToDefaultMessage for $Params {
-            fn to_default_message(&self) -> String {
-                format!($message, self.$limit,)
+                #[allow(dead_code)]
+                pub fn [<$ErrorType:snake>](&self) -> usize {
+                    self.[<$ErrorType:snake>]
+                }
+            }
+
+            impl ToDefaultMessage for [<$ErrorType ErrorParams>] {
+                fn to_default_message(&self) -> String {
+                    format!($message, self.[<$ErrorType:snake>],)
+                }
             }
         }
     };
 }
 
-struct_array_length_params!(
-    MinItemsErrorParams,
-    min_items,
-    "the length of the items must be `>= {}`."
-);
-struct_array_length_params!(
-    MaxItemsErrorParams,
-    max_items,
-    "the length of the items must be `<= {}`."
-);
+struct_array_length_params!(MinItems, "the length of the items must be `>= {}`.");
+struct_array_length_params!(MaxItems, "the length of the items must be `<= {}`.");
