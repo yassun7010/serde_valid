@@ -17,7 +17,7 @@ pub use numeric::{
     ValidateMultipleOf,
 };
 pub use object::{ValidateMaxProperties, ValidateMinProperties};
-pub use string::{ValidateMaxLength, ValidateMinLength, ValidatePattern};
+pub use string::{Pattern, ValidateMaxLength, ValidateMinLength, ValidatePattern};
 
 use crate::{
     MaxLengthErrorParams, MaxPropertiesErrorParams, MinLengthErrorParams, MinPropertiesErrorParams,
