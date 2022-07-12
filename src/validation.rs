@@ -11,7 +11,7 @@ pub use error::{
 };
 pub use generic::{ValidateCompositedEnumerate, ValidateEnumerate};
 pub use numeric::{
-    ValidateCompositedExclusiveMaximum, ValidateCompositedExclusiveMinimum,
+    Number, ValidateCompositedExclusiveMaximum, ValidateCompositedExclusiveMinimum,
     ValidateCompositedMaximum, ValidateCompositedMinimum, ValidateCompositedMultipleOf,
     ValidateExclusiveMaximum, ValidateExclusiveMinimum, ValidateMaximum, ValidateMinimum,
     ValidateMultipleOf,

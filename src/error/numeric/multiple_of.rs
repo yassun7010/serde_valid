@@ -1,23 +1,21 @@
 use crate::error::ToDefaultMessage;
+use crate::validation::Number;
 
 #[derive(Debug, Clone, serde::Serialize)]
 pub struct MultipleOfErrorParams {
-    multiple_of: String,
+    multiple_of: Number,
 }
 
 impl MultipleOfErrorParams {
-    pub fn new<T>(multiple_of: T) -> Self
-    where
-        T: PartialEq + std::ops::Rem<Output = T> + num_traits::Zero + ToString,
-    {
+    pub fn new<N: Into<Number>>(multiple_of: N) -> Self {
         Self {
-            multiple_of: multiple_of.to_string(),
+            multiple_of: multiple_of.into(),
         }
     }
 
     #[allow(dead_code)]
-    pub fn multiple_of(&self) -> &str {
-        &self.multiple_of
+    pub fn multiple_of(&self) -> Number {
+        self.multiple_of
     }
 }
 
