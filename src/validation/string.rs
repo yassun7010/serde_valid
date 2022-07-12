@@ -8,20 +8,20 @@ pub use pattern::ValidatePattern;
 #[derive(Debug, Clone, PartialEq, PartialOrd)]
 pub struct Pattern(String);
 
-macro_rules! impl_from {
+macro_rules! impl_from_trait {
     ($type:ty) => {
         impl From<$type> for Pattern {
-            fn from(from: $type) -> Self {
-                Self(format!("{:?}", from))
+            fn from(item: $type) -> Self {
+                Self(format!("{:?}", item))
             }
         }
     };
 }
 
-impl_from!(regex::Regex);
-impl_from!(&regex::Regex);
-impl_from!(String);
-impl_from!(&str);
+impl_from_trait!(regex::Regex);
+impl_from_trait!(&regex::Regex);
+impl_from_trait!(String);
+impl_from_trait!(&str);
 
 impl std::fmt::Display for Pattern {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {

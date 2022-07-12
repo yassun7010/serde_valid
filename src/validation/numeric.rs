@@ -185,8 +185,8 @@ macro_rules! impl_from_trait {
     ($type:ty) => {
         paste::paste! {
             impl std::convert::From<$type> for Number {
-                fn from(from: $type) -> Self {
-                    Number::[<$type:camel>](from)
+                fn from(item: $type) -> Self {
+                    Number::[<$type:camel>](item)
                 }
             }
         }
