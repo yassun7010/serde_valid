@@ -4,17 +4,12 @@ macro_rules! struct_object_size_params {
     ($Params:tt, $limit:tt, $message:tt) => {
         #[derive(Debug, Clone)]
         pub struct $Params {
-            $limit: usize,
+            pub $limit: usize,
         }
 
         impl $Params {
             pub fn new($limit: usize) -> Self {
                 Self { $limit }
-            }
-
-            #[allow(dead_code)]
-            pub fn $limit(&self) -> usize {
-                self.$limit
             }
         }
 

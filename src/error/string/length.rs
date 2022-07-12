@@ -8,7 +8,7 @@ macro_rules! struct_string_length_params {
         #[derive(Debug, Clone)]
         #[default_message=$default_message:literal]
         pub struct $ErrorParams:ident {
-            $limit:ident: usize,
+            pub $limit:ident: usize,
         }
     ) => {
         #[derive(Debug, Clone)]
@@ -19,11 +19,6 @@ macro_rules! struct_string_length_params {
         impl $ErrorParams {
             pub fn new($limit: usize) -> Self {
                 Self { $limit }
-            }
-
-            #[allow(dead_code)]
-            pub fn $limit(&self) -> usize {
-                self.$limit
             }
         }
 
@@ -39,13 +34,13 @@ struct_string_length_params!(
     #[derive(Debug, Clone)]
     #[default_message = "the length of the value must be `>= {}`."]
     pub struct MinLengthErrorParams {
-        min_length: usize,
+        pub min_length: usize,
     }
 );
 struct_string_length_params!(
     #[derive(Debug, Clone)]
     #[default_message = "the length of the value must be `<= {}`."]
     pub struct MaxLengthErrorParams {
-        max_length: usize,
+        pub max_length: usize,
     }
 );

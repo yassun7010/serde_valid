@@ -8,17 +8,12 @@ macro_rules! struct_array_length_params {
         paste::paste! {
             #[derive(Debug, Clone)]
             pub struct [<$ErrorType ErrorParams>] {
-                [<$ErrorType:snake>]: usize,
+                pub [<$ErrorType:snake>]: usize,
             }
 
             impl [<$ErrorType ErrorParams>] {
                 pub fn new([<$ErrorType:snake>]: usize) -> Self {
                     Self { [<$ErrorType:snake>] }
-                }
-
-                #[allow(dead_code)]
-                pub fn [<$ErrorType:snake>](&self) -> usize {
-                    self.[<$ErrorType:snake>]
                 }
             }
 

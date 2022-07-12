@@ -1,6 +1,6 @@
 use crate::error::ToDefaultMessage;
 
-#[derive(Debug, Clone, serde::Serialize)]
+#[derive(Debug, Clone)]
 pub struct UniqueItemsErrorParams {}
 
 impl UniqueItemsErrorParams {

@@ -3,15 +3,15 @@ use crate::validation::Number;
 
 macro_rules! struct_numeric_range_error_params {
     (
-        #[derive(Debug, Clone, Copy)]
+        #[derive(Debug, Clone)]
         #[default_message=$default_message:literal]
         pub struct $ErrorParams:ident {
-            $limit:ident: Number,
+            pub $limit:ident: Number,
         }
     ) => {
-        #[derive(Debug, Clone, Copy)]
+        #[derive(Debug, Clone)]
         pub struct $ErrorParams {
-            $limit: Number,
+            pub $limit: Number,
         }
 
         impl $ErrorParams {
@@ -19,11 +19,6 @@ macro_rules! struct_numeric_range_error_params {
                 Self {
                     $limit: $limit.into(),
                 }
-            }
-
-            #[allow(dead_code)]
-            pub fn $limit(&self) -> Number {
-                self.$limit
             }
         }
 
@@ -36,33 +31,33 @@ macro_rules! struct_numeric_range_error_params {
 }
 
 struct_numeric_range_error_params!(
-    #[derive(Debug, Clone, Copy)]
+    #[derive(Debug, Clone)]
     #[default_message = "the number must be `>= {}`."]
     pub struct MinimumErrorParams {
-        minimum: Number,
+        pub minimum: Number,
     }
 );
 
 struct_numeric_range_error_params!(
-    #[derive(Debug, Clone, Copy)]
+    #[derive(Debug, Clone)]
     #[default_message = "the number must be `<= {}`."]
     pub struct MaximumErrorParams {
-        maximum: Number,
+        pub maximum: Number,
     }
 );
 
 struct_numeric_range_error_params!(
-    #[derive(Debug, Clone, Copy)]
+    #[derive(Debug, Clone)]
     #[default_message = "the number must be `> {}`."]
     pub struct ExclusiveMinimumErrorParams {
-        exclusive_minimum: Number,
+        pub exclusive_minimum: Number,
     }
 );
 
 struct_numeric_range_error_params!(
-    #[derive(Debug, Clone, Copy)]
+    #[derive(Debug, Clone)]
     #[default_message = "the number must be `< {}`."]
     pub struct ExclusiveMaximumErrorParams {
-        exclusive_maximum: Number,
+        pub exclusive_maximum: Number,
     }
 );

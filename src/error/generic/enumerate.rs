@@ -1,8 +1,8 @@
 use crate::error::ToDefaultMessage;
 
-#[derive(Debug, Clone, serde::Serialize)]
+#[derive(Debug, Clone)]
 pub struct EnumerateErrorParams {
-    enumerate: String,
+    pub enumerate: String,
 }
 
 impl EnumerateErrorParams {
@@ -13,11 +13,6 @@ impl EnumerateErrorParams {
         Self {
             enumerate: format!("{:?}", enumerate),
         }
-    }
-
-    #[allow(dead_code)]
-    pub fn enumerate(&self) -> &str {
-        &self.enumerate
     }
 }
 

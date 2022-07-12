@@ -1,9 +1,9 @@
 use crate::error::ToDefaultMessage;
 use crate::validation::Number;
 
-#[derive(Debug, Clone, serde::Serialize)]
+#[derive(Debug, Clone)]
 pub struct MultipleOfErrorParams {
-    multiple_of: Number,
+    pub multiple_of: Number,
 }
 
 impl MultipleOfErrorParams {
@@ -11,11 +11,6 @@ impl MultipleOfErrorParams {
         Self {
             multiple_of: multiple_of.into(),
         }
-    }
-
-    #[allow(dead_code)]
-    pub fn multiple_of(&self) -> Number {
-        self.multiple_of
     }
 }
 

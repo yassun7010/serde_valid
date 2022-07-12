@@ -3,7 +3,7 @@ use regex::Regex;
 
 #[derive(Debug, Clone, serde::Serialize)]
 pub struct PatternErrorParams {
-    pattern: String,
+    pub pattern: String,
 }
 
 impl PatternErrorParams {
@@ -11,11 +11,6 @@ impl PatternErrorParams {
         Self {
             pattern: format!("{:?}", pattern),
         }
-    }
-
-    #[allow(dead_code)]
-    pub fn pattern(&self) -> &str {
-        &self.pattern
     }
 }
 
