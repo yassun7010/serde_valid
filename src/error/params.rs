@@ -95,6 +95,7 @@ struct_error_params!(
         pub min_length: usize,
     }
 );
+
 struct_error_params!(
     #[derive(Debug, Clone)]
     #[default_message = "the length of the value must be `<= {}`."]
