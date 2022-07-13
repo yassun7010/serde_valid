@@ -72,8 +72,11 @@ impl_validate_generic_enumerate_literal!(char);
 
 macro_rules! impl_validate_generic_enumerate_str {
     ($type:ty) => {
-        impl ValidateEnumerate<&str> for $type {
-            fn validate_enumerate(&self, enumerate: &[&str]) -> Result<(), EnumerateErrorParams> {
+        impl ValidateEnumerate<&'static str> for $type {
+            fn validate_enumerate(
+                &self,
+                enumerate: &[&'static str],
+            ) -> Result<(), EnumerateErrorParams> {
                 if enumerate.iter().any(|candidate| candidate == self) {
                     Ok(())
                 } else {
@@ -92,8 +95,11 @@ impl_validate_generic_enumerate_str!(std::ffi::OsString);
 
 macro_rules! impl_validate_generic_enumerate_path {
     ($type:ty) => {
-        impl ValidateEnumerate<&str> for $type {
-            fn validate_enumerate(&self, enumerate: &[&str]) -> Result<(), EnumerateErrorParams> {
+        impl ValidateEnumerate<&'static str> for $type {
+            fn validate_enumerate(
+                &self,
+                enumerate: &[&'static str],
+            ) -> Result<(), EnumerateErrorParams> {
                 if enumerate
                     .iter()
                     .any(|candidate| &std::path::Path::new(candidate) == self)

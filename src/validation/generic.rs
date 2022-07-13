@@ -6,7 +6,8 @@ pub enum Literal {
     Bool(bool),
     Number(crate::validation::Number),
     String(&'static str),
-    None,
+    Char(char),
+    Null,
 }
 
 impl std::convert::From<bool> for Literal {
@@ -30,6 +31,12 @@ impl std::convert::From<&'static str> for Literal {
     }
 }
 
+impl std::convert::From<char> for Literal {
+    fn from(item: char) -> Self {
+        Literal::Char(item)
+    }
+}
+
 impl<T> std::convert::From<Option<T>> for Literal
 where
     Literal: From<T>,
@@ -37,7 +44,19 @@ where
     fn from(item: Option<T>) -> Self {
         match item {
             Some(value) => std::convert::From::from(value),
-            None => Literal::None,
+            None => Literal::Null,
+        }
+    }
+}
+
+impl std::fmt::Display for Literal {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Literal::Bool(value) => write!(f, "{value}"),
+            Literal::Number(value) => write!(f, "{value}"),
+            Literal::String(value) => write!(f, "{value}"),
+            Literal::Char(value) => write!(f, "{value}"),
+            Literal::Null => write!(f, "null"),
         }
     }
 }

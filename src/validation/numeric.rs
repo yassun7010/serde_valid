@@ -184,9 +184,15 @@ impl std::fmt::Display for Number {
 macro_rules! impl_from_trait {
     ($type:ty) => {
         paste::paste! {
-            impl std::convert::From<$type> for Number {
+            impl From<$type> for Number {
                 fn from(item: $type) -> Self {
                     Number::[<$type:camel>](item)
+                }
+            }
+
+            impl From<&$type> for Number {
+                fn from(item: &$type) -> Self {
+                    Number::[<$type:camel>](*item)
                 }
             }
         }

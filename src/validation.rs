@@ -9,7 +9,7 @@ pub use array::{ValidateMaxItems, ValidateMinItems, ValidateUniqueItems};
 pub use error::{
     ArrayErrors, Composited, Error, Errors, IntoError, MapErrors, ObjectErrors, VecErrors,
 };
-pub use generic::{ValidateCompositedEnumerate, ValidateEnumerate};
+pub use generic::{Literal, ValidateCompositedEnumerate, ValidateEnumerate};
 pub use numeric::{
     Number, ValidateCompositedExclusiveMaximum, ValidateCompositedExclusiveMinimum,
     ValidateCompositedMaximum, ValidateCompositedMinimum, ValidateCompositedMultipleOf,
