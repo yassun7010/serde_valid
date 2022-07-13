@@ -25,39 +25,46 @@ use crate::{
 };
 
 macro_rules! impl_composited_validation1 {
-    ($ErrorType:ident, $limit_type:ty) => {
+    (
+        pub trait $ValidateCompositedTrait:ident {
+            fn $validate_composited_method:ident(
+                &self,
+                $limit:ident: $limit_type:ty,
+            ) -> Result<(), Composited<$ErrorParams:ty>>;
+        }
+    ) => {
         paste::paste! {
-            pub trait [<ValidateComposited $ErrorType>] {
-                fn [<validate_composited_ $ErrorType:snake>](
+            pub trait $ValidateCompositedTrait {
+                fn $validate_composited_method(
                     &self,
-                    limit: $limit_type,
-                ) -> Result<(), crate::validation::Composited<[<$ErrorType ErrorParams>]>>;
+                    $limit: $limit_type,
+                ) -> Result<(), Composited<$ErrorParams>>;
             }
 
-            impl<T> [<ValidateComposited $ErrorType>] for T
+            impl<T> $ValidateCompositedTrait for T
             where
-                T: [<Validate $ErrorType>],
+                T: [<Validate $limit:camel>],
             {
-                fn [<validate_composited_ $ErrorType:snake>](
+                fn $validate_composited_method(
                     &self,
-                    limit: $limit_type,
-                ) -> Result<(), crate::validation::Composited<[<$ErrorType ErrorParams>]>> {
-                    self.[<validate_ $ErrorType:snake>](limit)
-                        .map_err(|error| crate::validation::Composited::Single(error))
+                    $limit: $limit_type,
+                ) -> Result<(), Composited<$ErrorParams>> {
+                    self.[<validate_ $limit>]($limit)
+                        .map_err(|error| Composited::Single(error))
                 }
             }
 
-            impl<T> [<ValidateComposited $ErrorType>] for Vec<T>
+            impl<T> $ValidateCompositedTrait for Vec<T>
             where
-                T: [<ValidateComposited $ErrorType>],
+                T: $ValidateCompositedTrait,
             {
-                fn [<validate_composited_ $ErrorType:snake>](
+                fn $validate_composited_method(
                     &self,
-                    limit: $limit_type,
-                ) -> Result<(), crate::validation::Composited<[<$ErrorType ErrorParams>]>> {
+                    $limit: $limit_type,
+                ) -> Result<(), Composited<$ErrorParams>> {
                     let mut errors = vec![];
                     self.iter().for_each(|item| {
-                        item.[<validate_composited_ $ErrorType:snake>](limit)
+                        item.$validate_composited_method($limit)
                             .map_err(|error| errors.push(error))
                             .ok();
                     });
@@ -65,22 +72,22 @@ macro_rules! impl_composited_validation1 {
                     if errors.is_empty() {
                         Ok(())
                     } else {
-                        Err(crate::validation::Composited::Array(errors))
+                        Err(Composited::Array(errors))
                     }
                 }
             }
 
-            impl<T, const N: usize> [<ValidateComposited $ErrorType>] for [T; N]
+            impl<T, const N: usize> $ValidateCompositedTrait for [T; N]
             where
-                T: [<ValidateComposited $ErrorType>],
+                T: $ValidateCompositedTrait,
             {
-                fn [<validate_composited_ $ErrorType:snake>](
+                fn $validate_composited_method(
                     &self,
-                    limit: $limit_type,
-                ) -> Result<(), crate::validation::Composited<[<$ErrorType ErrorParams>]>> {
+                    $limit: $limit_type,
+                ) -> Result<(), Composited<$ErrorParams>> {
                     let mut errors = vec![];
                     self.iter().for_each(|item| {
-                        item.[<validate_composited_ $ErrorType:snake>](limit)
+                        item.$validate_composited_method($limit)
                             .map_err(|error| errors.push(error))
                             .ok();
                     });
@@ -88,21 +95,21 @@ macro_rules! impl_composited_validation1 {
                     if errors.is_empty() {
                         Ok(())
                     } else {
-                        Err(crate::validation::Composited::Array(errors))
+                        Err(Composited::Array(errors))
                     }
                 }
             }
 
-            impl<T> [<ValidateComposited $ErrorType>] for Option<T>
+            impl<T> $ValidateCompositedTrait for Option<T>
             where
-                T: [<ValidateComposited $ErrorType>],
+                T: $ValidateCompositedTrait,
             {
-                fn [<validate_composited_ $ErrorType:snake>](
+                fn $validate_composited_method(
                     &self,
-                    limit: $limit_type,
-                ) -> Result<(), crate::validation::Composited<[<$ErrorType ErrorParams>]>> {
+                    $limit: $limit_type,
+                ) -> Result<(), Composited<$ErrorParams>> {
                     match self {
-                        Some(value) => value.[<validate_composited_ $ErrorType:snake>](limit),
+                        Some(value) => value.$validate_composited_method($limit),
                         None => Ok(()),
                     }
                 }
@@ -112,10 +119,48 @@ macro_rules! impl_composited_validation1 {
 }
 
 // String
-impl_composited_validation1!(MaxLength, usize);
-impl_composited_validation1!(MinLength, usize);
-impl_composited_validation1!(Pattern, &regex::Regex);
+impl_composited_validation1!(
+    pub trait ValidateCompositedMaxLength {
+        fn validate_composited_max_length(
+            &self,
+            max_length: usize,
+        ) -> Result<(), Composited<MaxLengthErrorParams>>;
+    }
+);
+
+impl_composited_validation1!(
+    pub trait ValidateCompositedMinLength {
+        fn validate_composited_min_length(
+            &self,
+            min_length: usize,
+        ) -> Result<(), Composited<MinLengthErrorParams>>;
+    }
+);
+
+impl_composited_validation1!(
+    pub trait ValidateCompositedPattern {
+        fn validate_composited_pattern(
+            &self,
+            pattern: &regex::Regex,
+        ) -> Result<(), Composited<PatternErrorParams>>;
+    }
+);
 
 // Object
-impl_composited_validation1!(MaxProperties, usize);
-impl_composited_validation1!(MinProperties, usize);
+impl_composited_validation1!(
+    pub trait ValidateCompositedMaxProperties {
+        fn validate_composited_max_properties(
+            &self,
+            max_properties: usize,
+        ) -> Result<(), Composited<MaxPropertiesErrorParams>>;
+    }
+);
+
+impl_composited_validation1!(
+    pub trait ValidateCompositedMinProperties {
+        fn validate_composited_min_properties(
+            &self,
+            min_properties: usize,
+        ) -> Result<(), Composited<MinPropertiesErrorParams>>;
+    }
+);
