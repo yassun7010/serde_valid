@@ -9,22 +9,21 @@ pub use array::{ValidateMaxItems, ValidateMinItems, ValidateUniqueItems};
 pub use error::{
     ArrayErrors, Composited, Error, Errors, IntoError, MapErrors, ObjectErrors, VecErrors,
 };
-pub use generic::{Literal, ValidateCompositedEnumerate, ValidateEnumerate};
+pub use generic::{Literal, ValidateEnumerate};
 pub use numeric::{
-    Number, ValidateCompositedExclusiveMaximum, ValidateCompositedExclusiveMinimum,
-    ValidateCompositedMaximum, ValidateCompositedMinimum, ValidateCompositedMultipleOf,
-    ValidateExclusiveMaximum, ValidateExclusiveMinimum, ValidateMaximum, ValidateMinimum,
-    ValidateMultipleOf,
+    Number, ValidateCompositedMultipleOf, ValidateExclusiveMaximum, ValidateExclusiveMinimum,
+    ValidateMaximum, ValidateMinimum, ValidateMultipleOf,
 };
 pub use object::{ValidateMaxProperties, ValidateMinProperties};
 pub use string::{Pattern, ValidateMaxLength, ValidateMinLength, ValidatePattern};
 
 use crate::{
-    MaxLengthErrorParams, MaxPropertiesErrorParams, MinLengthErrorParams, MinPropertiesErrorParams,
-    PatternErrorParams,
+    EnumerateErrorParams, ExclusiveMaximumErrorParams, ExclusiveMinimumErrorParams,
+    MaxLengthErrorParams, MaxPropertiesErrorParams, MaximumErrorParams, MinLengthErrorParams,
+    MinPropertiesErrorParams, MinimumErrorParams, PatternErrorParams,
 };
 
-macro_rules! impl_composited_validation1 {
+macro_rules! impl_composited_validation_1args {
     (
         pub trait $ValidateCompositedTrait:ident {
             fn $validate_composited_method:ident(
@@ -116,10 +115,126 @@ macro_rules! impl_composited_validation1 {
             }
         }
     };
+    (
+        pub trait $ValidateCompositedTrait:ident<T> {
+            fn $validate_composited_method:ident(
+                &self,
+                $limit:ident: T,
+            ) -> Result<(), Composited<$ErrorParams:ty>>;
+        }
+    ) => {
+        pub trait $ValidateCompositedTrait<T> {
+            fn $validate_composited_method(
+                &self,
+                limit: T,
+            ) -> Result<(), crate::validation::Composited<$ErrorParams>>;
+        }
+
+        impl<T, U> $ValidateCompositedTrait<T> for Vec<U>
+        where
+            T: Copy,
+            U: $ValidateCompositedTrait<T>,
+        {
+            fn $validate_composited_method(
+                &self,
+                limit: T,
+            ) -> Result<(), crate::validation::Composited<$ErrorParams>> {
+                let mut errors = vec![];
+                self.iter().for_each(|item| {
+                    item.$validate_composited_method(limit)
+                        .map_err(|error| errors.push(error))
+                        .ok();
+                });
+
+                if errors.is_empty() {
+                    Ok(())
+                } else {
+                    Err(crate::validation::Composited::Array(errors))
+                }
+            }
+        }
+
+        impl<T, U, const N: usize> $ValidateCompositedTrait<T> for [U; N]
+        where
+            T: Copy,
+            U: $ValidateCompositedTrait<T>,
+        {
+            fn $validate_composited_method(
+                &self,
+                limit: T,
+            ) -> Result<(), crate::validation::Composited<$ErrorParams>> {
+                let mut errors = vec![];
+                self.iter().for_each(|item| {
+                    item.$validate_composited_method(limit)
+                        .map_err(|error| errors.push(error))
+                        .ok();
+                });
+
+                if errors.is_empty() {
+                    Ok(())
+                } else {
+                    Err(crate::validation::Composited::Array(errors))
+                }
+            }
+        }
+
+        impl<T, U> $ValidateCompositedTrait<T> for Option<U>
+        where
+            T: Copy,
+            U: $ValidateCompositedTrait<T>,
+        {
+            fn $validate_composited_method(
+                &self,
+                limit: T,
+            ) -> Result<(), crate::validation::Composited<$ErrorParams>> {
+                match self {
+                    Some(value) => value.$validate_composited_method(limit),
+                    None => Ok(()),
+                }
+            }
+        }
+    };
 }
 
+// Number
+impl_composited_validation_1args!(
+    pub trait ValidateCompositedMaximum<T> {
+        fn validate_composited_maximum(
+            &self,
+            maximum: T,
+        ) -> Result<(), Composited<MaximumErrorParams>>;
+    }
+);
+
+impl_composited_validation_1args!(
+    pub trait ValidateCompositedMinimum<T> {
+        fn validate_composited_minimum(
+            &self,
+            minimum: T,
+        ) -> Result<(), Composited<MinimumErrorParams>>;
+    }
+);
+
+impl_composited_validation_1args!(
+    pub trait ValidateCompositedExclusiveMaximum<T> {
+        fn validate_composited_exclusive_maximum(
+            &self,
+            exclusive_maximum: T,
+        ) -> Result<(), Composited<ExclusiveMaximumErrorParams>>;
+    }
+);
+
+impl_composited_validation_1args!(
+    pub trait ValidateCompositedExclusiveMinimum<T> {
+        fn validate_composited_exclusive_minimum(
+            &self,
+            exclusive_minimum: T,
+        ) -> Result<(), Composited<ExclusiveMinimumErrorParams>>;
+    }
+);
+
 // String
-impl_composited_validation1!(
+impl_composited_validation_1args!(
     pub trait ValidateCompositedMaxLength {
         fn validate_composited_max_length(
             &self,
@@ -128,7 +243,7 @@ impl_composited_validation1!(
     }
 );
 
-impl_composited_validation1!(
+impl_composited_validation_1args!(
     pub trait ValidateCompositedMinLength {
         fn validate_composited_min_length(
             &self,
@@ -137,7 +252,7 @@ impl_composited_validation1!(
     }
 );
 
-impl_composited_validation1!(
+impl_composited_validation_1args!(
     pub trait ValidateCompositedPattern {
         fn validate_composited_pattern(
             &self,
@@ -147,7 +262,7 @@ impl_composited_validation1!(
 );
 
 // Object
-impl_composited_validation1!(
+impl_composited_validation_1args!(
     pub trait ValidateCompositedMaxProperties {
         fn validate_composited_max_properties(
             &self,
@@ -156,11 +271,21 @@ impl_composited_validation1!(
     }
 );
 
-impl_composited_validation1!(
+impl_composited_validation_1args!(
     pub trait ValidateCompositedMinProperties {
         fn validate_composited_min_properties(
             &self,
             min_properties: usize,
         ) -> Result<(), Composited<MinPropertiesErrorParams>>;
+    }
+);
+
+// Generic
+impl_composited_validation_1args!(
+    pub trait ValidateCompositedEnumerate<T> {
+        fn validate_composited_enumerate(
+            &self,
+            enumerate: T,
+        ) -> Result<(), Composited<EnumerateErrorParams>>;
     }
 );

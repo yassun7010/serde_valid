@@ -1,6 +1,6 @@
+use crate::validation::ValidateCompositedMaximum;
 use crate::MaximumErrorParams;
 
-use super::impl_composited_validation1;
 use super::impl_literal_composited_validation;
 
 /// Maximum validation of the number.
@@ -12,14 +12,6 @@ where
 {
     fn validate_maximum(&self, maximum: T) -> Result<(), MaximumErrorParams>;
 }
-
-impl_composited_validation1!(
-    ValidateCompositedMaximum,
-    ValidateMaximum,
-    MaximumErrorParams,
-    validate_composited_maximum,
-    validate_maximum
-);
 
 macro_rules! impl_validate_numeric_maximum {
     ($type:ty) => {

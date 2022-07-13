@@ -1,4 +1,5 @@
-use crate::{validation::numeric::impl_composited_validation1, EnumerateErrorParams};
+use crate::validation::ValidateCompositedEnumerate;
+use crate::EnumerateErrorParams;
 
 /// Enumerate validation.
 ///
@@ -6,14 +7,6 @@ use crate::{validation::numeric::impl_composited_validation1, EnumerateErrorPara
 pub trait ValidateEnumerate<T> {
     fn validate_enumerate(&self, enumerate: &[T]) -> Result<(), EnumerateErrorParams>;
 }
-
-impl_composited_validation1!(
-    ValidateCompositedEnumerate,
-    ValidateEnumerate,
-    EnumerateErrorParams,
-    validate_composited_enumerate,
-    validate_enumerate
-);
 
 macro_rules! impl_validate_generic_enumerate_literal {
     ($type:ty) => {

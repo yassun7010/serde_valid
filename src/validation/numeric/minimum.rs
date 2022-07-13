@@ -1,5 +1,5 @@
-use super::impl_composited_validation1;
 use super::impl_literal_composited_validation;
+use crate::validation::ValidateCompositedMinimum;
 use crate::MinimumErrorParams;
 
 /// Minimum validation of the number.
@@ -11,14 +11,6 @@ where
 {
     fn validate_minimum(&self, minimum: T) -> Result<(), MinimumErrorParams>;
 }
-
-impl_composited_validation1!(
-    ValidateCompositedMinimum,
-    ValidateMinimum,
-    MinimumErrorParams,
-    validate_composited_minimum,
-    validate_minimum
-);
 
 macro_rules! impl_validate_numeric_minimum {
     ($type:ty) => {

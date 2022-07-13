@@ -1,7 +1,7 @@
 use crate::ExclusiveMaximumErrorParams;
 
-use super::impl_composited_validation1;
 use super::impl_literal_composited_validation;
+use crate::validation::ValidateCompositedExclusiveMaximum;
 
 /// Exclusive maximum validation of the number.
 ///
@@ -15,14 +15,6 @@ where
         exclusive_maximum: T,
     ) -> Result<(), ExclusiveMaximumErrorParams>;
 }
-
-impl_composited_validation1!(
-    ValidateCompositedExclusiveMaximum,
-    ValidateExclusiveMaximum,
-    ExclusiveMaximumErrorParams,
-    validate_composited_exclusive_maximum,
-    validate_exclusive_maximum
-);
 
 macro_rules! impl_validate_numeric_exclusive_maximum {
     ($type:ty) => {

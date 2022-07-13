@@ -1,5 +1,5 @@
-use super::impl_composited_validation1;
 use super::impl_literal_composited_validation;
+use crate::validation::ValidateCompositedExclusiveMinimum;
 use crate::ExclusiveMinimumErrorParams;
 
 /// Exclusive minimum validation of the number.
@@ -14,14 +14,6 @@ where
         exclusive_minimum: T,
     ) -> Result<(), ExclusiveMinimumErrorParams>;
 }
-
-impl_composited_validation1!(
-    ValidateCompositedExclusiveMinimum,
-    ValidateExclusiveMinimum,
-    ExclusiveMinimumErrorParams,
-    validate_composited_exclusive_minimum,
-    validate_exclusive_minimum
-);
 
 macro_rules! impl_validate_numeric_exclusive_minimum {
     ($type:ty) => {

@@ -1,5 +1,5 @@
 mod enumerate;
-pub use enumerate::{ValidateCompositedEnumerate, ValidateEnumerate};
+pub use enumerate::ValidateEnumerate;
 
 #[derive(Debug, Clone, PartialEq, PartialOrd)]
 pub enum Literal {
