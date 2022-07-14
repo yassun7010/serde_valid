@@ -13,33 +13,7 @@ pub use exclusive_maximum::ValidateExclusiveMaximum;
 pub use exclusive_minimum::ValidateExclusiveMinimum;
 pub use maximum::ValidateMaximum;
 pub use minimum::ValidateMinimum;
-pub use multiple_of::{ValidateCompositedMultipleOf, ValidateMultipleOf};
-
-macro_rules! impl_literal_composited_validation {
-    (
-        $CompositedValidateTrait:ident,
-        $ValidateTrait:ident,
-        $ErrorParams:tt,
-        $composited_validation_method:ident,
-        $validation_method:ident,
-        $type:ty
-    ) => {
-        impl<T> $CompositedValidateTrait<$type> for T
-        where
-            T: $ValidateTrait<$type>,
-        {
-            fn $composited_validation_method(
-                &self,
-                limit: $type,
-            ) -> Result<(), crate::validation::Composited<$ErrorParams>> {
-                self.$validation_method(limit)
-                    .map_err(|error| crate::validation::Composited::Single(error))
-            }
-        }
-    };
-}
-
-pub(crate) use impl_literal_composited_validation;
+pub use multiple_of::ValidateMultipleOf;
 
 #[derive(Debug, Copy, Clone, PartialEq, PartialOrd, serde::Serialize)]
 #[serde(untagged)]

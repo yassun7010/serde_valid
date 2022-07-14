@@ -11,8 +11,8 @@ pub use error::{
 };
 pub use generic::{Literal, ValidateEnumerate};
 pub use numeric::{
-    Number, ValidateCompositedMultipleOf, ValidateExclusiveMaximum, ValidateExclusiveMinimum,
-    ValidateMaximum, ValidateMinimum, ValidateMultipleOf,
+    Number, ValidateExclusiveMaximum, ValidateExclusiveMinimum, ValidateMaximum, ValidateMinimum,
+    ValidateMultipleOf,
 };
 pub use object::{ValidateMaxProperties, ValidateMinProperties};
 pub use string::{Pattern, ValidateMaxLength, ValidateMinLength, ValidatePattern};
@@ -20,7 +20,7 @@ pub use string::{Pattern, ValidateMaxLength, ValidateMinLength, ValidatePattern}
 use crate::{
     EnumerateErrorParams, ExclusiveMaximumErrorParams, ExclusiveMinimumErrorParams,
     MaxLengthErrorParams, MaxPropertiesErrorParams, MaximumErrorParams, MinLengthErrorParams,
-    MinPropertiesErrorParams, MinimumErrorParams, PatternErrorParams,
+    MinPropertiesErrorParams, MinimumErrorParams, MultipleOfErrorParams, PatternErrorParams,
 };
 
 macro_rules! impl_composited_validation_1args {
@@ -196,6 +196,30 @@ macro_rules! impl_composited_validation_1args {
     };
 }
 
+macro_rules! impl_generic_composited_validation_1args {
+    (
+        $ErrorType:ident,
+        $type:ty
+    ) => {
+        paste::paste! {
+            impl<T> [<ValidateComposited $ErrorType >]<$type> for T
+            where
+                T: [<Validate $ErrorType >]<$type>,
+            {
+                fn [< validate_composited_ $ErrorType:snake>](
+                    &self,
+                    limit: $type,
+                ) -> Result<(), crate::validation::Composited<[<$ErrorType ErrorParams>]>> {
+                    self.[< validate_ $ErrorType:snake>](limit)
+                        .map_err(|error| crate::validation::Composited::Single(error))
+                }
+            }
+        }
+    };
+}
+
+pub(crate) use impl_generic_composited_validation_1args;
+
 // Number
 impl_composited_validation_1args!(
     pub trait ValidateCompositedMaximum<T> {
@@ -230,6 +254,15 @@ impl_composited_validation_1args!(
             &self,
             exclusive_minimum: T,
         ) -> Result<(), Composited<ExclusiveMinimumErrorParams>>;
+    }
+);
+
+impl_composited_validation_1args!(
+    pub trait ValidateCompositedMultipleOf<T> {
+        fn validate_composited_multiple_of(
+            &self,
+            exclusive_minimum: T,
+        ) -> Result<(), Composited<MultipleOfErrorParams>>;
     }
 );
 

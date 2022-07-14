@@ -1,7 +1,5 @@
-use crate::validation::ValidateCompositedMaximum;
+use crate::validation::{impl_generic_composited_validation_1args, ValidateCompositedMaximum};
 use crate::MaximumErrorParams;
-
-use super::impl_literal_composited_validation;
 
 /// Maximum validation of the number.
 ///
@@ -25,14 +23,7 @@ macro_rules! impl_validate_numeric_maximum {
             }
         }
 
-        impl_literal_composited_validation!(
-            ValidateCompositedMaximum,
-            ValidateMaximum,
-            MaximumErrorParams,
-            validate_composited_maximum,
-            validate_maximum,
-            $type
-        );
+        impl_generic_composited_validation_1args!(Maximum, $type);
     };
 }
 
