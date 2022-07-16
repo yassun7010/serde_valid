@@ -5,6 +5,11 @@ mod numeric;
 mod object;
 mod string;
 
+use crate::{
+    EnumerateErrorParams, ExclusiveMaximumErrorParams, ExclusiveMinimumErrorParams,
+    MaxLengthErrorParams, MaxPropertiesErrorParams, MaximumErrorParams, MinLengthErrorParams,
+    MinPropertiesErrorParams, MinimumErrorParams, MultipleOfErrorParams, PatternErrorParams,
+};
 pub use array::{ValidateMaxItems, ValidateMinItems, ValidateUniqueItems};
 pub use error::{
     ArrayErrors, Composited, Error, Errors, IntoError, MapErrors, ObjectErrors, VecErrors,
@@ -15,14 +20,8 @@ pub use numeric::{
     ValidateMultipleOf,
 };
 pub use object::{ValidateMaxProperties, ValidateMinProperties};
-pub use serde_valid_literal::{Literal, Number};
-pub use string::{Pattern, ValidateMaxLength, ValidateMinLength, ValidatePattern};
-
-use crate::{
-    EnumerateErrorParams, ExclusiveMaximumErrorParams, ExclusiveMinimumErrorParams,
-    MaxLengthErrorParams, MaxPropertiesErrorParams, MaximumErrorParams, MinLengthErrorParams,
-    MinPropertiesErrorParams, MinimumErrorParams, MultipleOfErrorParams, PatternErrorParams,
-};
+pub use serde_valid_literal::{Literal, Number, Pattern};
+pub use string::{ValidateMaxLength, ValidateMinLength, ValidatePattern};
 
 macro_rules! impl_composited_validation_1args {
     (
