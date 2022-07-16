@@ -35,22 +35,18 @@ fn inner_extract_numeric_multiple_of_validator(
     ));
 
     Ok(quote!(
-        if let Err(error_params) = ::serde_valid::ValidateMultipleOf::validate_multiple_of(
+        if let Err(__composited_error_params) = ::serde_valid::validation::ValidateCompositedMultipleOf::validate_composited_multiple_of(
             #field_ident,
             #multiple_of,
         ) {
             use ::serde_valid::error::ToDefaultMessage;
+            use ::serde_valid::validation::IntoError;
+
             __properties_errors
                 .entry(#rename)
                 .or_default()
-                .push(
-                    ::serde_valid::validation::Error::MultipleOf(
-                        ::serde_valid::error::Message::new(
-                            error_params,
-                            #message
-                        )
-                    )
-                );
+                .push(__composited_error_params.into_error_by(#message)
+            );
         }
     ))
 }

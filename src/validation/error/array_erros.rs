@@ -2,7 +2,7 @@ use indexmap::IndexMap;
 
 use super::{Errors, VecErrors};
 
-#[derive(Debug, serde::Serialize, thiserror::Error)]
+#[derive(Debug, Clone, serde::Serialize, thiserror::Error)]
 pub struct ArrayErrors {
     pub errors: VecErrors,
     pub items: IndexMap<usize, Errors>,
@@ -11,6 +11,20 @@ pub struct ArrayErrors {
 impl ArrayErrors {
     pub fn new(errors: VecErrors, items: IndexMap<usize, Errors>) -> Self {
         Self { errors, items }
+    }
+
+    pub fn merge(mut self, other: ArrayErrors) -> Self {
+        self.errors.extend(other.errors);
+
+        for (index, item) in other.items {
+            match self.items.get_mut(&index) {
+                Some(errors) => errors.merge(item),
+                None => {
+                    self.items.insert(index, item);
+                }
+            };
+        }
+        return self;
     }
 }
 

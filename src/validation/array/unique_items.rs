@@ -15,7 +15,7 @@ where
         if self.is_unique() {
             Ok(())
         } else {
-            Err(crate::UniqueItemsErrorParams::new())
+            Err(crate::UniqueItemsErrorParams {})
         }
     }
 }
@@ -28,7 +28,7 @@ where
         if self.is_unique() {
             Ok(())
         } else {
-            Err(crate::UniqueItemsErrorParams::new())
+            Err(crate::UniqueItemsErrorParams {})
         }
     }
 }

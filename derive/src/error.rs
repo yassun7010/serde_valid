@@ -4,10 +4,6 @@ use syn::spanned::Spanned;
 
 use crate::types::CommaSeparatedNestedMetas;
 
-// pub fn fields_errors_tokens() -> TokenStream {
-//     quote!(::serde_valid::validation::Errors::Fields(__errors))
-// }
-
 pub fn object_errors_tokens() -> TokenStream {
     quote!(::serde_valid::validation::Errors::Object(
         ::serde_valid::validation::ObjectErrors::new(
@@ -15,13 +11,13 @@ pub fn object_errors_tokens() -> TokenStream {
             __properties_errors
                 .into_iter()
                 .map(|(field, errors)| {
-                    let mut __field_items_errors = None;
+                    let mut __field_items_errors = vec![];
                     let mut __field_properties_errors = None;
                     let mut __field_errors: ::serde_valid::validation::VecErrors = errors
                         .into_iter()
                         .filter_map(|error| match error {
                             ::serde_valid::validation::Error::Items(__array_errors) => {
-                                __field_items_errors = Some(__array_errors);
+                                __field_items_errors.push(__array_errors);
                                 None
                             }
                             ::serde_valid::validation::Error::Properties(__object_errors) => {
@@ -44,7 +40,11 @@ pub fn object_errors_tokens() -> TokenStream {
                                 ),
                             ),
                         )
-                    } else if let Some(__array_errors) = __field_items_errors {
+                    } else if !__field_items_errors.is_empty() {
+                        let __array_errors = __field_items_errors
+                            .into_iter()
+                            .reduce(|a, b| a.merge(b))
+                            .unwrap();
                         __field_errors.extend(__array_errors.errors);
 
                         (

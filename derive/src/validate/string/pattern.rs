@@ -42,20 +42,19 @@ fn inner_extract_string_pattern_validator(
     Ok(quote!(
         static #pattern_ident : ::once_cell::sync::OnceCell<::regex::Regex> = ::once_cell::sync::OnceCell::new();
         let __pattern = #pattern_ident.get_or_init(|| ::regex::Regex::new(#pattern).unwrap());
-        if let Err(error_params) = ::serde_valid::ValidatePattern::validate_pattern(
+        if let Err(__composited_error_params) = ::serde_valid::validation::ValidateCompositedPattern::validate_composited_pattern(
             #field_ident,
             __pattern,
         ) {
+
             use ::serde_valid::error::ToDefaultMessage;
+            use ::serde_valid::validation::IntoError;
+
             __properties_errors
                 .entry(#rename)
                 .or_default()
-                .push(::serde_valid::validation::Error::Pattern(
-                    ::serde_valid::error::Message::new(
-                        error_params,
-                        #message
-                    )
-                ));
+                .push(__composited_error_params.into_error_by(#message)
+            );
         }
     ))
 }

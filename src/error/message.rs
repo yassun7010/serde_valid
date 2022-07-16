@@ -8,6 +8,7 @@ impl ToDefaultMessage for String {
     }
 }
 
+#[derive(Clone)]
 pub struct Message<Params>
 where
     Params: ToDefaultMessage,

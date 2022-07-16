@@ -9,20 +9,22 @@ pub use unique_items::ValidateUniqueItems;
 use crate::{MaxItemsErrorParams, MinItemsErrorParams};
 
 macro_rules! impl_validate_array_length_items {
-    ($ValidateTrait:tt, $ErrorParams:tt, $validation_method:ident) => {
-        impl<T> $ValidateTrait for Option<T>
-        where
-            T: $ValidateTrait,
-        {
-            fn $validation_method(&self, limit: usize) -> Result<(), $ErrorParams> {
-                match self {
-                    Some(value) => value.$validation_method(limit),
-                    None => Ok(()),
+    ($ErrorType:ident) => {
+        paste::paste! {
+            impl<T> [<Validate $ErrorType>] for Option<T>
+            where
+                T: [<Validate $ErrorType>],
+            {
+                fn [<validate_ $ErrorType:snake>] (&self, limit: usize) -> Result<(), [<$ErrorType ErrorParams>]> {
+                    match self {
+                        Some(value) => value.[<validate_ $ErrorType:snake>](limit),
+                        None => Ok(()),
+                    }
                 }
             }
         }
     };
 }
 
-impl_validate_array_length_items!(ValidateMaxItems, MaxItemsErrorParams, validate_max_items);
-impl_validate_array_length_items!(ValidateMinItems, MinItemsErrorParams, validate_min_items);
+impl_validate_array_length_items!(MaxItems);
+impl_validate_array_length_items!(MinItems);

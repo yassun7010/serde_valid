@@ -1,3 +1,4 @@
+use crate::validation::{impl_generic_composited_validation_1args, ValidateCompositedMinimum};
 use crate::MinimumErrorParams;
 
 /// Minimum validation of the number.
@@ -11,9 +12,9 @@ where
 }
 
 macro_rules! impl_validate_numeric_minimum {
-    ($ty:ty) => {
-        impl ValidateMinimum<$ty> for $ty {
-            fn validate_minimum(&self, minimum: $ty) -> Result<(), MinimumErrorParams> {
+    ($type:ty) => {
+        impl ValidateMinimum<$type> for $type {
+            fn validate_minimum(&self, minimum: $type) -> Result<(), MinimumErrorParams> {
                 if *self >= minimum {
                     Ok(())
                 } else {
@@ -21,6 +22,8 @@ macro_rules! impl_validate_numeric_minimum {
                 }
             }
         }
+
+        impl_generic_composited_validation_1args!(Minimum, $type);
     };
 }
 
@@ -64,36 +67,6 @@ mod tests {
     #[test]
     fn test_validate_numeric_minimum_is_false() {
         assert!(ValidateMinimum::validate_minimum(&5, 6).is_err());
-    }
-
-    #[test]
-    fn test_validate_numeric_minimum_vec_is_true() {
-        assert!(ValidateMinimum::validate_minimum(&vec![5], 3).is_ok());
-    }
-
-    #[test]
-    fn test_validate_numeric_minimum_vec_is_false() {
-        assert!(ValidateMinimum::validate_minimum(&vec![5], 7).is_err());
-    }
-
-    #[test]
-    fn test_validate_numeric_minimum_array_is_true() {
-        assert!(ValidateMinimum::validate_minimum(&[5, 6, 7], 3).is_ok());
-    }
-
-    #[test]
-    fn test_validate_numeric_minimum_array_is_false() {
-        assert!(ValidateMinimum::validate_minimum(&vec![5], 7).is_err());
-    }
-
-    #[test]
-    fn test_validate_numeric_minimum_option_is_true() {
-        assert!(ValidateMinimum::validate_minimum(&Some(5), 3).is_ok());
-    }
-
-    #[test]
-    fn test_validate_numeric_minimum_option_is_false() {
-        assert!(ValidateMinimum::validate_minimum(&Some(5), 7).is_err());
     }
 
     #[test]

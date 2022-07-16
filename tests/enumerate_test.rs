@@ -210,7 +210,7 @@ fn enumerate_custom_err_message() {
 }
 
 #[test]
-fn enumerate_trait() {
+fn enumerate_numeric_trait() {
     struct MyType(i32);
 
     impl PartialEq<i32> for MyType {
@@ -235,6 +235,45 @@ fn enumerate_trait() {
     }
 
     let s = TestStruct { val: MyType(4) };
+
+    assert_eq!(
+        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
+        serde_json::to_string(&json!({
+            "errors": [],
+            "properties": {
+                "val": {
+                    "errors": [
+                    "this is custom message."
+                    ]
+                }
+            }
+        }))
+        .unwrap()
+    );
+}
+
+#[test]
+fn enumerate_string_trait() {
+    struct MyType(String);
+
+    impl ValidateEnumerate<&'static str> for MyType {
+        fn validate_enumerate(
+            &self,
+            enumerate: &[&'static str],
+        ) -> Result<(), serde_valid::EnumerateErrorParams> {
+            self.0.validate_enumerate(enumerate)
+        }
+    }
+
+    #[derive(Validate)]
+    struct TestStruct {
+        #[validate(enumerate("1", "2", "3"), message = "this is custom message.")]
+        val: MyType,
+    }
+
+    let s = TestStruct {
+        val: MyType("4".to_string()),
+    };
 
     assert_eq!(
         serde_json::to_string(&s.validate().unwrap_err()).unwrap(),

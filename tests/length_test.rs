@@ -338,6 +338,41 @@ fn length_custom_err_message() {
 }
 
 #[test]
+fn length_vec_err_message() {
+    #[derive(Validate)]
+    struct TestStruct {
+        #[validate(min_length = 5, message = "this is min custom message.")]
+        #[validate(max_length = 3, message = "this is max custom message.")]
+        val: Vec<String>,
+    }
+
+    let s = TestStruct {
+        val: vec![String::from("test")],
+    };
+
+    assert_eq!(
+        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
+        serde_json::to_string(&json!({
+            "errors": [],
+            "properties": {
+                "val": {
+                    "errors": [],
+                    "items": {
+                        "0": {
+                            "errors": [
+                                "this is min custom message.",
+                                "this is max custom message."
+                            ]
+                        }
+                    }
+                }
+            }
+        }))
+        .unwrap()
+    );
+}
+
+#[test]
 fn length_trait() {
     struct MyType(String);
 

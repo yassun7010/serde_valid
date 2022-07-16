@@ -1,20 +1,15 @@
-mod array;
 mod generic;
 mod message;
-mod numeric;
-mod object;
-mod string;
+mod params;
 
-use crate::validation;
-pub use array::{MaxItemsErrorParams, MinItemsErrorParams, UniqueItemsErrorParams};
 pub use generic::EnumerateErrorParams;
 pub use message::{Message, ToDefaultMessage};
-pub use numeric::{
-    ExclusiveMaximumErrorParams, ExclusiveMinimumErrorParams, MaximumErrorParams,
-    MinimumErrorParams, MultipleOfErrorParams,
+pub use params::{
+    ExclusiveMaximumErrorParams, ExclusiveMinimumErrorParams, MaxItemsErrorParams,
+    MaxLengthErrorParams, MaxPropertiesErrorParams, MaximumErrorParams, MinItemsErrorParams,
+    MinLengthErrorParams, MinPropertiesErrorParams, MinimumErrorParams, MultipleOfErrorParams,
+    PatternErrorParams, UniqueItemsErrorParams,
 };
-pub use object::{MaxPropertiesErrorParams, MinPropertiesErrorParams};
-pub use string::{MaxLengthErrorParams, MinLengthErrorParams, PatternErrorParams};
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error<E>
@@ -25,7 +20,7 @@ where
     DeserializeError(#[from] E),
 
     #[error(transparent)]
-    ValidationError(validation::Errors),
+    ValidationError(crate::validation::Errors),
 }
 
 impl<E> Error<E>
@@ -53,7 +48,7 @@ where
         }
     }
 
-    pub fn as_validation_errors(&self) -> Option<&validation::Errors> {
+    pub fn as_validation_errors(&self) -> Option<&crate::validation::Errors> {
         match self {
             Self::DeserializeError(_) => None,
             Self::ValidationError(error) => Some(error),

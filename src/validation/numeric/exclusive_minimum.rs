@@ -1,3 +1,6 @@
+use crate::validation::{
+    impl_generic_composited_validation_1args, ValidateCompositedExclusiveMinimum,
+};
 use crate::ExclusiveMinimumErrorParams;
 
 /// Exclusive minimum validation of the number.
@@ -14,11 +17,11 @@ where
 }
 
 macro_rules! impl_validate_numeric_exclusive_minimum {
-    ($ty:ty) => {
-        impl ValidateExclusiveMinimum<$ty> for $ty {
+    ($type:ty) => {
+        impl ValidateExclusiveMinimum<$type> for $type {
             fn validate_exclusive_minimum(
                 &self,
-                exclusive_minimum: $ty,
+                exclusive_minimum: $type,
             ) -> Result<(), ExclusiveMinimumErrorParams> {
                 if *self > exclusive_minimum {
                     Ok(())
@@ -27,6 +30,8 @@ macro_rules! impl_validate_numeric_exclusive_minimum {
                 }
             }
         }
+
+        impl_generic_composited_validation_1args!(ExclusiveMinimum, $type);
     };
 }
 
