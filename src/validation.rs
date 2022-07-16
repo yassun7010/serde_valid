@@ -9,12 +9,13 @@ pub use array::{ValidateMaxItems, ValidateMinItems, ValidateUniqueItems};
 pub use error::{
     ArrayErrors, Composited, Error, Errors, IntoError, MapErrors, ObjectErrors, VecErrors,
 };
-pub use generic::{Literal, ValidateEnumerate};
+pub use generic::ValidateEnumerate;
 pub use numeric::{
-    Number, ValidateExclusiveMaximum, ValidateExclusiveMinimum, ValidateMaximum, ValidateMinimum,
+    ValidateExclusiveMaximum, ValidateExclusiveMinimum, ValidateMaximum, ValidateMinimum,
     ValidateMultipleOf,
 };
 pub use object::{ValidateMaxProperties, ValidateMinProperties};
+pub use serde_valid_literal::{Literal, Number};
 pub use string::{Pattern, ValidateMaxLength, ValidateMinLength, ValidatePattern};
 
 use crate::{
