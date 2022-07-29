@@ -10,12 +10,12 @@ where
     /// use serde_valid::json::FromJsonSlice;
     ///
     /// #[derive(Debug, Validate, Deserialize)]
-    /// struct TestStruct {
-    ///     #[validate(maximum = 2000)]
-    ///     val: i32,
+    /// struct TestStruct<'a> {
+    ///     #[validate(min_length = 1)]
+    ///     val: &'a str,
     /// }
     ///
-    /// let s = TestStruct::from_json_slice(b"{ \"val\": 1234 }");
+    /// let s = TestStruct::from_json_slice(br#"{ "val": "abcde" }"#);
     ///
     /// assert!(s.is_ok())
     /// ```

@@ -10,12 +10,12 @@ where
     /// use serde_valid::yaml::FromYamlSlice;
     ///
     /// #[derive(Debug, Validate, Deserialize)]
-    /// struct TestStruct {
-    ///     #[validate(maximum = 10)]
-    ///     val: i32,
+    /// struct TestStruct<'a> {
+    ///     #[validate(min_length = 1)]
+    ///     val: &'a str,
     /// }
     ///
-    /// let s = TestStruct::from_yaml_slice(b"---\nval: 10\n");
+    /// let s = TestStruct::from_yaml_slice(b"---\nval: abcde\n");
     ///
     /// assert!(s.is_ok())
     /// ```
