@@ -168,9 +168,11 @@ fn items_err_message() {
 
 #[test]
 fn items_custom_err_message_fn() {
+    #[inline]
     fn min_error_message(_params: &serde_valid::MinItemsErrorParams) -> String {
         "this is min custom message.".to_string()
     }
+    #[inline]
     fn max_error_message(_params: &serde_valid::MaxItemsErrorParams) -> String {
         "this is max custom message.".to_string()
     }

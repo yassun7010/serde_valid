@@ -23,6 +23,7 @@ macro_rules! struct_error_params {
         }
 
         impl ToDefaultMessage for $ErrorParams {
+            #[inline]
             fn to_default_message(&self) -> String {
                 format!($default_message, self.$limit)
             }
@@ -39,6 +40,7 @@ macro_rules! struct_error_params {
         pub struct $ErrorParams {}
 
         impl ToDefaultMessage for $ErrorParams {
+            #[inline]
             fn to_default_message(&self) -> String {
                 format!($default_message)
             }

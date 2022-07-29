@@ -122,6 +122,7 @@
 //! use serde_json::json;
 //! use serde_valid::Validate;
 //!
+//! #[inline]
 //! fn min_error_message(_params: &serde_valid::MinItemsErrorParams) -> String {
 //!     "this is min custom message_fn.".to_string()
 //! }
