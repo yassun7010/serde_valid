@@ -99,7 +99,8 @@ where
 
 impl<T> FromYamlReader for T
 where
-    T: serde::de::DeserializeOwned + crate::Validate,
+    for<'de> T: serde::de::Deserialize<'de>,
+    T: crate::Validate,
 {
     fn from_yaml_reader<R>(reader: R) -> Result<Self, crate::Error<serde_yaml::Error>>
     where
