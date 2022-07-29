@@ -1,4 +1,4 @@
-pub trait FromToml
+pub trait FromTomlReader
 where
     Self: Sized,
 {
@@ -8,7 +8,7 @@ where
     /// use std::fs::File;
     /// use serde::Deserialize;
     /// use serde_valid::Validate;
-    /// use serde_valid::toml::FromToml;
+    /// use serde_valid::toml::FromTomlReader;
     ///
     /// #[derive(Debug, Validate, Deserialize)]
     /// struct TestStruct {
@@ -23,13 +23,18 @@ where
     fn from_toml_reader<R>(reader: R) -> Result<Self, crate::Error<serde_toml::de::Error>>
     where
         R: std::io::Read;
+}
 
+pub trait FromTomlSlice<'de>
+where
+    Self: Sized,
+{
     /// Convert from toml slice.
     ///
     /// ```rust
     /// use serde::Deserialize;
     /// use serde_valid::Validate;
-    /// use serde_valid::toml::FromToml;
+    /// use serde_valid::toml::FromTomlSlice;
     ///
     /// #[derive(Debug, Validate, Deserialize)]
     /// struct TestStruct {
@@ -41,14 +46,19 @@ where
     ///
     /// assert!(s.is_ok())
     /// ```
-    fn from_toml_slice(slice: &[u8]) -> Result<Self, crate::Error<serde_toml::de::Error>>;
+    fn from_toml_slice(slice: &'de [u8]) -> Result<Self, crate::Error<serde_toml::de::Error>>;
+}
 
+pub trait FromTomlStr<'de>
+where
+    Self: Sized,
+{
     /// Convert from toml str.
     ///
     /// ```rust
     /// use serde::Deserialize;
     /// use serde_valid::Validate;
-    /// use serde_valid::toml::FromToml;
+    /// use serde_valid::toml::FromTomlStr;
     ///
     /// #[derive(Debug, Validate, Deserialize)]
     /// struct TestStruct {
@@ -60,14 +70,19 @@ where
     ///
     /// assert!(s.is_ok())
     /// ```
-    fn from_toml_str(str: &str) -> Result<Self, crate::Error<serde_toml::de::Error>>;
+    fn from_toml_str(str: &'de str) -> Result<Self, crate::Error<serde_toml::de::Error>>;
+}
 
+pub trait FromTomlValue
+where
+    Self: Sized,
+{
     /// Convert from [`serde_toml::Value`](serde_toml::Value).
     ///
     /// ```rust
     /// use serde::Deserialize;
     /// use serde_valid::Validate;
-    /// use serde_valid::toml::{FromToml, Value};
+    /// use serde_valid::toml::{FromTomlValue, Value};
     ///
     /// #[derive(Debug, Validate, Deserialize)]
     /// struct TestStruct {
@@ -84,7 +99,7 @@ where
     ) -> Result<Self, crate::Error<serde_toml::de::Error>>;
 }
 
-impl<T> FromToml for T
+impl<T> FromTomlReader for T
 where
     T: serde::de::DeserializeOwned + crate::Validate,
 {
@@ -106,23 +121,38 @@ where
             .map_err(|err| crate::Error::ValidationError(err))?;
         Ok(model)
     }
+}
 
-    fn from_toml_slice(slice: &[u8]) -> Result<Self, crate::Error<serde_toml::de::Error>> {
+impl<'de, T> FromTomlSlice<'de> for T
+where
+    T: serde::de::Deserialize<'de> + crate::Validate,
+{
+    fn from_toml_slice(slice: &'de [u8]) -> Result<Self, crate::Error<serde_toml::de::Error>> {
         let model: T = serde_toml::from_slice(slice)?;
         model
             .validate()
             .map_err(|err| crate::Error::ValidationError(err))?;
         Ok(model)
     }
+}
 
-    fn from_toml_str(str: &str) -> Result<Self, crate::Error<serde_toml::de::Error>> {
+impl<'de, T> FromTomlStr<'de> for T
+where
+    T: serde::de::Deserialize<'de> + crate::Validate,
+{
+    fn from_toml_str(str: &'de str) -> Result<Self, crate::Error<serde_toml::de::Error>> {
         let model: T = serde_toml::from_str(str)?;
         model
             .validate()
             .map_err(|err| crate::Error::ValidationError(err))?;
         Ok(model)
     }
+}
 
+impl<T> FromTomlValue for T
+where
+    T: serde::de::DeserializeOwned + crate::Validate,
+{
     fn from_toml_value(
         value: serde_toml::Value,
     ) -> Result<Self, crate::Error<serde_toml::de::Error>> {
