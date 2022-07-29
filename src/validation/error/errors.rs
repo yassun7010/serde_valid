@@ -5,7 +5,7 @@ use super::{ArrayErrors, ObjectErrors, VecErrors};
 pub enum Errors {
     Array(ArrayErrors),
     Object(ObjectErrors),
-    #[serde(serialize_with = "serialize")]
+    #[serde(serialize_with = "serialize_vec_errors")]
     NewType(VecErrors),
 }
 
@@ -51,7 +51,7 @@ impl Errors {
     }
 }
 
-pub fn serialize<T>(errors: &VecErrors, serializer: T) -> Result<T::Ok, T::Error>
+pub fn serialize_vec_errors<T>(errors: &VecErrors, serializer: T) -> Result<T::Ok, T::Error>
 where
     T: serde::ser::Serializer,
 {
@@ -70,7 +70,7 @@ impl std::fmt::Display for Errors {
                         .map(ToString::to_string)
                         .collect::<Vec<String>>(),
                 ) {
-                    Ok(json_string) => write!(f, "{}", json_string),
+                    Ok(json_string) => write!(f, "{{\"errors\": {}}}", json_string),
                     Err(_) => Err(std::fmt::Error),
                 }
             }

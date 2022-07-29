@@ -149,7 +149,7 @@ fn nested_validate_err_message() {
                 },
                 "unnamed_fields_struct": {
                     "errors": [],
-                    "properties": {
+                    "items": {
                         "0": {
                             "errors": ["the number must be `<= 0`."]
                         },
@@ -173,7 +173,7 @@ fn nested_validate_err_message() {
                 },
                 "unnamed_fields_enum": {
                     "errors": [],
-                    "properties": {
+                    "items": {
                         "0": {
                             "errors": ["the number must be `<= 0`."]
                         },

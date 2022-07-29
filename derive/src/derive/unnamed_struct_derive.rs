@@ -1,4 +1,4 @@
-use crate::error::{new_type_errors_tokens, object_errors_tokens};
+use crate::error::{array_errors_tokens, new_type_errors_tokens};
 use crate::rule::collect_rules_from_unnamed_struct;
 use crate::types::{Field, UnnamedField};
 use crate::validate::{extract_meta_validator, FieldValidators};
@@ -41,7 +41,7 @@ pub fn expand_unnamed_struct_derive(
     };
 
     let fields_errors = if fields.unnamed.len() != 1 {
-        object_errors_tokens()
+        array_errors_tokens()
     } else {
         new_type_errors_tokens()
     };
