@@ -1,6 +1,6 @@
 # Serde Valid
 
-[![Latest Version](https://img.shields.io/crates/v/serde_valid.svg?color=success&style=flat-square)](https://crates.io/crates/serde_valid)
+[![Latest Version](https://img.shields.io/crates/v/serde_valid.svg?color=green&style=flat-square)](https://crates.io/crates/serde_valid)
 [![GitHub license](https://badgen.net/github/license/Naereen/Strapdown.js?style=flat-square)](https://github.com/Naereen/StrapDown.js/blob/master/LICENSE)
 
 This is [JSON Schema](https://json-schema.org/) based validation tool using with [serde](https://github.com/serde-rs/serde).
@@ -67,7 +67,7 @@ Serde Valid support complete constructor method using by [`serde_valid::json::Fr
 ```rust
 use serde::Deserialize;
 use serde_valid::Validate;
-use serde_valid::json::{json, FromJson};
+use serde_valid::json::{json, FromJsonValue};
 
 #[derive(Debug, Deserialize, Validate)]
 struct SampleStruct {
@@ -80,7 +80,14 @@ let err = SampleStruct::from_json_value(json!({ "val": 123 })).unwrap_err();
 
 assert_eq!(
     serde_json::to_value(err.as_validation_errors().unwrap()).unwrap(),
-    json!({ "val": [ "the number must be `<= 100`." ] })
+    json!({
+        "errors": [],
+        "properties": {
+            "val": {
+                "errors": ["the number must be `<= 100`."]
+            }
+        }
+    })
 );
 ```
 
@@ -93,7 +100,7 @@ For serialization, provides [`serde_valid::json::ToJson`](json::ToJson) trait.
 ```rust
 use serde::Serialize;
 use serde_valid::Validate;
-use serde_valid::json::{json, ToJson};
+use serde_valid::json::{json, ToJsonString};
 
 #[derive(Debug, Serialize, Validate)]
 struct SampleStruct {
@@ -131,16 +138,21 @@ let s = SampleStruct { val: vec![1, 2, 3] };
 assert_eq!(
     serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
     serde_json::to_string(&json!({
-        "val": [
-            "this is min custom message_fn.",
-            "this is max custom message."
-        ]
+        "errors": [],
+        "properties": {
+            "val": {
+                "errors": [
+                    "this is min custom message_fn.",
+                    "this is max custom message."
+                ]
+            }
+        }
     }))
     .unwrap()
 );
 ```
 
-## Custom Validation
+## Custom method
 
 You can use your custom validation using by `#[validate(custom)]`.
 
@@ -172,7 +184,7 @@ use serde_valid::Validate;
 
 fn sample_rule(_val1: &i32, _val2: &str) -> Result<(), serde_valid::validation::Error> {
     Err(serde_valid::validation::Error::Custom(
-        "Rule error is added to the first arg of the rule_method.".to_owned(),
+        "Rule error.".to_owned(),
     ))
 }
 
@@ -191,9 +203,8 @@ let s = SampleStruct {
 assert_eq!(
     serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
     serde_json::to_string(&json!({
-        "val2": [
-            "Rule error is added to the first arg of the rule_method."
-        ]
+        "errors": ["Rule error."],
+        "properties": {}
     }))
     .unwrap()
 );
