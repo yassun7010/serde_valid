@@ -62,7 +62,7 @@
 //!
 //! ## Complete Constructor (Deserialization)
 //!
-//! Serde Valid support complete constructor method using by [`serde_valid::json::FromJson`](json::FromJson) trait.
+//! Serde Valid support complete constructor method using by [`serde_valid::json::FromJsonValue`](json::FromJsonValue) trait.
 //!
 //! ```rust
 //! use serde::Deserialize;
@@ -95,7 +95,7 @@
 //!
 //! ## Serialization
 //!
-//! For serialization, provides [`serde_valid::json::ToJson`](json::ToJson) trait.
+//! For serialization, provides [`serde_valid::json::ToJsonString`](json::ToJsonString) trait.
 //!
 //! ```rust
 //! use serde::Serialize;
@@ -244,15 +244,8 @@
 //!     }
 //! }
 //!
-//! impl serde_valid::ValidateMinLength for MyType {
-//!     fn validate_min_length(&self, min_length: usize) -> Result<(), serde_valid::MinLengthErrorParams> {
-//!         self.0.validate_min_length(min_length)
-//!     }
-//! }
-//!
 //! #[derive(Validate)]
 //! struct SampleStruct {
-//!     #[validate(min_length = 5)]
 //!     #[validate(max_length = 5)]
 //!     val: MyType,
 //! }
