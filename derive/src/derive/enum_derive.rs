@@ -116,7 +116,7 @@ fn expand_enum_variant_named_fields(
         Ok(quote!(
             #else_token if let #ident::#variant_ident{#fields_idents} = &self {
                 let mut __errors = ::serde_valid::validation::VecErrors::new();
-                let mut __properties_errors = ::serde_valid::validation::MapErrors::new();
+                let mut __properties_errors = ::serde_valid::validation::PropertiesErrors::new();
 
                 #validates
                 #rules
@@ -185,7 +185,7 @@ fn expand_enum_variant_unnamed_fields_varidation(
         Ok(quote!(
             #else_token if let #ident::#variant_ident(#fields_idents) = &self {
                 let mut __errors = ::serde_valid::validation::VecErrors::new();
-                let mut __properties_errors = ::serde_valid::validation::MapErrors::new();
+                let mut __properties_errors = ::serde_valid::validation::PropertiesErrors::new();
 
                 #validates
                 #rules

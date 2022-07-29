@@ -51,7 +51,7 @@ pub fn expand_unnamed_struct_derive(
             impl #impl_generics ::serde_valid::Validate for #ident #type_generics #where_clause {
                 fn validate(&self) -> std::result::Result<(), ::serde_valid::validation::Errors> {
                     let mut __errors = ::serde_valid::validation::VecErrors::new();
-                    let mut __properties_errors = ::serde_valid::validation::MapErrors::new();
+                    let mut __properties_errors = ::serde_valid::validation::PropertiesErrors::new();
 
                     #validates
                     #rules
