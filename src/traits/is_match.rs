@@ -45,4 +45,4 @@ macro_rules! impl_for_path {
 impl_for_path!(std::path::Path);
 impl_for_path!(&std::path::Path);
 impl_for_path!(std::path::PathBuf);
-impl_for_os_str!(std::borrow::Cow<'_, std::path::Path>);
+impl_for_path!(std::borrow::Cow<'_, std::path::Path>);
