@@ -55,7 +55,7 @@ fn json_error_as_validation_errors() {
 #[test]
 fn yaml_error_as_validation_errors() {
     use serde::Deserialize;
-    use serde_valid::yaml::FromYaml;
+    use serde_valid::yaml::FromYamlValue;
     use serde_valid::Validate;
 
     #[derive(Debug, Validate, Deserialize)]
