@@ -13,7 +13,7 @@ pub trait ToYaml {
     /// }
     /// let s = TestStruct { val: 10 };
     ///
-    /// assert!(s.to_toml_string().is_ok());
+    /// assert!(s.to_yaml_string().is_ok());
     /// ```
     fn to_yaml_string(&self) -> Result<String, serde_yaml::Error>;
 
@@ -31,7 +31,7 @@ pub trait ToYaml {
     /// }
     /// let s = TestStruct { val: 10 };
     ///
-    /// assert!(s.to_toml_value().is_ok());
+    /// assert!(s.to_yaml_value().is_ok());
     /// ```
     fn to_yaml_value(&self) -> Result<serde_yaml::Value, serde_yaml::Error>;
 
@@ -50,7 +50,7 @@ pub trait ToYaml {
     /// }
     /// let s = TestStruct { val: 10 };
     ///
-    /// assert!(s.to_toml_writer(File::open("foo.txt").unwrap()).is_ok());
+    /// assert!(s.to_yaml_writer(File::open("foo.txt").unwrap()).is_ok());
     /// ```
     fn to_yaml_writer<W>(&self, writer: W) -> Result<(), serde_yaml::Error>
     where

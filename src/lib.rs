@@ -67,7 +67,7 @@
 //! ```rust
 //! use serde::Deserialize;
 //! use serde_valid::Validate;
-//! use serde_valid::json::{json, FromJson};
+//! use serde_valid::json::{json, FromJsonValue};
 //!
 //! #[derive(Debug, Deserialize, Validate)]
 //! struct SampleStruct {
@@ -100,7 +100,7 @@
 //! ```rust
 //! use serde::Serialize;
 //! use serde_valid::Validate;
-//! use serde_valid::json::{json, ToJson};
+//! use serde_valid::json::{json, ToJsonString};
 //!
 //! #[derive(Debug, Serialize, Validate)]
 //! struct SampleStruct {

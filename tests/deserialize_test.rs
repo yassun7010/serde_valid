@@ -1,6 +1,6 @@
 use serde::Deserialize;
 use serde_json::json;
-use serde_valid::json::FromJson;
+use serde_valid::json::FromJsonValue;
 use serde_valid::Validate;
 
 #[test]
@@ -68,7 +68,14 @@ fn yaml_error_as_validation_errors() {
 
     assert_eq!(
         serde_json::to_value(err.as_validation_errors().unwrap()).unwrap(),
-        json!({"val": ["the number must be `<= 10`."]})
+        json!({
+            "errors": [],
+            "properties": {
+                "val": {
+                    "errors": ["the number must be `<= 10`."]
+                }
+            }
+        })
     );
 }
 
@@ -89,6 +96,13 @@ fn toml_error_as_validation_errors() {
 
     assert_eq!(
         serde_json::to_value(err.as_validation_errors().unwrap()).unwrap(),
-        json!({"val": ["the number must be `<= 10`."]})
+        json!({
+            "errors": [],
+            "properties": {
+                "val": {
+                    "errors": ["the number must be `<= 10`."]
+                }
+            }
+        })
     );
 }

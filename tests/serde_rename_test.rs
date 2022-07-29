@@ -1,6 +1,6 @@
 use serde::Deserialize;
 use serde_json::json;
-use serde_valid::json::FromJson;
+use serde_valid::json::FromJsonValue;
 use serde_valid::Validate;
 
 #[test]
