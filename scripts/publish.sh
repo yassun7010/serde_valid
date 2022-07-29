@@ -10,5 +10,8 @@ cargo publish
 cd ../literal
 cargo publish
 
+# wait tarball package publishment
+sleep 10
+
 cd ../
 cargo publish
