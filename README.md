@@ -62,7 +62,7 @@ Serde Valid support standard validation based JSON Schema.
 
 ## Complete Constructor (Deserialization)
 
-Serde Valid support complete constructor method using by [`serde_valid::json::FromJson`](json::FromJson) trait.
+Serde Valid support complete constructor method using by [`serde_valid::json::FromJsonValue`](json::FromJsonValue) trait.
 
 ```rust
 use serde::Deserialize;
@@ -244,15 +244,8 @@ impl serde_valid::ValidateMaxLength for MyType {
     }
 }
 
-impl serde_valid::ValidateMinLength for MyType {
-    fn validate_min_length(&self, min_length: usize) -> Result<(), serde_valid::MinLengthErrorParams> {
-        self.0.validate_min_length(min_length)
-    }
-}
-
 #[derive(Validate)]
 struct SampleStruct {
-    #[validate(min_length = 5)]
     #[validate(max_length = 5)]
     val: MyType,
 }
