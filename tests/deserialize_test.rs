@@ -83,7 +83,7 @@ fn yaml_error_as_validation_errors() {
 #[test]
 fn toml_error_as_validation_errors() {
     use serde::Deserialize;
-    use serde_valid::toml::FromToml;
+    use serde_valid::toml::FromTomlValue;
     use serde_valid::Validate;
 
     #[derive(Debug, Validate, Deserialize)]
