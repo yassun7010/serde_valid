@@ -1,9 +1,9 @@
-pub trait ToJson {
+pub trait ToJsonString {
     /// Convert to json string.
     ///
     /// ```rust
     /// use serde::Serialize;
-    /// use serde_valid::json::ToJson;
+    /// use serde_valid::json::ToJsonString;
     /// use serde_valid::Validate;
     ///
     /// #[derive(Debug, Validate, Serialize)]
@@ -21,7 +21,7 @@ pub trait ToJson {
     ///
     /// ```rust
     /// use serde::Serialize;
-    /// use serde_valid::json::ToJson;
+    /// use serde_valid::json::ToJsonString;
     /// use serde_valid::Validate;
     ///
     /// #[derive(Debug, Validate, Serialize)]
@@ -34,12 +34,14 @@ pub trait ToJson {
     /// assert!(s.to_json_string_pretty().is_ok());
     /// ```
     fn to_json_string_pretty(&self) -> Result<String, serde_json::Error>;
+}
 
+pub trait ToJsonValue {
     /// Convert to json string.
     ///
     /// ```rust
     /// use serde::Serialize;
-    /// use serde_valid::json::ToJson;
+    /// use serde_valid::json::ToJsonValue;
     /// use serde_valid::Validate;
     ///
     /// #[derive(Debug, Validate, Serialize)]
@@ -52,13 +54,15 @@ pub trait ToJson {
     /// assert!(s.to_json_value().is_ok());
     /// ```
     fn to_json_value(&self) -> Result<serde_json::Value, serde_json::Error>;
+}
 
+pub trait ToJsonWriter {
     /// Convert to json writer.
     ///
     /// ```should_panic
     /// use std::fs::File;
     /// use serde::Serialize;
-    /// use serde_valid::json::ToJson;
+    /// use serde_valid::json::ToJsonWriter;
     /// use serde_valid::Validate;
     ///
     /// #[derive(Debug, Validate, Serialize)]
@@ -79,7 +83,7 @@ pub trait ToJson {
     /// ```should_panic
     /// use std::fs::File;
     /// use serde::Serialize;
-    /// use serde_valid::json::ToJson;
+    /// use serde_valid::json::ToJsonWriter;
     /// use serde_valid::Validate;
     ///
     /// #[derive(Debug, Validate, Serialize)]
@@ -96,7 +100,7 @@ pub trait ToJson {
         W: std::io::Write;
 }
 
-impl<T> ToJson for T
+impl<T> ToJsonString for T
 where
     T: serde::Serialize + crate::Validate,
 {
@@ -107,11 +111,21 @@ where
     fn to_json_string_pretty(&self) -> Result<String, serde_json::Error> {
         serde_json::to_string_pretty(self)
     }
+}
 
+impl<T> ToJsonValue for T
+where
+    T: serde::Serialize + crate::Validate,
+{
     fn to_json_value(&self) -> Result<serde_json::Value, serde_json::Error> {
         serde_json::to_value(self)
     }
+}
 
+impl<T> ToJsonWriter for T
+where
+    T: serde::Serialize + crate::Validate,
+{
     fn to_json_writer<W>(&self, writer: W) -> Result<(), serde_json::Error>
     where
         W: std::io::Write,
@@ -127,7 +141,7 @@ where
     }
 }
 
-impl ToJson for serde_json::Value {
+impl ToJsonString for serde_json::Value {
     fn to_json_string(&self) -> Result<String, serde_json::Error> {
         serde_json::to_string(self)
     }
@@ -135,11 +149,9 @@ impl ToJson for serde_json::Value {
     fn to_json_string_pretty(&self) -> Result<String, serde_json::Error> {
         serde_json::to_string_pretty(self)
     }
+}
 
-    fn to_json_value(&self) -> Result<serde_json::Value, serde_json::Error> {
-        serde_json::to_value(self)
-    }
-
+impl ToJsonWriter for serde_json::Value {
     fn to_json_writer<W>(&self, writer: W) -> Result<(), serde_json::Error>
     where
         W: std::io::Write,

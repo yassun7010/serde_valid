@@ -1,4 +1,4 @@
-pub trait FromJson
+pub trait FromJsonReader
 where
     Self: Sized,
 {
@@ -8,7 +8,7 @@ where
     /// use std::fs::File;
     /// use serde::Deserialize;
     /// use serde_valid::Validate;
-    /// use serde_valid::json::FromJson;
+    /// use serde_valid::json::FromJsonReader;
     ///
     /// #[derive(Debug, Validate, Deserialize)]
     /// struct TestStruct {
@@ -23,13 +23,18 @@ where
     fn from_json_reader<R>(reader: R) -> Result<Self, crate::Error<serde_json::Error>>
     where
         R: std::io::Read;
+}
 
+pub trait FromJsonSlice<'de>
+where
+    Self: Sized,
+{
     /// Convert from json slice.
     ///
     /// ```rust
     /// use serde::Deserialize;
     /// use serde_valid::Validate;
-    /// use serde_valid::json::FromJson;
+    /// use serde_valid::json::FromJsonSlice;
     ///
     /// #[derive(Debug, Validate, Deserialize)]
     /// struct TestStruct {
@@ -41,14 +46,19 @@ where
     ///
     /// assert!(s.is_ok())
     /// ```
-    fn from_json_slice(slice: &[u8]) -> Result<Self, crate::Error<serde_json::Error>>;
+    fn from_json_slice(slice: &'de [u8]) -> Result<Self, crate::Error<serde_json::Error>>;
+}
 
+pub trait FromJsonStr<'de>
+where
+    Self: Sized,
+{
     /// Convert from json str.
     ///
     /// ```rust
     /// use serde::Deserialize;
     /// use serde_valid::Validate;
-    /// use serde_valid::json::{json, FromJson};
+    /// use serde_valid::json::{json, FromJsonStr};
     ///
     /// #[derive(Debug, Validate, Deserialize)]
     /// struct TestStruct {
@@ -60,14 +70,19 @@ where
     ///
     /// assert!(s.is_ok())
     /// ```
-    fn from_json_str(str: &str) -> Result<Self, crate::Error<serde_json::Error>>;
+    fn from_json_str(str: &'de str) -> Result<Self, crate::Error<serde_json::Error>>;
+}
 
+pub trait FromJsonValue
+where
+    Self: Sized,
+{
     /// Convert from [`serde_json::Value`](serde_json::Value).
     ///
     /// ```rust
     /// use serde::Deserialize;
     /// use serde_valid::Validate;
-    /// use serde_valid::json::{json, FromJson};
+    /// use serde_valid::json::{json, FromJsonValue};
     ///
     /// #[derive(Debug, Validate, Deserialize)]
     /// struct TestStruct {
@@ -82,7 +97,7 @@ where
     fn from_json_value(value: serde_json::Value) -> Result<Self, crate::Error<serde_json::Error>>;
 }
 
-impl<T> FromJson for T
+impl<T> FromJsonReader for T
 where
     T: serde::de::DeserializeOwned + crate::Validate,
 {
@@ -96,23 +111,38 @@ where
             .map_err(|err| crate::Error::ValidationError(err))?;
         Ok(model)
     }
+}
 
-    fn from_json_slice(slice: &[u8]) -> Result<Self, crate::Error<serde_json::Error>> {
+impl<'de, T> FromJsonSlice<'de> for T
+where
+    T: serde::de::Deserialize<'de> + crate::Validate,
+{
+    fn from_json_slice(slice: &'de [u8]) -> Result<Self, crate::Error<serde_json::Error>> {
         let model: T = serde_json::from_slice(slice)?;
         model
             .validate()
             .map_err(|err| crate::Error::ValidationError(err))?;
         Ok(model)
     }
+}
 
-    fn from_json_str(str: &str) -> Result<Self, crate::Error<serde_json::Error>> {
+impl<'de, T> FromJsonStr<'de> for T
+where
+    T: serde::de::Deserialize<'de> + crate::Validate,
+{
+    fn from_json_str(str: &'de str) -> Result<Self, crate::Error<serde_json::Error>> {
         let model: Self = serde_json::from_str(str)?;
         model
             .validate()
             .map_err(|err| crate::Error::ValidationError(err))?;
         Ok(model)
     }
+}
 
+impl<T> FromJsonValue for T
+where
+    T: serde::de::DeserializeOwned + crate::Validate,
+{
     fn from_json_value(value: serde_json::Value) -> Result<Self, crate::Error<serde_json::Error>> {
         let model: T = serde_json::from_value(value)?;
         model

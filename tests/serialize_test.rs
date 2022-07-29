@@ -1,5 +1,5 @@
 use serde_json::json;
-use serde_valid::json::ToJson;
+use serde_valid::json::ToJsonString;
 
 #[test]
 fn to_json_string_is_ok() {
