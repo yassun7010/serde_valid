@@ -1,5 +1,4 @@
-use std::collections::HashMap;
-
+use crate::serde::rename::RenameMap;
 use crate::types::Field;
 use crate::validate::Validator;
 use proc_macro2::TokenStream;
@@ -11,7 +10,7 @@ pub fn extract_generic_enumerate_validator(
     field: &impl Field,
     item_list: &syn::MetaList,
     message_fn: Option<TokenStream>,
-    rename_map: &HashMap<String, String>,
+    rename_map: &RenameMap,
 ) -> Result<Validator, crate::Errors> {
     Ok(inner_extract_generic_enumerate_validator(
         field, item_list, message_fn, rename_map,
@@ -22,11 +21,13 @@ fn inner_extract_generic_enumerate_validator(
     field: &impl Field,
     item_list: &syn::MetaList,
     message_fn: Option<TokenStream>,
-    rename_map: &HashMap<String, String>,
+    rename_map: &RenameMap,
 ) -> Result<TokenStream, crate::Errors> {
     let field_name = field.name();
     let field_ident = field.ident();
-    let rename = rename_map.get(field_name).unwrap_or(field_name);
+    let field_key = field.key();
+    let rename = rename_map.get(field_name).unwrap_or(&field_key);
+    let errors = field.errors_variable();
     let enumerate = get_enumerate(item_list)?;
     let message = message_fn.unwrap_or(quote!(
         ::serde_valid::EnumerateErrorParams::to_default_message
@@ -40,7 +41,7 @@ fn inner_extract_generic_enumerate_validator(
             use ::serde_valid::error::ToDefaultMessage;
             use ::serde_valid::validation::IntoError;
 
-            __properties_errors
+            #errors
                 .entry(#rename)
                 .or_default()
                 .push(__composited_error_params.into_error_by(#message)

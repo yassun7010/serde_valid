@@ -38,6 +38,15 @@ impl<'a> Field for UnnamedField<'a> {
         &self.ident
     }
 
+    fn key(&self) -> proc_macro2::TokenStream {
+        let index = self.index;
+        quote!(#index)
+    }
+
+    fn errors_variable(&self) -> proc_macro2::TokenStream {
+        quote!(__items_errors)
+    }
+
     fn getter_token(&self) -> proc_macro2::TokenStream {
         let index = syn::Index::from(self.index);
         quote!(#index)

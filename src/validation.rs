@@ -12,7 +12,8 @@ use crate::{
 };
 pub use array::{ValidateMaxItems, ValidateMinItems, ValidateUniqueItems};
 pub use error::{
-    ArrayErrors, Composited, Error, Errors, IntoError, ObjectErrors, PropertiesErrors, VecErrors,
+    ArrayErrors, Composited, Error, Errors, IntoError, ItemsErrors, ObjectErrors, PropertiesErrors,
+    VecErrors,
 };
 pub use generic::ValidateEnumerate;
 pub use numeric::{

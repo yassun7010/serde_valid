@@ -72,10 +72,9 @@ pub fn array_errors_tokens() -> TokenStream {
     quote!(::serde_valid::validation::Errors::Array(
         ::serde_valid::validation::ArrayErrors::new(
             __errors,
-            __properties_errors
+            __items_errors
                 .into_iter()
-                .map(|(field, errors)| {
-                    let index = field.parse::<usize>().unwrap();
+                .map(|(index, errors)| {
                     let mut __field_items_errors = vec![];
                     let mut __field_properties_errors = None;
                     let mut __field_errors: ::serde_valid::validation::VecErrors = errors
@@ -135,7 +134,7 @@ pub fn array_errors_tokens() -> TokenStream {
 
 pub fn new_type_errors_tokens() -> TokenStream {
     quote!(::serde_valid::validation::Errors::NewType(
-        __properties_errors.remove("0").unwrap()
+        __items_errors.remove(&0).unwrap()
     ))
 }
 
