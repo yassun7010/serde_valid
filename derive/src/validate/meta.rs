@@ -4,8 +4,7 @@ mod nested_meta_list;
 mod nested_meta_name_value;
 mod nested_meta_path;
 
-use std::collections::HashMap;
-
+use crate::serde::rename::RenameMap;
 use crate::types::Field;
 use crate::validate::Validator;
 use meta_path::extract_validator_from_meta_path;
@@ -15,7 +14,7 @@ use self::meta_list::extract_validator_from_meta_list;
 pub fn extract_meta_validator(
     field: &impl Field,
     attribute: &syn::Attribute,
-    rename_map: &HashMap<String, String>,
+    rename_map: &RenameMap,
 ) -> Result<Validator, crate::Errors> {
     match attribute.parse_meta() {
         Ok(syn::Meta::List(list)) => {

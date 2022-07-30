@@ -1,11 +1,14 @@
 use std::collections::HashMap;
 
 use crate::types::{Field, NamedField};
+use proc_macro2::TokenStream;
 use quote::ToTokens;
 use syn::parse_quote;
 
-pub fn collect_serde_rename_map(fields: &syn::FieldsNamed) -> HashMap<String, String> {
-    let mut renames = HashMap::new();
+pub type RenameMap = HashMap<String, TokenStream>;
+
+pub fn collect_serde_rename_map(fields: &syn::FieldsNamed) -> RenameMap {
+    let mut renames = RenameMap::new();
     for field in fields.named.iter() {
         let named_field = NamedField::new(field);
         for attribute in named_field.attrs() {
@@ -19,7 +22,7 @@ pub fn collect_serde_rename_map(fields: &syn::FieldsNamed) -> HashMap<String, St
     renames
 }
 
-fn find_rename_from_serde_attributes(attribute: &syn::Attribute) -> Option<String> {
+fn find_rename_from_serde_attributes(attribute: &syn::Attribute) -> Option<TokenStream> {
     if let Ok(syn::Meta::List(serde_list)) = attribute.parse_meta() {
         for serde_nested_meta in serde_list.nested {
             if let syn::NestedMeta::Meta(serde_meta) = &serde_nested_meta {
@@ -32,11 +35,11 @@ fn find_rename_from_serde_attributes(attribute: &syn::Attribute) -> Option<Strin
     None
 }
 
-fn find_rename_from_serde_rename_attributes(serde_meta: &syn::Meta) -> Option<String> {
+fn find_rename_from_serde_rename_attributes(serde_meta: &syn::Meta) -> Option<TokenStream> {
     match serde_meta {
         syn::Meta::NameValue(rename_name_value) => {
             if let syn::Lit::Str(lit_str) = &rename_name_value.lit {
-                Some(lit_str.value())
+                Some(lit_str.to_token_stream())
             } else {
                 None
             }
@@ -49,7 +52,7 @@ fn find_rename_from_serde_rename_attributes(serde_meta: &syn::Meta) -> Option<St
                     }
                     if let syn::Meta::NameValue(deserialize_name_value) = rename_meta {
                         if let syn::Lit::Str(lit_str) = &deserialize_name_value.lit {
-                            return Some(lit_str.value());
+                            return Some(lit_str.to_token_stream());
                         }
                     }
                 }

@@ -1,3 +1,4 @@
+use crate::serde::rename::RenameMap;
 use crate::types::{Field, SingleIdentPath};
 use crate::validate::array::{
     extract_array_max_items_validator, extract_array_min_items_validator,
@@ -17,7 +18,6 @@ use crate::validate::string::{
 };
 use crate::validate::Validator;
 use proc_macro2::TokenStream;
-use std::collections::HashMap;
 use std::str::FromStr;
 
 pub fn extract_validator_from_nested_meta_name_value(
@@ -29,7 +29,7 @@ pub fn extract_validator_from_nested_meta_name_value(
         ..
     }: &syn::MetaNameValue,
     message_fn: Option<TokenStream>,
-    rename_map: &HashMap<String, String>,
+    rename_map: &RenameMap,
 ) -> Result<Validator, crate::Errors> {
     let validation_name_ident = SingleIdentPath::new(validation_name).ident();
     match MetaNameValueValidation::from_str(&validation_name_ident.to_string()) {

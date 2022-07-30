@@ -17,6 +17,7 @@ use indexmap::IndexMap;
 pub use object_errors::ObjectErrors;
 
 pub type VecErrors = Vec<Error>;
+pub type ItemsErrors = IndexMap<usize, VecErrors>;
 pub type PropertiesErrors = IndexMap<&'static str, VecErrors>;
 
 #[derive(Debug)]

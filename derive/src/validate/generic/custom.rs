@@ -1,5 +1,4 @@
-use std::collections::HashMap;
-
+use crate::serde::rename::RenameMap;
 use crate::types::Field;
 use crate::validate::Validator;
 use proc_macro2::TokenStream;
@@ -8,11 +7,13 @@ use quote::quote;
 pub fn extract_generic_custom_validator(
     field: &impl Field,
     syn::MetaList { path, nested, .. }: &syn::MetaList,
-    rename_map: &HashMap<String, String>,
+    rename_map: &RenameMap,
 ) -> Result<Validator, crate::Errors> {
     let field_name = field.name();
     let field_ident = field.ident();
-    let rename = rename_map.get(field_name).unwrap_or(field_name);
+    let field_key = field.key();
+    let rename = rename_map.get(field_name).unwrap_or(&field_key);
+    let errors = field.errors_variable();
 
     let custom_fn_name = match nested.len() {
         0 => Err(crate::Error::validate_custom_need_item(path)),
@@ -23,7 +24,7 @@ pub fn extract_generic_custom_validator(
 
     Ok(quote!(
         if let Err(__error) = #custom_fn_name(#field_ident) {
-            __properties_errors
+            #errors
                 .entry(#rename)
                 .or_default()
                 .push(__error);

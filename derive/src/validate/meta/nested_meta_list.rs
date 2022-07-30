@@ -1,3 +1,4 @@
+use crate::serde::rename::RenameMap;
 use crate::types::{Field, SingleIdentPath};
 use crate::validate::common::MetaListValidation;
 use crate::validate::generic::{
@@ -5,14 +6,13 @@ use crate::validate::generic::{
 };
 use crate::validate::Validator;
 use proc_macro2::TokenStream;
-use std::collections::HashMap;
 use std::str::FromStr;
 
 pub fn extract_validator_from_nested_meta_list(
     field: &impl Field,
     validation_list: &syn::MetaList,
     message_fn: Option<TokenStream>,
-    rename_map: &HashMap<String, String>,
+    rename_map: &RenameMap,
 ) -> Result<Validator, crate::Errors> {
     let syn::MetaList {
         path: validation_name,

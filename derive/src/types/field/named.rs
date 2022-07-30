@@ -33,6 +33,15 @@ impl<'a> Field for NamedField<'a> {
         self.field.ident.as_ref().unwrap()
     }
 
+    fn key(&self) -> proc_macro2::TokenStream {
+        let name = &self.name;
+        quote!(#name)
+    }
+
+    fn errors_variable(&self) -> proc_macro2::TokenStream {
+        quote!(__properties_errors)
+    }
+
     fn getter_token(&self) -> proc_macro2::TokenStream {
         let ident = self.ident();
         quote!(#ident)

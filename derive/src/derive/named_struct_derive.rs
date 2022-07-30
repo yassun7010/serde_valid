@@ -1,12 +1,12 @@
 use crate::error::object_errors_tokens;
 use crate::rule::collect_rules_from_named_struct;
-use crate::serde::rename::collect_serde_rename_map;
+use crate::serde::rename::{collect_serde_rename_map, RenameMap};
 use crate::types::{Field, NamedField};
 use crate::validate::{extract_meta_validator, FieldValidators};
 use proc_macro2::TokenStream;
 use quote::quote;
 use std::borrow::Cow;
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 use std::iter::FromIterator;
 use syn::parse_quote;
 
@@ -69,7 +69,7 @@ pub fn expand_named_struct_derive(
 
 pub fn collect_named_fields_validators_list<'a>(
     fields: &'a syn::FieldsNamed,
-    rename_map: &HashMap<String, String>,
+    rename_map: &RenameMap,
 ) -> Result<Vec<FieldValidators<'a, NamedField<'a>>>, crate::Errors> {
     let mut errors = vec![];
 
@@ -96,7 +96,7 @@ pub fn collect_named_fields_validators_list<'a>(
 
 fn collect_named_field_validators<'a>(
     field: &'a syn::Field,
-    rename_map: &HashMap<String, String>,
+    rename_map: &RenameMap,
 ) -> Result<FieldValidators<'a, NamedField<'a>>, crate::Errors> {
     let mut errors = vec![];
 
