@@ -177,7 +177,7 @@ assert!(s.validate().is_ok());
 
 ## Rules
 
-If you want to check multi fields validation, you can use `#[rule]`.
+If you want to check multi fields validation, can use `#[rule]`.
 
 ```rust
 use serde_json::json;
@@ -258,4 +258,187 @@ let s = SampleStruct {
 };
 
 assert!(s.validate().is_ok());
+```
+
+## Validation Errors Format
+### Named Struct
+Field errors are output to `properties`.
+
+```rust
+use serde_json::json;
+use serde_valid::Validate;
+
+#[derive(Validate)]
+struct SampleStruct {
+    #[validate(maximum = 4)]
+    val: u32,
+}
+
+let s = SampleStruct { val: 5 };
+
+assert_eq!(
+    s.validate().unwrap_err().to_string(),
+    json!({
+        "errors": [],
+        "properties": {
+            "val": {
+                "errors": ["The number must be `<= 4`."]
+            }
+        }
+    })
+    .to_string()
+);
+```
+
+### Unnamed Struct
+Field errors are output to `items`. The key for `items` is guaranteed to be a string of positive numbers.
+
+```rust
+use serde_json::json;
+use serde_valid::Validate;
+
+#[derive(Validate)]
+struct SampleStruct (
+    #[validate(maximum = 4)]
+    u32,
+    #[validate(maximum = 3)]
+    u32,
+);
+
+let s = SampleStruct ( 5, 4 );
+
+assert_eq!(
+    s.validate().unwrap_err().to_string(),
+    json!({
+        "errors": [],
+        "items": {
+            "0": {
+                "errors": ["The number must be `<= 4`."]
+            },
+            "1": {
+                "errors": ["The number must be `<= 3`."]
+            }
+        }
+    })
+    .to_string()
+);
+```
+
+### New Type
+Field errors are output to `errors`.
+
+```rust
+use serde_json::json;
+use serde_valid::Validate;
+
+#[derive(Validate)]
+struct SampleStruct (
+    #[validate(maximum = 4)]
+    u32
+);
+
+let s = SampleStruct (5);
+
+assert_eq!(
+    s.validate().unwrap_err().to_string(),
+    json!({
+        "errors": ["The number must be `<= 4`."]
+    })
+    .to_string()
+);
+```
+
+### Named Enum
+Variant errors are output to `properties`.
+
+```rust
+use serde_json::json;
+use serde_valid::Validate;
+
+#[derive(Validate)]
+enum TestEnum {
+    Named {
+        #[validate(maximum = 5)]
+        a: i32,
+        #[validate(maximum = 5)]
+        b: i32,
+    },
+}
+
+let s = TestEnum::Named { a: 6, b: 6 };
+
+assert_eq!(
+    s.validate().unwrap_err().to_string(),
+    json!({
+        "errors": [],
+        "properties": {
+            "a": {
+                "errors": ["The number must be `<= 5`."]
+            },
+            "b": {
+                "errors": ["The number must be `<= 5`."]
+            }
+        }
+    })
+    .to_string()
+);
+```
+
+### Unnamed Enum
+Variant errors are output to `items`. The key for `items` is guaranteed to be a string of positive numbers.
+
+```rust
+use serde_json::json;
+use serde_valid::Validate;
+
+#[derive(Validate)]
+enum TestEnum {
+    Unnamed (
+        #[validate(maximum = 5)] i32,
+        #[validate(maximum = 5)] i32,
+    ),
+}
+
+let s = TestEnum::Unnamed ( 6, 6 );
+
+assert_eq!(
+    s.validate().unwrap_err().to_string(),
+    json!({
+        "errors": [],
+        "items": {
+            "0": {
+                "errors": ["The number must be `<= 5`."]
+            },
+            "1": {
+                "errors": ["The number must be `<= 5`."]
+            }
+        }
+    })
+    .to_string()
+);
+```
+
+### Newtype Enum
+Variant errors are output to `errors`.
+
+```rust
+use serde_json::json;
+use serde_valid::Validate;
+
+#[derive(Validate)]
+enum TestEnum {
+    NewType (
+        #[validate(maximum = 5)] i32,
+    ),
+}
+
+let s = TestEnum::NewType ( 6 );
+
+assert_eq!(
+    s.validate().unwrap_err().to_string(),
+    json!({
+        "errors": ["The number must be `<= 5`."]
+    })
+    .to_string()
+);
 ```

@@ -64,15 +64,12 @@ impl std::fmt::Display for Errors {
             Self::Array(errors) => std::fmt::Display::fmt(errors, f),
             Self::Object(errors) => std::fmt::Display::fmt(errors, f),
             Self::NewType(vec_errors) => {
-                match serde_json::to_string(
-                    &vec_errors
-                        .iter()
-                        .map(ToString::to_string)
-                        .collect::<Vec<String>>(),
-                ) {
-                    Ok(json_string) => write!(f, "{{\"errors\": {}}}", json_string),
-                    Err(_) => Err(std::fmt::Error),
-                }
+                let errors = &vec_errors
+                    .iter()
+                    .map(ToString::to_string)
+                    .collect::<Vec<String>>();
+                let value = serde_json::json!({ "errors": errors });
+                std::fmt::Display::fmt(&value, f)
             }
         }
     }

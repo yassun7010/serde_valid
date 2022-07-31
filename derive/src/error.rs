@@ -134,7 +134,10 @@ pub fn array_errors_tokens() -> TokenStream {
 
 pub fn new_type_errors_tokens() -> TokenStream {
     quote!(::serde_valid::validation::Errors::NewType(
-        __items_errors.remove(&0).unwrap()
+        __errors
+            .into_iter()
+            .chain(__items_errors.remove(&0).unwrap().into_iter())
+            .collect()
     ))
 }
 
