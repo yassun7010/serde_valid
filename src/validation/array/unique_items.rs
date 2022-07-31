@@ -3,6 +3,42 @@ use crate::traits::IsUnique;
 /// Uniqueness validation of the array items.
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/array.html#unique_items>
+///
+/// ```rust
+/// use serde_json::json;
+/// use serde_valid::{Validate, ValidateUniqueItems};
+///
+/// struct MyType(Vec<i32>);
+///
+/// impl ValidateUniqueItems for MyType {
+///     fn validate_unique_items(&self) -> Result<(), serde_valid::UniqueItemsErrorParams> {
+///         self.0.validate_unique_items()
+///     }
+/// }
+///
+/// #[derive(Validate)]
+/// struct TestStruct {
+///     #[validate(unique_items)]
+///     val: MyType,
+/// }
+///
+/// let s = TestStruct {
+///     val: MyType(vec![1, 2, 1]),
+/// };
+///
+/// assert_eq!(
+///     serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
+///     serde_json::to_string(&json!({
+///         "errors": [],
+///         "properties": {
+///             "val": {
+///                 "errors": ["The items must be unique."]
+///             }
+///         }
+///     }))
+///     .unwrap()
+/// );
+/// ```
 pub trait ValidateUniqueItems {
     fn validate_unique_items(&self) -> Result<(), crate::UniqueItemsErrorParams>;
 }

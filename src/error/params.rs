@@ -133,7 +133,7 @@ struct_error_params!(
 
 struct_error_params!(
     #[derive(Debug, Clone)]
-    #[default_message = "items must be unique."]
+    #[default_message = "The items must be unique."]
     pub struct UniqueItemsErrorParams {}
 );
 
