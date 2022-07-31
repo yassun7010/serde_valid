@@ -1,5 +1,3 @@
-use super::array::{extract_element_type_from_array, make_element_field, make_element_ident};
-use super::option::{extract_type_from_option, make_some_field, make_some_ident};
 use super::Field;
 use proc_macro_error::abort;
 use quote::quote;
@@ -62,31 +60,5 @@ impl<'a> Field for UnnamedField<'a> {
 
     fn ty(&self) -> &syn::Type {
         &self.field.ty
-    }
-
-    fn array_field(&self) -> Option<UnnamedField<'a>> {
-        if let Some(ty) = extract_element_type_from_array(&self.ty()) {
-            Some(UnnamedField {
-                index: self.index,
-                name: self.name.clone(),
-                ident: make_element_ident(&self.ident, self.field.span()),
-                field: Cow::Owned(make_element_field(&self.field, self.field.span(), ty)),
-            })
-        } else {
-            None
-        }
-    }
-
-    fn option_field(&self) -> Option<UnnamedField<'a>> {
-        if let Some(ty) = extract_type_from_option(&self.ty()) {
-            Some(UnnamedField {
-                index: self.index,
-                name: self.name.clone(),
-                ident: make_some_ident(&self.ident, self.field.span()),
-                field: Cow::Owned(make_some_field(&self.field, self.field.span(), ty)),
-            })
-        } else {
-            None
-        }
     }
 }

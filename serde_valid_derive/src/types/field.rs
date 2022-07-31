@@ -1,6 +1,4 @@
-mod array;
 mod named;
-mod option;
 mod unnamed;
 
 pub use named::NamedField;
@@ -22,12 +20,4 @@ pub trait Field {
     fn vis(&self) -> &syn::Visibility;
 
     fn ty(&self) -> &syn::Type;
-
-    fn array_field(&self) -> Option<Self>
-    where
-        Self: Sized;
-
-    fn option_field(&self) -> Option<Self>
-    where
-        Self: Sized;
 }
