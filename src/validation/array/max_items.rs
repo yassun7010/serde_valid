@@ -1,6 +1,45 @@
 /// Max length validation of the array items.
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/array.html#length>
+///
+/// ```rust
+/// use serde_json::json;
+/// use serde_valid::{Validate, ValidateMaxItems};
+///
+/// struct MyType(Vec<i32>);
+///
+/// impl ValidateMaxItems for MyType {
+///     fn validate_max_items(
+///         &self,
+///         max_items: usize,
+///     ) -> Result<(), serde_valid::MaxItemsErrorParams> {
+///         self.0.validate_max_items(max_items)
+///     }
+/// }
+///
+/// #[derive(Validate)]
+/// struct TestStruct {
+///     #[validate(max_items = 2)]
+///     val: MyType,
+/// }
+///
+/// let s = TestStruct {
+///     val: MyType(vec![1, 2, 3]),
+/// };
+///
+/// assert_eq!(
+///     serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
+///     serde_json::to_string(&json!({
+///         "errors": [],
+///         "properties": {
+///             "val": {
+///                 "errors": ["The length of the items must be `<= 2`."]
+///             }
+///         }
+///     }))
+///     .unwrap()
+/// );
+/// ```
 pub trait ValidateMaxItems {
     fn validate_max_items(&self, max_items: usize) -> Result<(), crate::MaxItemsErrorParams>;
 }
