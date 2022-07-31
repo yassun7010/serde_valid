@@ -132,7 +132,7 @@ fn multiple_of_err_message() {
             "properties": {
                 "val": {
                     "errors": [
-                        "the value must be multiple of `5`."
+                        "The value must be multiple of `5`."
                     ]
                 }
             }

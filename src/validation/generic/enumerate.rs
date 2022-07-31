@@ -4,6 +4,45 @@ use crate::EnumerateErrorParams;
 /// Enumerate validation.
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/generic.html#enumerated-values>
+///
+/// ```rust
+/// use serde_json::json;
+/// use serde_valid::{Validate, ValidateEnumerate};
+///
+/// struct MyType(String);
+///
+/// impl ValidateEnumerate<&'static str> for MyType {
+///     fn validate_enumerate(
+///         &self,
+///         enumerate: &[&'static str],
+///     ) -> Result<(), serde_valid::EnumerateErrorParams> {
+///         self.0.validate_enumerate(enumerate)
+///     }
+/// }
+///
+/// #[derive(Validate)]
+/// struct TestStruct {
+///     #[validate(enumerate("1", "2", "3"))]
+///     val: MyType,
+/// }
+///
+/// let s = TestStruct {
+///     val: MyType("4".to_string()),
+/// };
+///
+/// assert_eq!(
+///     serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
+///     serde_json::to_string(&json!({
+///         "errors": [],
+///         "properties": {
+///             "val": {
+///                 "errors": ["The value must be in [1, 2, 3]."]
+///             }
+///         }
+///     }))
+///     .unwrap()
+/// );
+/// ```
 pub trait ValidateEnumerate<T> {
     fn validate_enumerate(&self, enumerate: &[T]) -> Result<(), EnumerateErrorParams>;
 }

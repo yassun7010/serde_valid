@@ -21,7 +21,7 @@ fn struct_unnamed_fields_newtype_is_err() {
     assert_eq!(
         serde_json::from_str::<serde_json::Value>(&err.to_string()).unwrap(),
         json!({
-            "errors": ["the value must be multiple of `5`."]
+            "errors": ["The value must be multiple of `5`."]
         })
     );
 }

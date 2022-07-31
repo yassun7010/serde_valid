@@ -83,7 +83,7 @@ struct_error_params!(
 
 struct_error_params!(
     #[derive(Debug, Clone)]
-    #[default_message = "the value must be multiple of `{}`."]
+    #[default_message = "The value must be multiple of `{}`."]
     pub struct MultipleOfErrorParams {
         pub multiple_of: Number,
     }
@@ -108,7 +108,7 @@ struct_error_params!(
 
 struct_error_params!(
     #[derive(Debug, Clone)]
-    #[default_message = "the value must match the pattern of \"{}\"."]
+    #[default_message = "The value must match the pattern of \"{}\"."]
     pub struct PatternErrorParams {
         pub pattern: Pattern,
     }

@@ -22,7 +22,7 @@ impl EnumerateErrorParams {
 impl ToDefaultMessage for EnumerateErrorParams {
     fn to_default_message(&self) -> String {
         format!(
-            "the value must be in [{:}].",
+            "The value must be in [{:}].",
             self.enumerate.iter().map(|v| format!("{}", v)).join(", ")
         )
     }

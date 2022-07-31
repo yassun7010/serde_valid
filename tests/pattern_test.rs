@@ -209,7 +209,7 @@ fn pattern_err_message() {
             "properties": {
                 "val": {
                     "errors": [
-                        "the value must match the pattern of \"^\\d{4}-\\d{2}-\\d{2}$\"."
+                        "The value must match the pattern of \"^\\d{4}-\\d{2}-\\d{2}$\"."
                     ]
                 }
             }
