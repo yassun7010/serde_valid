@@ -22,14 +22,14 @@ regex = "^1.4"
 serde = { version = "^1.0", features = ["derive"] }
 serde_json = "^1.0"
 serde_toml = { package = "toml", version = "^0.5", optional = true }
-serde_valid_derive = { version = "0.6.1", path = "derive" }
-serde_valid_literal = { version = "0.6.1", path = "literal" }
+serde_valid_derive = { version = "0.6.1", path = "serde_valid_derive" }
+serde_valid_literal = { version = "0.6.1", path = "serde_valid_literal" }
 serde_yaml = { version = "^0.9", optional = true }
 thiserror = "^1.0"
 unicode-segmentation = "^1.7"
 
 [workspace]
-members = ["derive", "literal"]
+members = ["serde_valid_derive", "serde_valid_literal"]
 
 [features]
 default = []
