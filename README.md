@@ -25,11 +25,6 @@ enum SampleEnum {
         #[validate]
         a: SampleStruct,
     },
-    UnNamed(
-        #[validate(minimum = 0)]
-        #[validate(maximum = 10)]
-        i32,
-    ),
 }
 
 let s = SampleEnum::Named {
