@@ -4,6 +4,45 @@ use regex::Regex;
 /// Pattern validation of the string.
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/string.html#regular-expressions>
+///
+/// ```rust
+/// use serde_json::json;
+/// use serde_valid::{Validate, ValidatePattern};
+///
+/// struct MyType(String);
+///
+/// impl ValidatePattern for MyType {
+///     fn validate_pattern(
+///         &self,
+///         pattern: &regex::Regex,
+///     ) -> Result<(), serde_valid::PatternErrorParams> {
+///         self.0.validate_pattern(pattern)
+///     }
+/// }
+///
+/// #[derive(Validate)]
+/// struct TestStruct {
+///     #[validate(pattern = r"^\d{4}-\d{2}-\d{2}$")]
+///     val: MyType,
+/// }
+///
+/// let s = TestStruct {
+///     val: MyType(String::from("2020/09/10")),
+/// };
+///
+/// assert_eq!(
+///     serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
+///     serde_json::to_string(&json!({
+///         "errors": [],
+///         "properties": {
+///             "val": {
+///                 "errors": [r#"The value must match the pattern of "^\d{4}-\d{2}-\d{2}$"."#]
+///             }
+///         }
+///     }))
+///     .unwrap()
+/// );
+/// ```
 pub trait ValidatePattern {
     fn validate_pattern(&self, pattern: &Regex) -> Result<(), PatternErrorParams>;
 }
