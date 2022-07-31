@@ -4,10 +4,10 @@ set -e
 
 cd "$(dirname "$0")/.."
 
-cd derive
+cd serde_valid_derive
 cargo publish
 
-cd ../literal
+cd ../serde_valid_literal
 cargo publish
 
 # wait tarball package publishment
