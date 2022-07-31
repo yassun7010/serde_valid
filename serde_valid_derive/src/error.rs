@@ -7,7 +7,7 @@ use crate::types::CommaSeparatedNestedMetas;
 pub fn object_errors_tokens() -> TokenStream {
     quote!(::serde_valid::validation::Errors::Object(
         ::serde_valid::validation::ObjectErrors::new(
-            __errors,
+            __rule_errors,
             __properties_errors
                 .into_iter()
                 .map(|(field, errors)| {
@@ -71,7 +71,7 @@ pub fn object_errors_tokens() -> TokenStream {
 pub fn array_errors_tokens() -> TokenStream {
     quote!(::serde_valid::validation::Errors::Array(
         ::serde_valid::validation::ArrayErrors::new(
-            __errors,
+            __rule_errors,
             __items_errors
                 .into_iter()
                 .map(|(index, errors)| {
@@ -134,7 +134,7 @@ pub fn array_errors_tokens() -> TokenStream {
 
 pub fn new_type_errors_tokens() -> TokenStream {
     quote!(::serde_valid::validation::Errors::NewType(
-        __errors
+        __rule_errors
             .into_iter()
             .chain(__items_errors.remove(&0).unwrap().into_iter())
             .collect()

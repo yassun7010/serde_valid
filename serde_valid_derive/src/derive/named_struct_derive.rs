@@ -48,13 +48,13 @@ pub fn expand_named_struct_derive(
         Ok(quote!(
             impl #impl_generics ::serde_valid::Validate for #ident #type_generics #where_clause {
                 fn validate(&self) -> std::result::Result<(), ::serde_valid::validation::Errors> {
-                    let mut __errors = ::serde_valid::validation::VecErrors::new();
+                    let mut __rule_errors = ::serde_valid::validation::VecErrors::new();
                     let mut __properties_errors = ::serde_valid::validation::PropertiesErrors::new();
 
                     #validates
                     #rules
 
-                    if __errors.is_empty() && __properties_errors.is_empty() {
+                    if __rule_errors.is_empty() && __properties_errors.is_empty() {
                         Ok(())
                     } else {
                         Err(#fields_errors)

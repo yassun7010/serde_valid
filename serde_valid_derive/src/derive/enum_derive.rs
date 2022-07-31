@@ -115,13 +115,13 @@ fn expand_enum_variant_named_fields(
     if errors.is_empty() {
         Ok(quote!(
             #else_token if let #ident::#variant_ident{#fields_idents} = &self {
-                let mut __errors = ::serde_valid::validation::VecErrors::new();
+                let mut __rule_errors = ::serde_valid::validation::VecErrors::new();
                 let mut __properties_errors = ::serde_valid::validation::PropertiesErrors::new();
 
                 #validates
                 #rules
 
-                if !(__errors.is_empty() && __properties_errors.is_empty()) {
+                if !(__rule_errors.is_empty() && __properties_errors.is_empty()) {
                     Err(#variant_errors)?
                 }
             }
@@ -184,13 +184,13 @@ fn expand_enum_variant_unnamed_fields_varidation(
     if errors.is_empty() {
         Ok(quote!(
             #else_token if let #ident::#variant_ident(#fields_idents) = &self {
-                let mut __errors = ::serde_valid::validation::VecErrors::new();
+                let mut __rule_errors = ::serde_valid::validation::VecErrors::new();
                 let mut __items_errors = ::serde_valid::validation::ItemsErrors::new();
 
                 #validates
                 #rules
 
-                if !(__errors.is_empty() && __items_errors.is_empty()) {
+                if !(__rule_errors.is_empty() && __items_errors.is_empty()) {
                     Err(#variant_errors)?
                 }
             }
