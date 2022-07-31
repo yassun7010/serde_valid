@@ -126,8 +126,8 @@ fn multiple_of_err_message() {
     let s = TestStruct { val: 14 };
 
     assert_eq!(
-        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
-        serde_json::to_string(&json!({
+        s.validate().unwrap_err().to_string(),
+        json!({
             "errors": [],
             "properties": {
                 "val": {
@@ -136,8 +136,8 @@ fn multiple_of_err_message() {
                     ]
                 }
             }
-        }))
-        .unwrap()
+        })
+        .to_string()
     );
 }
 
@@ -156,8 +156,8 @@ fn multiple_of_custom_err_message_fn() {
     let s = TestStruct { val: 14 };
 
     assert_eq!(
-        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
-        serde_json::to_string(&json!({
+        s.validate().unwrap_err().to_string(),
+        json!({
             "errors": [],
             "properties": {
                 "val": {
@@ -166,8 +166,8 @@ fn multiple_of_custom_err_message_fn() {
                     ]
                 }
             }
-        }))
-        .unwrap()
+        })
+        .to_string()
     );
 }
 
@@ -182,8 +182,8 @@ fn multiple_of_custom_err_message() {
     let s = TestStruct { val: 14 };
 
     assert_eq!(
-        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
-        serde_json::to_string(&json!({
+        s.validate().unwrap_err().to_string(),
+        json!({
             "errors": [],
             "properties": {
                 "val": {
@@ -192,7 +192,7 @@ fn multiple_of_custom_err_message() {
                     ]
                 }
             }
-        }))
-        .unwrap()
+        })
+        .to_string()
     );
 }

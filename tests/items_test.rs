@@ -153,16 +153,16 @@ fn items_err_message() {
     let s = TestStruct { val: vec![1, 2, 3] };
 
     assert_eq!(
-        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
-        serde_json::to_string(&json!({
+        s.validate().unwrap_err().to_string(),
+        json!({
             "errors": [],
             "properties": {
                 "val": {
                     "errors": ["The length of the items must be `>= 4`."]
                 }
             }
-        }))
-        .unwrap()
+        })
+        .to_string()
     );
 }
 
@@ -187,8 +187,8 @@ fn items_custom_err_message_fn() {
     let s = TestStruct { val: vec![1, 2, 3] };
 
     assert_eq!(
-        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
-        serde_json::to_string(&json!({
+        s.validate().unwrap_err().to_string(),
+        json!({
         "errors": [],
         "properties": {
             "val": {
@@ -198,8 +198,8 @@ fn items_custom_err_message_fn() {
                 ]
             }
         }
-        }))
-        .unwrap()
+        })
+        .to_string()
     );
 }
 
@@ -215,8 +215,8 @@ fn items_custom_err_message() {
     let s = TestStruct { val: vec![1, 2, 3] };
 
     assert_eq!(
-        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
-        serde_json::to_string(&json!({
+        s.validate().unwrap_err().to_string(),
+        json!({
             "errors": [],
             "properties": {
                 "val": {
@@ -226,7 +226,7 @@ fn items_custom_err_message() {
                     ]
                 }
             }
-        }))
-        .unwrap()
+        })
+        .to_string()
     );
 }

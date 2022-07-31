@@ -137,8 +137,8 @@
 //! let s = SampleStruct { val: vec![1, 2, 3] };
 //!
 //! assert_eq!(
-//!     serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
-//!     serde_json::to_string(&json!({
+//!     s.validate().unwrap_err().to_string(),
+//!     json!({
 //!         "errors": [],
 //!         "properties": {
 //!             "val": {
@@ -148,8 +148,8 @@
 //!                 ]
 //!             }
 //!         }
-//!     }))
-//!     .unwrap()
+//!     })
+//!     .to_string()
 //! );
 //! ```
 //!
@@ -201,13 +201,15 @@
 //!     val2: 1,
 //! };
 //!
+//! let errors = s.validate().unwrap_err();
+//!
 //! assert_eq!(
-//!     serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
-//!     serde_json::to_string(&json!({
+//!     errors.to_string(),
+//!     json!({
 //!         "errors": ["Rule error."],
 //!         "properties": {}
-//!     }))
-//!     .unwrap()
+//!     })
+//!     .to_string()
 //! );
 //! ```
 //!

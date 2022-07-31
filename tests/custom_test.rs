@@ -57,8 +57,8 @@ fn custom_validation_error() {
         val: vec![1, 2, 3, 4],
     };
     assert_eq!(
-        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
-        serde_json::to_string(&json!({
+        s.validate().unwrap_err().to_string(),
+        json!({
             "errors": [],
             "properties": {
                 "val": {
@@ -67,7 +67,7 @@ fn custom_validation_error() {
                     ]
                 }
             }
-        }))
-        .unwrap()
+        })
+        .to_string()
     );
 }

@@ -254,8 +254,8 @@ fn length_err_message() {
     };
 
     assert_eq!(
-        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
-        serde_json::to_string(&json!({
+        s.validate().unwrap_err().to_string(),
+        json!({
             "errors": [],
             "properties": {
                 "val": {
@@ -264,8 +264,8 @@ fn length_err_message() {
                     ]
                 }
             }
-        }))
-        .unwrap()
+        })
+        .to_string()
     );
 }
 
@@ -291,8 +291,8 @@ fn length_custom_err_message_fn() {
     };
 
     assert_eq!(
-        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
-        serde_json::to_string(&json!({
+        s.validate().unwrap_err().to_string(),
+        json!({
             "errors": [],
             "properties": {
                 "val": {
@@ -302,8 +302,8 @@ fn length_custom_err_message_fn() {
                     ]
                 }
             }
-        }))
-        .unwrap()
+        })
+        .to_string()
     );
 }
 
@@ -321,8 +321,8 @@ fn length_custom_err_message() {
     };
 
     assert_eq!(
-        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
-        serde_json::to_string(&json!({
+        s.validate().unwrap_err().to_string(),
+        json!({
             "errors": [],
             "properties": {
                 "val": {
@@ -332,8 +332,8 @@ fn length_custom_err_message() {
                     ]
                 }
             }
-        }))
-        .unwrap()
+        })
+        .to_string()
     );
 }
 
@@ -351,8 +351,8 @@ fn length_vec_err_message() {
     };
 
     assert_eq!(
-        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
-        serde_json::to_string(&json!({
+        s.validate().unwrap_err().to_string(),
+        json!({
             "errors": [],
             "properties": {
                 "val": {
@@ -367,7 +367,7 @@ fn length_vec_err_message() {
                     }
                 }
             }
-        }))
-        .unwrap()
+        })
+        .to_string()
     );
 }

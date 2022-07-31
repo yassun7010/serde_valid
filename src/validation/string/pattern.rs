@@ -31,16 +31,16 @@ use regex::Regex;
 /// };
 ///
 /// assert_eq!(
-///     serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
-///     serde_json::to_string(&json!({
+///     s.validate().unwrap_err().to_string(),
+///     json!({
 ///         "errors": [],
 ///         "properties": {
 ///             "val": {
 ///                 "errors": [r#"The value must match the pattern of "^\d{4}-\d{2}-\d{2}$"."#]
 ///             }
 ///         }
-///     }))
-///     .unwrap()
+///     })
+///     .to_string()
 /// );
 /// ```
 pub trait ValidatePattern {

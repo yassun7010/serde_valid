@@ -43,22 +43,22 @@ assert!(s.validate().is_ok());
 
 Serde Valid support standard validation based JSON Schema.
 
-| Type | Serde Valid(validate derive) | Json Schema |
-| :---: | :--- | :--- |
-| String | `#[validate(max_length = 5)]` | [maxLength](https://json-schema.org/understanding-json-schema/reference/string.html#length) |
-| String | `#[validate(min_length = 5)]` | [minLength](https://json-schema.org/understanding-json-schema/reference/string.html#length) |
-| String | `#[validate(pattern = r"^\d{5}$")]` | [pattern](https://json-schema.org/understanding-json-schema/reference/string.html#regular-expressions) |
-| Numeric | `#[validate(maximum = 5)]` | [maximum](https://json-schema.org/understanding-json-schema/reference/numeric.html#range) |
-| Numeric | `#[validate(minimum = 5)]` | [minimum](https://json-schema.org/understanding-json-schema/reference/numeric.html#range) |
-| Numeric | `#[validate(exclusive_maximum = 5)]` | [exclusiveMaximum](https://json-schema.org/understanding-json-schema/reference/numeric.html#range) |
-| Numeric | `#[validate(exclusive_minimum = 5)]` | [exclusiveMinimum](https://json-schema.org/understanding-json-schema/reference/numeric.html#range) |
-| Numeric | `#[validate(multiple_of = 5)]` | [multipleOf](https://json-schema.org/understanding-json-schema/reference/numeric.html#multiples) |
-| Object | `#[validate(max_properties = 5)]` | [maxProperties](https://json-schema.org/understanding-json-schema/reference/object.html#size) |
-| Object | `#[validate(min_properties = 5)]` | [minProperties](https://json-schema.org/understanding-json-schema/reference/object.html#size) |
-| Array | `#[validate(max_items = 5)]` | [maxItems](https://json-schema.org/understanding-json-schema/reference/array.html#length) |
-| Array | `#[validate(min_items = 5)]` | [minItems](https://json-schema.org/understanding-json-schema/reference/array.html#length) |
-| Array | `#[validate(unique_items)]` | [uniqueItems](https://json-schema.org/understanding-json-schema/reference/array.html#unique_items) |
-| Generic | `#[validate(enumerate(5, 10, 15))]` | [enum](https://json-schema.org/understanding-json-schema/reference/generic.html#enumerated-values) |
+| Type | Serde Valid(validate derive) | Serde Valid(validate trait) | Json Schema |
+| :-----: | :----------------------------------- | :----------------------------------------------------- | :----------------------------------------------------------------------------------------------------- |
+| String  | `#[validate(max_length = 5)]`        | [`ValidateMaxLength`](ValidateMaxLength)               | [maxLength](https://json-schema.org/understanding-json-schema/reference/string.html#length)            |
+| String  | `#[validate(min_length = 5)]`        | [`ValidateMinLength`](ValidateMinLength)               | [minLength](https://json-schema.org/understanding-json-schema/reference/string.html#length)            |
+| String  | `#[validate(pattern = r"^\d{5}$")]`  | [`ValidatePattern`](ValidatePattern)                   | [pattern](https://json-schema.org/understanding-json-schema/reference/string.html#regular-expressions) |
+| Numeric | `#[validate(maximum = 5)]`           | [`ValidateMaximum`](ValidateMaximum)                   | [maximum](https://json-schema.org/understanding-json-schema/reference/numeric.html#range)              |
+| Numeric | `#[validate(minimum = 5)]`           | [`ValidateMinimum`](ValidateMinimum)                   | [minimum](https://json-schema.org/understanding-json-schema/reference/numeric.html#range)              |
+| Numeric | `#[validate(exclusive_maximum = 5)]` | [`ValidateExclusiveMaximum`](ValidateExclusiveMaximum) | [exclusiveMaximum](https://json-schema.org/understanding-json-schema/reference/numeric.html#range)     |
+| Numeric | `#[validate(exclusive_minimum = 5)]` | [`ValidateExclusiveMinimum`](ValidateExclusiveMinimum) | [exclusiveMinimum](https://json-schema.org/understanding-json-schema/reference/numeric.html#range)     |
+| Numeric | `#[validate(multiple_of = 5)]`       | [`ValidateMultipleOf`](ValidateMultipleOf)             | [multipleOf](https://json-schema.org/understanding-json-schema/reference/numeric.html#multiples)       |
+| Object  | `#[validate(max_properties = 5)]`    | [`ValidateMaxProperties`](ValidateMaxProperties)       | [maxProperties](https://json-schema.org/understanding-json-schema/reference/object.html#size)          |
+| Object  | `#[validate(min_properties = 5)]`    | [`ValidateMinProperties`](ValidateMinProperties)       | [minProperties](https://json-schema.org/understanding-json-schema/reference/object.html#size)          |
+| Array   | `#[validate(max_items = 5)]`         | [`ValidateMaxItems`](ValidateMaxItems)                 | [maxItems](https://json-schema.org/understanding-json-schema/reference/array.html#length)              |
+| Array   | `#[validate(min_items = 5)]`         | [`ValidateMinItems`](ValidateMinItems)                 | [minItems](https://json-schema.org/understanding-json-schema/reference/array.html#length)              |
+| Array   | `#[validate(unique_items)]`          | [`ValidateUniqueItems`](ValidateUniqueItems)           | [uniqueItems](https://json-schema.org/understanding-json-schema/reference/array.html#unique_items)     |
+| Generic | `#[validate(enumerate(5, 10, 15))]`  | [`ValidateEnumerate`](ValidateEnumerate)               | [enum](https://json-schema.org/understanding-json-schema/reference/generic.html#enumerated-values)     |
 
 ## Complete Constructor (Deserialization)
 
@@ -137,8 +137,8 @@ struct SampleStruct {
 let s = SampleStruct { val: vec![1, 2, 3] };
 
 assert_eq!(
-    serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
-    serde_json::to_string(&json!({
+    s.validate().unwrap_err().to_string(),
+    json!({
         "errors": [],
         "properties": {
             "val": {
@@ -148,8 +148,8 @@ assert_eq!(
                 ]
             }
         }
-    }))
-    .unwrap()
+    })
+    .to_string()
 );
 ```
 
@@ -201,13 +201,15 @@ let s = SampleStruct {
     val2: 1,
 };
 
+let errors = s.validate().unwrap_err();
+
 assert_eq!(
-    serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
-    serde_json::to_string(&json!({
+    errors.to_string(),
+    json!({
         "errors": ["Rule error."],
         "properties": {}
-    }))
-    .unwrap()
+    })
+    .to_string()
 );
 ```
 

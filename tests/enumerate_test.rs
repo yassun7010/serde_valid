@@ -138,8 +138,8 @@ fn enumerate_err_message() {
     let s = TestStruct { val: 4 };
 
     assert_eq!(
-        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
-        serde_json::to_string(&json!({
+        s.validate().unwrap_err().to_string(),
+        json!({
             "errors": [],
             "properties": {
                 "val": {
@@ -148,8 +148,8 @@ fn enumerate_err_message() {
                     ]
                 }
             }
-        }))
-        .unwrap()
+        })
+        .to_string()
     );
 }
 
@@ -168,8 +168,8 @@ fn enumerate_custom_err_message_fn() {
     let s = TestStruct { val: 4 };
 
     assert_eq!(
-        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
-        serde_json::to_string(&json!({
+        s.validate().unwrap_err().to_string(),
+        json!({
             "errors": [],
             "properties": {
                 "val": {
@@ -178,8 +178,8 @@ fn enumerate_custom_err_message_fn() {
                     ]
                 }
             }
-        }))
-        .unwrap()
+        })
+        .to_string()
     );
 }
 
@@ -194,8 +194,8 @@ fn enumerate_custom_err_message() {
     let s = TestStruct { val: 4 };
 
     assert_eq!(
-        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
-        serde_json::to_string(&json!({
+        s.validate().unwrap_err().to_string(),
+        json!({
             "errors": [],
             "properties": {
                 "val": {
@@ -204,8 +204,8 @@ fn enumerate_custom_err_message() {
                     ]
                 }
             }
-        }))
-        .unwrap()
+        })
+        .to_string()
     );
 }
 
@@ -237,8 +237,8 @@ fn enumerate_numeric_trait() {
     let s = TestStruct { val: MyType(4) };
 
     assert_eq!(
-        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
-        serde_json::to_string(&json!({
+        s.validate().unwrap_err().to_string(),
+        json!({
             "errors": [],
             "properties": {
                 "val": {
@@ -247,7 +247,7 @@ fn enumerate_numeric_trait() {
                     ]
                 }
             }
-        }))
-        .unwrap()
+        })
+        .to_string()
     );
 }

@@ -29,8 +29,8 @@ fn enum_named_variant_validation_is_ok() {
         b: TestStruct { val: 12 },
     };
     assert_eq!(
-        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
-        serde_json::to_string(&json!({
+        s.validate().unwrap_err().to_string(),
+        json!({
             "errors": [],
             "properties": {
                 "a": {
@@ -50,8 +50,8 @@ fn enum_named_variant_validation_is_ok() {
                     }
                 }
             }
-        }))
-        .unwrap()
+        })
+        .to_string()
     );
 }
 

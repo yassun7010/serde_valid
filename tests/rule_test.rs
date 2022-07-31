@@ -57,12 +57,12 @@ fn rule_struct_named_fields_is_err() {
         val2: 1,
     };
     assert_eq!(
-        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
-        serde_json::to_string(&json!({
+        s.validate().unwrap_err().to_string(),
+        json!({
             "errors": ["Rule error."],
             "properties": {}
-        }))
-        .unwrap()
+        })
+        .to_string()
     );
 }
 

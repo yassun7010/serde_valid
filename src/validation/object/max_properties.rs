@@ -35,16 +35,16 @@ use crate::{traits::Size, MaxPropertiesErrorParams};
 /// let s = TestStruct { val: MyType(map) };
 ///
 /// assert_eq!(
-///     serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
-///     serde_json::to_string(&json!({
+///     s.validate().unwrap_err().to_string(),
+///     json!({
 ///         "errors": [],
 ///         "properties": {
 ///             "val": {
 ///                 "errors": ["The size of the properties must be `<= 2`."]
 ///             }
 ///         }
-///     }))
-///     .unwrap()
+///     })
+///     .to_string()
 /// );
 /// ```
 pub trait ValidateMaxProperties {

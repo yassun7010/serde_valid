@@ -30,16 +30,16 @@ use crate::{traits::Length, MaxLengthErrorParams};
 /// };
 ///
 /// assert_eq!(
-///     serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
-///     serde_json::to_string(&json!({
+///     s.validate().unwrap_err().to_string(),
+///     json!({
 ///         "errors": [],
 ///         "properties": {
 ///             "val": {
 ///                 "errors": ["The length of the value must be `<= 5`."]
 ///             }
 ///         }
-///     }))
-///     .unwrap()
+///     })
+///     .to_string()
 /// );
 /// ```
 pub trait ValidateMaxLength {

@@ -34,8 +34,8 @@ fn items_err_message() {
     };
 
     assert_eq!(
-        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
-        serde_json::to_string(&json!({
+        s.validate().unwrap_err().to_string(),
+        json!({
             "errors": [],
             "properties": {
                 "val": {
@@ -67,7 +67,7 @@ fn items_err_message() {
                     }
                 }
             }
-        }))
-        .unwrap()
+        })
+        .to_string()
     );
 }

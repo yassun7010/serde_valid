@@ -31,16 +31,16 @@ use crate::EnumerateErrorParams;
 /// };
 ///
 /// assert_eq!(
-///     serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
-///     serde_json::to_string(&json!({
+///     s.validate().unwrap_err().to_string(),
+///     json!({
 ///         "errors": [],
 ///         "properties": {
 ///             "val": {
 ///                 "errors": ["The value must be in [1, 2, 3]."]
 ///             }
 ///         }
-///     }))
-///     .unwrap()
+///     })
+///     .to_string()
 /// );
 /// ```
 pub trait ValidateEnumerate<T> {

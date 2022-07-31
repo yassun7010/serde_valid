@@ -29,16 +29,16 @@ use crate::MultipleOfErrorParams;
 /// let s = TestStruct { val: MyType(6) };
 ///
 /// assert_eq!(
-///     serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
-///     serde_json::to_string(&json!({
+///     s.validate().unwrap_err().to_string(),
+///     json!({
 ///         "errors": [],
 ///         "properties": {
 ///             "val": {
 ///                 "errors": ["The value must be multiple of `5`."]
 ///             }
 ///         }
-///     }))
-///     .unwrap()
+///     })
+///     .to_string()
 /// );
 /// ```
 pub trait ValidateMultipleOf<T>

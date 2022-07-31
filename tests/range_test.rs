@@ -240,8 +240,8 @@ fn range_inclusive_err_message() {
     let s = TestStruct { val: 0 };
 
     assert_eq!(
-        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
-        serde_json::to_string(&json!({
+        s.validate().unwrap_err().to_string(),
+        json!({
             "errors": [],
             "properties": {
                 "val": {
@@ -250,8 +250,8 @@ fn range_inclusive_err_message() {
                     ]
                 }
             }
-        }))
-        .unwrap()
+        })
+        .to_string()
     );
 }
 
@@ -267,8 +267,8 @@ fn range_exclusive_err_message() {
     let s = TestStruct { val: 0 };
 
     assert_eq!(
-        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
-        serde_json::to_string(&json!({
+        s.validate().unwrap_err().to_string(),
+        json!({
             "errors": [],
             "properties": {
                 "val": {
@@ -277,8 +277,8 @@ fn range_exclusive_err_message() {
                     ]
                 }
             }
-        }))
-        .unwrap()
+        })
+        .to_string()
     );
 }
 
@@ -302,8 +302,8 @@ fn range_custom_err_message_fn() {
     let s = TestStruct { val: 4 };
 
     assert_eq!(
-        serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
-        serde_json::to_string(&json!({
+        s.validate().unwrap_err().to_string(),
+        json!({
             "errors": [],
             "properties": {
                 "val": {
@@ -313,8 +313,8 @@ fn range_custom_err_message_fn() {
                     ]
                 }
             }
-        }))
-        .unwrap()
+        })
+        .to_string()
     );
 }
 
@@ -332,7 +332,7 @@ fn range_custom_err_message() {
 
     assert_eq!(
         serde_json::to_string(&result).unwrap(),
-        serde_json::to_string(&json!({
+        json!({
             "errors": [],
             "properties": {
                 "val": {
@@ -342,7 +342,7 @@ fn range_custom_err_message() {
                     ]
                 }
             }
-        }))
-        .unwrap()
+        })
+        .to_string()
     );
 }
