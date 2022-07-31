@@ -79,7 +79,7 @@
 //! let err = SampleStruct::from_json_value(json!({ "val": 123 })).unwrap_err();
 //!
 //! assert_eq!(
-//!     serde_json::to_value(err.as_validation_errors().unwrap()).unwrap(),
+//!     err.as_validation_errors().unwrap().to_string(),
 //!     json!({
 //!         "errors": [],
 //!         "properties": {
@@ -88,6 +88,7 @@
 //!             }
 //!         }
 //!     })
+//!     .to_string()
 //! );
 //! ```
 //!
@@ -299,10 +300,8 @@
 //!
 //! #[derive(Validate)]
 //! struct SampleStruct (
-//!     #[validate(maximum = 4)]
-//!     u32,
-//!     #[validate(maximum = 3)]
-//!     u32,
+//!     #[validate(maximum = 4)] u32,
+//!     #[validate(maximum = 3)] u32,
 //! );
 //!
 //! let s = SampleStruct ( 5, 4 );
@@ -333,8 +332,7 @@
 //!
 //! #[derive(Validate)]
 //! struct SampleStruct (
-//!     #[validate(maximum = 4)]
-//!     u32
+//!     #[validate(maximum = 4)] u32
 //! );
 //!
 //! let s = SampleStruct (5);
