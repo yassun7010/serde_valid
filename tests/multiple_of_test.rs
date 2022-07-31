@@ -1,5 +1,5 @@
 use serde_json::json;
-use serde_valid::{Validate, ValidateMultipleOf};
+use serde_valid::Validate;
 
 #[test]
 fn multiple_of_integer_is_ok() {
@@ -195,28 +195,4 @@ fn multiple_of_custom_err_message() {
         }))
         .unwrap()
     );
-}
-
-#[test]
-fn multiple_of_trait() {
-    struct MyType(i32);
-
-    impl ValidateMultipleOf<i32> for MyType {
-        fn validate_multiple_of(
-            &self,
-            multiple_of: i32,
-        ) -> Result<(), serde_valid::MultipleOfErrorParams> {
-            self.0.validate_multiple_of(multiple_of)
-        }
-    }
-
-    #[derive(Validate)]
-    struct TestStruct {
-        #[validate(multiple_of = 5)]
-        val: MyType,
-    }
-
-    let s = TestStruct { val: MyType(10) };
-
-    assert!(s.validate().is_ok());
 }

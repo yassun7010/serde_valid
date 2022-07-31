@@ -4,6 +4,43 @@ use crate::MultipleOfErrorParams;
 /// Multipl validation of the number.
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/numeric.html#multiples>
+///
+/// ```rust
+/// use serde_json::json;
+/// use serde_valid::{Validate, ValidateMultipleOf};
+///
+/// struct MyType(i32);
+///
+/// impl ValidateMultipleOf<i32> for MyType {
+///     fn validate_multiple_of(
+///         &self,
+///         multiple_of: i32,
+///     ) -> Result<(), serde_valid::MultipleOfErrorParams> {
+///         self.0.validate_multiple_of(multiple_of)
+///     }
+/// }
+///
+/// #[derive(Validate)]
+/// struct TestStruct {
+///     #[validate(multiple_of = 5)]
+///     val: MyType,
+/// }
+///
+/// let s = TestStruct { val: MyType(6) };
+///
+/// assert_eq!(
+///     serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
+///     serde_json::to_string(&json!({
+///         "errors": [],
+///         "properties": {
+///             "val": {
+///                 "errors": ["The value must be multiple of `5`."]
+///             }
+///         }
+///     }))
+///     .unwrap()
+/// );
+/// ```
 pub trait ValidateMultipleOf<T>
 where
     T: std::cmp::PartialEq + std::ops::Rem<Output = T> + num_traits::Zero,
