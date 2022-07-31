@@ -445,14 +445,14 @@ pub mod error;
 mod traits;
 pub mod validation;
 
+use indexmap::IndexMap;
+
 pub use error::{
     EnumerateErrorParams, Error, ExclusiveMaximumErrorParams, ExclusiveMinimumErrorParams,
     MaxItemsErrorParams, MaxLengthErrorParams, MaxPropertiesErrorParams, MaximumErrorParams,
     MinItemsErrorParams, MinLengthErrorParams, MinPropertiesErrorParams, MinimumErrorParams,
     MultipleOfErrorParams, PatternErrorParams, UniqueItemsErrorParams,
 };
-use indexmap::IndexMap;
-use validation::ArrayErrors;
 pub use validation::{
     ValidateEnumerate, ValidateExclusiveMaximum, ValidateExclusiveMinimum, ValidateMaxItems,
     ValidateMaxLength, ValidateMaxProperties, ValidateMaximum, ValidateMinItems, ValidateMinLength,
@@ -479,10 +479,9 @@ where
         if items.len() == 0 {
             Ok(())
         } else {
-            Err(self::validation::Errors::Array(ArrayErrors::new(
-                vec![],
-                items,
-            )))
+            Err(self::validation::Errors::Array(
+                validation::ArrayErrors::new(vec![], items),
+            ))
         }
     }
 }
@@ -502,10 +501,9 @@ where
         if items.len() == 0 {
             Ok(())
         } else {
-            Err(self::validation::Errors::Array(ArrayErrors::new(
-                vec![],
-                items,
-            )))
+            Err(self::validation::Errors::Array(
+                validation::ArrayErrors::new(vec![], items),
+            ))
         }
     }
 }
