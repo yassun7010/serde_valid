@@ -140,7 +140,7 @@ struct_error_params!(
 // Object
 struct_error_params!(
     #[derive(Debug, Clone)]
-    #[default_message = "the size of the properties must be `<= {}`."]
+    #[default_message = "The size of the properties must be `<= {}`."]
     pub struct MaxPropertiesErrorParams {
         pub max_properties: usize,
     }
@@ -148,7 +148,7 @@ struct_error_params!(
 
 struct_error_params!(
     #[derive(Debug, Clone)]
-    #[default_message = "the size of the properties must be `>= {}`."]
+    #[default_message = "The size of the properties must be `>= {}`."]
     pub struct MinPropertiesErrorParams {
         pub min_properties: usize,
     }

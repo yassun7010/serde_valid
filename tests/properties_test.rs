@@ -2,7 +2,6 @@ use serde_valid::Validate;
 
 use serde::Deserialize;
 use serde_json::json;
-use serde_valid::{ValidateMaxProperties, ValidateMinProperties};
 use std::collections::BTreeMap;
 use std::collections::HashMap;
 
@@ -100,7 +99,7 @@ fn properties_hash_map_type_err_message() {
             "properties": {
                 "val": {
                     "errors": [
-                        "the size of the properties must be `>= 3`."
+                        "The size of the properties must be `>= 3`."
                     ]
                 }
             }
@@ -130,7 +129,7 @@ fn properties_btree_map_type_err_message() {
             "properties": {
                 "val": {
                     "errors": [
-                        "the size of the properties must be `>= 3`."
+                        "The size of the properties must be `>= 3`."
                     ]
                 }
             }
@@ -162,7 +161,7 @@ fn properties_json_map_type_err_message() {
             "properties": {
                 "val": {
                     "errors": [
-                        "the size of the properties must be `>= 3`.",
+                        "The size of the properties must be `>= 3`.",
                     ]
                 }
             }
@@ -245,42 +244,4 @@ fn properties_custom_err_message() {
         }))
         .unwrap()
     );
-}
-
-#[test]
-fn properties_trait() {
-    struct MyType(HashMap<String, String>);
-
-    impl ValidateMaxProperties for MyType {
-        fn validate_max_properties(
-            &self,
-            max_properties: usize,
-        ) -> Result<(), serde_valid::MaxPropertiesErrorParams> {
-            self.0.validate_max_properties(max_properties)
-        }
-    }
-
-    impl ValidateMinProperties for MyType {
-        fn validate_min_properties(
-            &self,
-            min_properties: usize,
-        ) -> Result<(), serde_valid::MinPropertiesErrorParams> {
-            self.0.validate_min_properties(min_properties)
-        }
-    }
-
-    #[derive(Validate)]
-    struct TestStruct {
-        #[validate(min_properties = 3)]
-        #[validate(max_properties = 3)]
-        val: MyType,
-    }
-
-    let mut map = HashMap::new();
-    map.insert("key1".to_string(), "value1".to_string());
-    map.insert("key2".to_string(), "value2".to_string());
-    map.insert("key3".to_string(), "value3".to_string());
-
-    let s = TestStruct { val: MyType(map) };
-    assert!(s.validate().is_ok());
 }

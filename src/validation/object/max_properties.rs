@@ -3,6 +3,50 @@ use crate::{traits::Size, MaxPropertiesErrorParams};
 /// Max size validation of the object properties.
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/object.html#size>
+///
+/// ```rust
+/// use std::collections::HashMap;
+///
+/// use serde_json::json;
+/// use serde_valid::{Validate, ValidateMaxProperties};
+///
+/// struct MyType(HashMap<String, String>);
+///
+/// impl ValidateMaxProperties for MyType {
+///     fn validate_max_properties(
+///         &self,
+///         max_properties: usize,
+///     ) -> Result<(), serde_valid::MaxPropertiesErrorParams> {
+///         self.0.validate_max_properties(max_properties)
+///     }
+/// }
+///
+/// #[derive(Validate)]
+/// struct TestStruct {
+///     #[validate(max_properties = 2)]
+///     val: MyType,
+/// }
+///
+/// let mut map = HashMap::new();
+/// map.insert("key1".to_string(), "value1".to_string());
+/// map.insert("key2".to_string(), "value2".to_string());
+/// map.insert("key3".to_string(), "value3".to_string());
+///
+/// let s = TestStruct { val: MyType(map) };
+///
+/// assert_eq!(
+///     serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
+///     serde_json::to_string(&json!({
+///         "errors": [],
+///         "properties": {
+///             "val": {
+///                 "errors": ["The size of the properties must be `<= 2`."]
+///             }
+///         }
+///     }))
+///     .unwrap()
+/// );
+/// ```
 pub trait ValidateMaxProperties {
     fn validate_max_properties(
         &self,

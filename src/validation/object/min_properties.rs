@@ -3,6 +3,48 @@ use crate::{traits::Size, MinPropertiesErrorParams};
 /// Min size validation of the object properties.
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/object.html#size>
+///
+/// ```rust
+/// use std::collections::HashMap;
+///
+/// use serde_json::json;
+/// use serde_valid::{Validate, ValidateMinProperties};
+///
+/// struct MyType(HashMap<String, String>);
+///
+/// impl ValidateMinProperties for MyType {
+///     fn validate_min_properties(
+///         &self,
+///         min_properties: usize,
+///     ) -> Result<(), serde_valid::MinPropertiesErrorParams> {
+///         self.0.validate_min_properties(min_properties)
+///     }
+/// }
+///
+/// #[derive(Validate)]
+/// struct TestStruct {
+///     #[validate(min_properties = 2)]
+///     val: MyType,
+/// }
+///
+/// let mut map = HashMap::new();
+/// map.insert("key1".to_string(), "value1".to_string());
+///
+/// let s = TestStruct { val: MyType(map) };
+///
+/// assert_eq!(
+///     serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
+///     serde_json::to_string(&json!({
+///         "errors": [],
+///         "properties": {
+///             "val": {
+///                 "errors": ["The size of the properties must be `>= 2`."]
+///             }
+///         }
+///     }))
+///     .unwrap()
+/// );
+/// ```
 pub trait ValidateMinProperties {
     fn validate_min_properties(
         &self,
