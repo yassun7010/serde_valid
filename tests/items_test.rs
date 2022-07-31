@@ -158,7 +158,7 @@ fn items_err_message() {
             "errors": [],
             "properties": {
                 "val": {
-                    "errors": ["the length of the items must be `>= 4`."]
+                    "errors": ["The length of the items must be `>= 4`."]
                 }
             }
         }))

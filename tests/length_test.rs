@@ -1,5 +1,5 @@
 use serde_json::json;
-use serde_valid::{Validate, ValidateMaxLength, ValidateMinLength};
+use serde_valid::Validate;
 use std::borrow::Cow;
 use std::ffi::{OsStr, OsString};
 
@@ -260,7 +260,7 @@ fn length_err_message() {
             "properties": {
                 "val": {
                     "errors": [
-                        "the length of the value must be `<= 3`."
+                        "The length of the value must be `<= 3`."
                     ]
                 }
             }
@@ -370,40 +370,4 @@ fn length_vec_err_message() {
         }))
         .unwrap()
     );
-}
-
-#[test]
-fn length_trait() {
-    struct MyType(String);
-
-    impl ValidateMaxLength for MyType {
-        fn validate_max_length(
-            &self,
-            max_length: usize,
-        ) -> Result<(), serde_valid::MaxLengthErrorParams> {
-            self.0.validate_max_length(max_length)
-        }
-    }
-
-    impl ValidateMinLength for MyType {
-        fn validate_min_length(
-            &self,
-            min_length: usize,
-        ) -> Result<(), serde_valid::MinLengthErrorParams> {
-            self.0.validate_min_length(min_length)
-        }
-    }
-
-    #[derive(Validate)]
-    struct TestStruct {
-        #[validate(min_length = 5)]
-        #[validate(max_length = 5)]
-        val: MyType,
-    }
-
-    let s = TestStruct {
-        val: MyType(String::from("😍👺🙋🏽👨‍🎤👨‍👩‍👧‍👦")),
-    };
-
-    assert!(s.validate().is_ok());
 }

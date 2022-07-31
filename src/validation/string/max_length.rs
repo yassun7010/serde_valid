@@ -3,6 +3,45 @@ use crate::{traits::Length, MaxLengthErrorParams};
 /// Max length validation of the string.
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/string.html#length>
+///
+/// ```rust
+/// use serde_json::json;
+/// use serde_valid::{Validate, ValidateMaxLength};
+///
+/// struct MyType(String);
+///
+/// impl ValidateMaxLength for MyType {
+///     fn validate_max_length(
+///         &self,
+///         max_length: usize,
+///     ) -> Result<(), serde_valid::MaxLengthErrorParams> {
+///         self.0.validate_max_length(max_length)
+///     }
+/// }
+///
+/// #[derive(Validate)]
+/// struct TestStruct {
+///     #[validate(max_length = 5)]
+///     val: MyType,
+/// }
+///
+/// let s = TestStruct {
+///     val: MyType(String::from("abcdef")),
+/// };
+///
+/// assert_eq!(
+///     serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
+///     serde_json::to_string(&json!({
+///         "errors": [],
+///         "properties": {
+///             "val": {
+///                 "errors": ["The length of the value must be `<= 5`."]
+///             }
+///         }
+///     }))
+///     .unwrap()
+/// );
+/// ```
 pub trait ValidateMaxLength {
     fn validate_max_length(&self, max_length: usize) -> Result<(), MaxLengthErrorParams>;
 }

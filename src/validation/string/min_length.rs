@@ -3,6 +3,45 @@ use crate::{traits::Length, MinLengthErrorParams};
 /// Min length validation of the string.
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/string.html#length>
+///
+/// ```rust
+/// use serde_json::json;
+/// use serde_valid::{Validate, ValidateMinLength};
+///
+/// struct MyType(String);
+///
+/// impl ValidateMinLength for MyType {
+///     fn validate_min_length(
+///         &self,
+///         min_length: usize,
+///     ) -> Result<(), serde_valid::MinLengthErrorParams> {
+///         self.0.validate_min_length(min_length)
+///     }
+/// }
+///
+/// #[derive(Validate)]
+/// struct TestStruct {
+///     #[validate(min_length = 5)]
+///     val: MyType,
+/// }
+///
+/// let s = TestStruct {
+///     val: MyType(String::from("abc")),
+/// };
+///
+/// assert_eq!(
+///     serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
+///     serde_json::to_string(&json!({
+///         "errors": [],
+///         "properties": {
+///             "val": {
+///                 "errors": ["The length of the value must be `>= 5`."]
+///             }
+///         }
+///     }))
+///     .unwrap()
+/// );
+/// ```
 pub trait ValidateMinLength {
     fn validate_min_length(&self, min_length: usize) -> Result<(), MinLengthErrorParams>;
 }

@@ -55,7 +55,7 @@ fn struct_unnamed_fields_is_err() {
             "errors": [],
             "items": {
                 "1": {
-                    "errors": ["the length of the value must be `>= 8`."]
+                    "errors": ["The length of the value must be `>= 8`."]
                 }
             }
         })
