@@ -20,7 +20,7 @@ fn json_error_to_string() {
             "errors": [],
             "properties": {
                 "val": {
-                    "errors": ["the number must be `<= 1000`."]
+                    "errors": ["The number must be `<= 1000`."]
                 }
             }
         })
@@ -44,7 +44,7 @@ fn json_error_as_validation_errors() {
             "errors": [],
             "properties": {
                 "val": {
-                    "errors": ["the number must be `<= 1000`."]
+                    "errors": ["The number must be `<= 1000`."]
                 }
             }
         })
@@ -72,7 +72,7 @@ fn yaml_error_as_validation_errors() {
             "errors": [],
             "properties": {
                 "val": {
-                    "errors": ["the number must be `<= 10`."]
+                    "errors": ["The number must be `<= 10`."]
                 }
             }
         })
@@ -100,7 +100,7 @@ fn toml_error_as_validation_errors() {
             "errors": [],
             "properties": {
                 "val": {
-                    "errors": ["the number must be `<= 10`."]
+                    "errors": ["The number must be `<= 10`."]
                 }
             }
         })

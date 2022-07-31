@@ -48,7 +48,7 @@ fn items_err_message() {
                             "errors": ["Rule error."],
                             "properties": {
                                 "val": {
-                                    "errors": ["the number must be `>= 1`."]
+                                    "errors": ["The number must be `>= 1`."]
                                 }
                             }
                         },
@@ -60,7 +60,7 @@ fn items_err_message() {
                             "errors": ["Rule error."],
                             "properties": {
                                 "val": {
-                                    "errors": ["the number must be `<= 10`."]
+                                    "errors": ["The number must be `<= 10`."]
                                 }
                             }
                         }

@@ -84,7 +84,7 @@ assert_eq!(
         "errors": [],
         "properties": {
             "val": {
-                "errors": ["the number must be `<= 100`."]
+                "errors": ["The number must be `<= 100`."]
             }
         }
     })

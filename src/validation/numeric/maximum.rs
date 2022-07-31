@@ -4,6 +4,39 @@ use crate::MaximumErrorParams;
 /// Maximum validation of the number.
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/numeric.html#range>
+///
+/// ```rust
+/// use serde_json::json;
+/// use serde_valid::{Validate, ValidateMaximum};
+/// struct MyType(i32);
+///
+/// impl ValidateMaximum<i32> for MyType {
+///     fn validate_maximum(&self, maximum: i32) -> Result<(), serde_valid::MaximumErrorParams> {
+///         self.0.validate_maximum(maximum)
+///     }
+/// }
+///
+/// #[derive(Validate)]
+/// struct TestStruct {
+///     #[validate(maximum = 5)]
+///     val: MyType,
+/// }
+///
+/// let s = TestStruct { val: MyType(6) };
+///
+/// assert_eq!(
+///     serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
+///     serde_json::to_string(&json!({
+///         "errors": [],
+///         "properties": {
+///             "val": {
+///                 "errors": ["The number must be `<= 5`."]
+///             }
+///         }
+///     }))
+///     .unwrap()
+/// );
+/// ```
 pub trait ValidateMaximum<T>
 where
     T: PartialOrd + PartialEq,

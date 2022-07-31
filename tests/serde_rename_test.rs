@@ -35,7 +35,7 @@ fn serde_rename_is_err() {
             "properties": {
                 "value": {
                     "errors": [
-                        "the number must be `<= 100`."
+                        "The number must be `<= 100`."
                     ]
                 }
             }
@@ -74,7 +74,7 @@ fn serde_rename_deserialize_is_err() {
             "errors": [],
             "properties": {
                 "value": {
-                    "errors": ["the number must be `<= 100`."]
+                    "errors": ["The number must be `<= 100`."]
                 }
             }
         })
@@ -116,7 +116,7 @@ fn serde_rename_enume_is_err() {
             "errors": [],
             "properties": {
                 "value": {
-                    "errors": ["the number must be `<= 100`."]
+                    "errors": ["The number must be `<= 100`."]
                 }
             }
         })

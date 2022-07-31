@@ -37,7 +37,7 @@ fn enum_named_variant_validation_is_ok() {
                     "errors": [],
                     "properties": {
                         "val": {
-                            "errors": ["the number must be `<= 10`."]
+                            "errors": ["The number must be `<= 10`."]
                         }
                     }
                 },
@@ -45,7 +45,7 @@ fn enum_named_variant_validation_is_ok() {
                     "errors": [],
                     "properties": {
                         "val": {
-                            "errors": ["the number must be `<= 10`."]
+                            "errors": ["The number must be `<= 10`."]
                         }
                     }
                 }

@@ -6,6 +6,39 @@ use crate::ExclusiveMaximumErrorParams;
 /// Exclusive maximum validation of the number.
 ///
 /// See <https://json-schema.org/understanding-json-schema/reference/numeric.html#range>
+///
+/// ```rust
+/// use serde_json::json;
+/// use serde_valid::{Validate, ValidateExclusiveMaximum};
+/// struct MyType(i32);
+///
+/// impl ValidateExclusiveMaximum<i32> for MyType {
+///     fn validate_exclusive_maximum(&self, exclusive_maximum: i32) -> Result<(), serde_valid::ExclusiveMaximumErrorParams> {
+///         self.0.validate_exclusive_maximum(exclusive_maximum)
+///     }
+/// }
+///
+/// #[derive(Validate)]
+/// struct TestStruct {
+///     #[validate(exclusive_maximum = 5)]
+///     val: MyType,
+/// }
+///
+/// let s = TestStruct { val: MyType(5) };
+///
+/// assert_eq!(
+///     serde_json::to_string(&s.validate().unwrap_err()).unwrap(),
+///     serde_json::to_string(&json!({
+///         "errors": [],
+///         "properties": {
+///             "val": {
+///                 "errors": ["The number must be `< 5`."]
+///             }
+///         }
+///     }))
+///     .unwrap()
+/// );
+/// ```
 pub trait ValidateExclusiveMaximum<T>
 where
     T: PartialOrd + PartialEq,

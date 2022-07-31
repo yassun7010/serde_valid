@@ -1,7 +1,5 @@
 use serde_json::json;
-use serde_valid::{
-    Validate, ValidateExclusiveMaximum, ValidateExclusiveMinimum, ValidateMaximum, ValidateMinimum,
-};
+use serde_valid::Validate;
 
 #[test]
 fn range_integer() {
@@ -248,7 +246,7 @@ fn range_inclusive_err_message() {
             "properties": {
                 "val": {
                     "errors": [
-                        "the number must be `>= 1`."
+                        "The number must be `>= 1`."
                     ]
                 }
             }
@@ -275,7 +273,7 @@ fn range_exclusive_err_message() {
             "properties": {
                 "val": {
                     "errors": [
-                        "the number must be `> 1`."
+                        "The number must be `> 1`."
                     ]
                 }
             }
@@ -347,50 +345,4 @@ fn range_custom_err_message() {
         }))
         .unwrap()
     );
-}
-
-#[test]
-fn range_trait() {
-    struct MyType(i32);
-
-    impl ValidateMinimum<i32> for MyType {
-        fn validate_minimum(&self, minimum: i32) -> Result<(), serde_valid::MinimumErrorParams> {
-            self.0.validate_minimum(minimum)
-        }
-    }
-
-    impl ValidateMaximum<i32> for MyType {
-        fn validate_maximum(&self, maximum: i32) -> Result<(), serde_valid::MaximumErrorParams> {
-            self.0.validate_maximum(maximum)
-        }
-    }
-
-    impl ValidateExclusiveMinimum<i32> for MyType {
-        fn validate_exclusive_minimum(
-            &self,
-            exclusive_minimum: i32,
-        ) -> Result<(), serde_valid::ExclusiveMinimumErrorParams> {
-            self.0.validate_exclusive_minimum(exclusive_minimum)
-        }
-    }
-
-    impl ValidateExclusiveMaximum<i32> for MyType {
-        fn validate_exclusive_maximum(
-            &self,
-            exclusive_maximum: i32,
-        ) -> Result<(), serde_valid::ExclusiveMaximumErrorParams> {
-            self.0.validate_exclusive_maximum(exclusive_maximum)
-        }
-    }
-
-    #[derive(Validate)]
-    struct TestStruct {
-        #[validate(minimum = 3)]
-        #[validate(maximum = 5)]
-        val: MyType,
-    }
-
-    let s = TestStruct { val: MyType(4) };
-
-    assert!(s.validate().is_ok());
 }

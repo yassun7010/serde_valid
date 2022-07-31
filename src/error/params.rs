@@ -51,7 +51,7 @@ macro_rules! struct_error_params {
 // Number
 struct_error_params!(
     #[derive(Debug, Clone)]
-    #[default_message = "the number must be `>= {}`."]
+    #[default_message = "The number must be `>= {}`."]
     pub struct MinimumErrorParams {
         pub minimum: Number,
     }
@@ -59,7 +59,7 @@ struct_error_params!(
 
 struct_error_params!(
     #[derive(Debug, Clone)]
-    #[default_message = "the number must be `<= {}`."]
+    #[default_message = "The number must be `<= {}`."]
     pub struct MaximumErrorParams {
         pub maximum: Number,
     }
@@ -67,7 +67,7 @@ struct_error_params!(
 
 struct_error_params!(
     #[derive(Debug, Clone)]
-    #[default_message = "the number must be `> {}`."]
+    #[default_message = "The number must be `> {}`."]
     pub struct ExclusiveMinimumErrorParams {
         pub exclusive_minimum: Number,
     }
@@ -75,7 +75,7 @@ struct_error_params!(
 
 struct_error_params!(
     #[derive(Debug, Clone)]
-    #[default_message = "the number must be `< {}`."]
+    #[default_message = "The number must be `< {}`."]
     pub struct ExclusiveMaximumErrorParams {
         pub exclusive_maximum: Number,
     }
