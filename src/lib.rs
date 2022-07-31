@@ -349,7 +349,7 @@
 //! use serde_valid::Validate;
 //!
 //! #[derive(Validate)]
-//! enum TestEnum {
+//! enum SampleEnum {
 //!     Named {
 //!         #[validate(maximum = 5)]
 //!         a: i32,
@@ -358,7 +358,7 @@
 //!     },
 //! }
 //!
-//! let s = TestEnum::Named { a: 6, b: 6 };
+//! let s = SampleEnum::Named { a: 6, b: 6 };
 //!
 //! assert_eq!(
 //!     s.validate().unwrap_err().to_string(),
@@ -385,14 +385,14 @@
 //! use serde_valid::Validate;
 //!
 //! #[derive(Validate)]
-//! enum TestEnum {
+//! enum SampleEnum {
 //!     Unnamed (
 //!         #[validate(maximum = 5)] i32,
 //!         #[validate(maximum = 5)] i32,
 //!     ),
 //! }
 //!
-//! let s = TestEnum::Unnamed ( 6, 6 );
+//! let s = SampleEnum::Unnamed ( 6, 6 );
 //!
 //! assert_eq!(
 //!     s.validate().unwrap_err().to_string(),
@@ -419,13 +419,13 @@
 //! use serde_valid::Validate;
 //!
 //! #[derive(Validate)]
-//! enum TestEnum {
+//! enum SampleEnum {
 //!     NewType (
 //!         #[validate(maximum = 5)] i32,
 //!     ),
 //! }
 //!
-//! let s = TestEnum::NewType ( 6 );
+//! let s = SampleEnum::NewType ( 6 );
 //!
 //! assert_eq!(
 //!     s.validate().unwrap_err().to_string(),
