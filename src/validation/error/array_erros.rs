@@ -1,15 +1,13 @@
-use indexmap::IndexMap;
-
-use super::{Errors, VecErrors};
+use super::{ItemErrorsMap, VecErrors};
 
 #[derive(Debug, Clone, serde::Serialize, thiserror::Error)]
 pub struct ArrayErrors {
     pub errors: VecErrors,
-    pub items: IndexMap<usize, Errors>,
+    pub items: ItemErrorsMap,
 }
 
 impl ArrayErrors {
-    pub fn new(errors: VecErrors, items: IndexMap<usize, Errors>) -> Self {
+    pub fn new(errors: VecErrors, items: ItemErrorsMap) -> Self {
         Self { errors, items }
     }
 

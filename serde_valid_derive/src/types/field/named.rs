@@ -37,7 +37,7 @@ impl<'a> Field for NamedField<'a> {
     }
 
     fn errors_variable(&self) -> proc_macro2::TokenStream {
-        quote!(__properties_errors)
+        quote!(__property_vec_errors_map)
     }
 
     fn getter_token(&self) -> proc_macro2::TokenStream {

@@ -42,7 +42,7 @@ impl<'a> Field for UnnamedField<'a> {
     }
 
     fn errors_variable(&self) -> proc_macro2::TokenStream {
-        quote!(__items_errors)
+        quote!(__item_vec_errors_map)
     }
 
     fn getter_token(&self) -> proc_macro2::TokenStream {

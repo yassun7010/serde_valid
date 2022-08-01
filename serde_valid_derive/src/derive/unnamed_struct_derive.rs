@@ -50,13 +50,13 @@ pub fn expand_unnamed_struct_derive(
         Ok(quote!(
             impl #impl_generics ::serde_valid::Validate for #ident #type_generics #where_clause {
                 fn validate(&self) -> std::result::Result<(), ::serde_valid::validation::Errors> {
-                    let mut __rule_errors = ::serde_valid::validation::VecErrors::new();
-                    let mut __items_errors = ::serde_valid::validation::ItemsErrors::new();
+                    let mut __rule_vec_errors = ::serde_valid::validation::VecErrors::new();
+                    let mut __item_vec_errors_map = ::serde_valid::validation::ItemVecErrorsMap::new();
 
                     #validates
                     #rules
 
-                    if __rule_errors.is_empty() && __items_errors.is_empty() {
+                    if __rule_vec_errors.is_empty() && __item_vec_errors_map.is_empty() {
                         Ok(())
                     } else {
                         Err(#fields_errors)

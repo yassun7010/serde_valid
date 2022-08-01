@@ -1,15 +1,13 @@
-use indexmap::IndexMap;
-
-use super::{Errors, VecErrors};
+use super::{PropertyErrorsMap, VecErrors};
 
 #[derive(Debug, Clone, serde::Serialize, thiserror::Error)]
 pub struct ObjectErrors {
     pub errors: VecErrors,
-    pub properties: IndexMap<&'static str, Errors>,
+    pub properties: PropertyErrorsMap,
 }
 
 impl ObjectErrors {
-    pub fn new(errors: VecErrors, properties: IndexMap<&'static str, Errors>) -> Self {
+    pub fn new(errors: VecErrors, properties: PropertyErrorsMap) -> Self {
         Self { errors, properties }
     }
 }
