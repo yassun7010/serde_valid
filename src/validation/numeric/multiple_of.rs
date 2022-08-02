@@ -91,12 +91,37 @@ mod tests {
 
     #[test]
     fn test_validate_numeric_multiple_of_integer_is_true() {
-        assert!(ValidateMultipleOf::validate_multiple_of(&10, 5).is_ok());
+        assert!(ValidateMultipleOf::validate_multiple_of(&10i8, 5).is_ok());
+        assert!(ValidateMultipleOf::validate_multiple_of(&10i16, 5).is_ok());
+        assert!(ValidateMultipleOf::validate_multiple_of(&10i32, 5).is_ok());
+        assert!(ValidateMultipleOf::validate_multiple_of(&10i64, 5).is_ok());
+        assert!(ValidateMultipleOf::validate_multiple_of(&10i128, 5).is_ok());
+        assert!(ValidateMultipleOf::validate_multiple_of(&10isize, 5).is_ok());
+
+        assert!(ValidateMultipleOf::validate_multiple_of(&10u8, 5).is_ok());
+        assert!(ValidateMultipleOf::validate_multiple_of(&10u16, 5).is_ok());
+        assert!(ValidateMultipleOf::validate_multiple_of(&10u32, 5).is_ok());
+        assert!(ValidateMultipleOf::validate_multiple_of(&10u64, 5).is_ok());
+        assert!(ValidateMultipleOf::validate_multiple_of(&10u128, 5).is_ok());
+        assert!(ValidateMultipleOf::validate_multiple_of(&10usize, 5).is_ok());
     }
 
     #[test]
     fn test_validate_numeric_multiple_of_integer_is_false() {
         assert!(ValidateMultipleOf::validate_multiple_of(&10, 3).is_err());
+        assert!(ValidateMultipleOf::validate_multiple_of(&10i8, 3).is_err());
+        assert!(ValidateMultipleOf::validate_multiple_of(&10i16, 3).is_err());
+        assert!(ValidateMultipleOf::validate_multiple_of(&10i32, 3).is_err());
+        assert!(ValidateMultipleOf::validate_multiple_of(&10i64, 3).is_err());
+        assert!(ValidateMultipleOf::validate_multiple_of(&10i128, 3).is_err());
+        assert!(ValidateMultipleOf::validate_multiple_of(&10isize, 3).is_err());
+
+        assert!(ValidateMultipleOf::validate_multiple_of(&10u8, 3).is_err());
+        assert!(ValidateMultipleOf::validate_multiple_of(&10u16, 3).is_err());
+        assert!(ValidateMultipleOf::validate_multiple_of(&10u32, 3).is_err());
+        assert!(ValidateMultipleOf::validate_multiple_of(&10u64, 3).is_err());
+        assert!(ValidateMultipleOf::validate_multiple_of(&10u128, 3).is_err());
+        assert!(ValidateMultipleOf::validate_multiple_of(&10usize, 3).is_err());
     }
 
     #[test]
