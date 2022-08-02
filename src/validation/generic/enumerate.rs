@@ -157,7 +157,7 @@ where
         limit: &[&'static str],
     ) -> Result<(), crate::validation::Composited<EnumerateErrorParams>> {
         self.validate_enumerate(limit)
-            .map_err(|error| crate::validation::Composited::Single(error))
+            .map_err(crate::validation::Composited::Single)
     }
 }
 

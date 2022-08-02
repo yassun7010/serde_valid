@@ -15,7 +15,7 @@ impl<'a> ToTokens for LitNumeric<'a> {
     }
 }
 
-pub fn get_numeric<'a>(lit: &'a syn::Lit) -> Result<LitNumeric<'a>, crate::Errors> {
+pub fn get_numeric(lit: &syn::Lit) -> Result<LitNumeric, crate::Errors> {
     match lit {
         syn::Lit::Int(int) => Ok(LitNumeric::Int(int)),
         syn::Lit::Float(float) => Ok(LitNumeric::Float(float)),

@@ -30,7 +30,7 @@ where
         let model: T = serde_json::from_slice(slice)?;
         model
             .validate()
-            .map_err(|err| crate::Error::ValidationError(err))?;
+            .map_err(crate::Error::ValidationError)?;
         Ok(model)
     }
 }

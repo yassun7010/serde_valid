@@ -30,7 +30,7 @@ pub fn extract_validator_from_meta_list(
         }
     };
 
-    if nested.len() > 0 {
+    if !nested.is_empty() {
         let meta_item = &nested[0];
         match meta_item {
             syn::NestedMeta::Meta(meta) => match meta {

@@ -2,7 +2,7 @@ use crate::error::object_errors_tokens;
 use crate::rule::collect_rules_from_named_struct;
 use crate::serde::rename::{collect_serde_rename_map, RenameMap};
 use crate::types::{Field, NamedField};
-use crate::validate::{extract_meta_validator, FieldValidators};
+use crate::validate::{extract_meta_validator, FieldValidators, Validator};
 use proc_macro2::TokenStream;
 use quote::quote;
 use std::borrow::Cow;
@@ -101,20 +101,23 @@ fn collect_named_field_validators<'a>(
     let mut errors = vec![];
 
     let named_field = NamedField::new(field);
+
     let validators = named_field
         .attrs()
         .iter()
-        .filter(|attribute| attribute.path == parse_quote!(validate))
-        .filter_map(
-            |attribute| match extract_meta_validator(&named_field, attribute, rename_map) {
+        .filter_map(|attribute| {
+            if attribute.path != parse_quote!(validate) {
+                return None;
+            }
+            match extract_meta_validator(&named_field, attribute, rename_map) {
                 Ok(validator) => Some(validator),
                 Err(validator_error) => {
                     errors.extend(validator_error);
                     None
                 }
-            },
-        )
-        .collect::<Vec<_>>();
+            }
+        })
+        .collect::<Vec<Validator>>();
 
     if !errors.is_empty() {
         return Err(errors);

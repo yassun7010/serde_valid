@@ -2,14 +2,14 @@ use serde_json::json;
 use serde_valid::Validate;
 
 mod parenthesized {
-    pub fn meta_path_validation(_val: &Vec<i32>) -> Result<(), serde_valid::validation::Error> {
+    pub fn meta_path_validation(_val: &[i32]) -> Result<(), serde_valid::validation::Error> {
         Ok(())
     }
 }
 
 #[test]
 fn custom_validation_is_ok() {
-    fn user_validation(_val: &Vec<i32>) -> Result<(), serde_valid::validation::Error> {
+    fn user_validation(_val: &[i32]) -> Result<(), serde_valid::validation::Error> {
         Ok(())
     }
 
@@ -41,7 +41,7 @@ fn custom_parenthesized_path_validation_is_ok() {
 
 #[test]
 fn custom_validation_error() {
-    fn user_validation(_val: &Vec<i32>) -> Result<(), serde_valid::validation::Error> {
+    fn user_validation(_val: &[i32]) -> Result<(), serde_valid::validation::Error> {
         Err(serde_valid::validation::Error::Custom(
             "this is custom message.".to_string(),
         ))

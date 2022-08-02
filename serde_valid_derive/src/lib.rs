@@ -1,3 +1,4 @@
+#[warn(clippy::needless_collect)]
 mod derive;
 mod error;
 mod rule;

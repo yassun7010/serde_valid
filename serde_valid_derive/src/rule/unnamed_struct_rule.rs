@@ -7,7 +7,7 @@ use syn::parse_quote;
 use crate::types::CommaSeparatedTokenStreams;
 
 pub fn collect_rules_from_unnamed_struct(
-    attributes: &Vec<syn::Attribute>,
+    attributes: &[syn::Attribute],
 ) -> Result<(HashSet<syn::Ident>, TokenStream), crate::Errors> {
     let mut errors = vec![];
 
@@ -63,13 +63,13 @@ fn collect_rule(
 
     let rule = match &nested[0] {
         syn::NestedMeta::Meta(meta) => match meta {
-            syn::Meta::List(list) => extract_rule_from_meta_list(&list),
+            syn::Meta::List(list) => extract_rule_from_meta_list(list),
             syn::Meta::NameValue(name_value) => {
-                Err(vec![crate::Error::meta_name_value_not_support(&name_value)])
+                Err(vec![crate::Error::meta_name_value_not_support(name_value)])
             }
-            syn::Meta::Path(path) => Err(vec![crate::Error::meta_path_not_support(&path)]),
+            syn::Meta::Path(path) => Err(vec![crate::Error::meta_path_not_support(path)]),
         },
-        syn::NestedMeta::Lit(lit) => Err(vec![crate::Error::literal_not_support(&lit)]),
+        syn::NestedMeta::Lit(lit) => Err(vec![crate::Error::literal_not_support(lit)]),
     };
 
     match rule {
@@ -122,7 +122,7 @@ fn extract_rule_from_meta_list(
         })
         .collect::<CommaSeparatedTokenStreams>();
 
-    if errors.len() > 0 {
+    if !errors.is_empty() {
         return Err(errors);
     }
 

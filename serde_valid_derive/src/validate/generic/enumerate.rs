@@ -12,9 +12,7 @@ pub fn extract_generic_enumerate_validator(
     message_fn: Option<TokenStream>,
     rename_map: &RenameMap,
 ) -> Result<Validator, crate::Errors> {
-    Ok(inner_extract_generic_enumerate_validator(
-        field, item_list, message_fn, rename_map,
-    )?)
+    inner_extract_generic_enumerate_validator(field, item_list, message_fn, rename_map)
 }
 
 fn inner_extract_generic_enumerate_validator(
@@ -50,13 +48,13 @@ fn inner_extract_generic_enumerate_validator(
     ))
 }
 
-fn get_enumerate<'a>(
-    syn::MetaList { path, nested, .. }: &'a syn::MetaList,
-) -> Result<Lits<'a>, crate::Errors> {
+fn get_enumerate(
+    syn::MetaList { path, nested, .. }: &syn::MetaList,
+) -> Result<Lits, crate::Errors> {
     let mut errors = vec![];
     let mut enumerate = Lits::new();
 
-    if nested.len() == 0 {
+    if nested.is_empty() {
         errors.push(crate::Error::validate_enumerate_need_item(path));
     }
     for item in nested {

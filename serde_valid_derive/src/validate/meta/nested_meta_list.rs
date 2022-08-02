@@ -18,7 +18,7 @@ pub fn extract_validator_from_nested_meta_list(
         path: validation_name,
         ..
     } = validation_list;
-    let validation_ident = SingleIdentPath::new(&validation_name).ident();
+    let validation_ident = SingleIdentPath::new(validation_name).ident();
 
     match MetaListValidation::from_str(&validation_ident.to_string()) {
         Ok(MetaListValidation::Enumerate) => {

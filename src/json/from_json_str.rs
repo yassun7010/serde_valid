@@ -30,7 +30,7 @@ where
         let model: Self = serde_json::from_str(str)?;
         model
             .validate()
-            .map_err(|err| crate::Error::ValidationError(err))?;
+            .map_err(crate::Error::ValidationError)?;
         Ok(model)
     }
 }

@@ -69,9 +69,9 @@ pub fn expand_unnamed_struct_derive(
     }
 }
 
-pub fn collect_unnamed_fields_validators_list<'a>(
-    fields: &'a syn::FieldsUnnamed,
-) -> Result<Vec<FieldValidators<'a, UnnamedField<'a>>>, crate::Errors> {
+pub fn collect_unnamed_fields_validators_list(
+    fields: &syn::FieldsUnnamed,
+) -> Result<Vec<FieldValidators<UnnamedField>>, crate::Errors> {
     let mut errors = vec![];
 
     let validators = fields
@@ -94,12 +94,13 @@ pub fn collect_unnamed_fields_validators_list<'a>(
     Ok(validators)
 }
 
-fn collect_unnamed_field_validators<'a>(
-    (index, field): (usize, &'a syn::Field),
-) -> Result<FieldValidators<'a, UnnamedField<'a>>, crate::Errors> {
+fn collect_unnamed_field_validators(
+    (index, field): (usize, &syn::Field),
+) -> Result<FieldValidators<UnnamedField>, crate::Errors> {
     let mut errors = vec![];
 
     let unnamed_field = UnnamedField::new(index, field);
+
     let validators = unnamed_field
         .attrs()
         .iter()
