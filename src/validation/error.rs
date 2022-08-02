@@ -1,17 +1,16 @@
 mod array_erros;
-mod error;
+mod composited;
 mod errors;
 mod object_errors;
 
-use crate::error::ToDefaultMessage;
-pub use crate::error::{
+use crate::error::{
     EnumerateErrorParams, ExclusiveMaximumErrorParams, ExclusiveMinimumErrorParams,
     MaxItemsErrorParams, MaxLengthErrorParams, MaxPropertiesErrorParams, MaximumErrorParams,
     Message, MinItemsErrorParams, MinLengthErrorParams, MinPropertiesErrorParams,
     MinimumErrorParams, MultipleOfErrorParams, PatternErrorParams, UniqueItemsErrorParams,
 };
 pub use array_erros::ArrayErrors;
-pub use error::Error;
+pub use composited::{Composited, IntoError};
 pub use errors::Errors;
 use indexmap::IndexMap;
 pub use object_errors::ObjectErrors;
@@ -22,67 +21,80 @@ pub type ItemVecErrorsMap = IndexMap<usize, VecErrors>;
 pub type PropertyErrorsMap = IndexMap<&'static str, Errors>;
 pub type PropertyVecErrorsMap = IndexMap<&'static str, VecErrors>;
 
-#[derive(Debug)]
-pub enum Composited<ErrorParams> {
-    Single(ErrorParams),
-    Array(Vec<Composited<ErrorParams>>),
+#[derive(Debug, Clone, serde::Serialize, thiserror::Error)]
+#[serde(untagged)]
+pub enum Error {
+    #[error("{0}")]
+    #[serde(serialize_with = "serialize_error_message")]
+    Minimum(Message<MinimumErrorParams>),
+
+    #[error("{0}")]
+    #[serde(serialize_with = "serialize_error_message")]
+    Maximum(Message<MaximumErrorParams>),
+
+    #[error("{0}")]
+    #[serde(serialize_with = "serialize_error_message")]
+    ExclusiveMinimum(Message<ExclusiveMinimumErrorParams>),
+
+    #[error("{0}")]
+    #[serde(serialize_with = "serialize_error_message")]
+    ExclusiveMaximum(Message<ExclusiveMaximumErrorParams>),
+
+    #[error("{0}")]
+    #[serde(serialize_with = "serialize_error_message")]
+    MultipleOf(Message<MultipleOfErrorParams>),
+
+    #[error("{0}")]
+    #[serde(serialize_with = "serialize_error_message")]
+    MinLength(Message<MinLengthErrorParams>),
+
+    #[error("{0}")]
+    #[serde(serialize_with = "serialize_error_message")]
+    MaxLength(Message<MaxLengthErrorParams>),
+
+    #[error("{0}")]
+    #[serde(serialize_with = "serialize_error_message")]
+    Pattern(Message<PatternErrorParams>),
+
+    #[error("{0}")]
+    #[serde(serialize_with = "serialize_error_message")]
+    MinItems(Message<MinItemsErrorParams>),
+
+    #[error("{0}")]
+    #[serde(serialize_with = "serialize_error_message")]
+    MaxItems(Message<MaxItemsErrorParams>),
+
+    #[error("{0}")]
+    #[serde(serialize_with = "serialize_error_message")]
+    UniqueItems(Message<UniqueItemsErrorParams>),
+
+    #[error("{0}")]
+    #[serde(serialize_with = "serialize_error_message")]
+    MinProperties(Message<MinPropertiesErrorParams>),
+
+    #[error("{0}")]
+    #[serde(serialize_with = "serialize_error_message")]
+    MaxProperties(Message<MaxPropertiesErrorParams>),
+
+    #[error("{0}")]
+    #[serde(serialize_with = "serialize_error_message")]
+    Enumerate(Message<EnumerateErrorParams>),
+
+    #[error("{0}")]
+    #[serde(serialize_with = "serialize_error_message")]
+    Custom(String),
+
+    #[error(transparent)]
+    Items(ArrayErrors),
+
+    #[error(transparent)]
+    Properties(ObjectErrors),
 }
 
-pub trait IntoError<Params>: Sized
+fn serialize_error_message<T, S>(message: &T, serializer: S) -> Result<S::Ok, S::Error>
 where
-    Params: ToDefaultMessage,
+    T: std::fmt::Display,
+    S: serde::Serializer,
 {
-    fn into_error(self) -> Error {
-        self.into_error_by(Params::to_default_message)
-    }
-
-    fn into_error_by(self, format_fn: fn(&Params) -> String) -> Error;
+    serializer.serialize_str(&message.to_string())
 }
-
-macro_rules! impl_into_error {
-    ($ErrorType:ident) => {
-        paste::paste! {
-            impl IntoError<[<$ErrorType ErrorParams>]> for Composited<[<$ErrorType ErrorParams>]> {
-                fn into_error_by(self, format_fn: fn(&[<$ErrorType ErrorParams>]) -> String) -> Error {
-                    match self {
-                        Composited::Single(single) => Error::$ErrorType(Message::new(single, format_fn)),
-                        Composited::Array(array) => Error::Items(ArrayErrors::new(
-                            Vec::with_capacity(0),
-                            array
-                                .into_iter()
-                                .enumerate()
-                                .map(|(index, params)| {
-                                    (index, Errors::NewType(vec![params.into_error_by(format_fn)]))
-                                })
-                                .collect::<IndexMap<_, _>>(),
-                        )),
-                    }
-                }
-            }
-        }
-    };
-}
-
-// Global
-impl_into_error!(Enumerate);
-
-// Numeric
-impl_into_error!(Maximum);
-impl_into_error!(Minimum);
-impl_into_error!(ExclusiveMaximum);
-impl_into_error!(ExclusiveMinimum);
-impl_into_error!(MultipleOf);
-
-// String
-impl_into_error!(MaxLength);
-impl_into_error!(MinLength);
-impl_into_error!(Pattern);
-
-// Array
-impl_into_error!(MaxItems);
-impl_into_error!(MinItems);
-impl_into_error!(UniqueItems);
-
-// Object
-impl_into_error!(MaxProperties);
-impl_into_error!(MinProperties);

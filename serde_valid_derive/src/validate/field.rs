@@ -12,11 +12,8 @@ pub struct FieldValidators<'a, F: Field + Clone + 'a> {
 }
 
 impl<'a, F: Field + Clone> FieldValidators<'a, F> {
-    pub fn new(field: Cow<'a, F>) -> Self {
-        Self {
-            field,
-            validators: vec![],
-        }
+    pub fn new(field: Cow<'a, F>, validators: Vec<Validator>) -> Self {
+        Self { field, validators }
     }
 
     pub fn ident(&self) -> &syn::Ident {
@@ -25,10 +22,6 @@ impl<'a, F: Field + Clone> FieldValidators<'a, F> {
 
     pub fn is_empty(&self) -> bool {
         self.validators.is_empty()
-    }
-
-    pub fn push(&mut self, validator: Validator) {
-        self.validators.push(validator)
     }
 
     pub fn get_tokens(&self) -> Option<TokenStream> {

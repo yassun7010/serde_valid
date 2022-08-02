@@ -104,8 +104,10 @@ fn collect_unnamed_field_validators(
     let validators = unnamed_field
         .attrs()
         .iter()
-        .filter(|attribute| attribute.path == parse_quote!(validate))
         .filter_map(|attribute| {
+            if attribute.path != parse_quote!(validate) {
+                return None;
+            }
             match extract_meta_validator(&unnamed_field, attribute, &HashMap::new()) {
                 Ok(validator) => Some(validator),
                 Err(validator_errors) => {
@@ -120,10 +122,5 @@ fn collect_unnamed_field_validators(
         return Err(errors);
     }
 
-    let mut field_validators = FieldValidators::new(Cow::Owned(unnamed_field));
-    validators
-        .into_iter()
-        .for_each(|validator| field_validators.push(validator));
-
-    Ok(field_validators)
+    Ok(FieldValidators::new(Cow::Owned(unnamed_field), validators))
 }
