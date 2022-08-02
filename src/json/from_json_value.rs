@@ -28,9 +28,7 @@ where
 {
     fn from_json_value(value: serde_json::Value) -> Result<Self, crate::Error<serde_json::Error>> {
         let model: T = serde_json::from_value(value)?;
-        model
-            .validate()
-            .map_err(crate::Error::ValidationError)?;
+        model.validate().map_err(crate::Error::ValidationError)?;
         Ok(model)
     }
 }

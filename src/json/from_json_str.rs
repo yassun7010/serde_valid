@@ -28,9 +28,7 @@ where
 {
     fn from_json_str(str: &'de str) -> Result<Self, crate::Error<serde_json::Error>> {
         let model: Self = serde_json::from_str(str)?;
-        model
-            .validate()
-            .map_err(crate::Error::ValidationError)?;
+        model.validate().map_err(crate::Error::ValidationError)?;
         Ok(model)
     }
 }
