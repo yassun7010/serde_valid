@@ -67,7 +67,7 @@ macro_rules! struct_error_params {
     };
 
     (
-        #[derive(Debug, Clone)]
+        #[derive(Debug, Copy, Clone)]
         #[default_message=$default_message:literal]
         pub struct $ErrorParams:ident {
         }
@@ -168,7 +168,7 @@ struct_error_params!(
 );
 
 struct_error_params!(
-    #[derive(Debug, Clone)]
+    #[derive(Debug, Copy, Clone)]
     #[default_message = "The items must be unique."]
     pub struct UniqueItemsErrorParams {}
 );
