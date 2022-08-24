@@ -69,7 +69,7 @@ fn unique_items_err_message() {
 
 #[test]
 fn unique_items_custom_err_message_fn() {
-    fn error_message(_params: &serde_valid::UniqueItemsErrorParams) -> String {
+    fn error_message(_params: &serde_valid::UniqueItemsError) -> String {
         "this is custom message.".to_string()
     }
 

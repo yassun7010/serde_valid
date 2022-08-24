@@ -5,10 +5,9 @@ mod object_errors;
 
 use crate::error::ToDefaultMessage;
 pub use crate::error::{
-    EnumerateErrorParams, ExclusiveMaximumErrorParams, ExclusiveMinimumErrorParams,
-    MaxItemsErrorParams, MaxLengthErrorParams, MaxPropertiesErrorParams, MaximumErrorParams,
-    Message, MinItemsErrorParams, MinLengthErrorParams, MinPropertiesErrorParams,
-    MinimumErrorParams, MultipleOfErrorParams, PatternErrorParams, UniqueItemsErrorParams,
+    EnumerateError, ExclusiveMaximumError, ExclusiveMinimumError, MaxItemsError, MaxLengthError,
+    MaxPropertiesError, MaximumError, Message, MinItemsError, MinLengthError, MinPropertiesError,
+    MinimumError, MultipleOfError, PatternError, UniqueItemsError,
 };
 pub use array_erros::ArrayErrors;
 pub use error::Error;
@@ -23,9 +22,9 @@ pub type PropertyErrorsMap = IndexMap<&'static str, Errors>;
 pub type PropertyVecErrorsMap = IndexMap<&'static str, VecErrors>;
 
 #[derive(Debug)]
-pub enum Composited<ErrorParams> {
-    Single(ErrorParams),
-    Array(Vec<Composited<ErrorParams>>),
+pub enum Composited<Error> {
+    Single(Error),
+    Array(Vec<Composited<Error>>),
 }
 
 pub trait IntoError<Params>: Sized
@@ -42,8 +41,8 @@ where
 macro_rules! impl_into_error {
     ($ErrorType:ident) => {
         paste::paste! {
-            impl IntoError<[<$ErrorType ErrorParams>]> for Composited<[<$ErrorType ErrorParams>]> {
-                fn into_error_by(self, format_fn: fn(&[<$ErrorType ErrorParams>]) -> String) -> Error {
+            impl IntoError<[<$ErrorType Error>]> for Composited<[<$ErrorType Error>]> {
+                fn into_error_by(self, format_fn: fn(&[<$ErrorType Error>]) -> String) -> Error {
                     match self {
                         Composited::Single(single) => Error::$ErrorType(Message::new(single, format_fn)),
                         Composited::Array(array) => Error::Items(ArrayErrors::new(

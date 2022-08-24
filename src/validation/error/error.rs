@@ -1,8 +1,7 @@
 pub use crate::error::{
-    EnumerateErrorParams, ExclusiveMaximumErrorParams, ExclusiveMinimumErrorParams,
-    MaxItemsErrorParams, MaxLengthErrorParams, MaxPropertiesErrorParams, MaximumErrorParams,
-    Message, MinItemsErrorParams, MinLengthErrorParams, MinPropertiesErrorParams,
-    MinimumErrorParams, MultipleOfErrorParams, PatternErrorParams, UniqueItemsErrorParams,
+    EnumerateError, ExclusiveMaximumError, ExclusiveMinimumError, MaxItemsError, MaxLengthError,
+    MaxPropertiesError, MaximumError, Message, MinItemsError, MinLengthError, MinPropertiesError,
+    MinimumError, MultipleOfError, PatternError, UniqueItemsError,
 };
 
 use super::{ArrayErrors, ObjectErrors};
@@ -12,59 +11,59 @@ use super::{ArrayErrors, ObjectErrors};
 pub enum Error {
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    Minimum(Message<MinimumErrorParams>),
+    Minimum(Message<MinimumError>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    Maximum(Message<MaximumErrorParams>),
+    Maximum(Message<MaximumError>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    ExclusiveMinimum(Message<ExclusiveMinimumErrorParams>),
+    ExclusiveMinimum(Message<ExclusiveMinimumError>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    ExclusiveMaximum(Message<ExclusiveMaximumErrorParams>),
+    ExclusiveMaximum(Message<ExclusiveMaximumError>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    MultipleOf(Message<MultipleOfErrorParams>),
+    MultipleOf(Message<MultipleOfError>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    MinLength(Message<MinLengthErrorParams>),
+    MinLength(Message<MinLengthError>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    MaxLength(Message<MaxLengthErrorParams>),
+    MaxLength(Message<MaxLengthError>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    Pattern(Message<PatternErrorParams>),
+    Pattern(Message<PatternError>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    MinItems(Message<MinItemsErrorParams>),
+    MinItems(Message<MinItemsError>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    MaxItems(Message<MaxItemsErrorParams>),
+    MaxItems(Message<MaxItemsError>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    UniqueItems(Message<UniqueItemsErrorParams>),
+    UniqueItems(Message<UniqueItemsError>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    MinProperties(Message<MinPropertiesErrorParams>),
+    MinProperties(Message<MinPropertiesError>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    MaxProperties(Message<MaxPropertiesErrorParams>),
+    MaxProperties(Message<MaxPropertiesError>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    Enumerate(Message<EnumerateErrorParams>),
+    Enumerate(Message<EnumerateError>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]

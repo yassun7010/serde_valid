@@ -5,16 +5,16 @@ macro_rules! struct_error_params {
     (
         #[derive(Debug, Clone)]
         #[default_message=$default_message:literal]
-        pub struct $ErrorParams:ident {
+        pub struct $Error:ident {
             pub $limit:ident: $type:ty,
         }
     ) => {
         #[derive(Debug, Clone)]
-        pub struct $ErrorParams {
+        pub struct $Error {
             pub $limit: $type,
         }
 
-        impl $ErrorParams {
+        impl $Error {
             pub fn new<N: Into<$type>>($limit: N) -> Self {
                 Self {
                     $limit: $limit.into(),
@@ -22,7 +22,7 @@ macro_rules! struct_error_params {
             }
         }
 
-        impl ToDefaultMessage for $ErrorParams {
+        impl ToDefaultMessage for $Error {
             #[inline]
             fn to_default_message(&self) -> String {
                 format!($default_message, self.$limit)
@@ -33,13 +33,13 @@ macro_rules! struct_error_params {
     (
         #[derive(Debug, Clone)]
         #[default_message=$default_message:literal]
-        pub struct $ErrorParams:ident {
+        pub struct $Error:ident {
         }
     ) => {
         #[derive(Debug, Clone)]
-        pub struct $ErrorParams {}
+        pub struct $Error {}
 
-        impl ToDefaultMessage for $ErrorParams {
+        impl ToDefaultMessage for $Error {
             #[inline]
             fn to_default_message(&self) -> String {
                 format!($default_message)
@@ -52,7 +52,7 @@ macro_rules! struct_error_params {
 struct_error_params!(
     #[derive(Debug, Clone)]
     #[default_message = "The number must be `>= {}`."]
-    pub struct MinimumErrorParams {
+    pub struct MinimumError {
         pub minimum: Number,
     }
 );
@@ -60,7 +60,7 @@ struct_error_params!(
 struct_error_params!(
     #[derive(Debug, Clone)]
     #[default_message = "The number must be `<= {}`."]
-    pub struct MaximumErrorParams {
+    pub struct MaximumError {
         pub maximum: Number,
     }
 );
@@ -68,7 +68,7 @@ struct_error_params!(
 struct_error_params!(
     #[derive(Debug, Clone)]
     #[default_message = "The number must be `> {}`."]
-    pub struct ExclusiveMinimumErrorParams {
+    pub struct ExclusiveMinimumError {
         pub exclusive_minimum: Number,
     }
 );
@@ -76,7 +76,7 @@ struct_error_params!(
 struct_error_params!(
     #[derive(Debug, Clone)]
     #[default_message = "The number must be `< {}`."]
-    pub struct ExclusiveMaximumErrorParams {
+    pub struct ExclusiveMaximumError {
         pub exclusive_maximum: Number,
     }
 );
@@ -84,7 +84,7 @@ struct_error_params!(
 struct_error_params!(
     #[derive(Debug, Clone)]
     #[default_message = "The value must be multiple of `{}`."]
-    pub struct MultipleOfErrorParams {
+    pub struct MultipleOfError {
         pub multiple_of: Number,
     }
 );
@@ -93,7 +93,7 @@ struct_error_params!(
 struct_error_params!(
     #[derive(Debug, Clone)]
     #[default_message = "The length of the value must be `>= {}`."]
-    pub struct MinLengthErrorParams {
+    pub struct MinLengthError {
         pub min_length: usize,
     }
 );
@@ -101,7 +101,7 @@ struct_error_params!(
 struct_error_params!(
     #[derive(Debug, Clone)]
     #[default_message = "The length of the value must be `<= {}`."]
-    pub struct MaxLengthErrorParams {
+    pub struct MaxLengthError {
         pub max_length: usize,
     }
 );
@@ -109,7 +109,7 @@ struct_error_params!(
 struct_error_params!(
     #[derive(Debug, Clone)]
     #[default_message = "The value must match the pattern of \"{}\"."]
-    pub struct PatternErrorParams {
+    pub struct PatternError {
         pub pattern: Pattern,
     }
 );
@@ -118,7 +118,7 @@ struct_error_params!(
 struct_error_params!(
     #[derive(Debug, Clone)]
     #[default_message = "The length of the items must be `<= {}`."]
-    pub struct MaxItemsErrorParams {
+    pub struct MaxItemsError {
         pub max_items: usize,
     }
 );
@@ -126,7 +126,7 @@ struct_error_params!(
 struct_error_params!(
     #[derive(Debug, Clone)]
     #[default_message = "The length of the items must be `>= {}`."]
-    pub struct MinItemsErrorParams {
+    pub struct MinItemsError {
         pub min_items: usize,
     }
 );
@@ -134,14 +134,14 @@ struct_error_params!(
 struct_error_params!(
     #[derive(Debug, Clone)]
     #[default_message = "The items must be unique."]
-    pub struct UniqueItemsErrorParams {}
+    pub struct UniqueItemsError {}
 );
 
 // Object
 struct_error_params!(
     #[derive(Debug, Clone)]
     #[default_message = "The size of the properties must be `<= {}`."]
-    pub struct MaxPropertiesErrorParams {
+    pub struct MaxPropertiesError {
         pub max_properties: usize,
     }
 );
@@ -149,7 +149,7 @@ struct_error_params!(
 struct_error_params!(
     #[derive(Debug, Clone)]
     #[default_message = "The size of the properties must be `>= {}`."]
-    pub struct MinPropertiesErrorParams {
+    pub struct MinPropertiesError {
         pub min_properties: usize,
     }
 );

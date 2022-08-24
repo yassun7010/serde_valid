@@ -220,7 +220,7 @@ fn pattern_err_message() {
 
 #[test]
 fn pattern_custom_err_message_fn() {
-    fn error_message(_params: &serde_valid::PatternErrorParams) -> String {
+    fn error_message(_params: &serde_valid::PatternError) -> String {
         "this is custom message.".to_string()
     }
 
@@ -286,7 +286,7 @@ fn pattern_trait() {
         fn validate_pattern(
             &self,
             pattern: &regex::Regex,
-        ) -> Result<(), serde_valid::PatternErrorParams> {
+        ) -> Result<(), serde_valid::PatternError> {
             self.0.validate_pattern(pattern)
         }
     }

@@ -1,5 +1,5 @@
 use crate::validation::{impl_generic_composited_validation_1args, ValidateCompositedMaximum};
-use crate::MaximumErrorParams;
+use crate::MaximumError;
 
 /// Maximum validation of the number.
 ///
@@ -11,7 +11,7 @@ use crate::MaximumErrorParams;
 /// struct MyType(i32);
 ///
 /// impl ValidateMaximum<i32> for MyType {
-///     fn validate_maximum(&self, maximum: i32) -> Result<(), serde_valid::MaximumErrorParams> {
+///     fn validate_maximum(&self, maximum: i32) -> Result<(), serde_valid::MaximumError> {
 ///         self.0.validate_maximum(maximum)
 ///     }
 /// }
@@ -41,17 +41,17 @@ pub trait ValidateMaximum<T>
 where
     T: PartialOrd + PartialEq,
 {
-    fn validate_maximum(&self, maximum: T) -> Result<(), MaximumErrorParams>;
+    fn validate_maximum(&self, maximum: T) -> Result<(), MaximumError>;
 }
 
 macro_rules! impl_validate_numeric_maximum {
     ($type:ty) => {
         impl ValidateMaximum<$type> for $type {
-            fn validate_maximum(&self, maximum: $type) -> Result<(), MaximumErrorParams> {
+            fn validate_maximum(&self, maximum: $type) -> Result<(), MaximumError> {
                 if *self <= maximum {
                     Ok(())
                 } else {
-                    Err(MaximumErrorParams::new(maximum))
+                    Err(MaximumError::new(maximum))
                 }
             }
         }

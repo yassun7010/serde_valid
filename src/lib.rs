@@ -119,7 +119,7 @@
 //! use serde_valid::Validate;
 //!
 //! #[inline]
-//! fn min_error_message(_params: &serde_valid::MinItemsErrorParams) -> String {
+//! fn min_error_message(_params: &serde_valid::MinItemsError) -> String {
 //!     "this is min custom message_fn.".to_string()
 //! }
 //!
@@ -238,7 +238,7 @@
 //! struct MyType(String);
 //!
 //! impl serde_valid::ValidateMaxLength for MyType {
-//!     fn validate_max_length(&self, max_length: usize) -> Result<(), serde_valid::MaxLengthErrorParams> {
+//!     fn validate_max_length(&self, max_length: usize) -> Result<(), serde_valid::MaxLengthError> {
 //!         self.0.validate_max_length(max_length)
 //!     }
 //! }
@@ -443,10 +443,9 @@ pub mod validation;
 use indexmap::IndexMap;
 
 pub use error::{
-    EnumerateErrorParams, Error, ExclusiveMaximumErrorParams, ExclusiveMinimumErrorParams,
-    MaxItemsErrorParams, MaxLengthErrorParams, MaxPropertiesErrorParams, MaximumErrorParams,
-    MinItemsErrorParams, MinLengthErrorParams, MinPropertiesErrorParams, MinimumErrorParams,
-    MultipleOfErrorParams, PatternErrorParams, UniqueItemsErrorParams,
+    EnumerateError, Error, ExclusiveMaximumError, ExclusiveMinimumError, MaxItemsError,
+    MaxLengthError, MaxPropertiesError, MaximumError, MinItemsError, MinLengthError,
+    MinPropertiesError, MinimumError, MultipleOfError, PatternError, UniqueItemsError,
 };
 pub use validation::{
     ValidateEnumerate, ValidateExclusiveMaximum, ValidateExclusiveMinimum, ValidateMaxItems,

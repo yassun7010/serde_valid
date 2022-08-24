@@ -1,7 +1,7 @@
 use crate::validation::{
     impl_generic_composited_validation_1args, ValidateCompositedExclusiveMinimum,
 };
-use crate::ExclusiveMinimumErrorParams;
+use crate::ExclusiveMinimumError;
 
 /// Exclusive minimum validation of the number.
 ///
@@ -13,7 +13,7 @@ use crate::ExclusiveMinimumErrorParams;
 /// struct MyType(i32);
 ///
 /// impl ValidateExclusiveMinimum<i32> for MyType {
-///     fn validate_exclusive_minimum(&self, exclusive_minimum: i32) -> Result<(), serde_valid::ExclusiveMinimumErrorParams> {
+///     fn validate_exclusive_minimum(&self, exclusive_minimum: i32) -> Result<(), serde_valid::ExclusiveMinimumError> {
 ///         self.0.validate_exclusive_minimum(exclusive_minimum)
 ///     }
 /// }
@@ -43,10 +43,8 @@ pub trait ValidateExclusiveMinimum<T>
 where
     T: PartialOrd + PartialEq,
 {
-    fn validate_exclusive_minimum(
-        &self,
-        exclusive_minimum: T,
-    ) -> Result<(), ExclusiveMinimumErrorParams>;
+    fn validate_exclusive_minimum(&self, exclusive_minimum: T)
+        -> Result<(), ExclusiveMinimumError>;
 }
 
 macro_rules! impl_validate_numeric_exclusive_minimum {
@@ -55,11 +53,11 @@ macro_rules! impl_validate_numeric_exclusive_minimum {
             fn validate_exclusive_minimum(
                 &self,
                 exclusive_minimum: $type,
-            ) -> Result<(), ExclusiveMinimumErrorParams> {
+            ) -> Result<(), ExclusiveMinimumError> {
                 if *self > exclusive_minimum {
                     Ok(())
                 } else {
-                    Err(ExclusiveMinimumErrorParams::new(exclusive_minimum))
+                    Err(ExclusiveMinimumError::new(exclusive_minimum))
                 }
             }
         }

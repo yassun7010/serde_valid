@@ -1,5 +1,5 @@
 use crate::validation::{impl_generic_composited_validation_1args, ValidateCompositedMultipleOf};
-use crate::MultipleOfErrorParams;
+use crate::MultipleOfError;
 
 /// Multipl validation of the number.
 ///
@@ -15,7 +15,7 @@ use crate::MultipleOfErrorParams;
 ///     fn validate_multiple_of(
 ///         &self,
 ///         multiple_of: i32,
-///     ) -> Result<(), serde_valid::MultipleOfErrorParams> {
+///     ) -> Result<(), serde_valid::MultipleOfError> {
 ///         self.0.validate_multiple_of(multiple_of)
 ///     }
 /// }
@@ -45,7 +45,7 @@ pub trait ValidateMultipleOf<T>
 where
     T: std::cmp::PartialEq + std::ops::Rem<Output = T> + num_traits::Zero,
 {
-    fn validate_multiple_of(&self, multiple_of: T) -> Result<(), crate::MultipleOfErrorParams>;
+    fn validate_multiple_of(&self, multiple_of: T) -> Result<(), crate::MultipleOfError>;
 }
 
 macro_rules! impl_validate_numeric_multiple_of {
@@ -54,14 +54,14 @@ macro_rules! impl_validate_numeric_multiple_of {
             fn validate_multiple_of(
                 &self,
                 multiple_of: $type,
-            ) -> Result<(), crate::MultipleOfErrorParams> {
+            ) -> Result<(), crate::MultipleOfError> {
                 if std::cmp::PartialEq::<$type>::eq(
                     &(*self % multiple_of),
                     &num_traits::Zero::zero(),
                 ) {
                     Ok(())
                 } else {
-                    Err(crate::MultipleOfErrorParams::new(multiple_of))
+                    Err(crate::MultipleOfError::new(multiple_of))
                 }
             }
         }

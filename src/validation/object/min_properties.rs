@@ -1,4 +1,4 @@
-use crate::{traits::Size, MinPropertiesErrorParams};
+use crate::{traits::Size, MinPropertiesError};
 
 /// Min size validation of the object properties.
 ///
@@ -16,7 +16,7 @@ use crate::{traits::Size, MinPropertiesErrorParams};
 ///     fn validate_min_properties(
 ///         &self,
 ///         min_properties: usize,
-///     ) -> Result<(), serde_valid::MinPropertiesErrorParams> {
+///     ) -> Result<(), serde_valid::MinPropertiesError> {
 ///         self.0.validate_min_properties(min_properties)
 ///     }
 /// }
@@ -46,24 +46,18 @@ use crate::{traits::Size, MinPropertiesErrorParams};
 /// );
 /// ```
 pub trait ValidateMinProperties {
-    fn validate_min_properties(
-        &self,
-        min_properties: usize,
-    ) -> Result<(), MinPropertiesErrorParams>;
+    fn validate_min_properties(&self, min_properties: usize) -> Result<(), MinPropertiesError>;
 }
 
 impl<T> ValidateMinProperties for T
 where
     T: Size,
 {
-    fn validate_min_properties(
-        &self,
-        min_properties: usize,
-    ) -> Result<(), MinPropertiesErrorParams> {
+    fn validate_min_properties(&self, min_properties: usize) -> Result<(), MinPropertiesError> {
         if min_properties <= self.size() {
             Ok(())
         } else {
-            Err(MinPropertiesErrorParams::new(min_properties))
+            Err(MinPropertiesError::new(min_properties))
         }
     }
 }

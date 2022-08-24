@@ -1,4 +1,4 @@
-use crate::{traits::Length, MinLengthErrorParams};
+use crate::{traits::Length, MinLengthError};
 
 /// Min length validation of the string.
 ///
@@ -14,7 +14,7 @@ use crate::{traits::Length, MinLengthErrorParams};
 ///     fn validate_min_length(
 ///         &self,
 ///         min_length: usize,
-///     ) -> Result<(), serde_valid::MinLengthErrorParams> {
+///     ) -> Result<(), serde_valid::MinLengthError> {
 ///         self.0.validate_min_length(min_length)
 ///     }
 /// }
@@ -43,18 +43,18 @@ use crate::{traits::Length, MinLengthErrorParams};
 /// );
 /// ```
 pub trait ValidateMinLength {
-    fn validate_min_length(&self, min_length: usize) -> Result<(), MinLengthErrorParams>;
+    fn validate_min_length(&self, min_length: usize) -> Result<(), MinLengthError>;
 }
 
 impl<T> ValidateMinLength for T
 where
     T: Length + ?Sized,
 {
-    fn validate_min_length(&self, min_length: usize) -> Result<(), MinLengthErrorParams> {
+    fn validate_min_length(&self, min_length: usize) -> Result<(), MinLengthError> {
         if min_length <= self.length() {
             Ok(())
         } else {
-            Err(MinLengthErrorParams::new(min_length))
+            Err(MinLengthError::new(min_length))
         }
     }
 }

@@ -2,13 +2,12 @@ mod generic;
 mod message;
 mod params;
 
-pub use generic::EnumerateErrorParams;
+pub use generic::EnumerateError;
 pub use message::{Message, ToDefaultMessage};
 pub use params::{
-    ExclusiveMaximumErrorParams, ExclusiveMinimumErrorParams, MaxItemsErrorParams,
-    MaxLengthErrorParams, MaxPropertiesErrorParams, MaximumErrorParams, MinItemsErrorParams,
-    MinLengthErrorParams, MinPropertiesErrorParams, MinimumErrorParams, MultipleOfErrorParams,
-    PatternErrorParams, UniqueItemsErrorParams,
+    ExclusiveMaximumError, ExclusiveMinimumError, MaxItemsError, MaxLengthError,
+    MaxPropertiesError, MaximumError, MinItemsError, MinLengthError, MinPropertiesError,
+    MinimumError, MultipleOfError, PatternError, UniqueItemsError,
 };
 
 #[derive(Debug, thiserror::Error)]

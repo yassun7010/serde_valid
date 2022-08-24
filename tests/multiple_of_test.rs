@@ -143,7 +143,7 @@ fn multiple_of_err_message() {
 
 #[test]
 fn multiple_of_custom_err_message_fn() {
-    fn error_message(_params: &serde_valid::MultipleOfErrorParams) -> String {
+    fn error_message(_params: &serde_valid::MultipleOfError) -> String {
         "this is custom message.".to_string()
     }
 

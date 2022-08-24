@@ -1,4 +1,4 @@
-use crate::{traits::IsMatch, PatternErrorParams};
+use crate::{traits::IsMatch, PatternError};
 use regex::Regex;
 
 /// Pattern validation of the string.
@@ -15,7 +15,7 @@ use regex::Regex;
 ///     fn validate_pattern(
 ///         &self,
 ///         pattern: &regex::Regex,
-///     ) -> Result<(), serde_valid::PatternErrorParams> {
+///     ) -> Result<(), serde_valid::PatternError> {
 ///         self.0.validate_pattern(pattern)
 ///     }
 /// }
@@ -44,18 +44,18 @@ use regex::Regex;
 /// );
 /// ```
 pub trait ValidatePattern {
-    fn validate_pattern(&self, pattern: &Regex) -> Result<(), PatternErrorParams>;
+    fn validate_pattern(&self, pattern: &Regex) -> Result<(), PatternError>;
 }
 
 impl<T> ValidatePattern for T
 where
     T: IsMatch + ?Sized,
 {
-    fn validate_pattern(&self, pattern: &Regex) -> Result<(), PatternErrorParams> {
+    fn validate_pattern(&self, pattern: &Regex) -> Result<(), PatternError> {
         if self.is_match(pattern) {
             Ok(())
         } else {
-            Err(PatternErrorParams::new(pattern))
+            Err(PatternError::new(pattern))
         }
     }
 }

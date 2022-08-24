@@ -271,11 +271,11 @@ fn length_err_message() {
 
 #[test]
 fn length_custom_err_message_fn() {
-    fn custom_min_error_message(_params: &serde_valid::MinLengthErrorParams) -> String {
+    fn custom_min_error_message(_params: &serde_valid::MinLengthError) -> String {
         "this is min custom message.".to_string()
     }
 
-    fn custom_max_error_message(_params: &serde_valid::MaxLengthErrorParams) -> String {
+    fn custom_max_error_message(_params: &serde_valid::MaxLengthError) -> String {
         "this is max custom message.".to_string()
     }
 
