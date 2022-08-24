@@ -1,6 +1,6 @@
 [package]
 name = "serde_valid_derive"
-version = "0.7.0"
+version = "0.8.0"
 authors = ["yassun4dev <yassun4dev@outlook.com>"]
 edition = "2021"
 license = "MIT"
