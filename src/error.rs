@@ -1,8 +1,9 @@
-mod generic;
 mod message;
 
+use itertools::Itertools;
+use serde_valid_literal::Literal;
+
 use crate::validation::{Number, Pattern};
-pub use generic::EnumerateError;
 pub use message::{Message, ToDefaultMessage};
 
 #[derive(Debug, thiserror::Error)]
@@ -51,6 +52,29 @@ where
 }
 
 macro_rules! struct_error_params {
+    (
+        #[derive(Debug, Clone)]
+        #[default_message=$default_message:literal]
+        pub struct $Error:ident {
+            pub $limit:ident: Vec<$type:ty>,
+        }
+    ) => {
+        #[derive(Debug, Clone)]
+        pub struct $Error {
+            pub $limit: Vec<$type>,
+        }
+
+        impl ToDefaultMessage for $Error {
+            #[inline]
+            fn to_default_message(&self) -> String {
+                format!(
+                    $default_message,
+                    self.enumerate.iter().map(|v| format!("{}", v)).join(", ")
+                )
+            }
+        }
+    };
+
     (
         #[derive(Debug, Clone)]
         #[default_message=$default_message:literal]
@@ -202,3 +226,23 @@ struct_error_params!(
         pub min_properties: usize,
     }
 );
+
+// Generic
+struct_error_params!(
+    #[derive(Debug, Clone)]
+    #[default_message = "The value must be in [{:}]."]
+    pub struct EnumerateError {
+        pub enumerate: Vec<Literal>,
+    }
+);
+
+impl EnumerateError {
+    pub fn new<T>(enumerate: &[T]) -> Self
+    where
+        T: Into<Literal> + std::fmt::Debug + Clone,
+    {
+        Self {
+            enumerate: (*enumerate).iter().map(|x| x.clone().into()).collect(),
+        }
+    }
+}
