@@ -99,14 +99,88 @@ mod tests {
 
     #[test]
     fn test_validate_numeric_minimum_is_false() {
-        assert!(ValidateMinimum::validate_minimum(&5, 6).is_err());
+        assert!(ValidateMinimum::validate_minimum(&10, 11).is_err());
     }
 
     #[test]
     fn test_validate_numeric_minimum_specified_type() {
-        assert!(ValidateMinimum::validate_minimum(&0.5, 0.2).is_ok());
-        assert!(ValidateMinimum::validate_minimum(&5u8, 0).is_ok());
-        assert!(ValidateMinimum::validate_minimum(&4u16, 0).is_ok());
-        assert!(ValidateMinimum::validate_minimum(&6u32, 0).is_ok());
+        assert!(ValidateMinimum::validate_minimum(&10, 10i8).is_ok());
+        assert!(ValidateMinimum::validate_minimum(&10, 10i16).is_ok());
+        assert!(ValidateMinimum::validate_minimum(&10, 10i32).is_ok());
+        assert!(ValidateMinimum::validate_minimum(&10, 10i64).is_ok());
+        assert!(ValidateMinimum::validate_minimum(&10, 10i128).is_ok());
+        assert!(ValidateMinimum::validate_minimum(&10, 10isize).is_ok());
+
+        assert!(ValidateMinimum::validate_minimum(&10, 10u8).is_ok());
+        assert!(ValidateMinimum::validate_minimum(&10, 10u16).is_ok());
+        assert!(ValidateMinimum::validate_minimum(&10, 10u32).is_ok());
+        assert!(ValidateMinimum::validate_minimum(&10, 10u64).is_ok());
+        assert!(ValidateMinimum::validate_minimum(&10, 10u128).is_ok());
+        assert!(ValidateMinimum::validate_minimum(&10, 10usize).is_ok());
+
+        assert!(ValidateMinimum::validate_minimum(
+            &std::num::NonZeroI8::new(10).unwrap(),
+            std::num::NonZeroI8::new(10).unwrap()
+        )
+        .is_ok());
+        assert!(ValidateMinimum::validate_minimum(
+            &std::num::NonZeroI16::new(10).unwrap(),
+            std::num::NonZeroI16::new(10).unwrap()
+        )
+        .is_ok());
+        assert!(ValidateMinimum::validate_minimum(
+            &std::num::NonZeroI32::new(10).unwrap(),
+            std::num::NonZeroI32::new(10).unwrap()
+        )
+        .is_ok());
+        assert!(ValidateMinimum::validate_minimum(
+            &std::num::NonZeroI64::new(10).unwrap(),
+            std::num::NonZeroI64::new(10).unwrap()
+        )
+        .is_ok());
+        assert!(ValidateMinimum::validate_minimum(
+            &std::num::NonZeroI128::new(10).unwrap(),
+            std::num::NonZeroI128::new(10).unwrap()
+        )
+        .is_ok());
+        assert!(ValidateMinimum::validate_minimum(
+            &std::num::NonZeroIsize::new(10).unwrap(),
+            std::num::NonZeroIsize::new(10).unwrap()
+        )
+        .is_ok());
+
+        assert!(ValidateMinimum::validate_minimum(
+            &std::num::NonZeroU8::new(10).unwrap(),
+            std::num::NonZeroU8::new(10).unwrap()
+        )
+        .is_ok());
+        assert!(ValidateMinimum::validate_minimum(
+            &std::num::NonZeroU16::new(10).unwrap(),
+            std::num::NonZeroU16::new(10).unwrap()
+        )
+        .is_ok());
+        assert!(ValidateMinimum::validate_minimum(
+            &std::num::NonZeroU32::new(10).unwrap(),
+            std::num::NonZeroU32::new(10).unwrap()
+        )
+        .is_ok());
+        assert!(ValidateMinimum::validate_minimum(
+            &std::num::NonZeroU64::new(10).unwrap(),
+            std::num::NonZeroU64::new(10).unwrap()
+        )
+        .is_ok());
+        assert!(ValidateMinimum::validate_minimum(
+            &std::num::NonZeroU128::new(10).unwrap(),
+            std::num::NonZeroU128::new(10).unwrap()
+        )
+        .is_ok());
+        assert!(ValidateMinimum::validate_minimum(
+            &std::num::NonZeroUsize::new(10).unwrap(),
+            std::num::NonZeroUsize::new(10).unwrap()
+        )
+        .is_ok());
+
+        assert!(ValidateMinimum::validate_minimum(&10.0, 10.0f32).is_ok());
+        assert!(ValidateMinimum::validate_minimum(&10.0, 10.0f64).is_ok());
     }
 }

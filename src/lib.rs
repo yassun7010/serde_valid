@@ -470,7 +470,7 @@ where
             }
         }
 
-        if items.len() == 0 {
+        if items.is_empty() {
             Ok(())
         } else {
             Err(self::validation::Errors::Array(
@@ -492,7 +492,7 @@ where
             }
         }
 
-        if items.len() == 0 {
+        if items.is_empty() {
             Ok(())
         } else {
             Err(self::validation::Errors::Array(

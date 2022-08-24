@@ -11,12 +11,7 @@ pub fn extract_numeric_multiple_of_validator(
     message_fn: Option<TokenStream>,
     rename_map: &RenameMap,
 ) -> Result<Validator, crate::Errors> {
-    Ok(inner_extract_numeric_multiple_of_validator(
-        field,
-        validation_value,
-        message_fn,
-        rename_map,
-    )?)
+    inner_extract_numeric_multiple_of_validator(field, validation_value, message_fn, rename_map)
 }
 
 fn inner_extract_numeric_multiple_of_validator(

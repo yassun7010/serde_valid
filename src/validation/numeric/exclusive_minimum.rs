@@ -105,15 +105,89 @@ mod tests {
 
     #[test]
     fn test_validate_numeric_exclusive_minimum_is_false() {
-        assert!(ValidateExclusiveMinimum::validate_exclusive_minimum(&5, 6).is_err());
-        assert!(ValidateExclusiveMinimum::validate_exclusive_minimum(&5, 5).is_err());
+        assert!(ValidateExclusiveMinimum::validate_exclusive_minimum(&10, 11).is_err());
+        assert!(ValidateExclusiveMinimum::validate_exclusive_minimum(&10, 10).is_err());
     }
 
     #[test]
     fn test_validate_numeric_exclusive_minimum_specified_type() {
-        assert!(ValidateExclusiveMinimum::validate_exclusive_minimum(&0.5, 0.2).is_ok());
-        assert!(ValidateExclusiveMinimum::validate_exclusive_minimum(&5u8, 0).is_ok());
-        assert!(ValidateExclusiveMinimum::validate_exclusive_minimum(&4u16, 0).is_ok());
-        assert!(ValidateExclusiveMinimum::validate_exclusive_minimum(&6u32, 0).is_ok());
+        assert!(ValidateExclusiveMinimum::validate_exclusive_minimum(&10, 9i8).is_ok());
+        assert!(ValidateExclusiveMinimum::validate_exclusive_minimum(&10, 9i16).is_ok());
+        assert!(ValidateExclusiveMinimum::validate_exclusive_minimum(&10, 9i32).is_ok());
+        assert!(ValidateExclusiveMinimum::validate_exclusive_minimum(&10, 9i64).is_ok());
+        assert!(ValidateExclusiveMinimum::validate_exclusive_minimum(&10, 9i128).is_ok());
+        assert!(ValidateExclusiveMinimum::validate_exclusive_minimum(&10, 9isize).is_ok());
+
+        assert!(ValidateExclusiveMinimum::validate_exclusive_minimum(&10, 9u8).is_ok());
+        assert!(ValidateExclusiveMinimum::validate_exclusive_minimum(&10, 9u16).is_ok());
+        assert!(ValidateExclusiveMinimum::validate_exclusive_minimum(&10, 9u32).is_ok());
+        assert!(ValidateExclusiveMinimum::validate_exclusive_minimum(&10, 9u64).is_ok());
+        assert!(ValidateExclusiveMinimum::validate_exclusive_minimum(&10, 9u128).is_ok());
+        assert!(ValidateExclusiveMinimum::validate_exclusive_minimum(&10, 9usize).is_ok());
+
+        assert!(ValidateExclusiveMinimum::validate_exclusive_minimum(
+            &std::num::NonZeroI8::new(10).unwrap(),
+            std::num::NonZeroI8::new(9).unwrap()
+        )
+        .is_ok());
+        assert!(ValidateExclusiveMinimum::validate_exclusive_minimum(
+            &std::num::NonZeroI16::new(10).unwrap(),
+            std::num::NonZeroI16::new(9).unwrap()
+        )
+        .is_ok());
+        assert!(ValidateExclusiveMinimum::validate_exclusive_minimum(
+            &std::num::NonZeroI32::new(10).unwrap(),
+            std::num::NonZeroI32::new(9).unwrap()
+        )
+        .is_ok());
+        assert!(ValidateExclusiveMinimum::validate_exclusive_minimum(
+            &std::num::NonZeroI64::new(10).unwrap(),
+            std::num::NonZeroI64::new(9).unwrap()
+        )
+        .is_ok());
+        assert!(ValidateExclusiveMinimum::validate_exclusive_minimum(
+            &std::num::NonZeroI128::new(10).unwrap(),
+            std::num::NonZeroI128::new(9).unwrap()
+        )
+        .is_ok());
+        assert!(ValidateExclusiveMinimum::validate_exclusive_minimum(
+            &std::num::NonZeroIsize::new(10).unwrap(),
+            std::num::NonZeroIsize::new(9).unwrap()
+        )
+        .is_ok());
+
+        assert!(ValidateExclusiveMinimum::validate_exclusive_minimum(
+            &std::num::NonZeroU8::new(10).unwrap(),
+            std::num::NonZeroU8::new(9).unwrap()
+        )
+        .is_ok());
+        assert!(ValidateExclusiveMinimum::validate_exclusive_minimum(
+            &std::num::NonZeroU16::new(10).unwrap(),
+            std::num::NonZeroU16::new(9).unwrap()
+        )
+        .is_ok());
+        assert!(ValidateExclusiveMinimum::validate_exclusive_minimum(
+            &std::num::NonZeroU32::new(10).unwrap(),
+            std::num::NonZeroU32::new(9).unwrap()
+        )
+        .is_ok());
+        assert!(ValidateExclusiveMinimum::validate_exclusive_minimum(
+            &std::num::NonZeroU64::new(10).unwrap(),
+            std::num::NonZeroU64::new(9).unwrap()
+        )
+        .is_ok());
+        assert!(ValidateExclusiveMinimum::validate_exclusive_minimum(
+            &std::num::NonZeroU128::new(10).unwrap(),
+            std::num::NonZeroU128::new(9).unwrap()
+        )
+        .is_ok());
+        assert!(ValidateExclusiveMinimum::validate_exclusive_minimum(
+            &std::num::NonZeroUsize::new(10).unwrap(),
+            std::num::NonZeroUsize::new(9).unwrap()
+        )
+        .is_ok());
+
+        assert!(ValidateExclusiveMinimum::validate_exclusive_minimum(&10.0, 9.9f32).is_ok());
+        assert!(ValidateExclusiveMinimum::validate_exclusive_minimum(&10.0, 9.9f64).is_ok());
     }
 }

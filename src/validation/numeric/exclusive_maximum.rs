@@ -105,15 +105,89 @@ mod tests {
 
     #[test]
     fn test_validate_numeric_exclusive_maximum_is_false() {
-        assert!(ValidateExclusiveMaximum::validate_exclusive_maximum(&5, 4).is_err());
+        assert!(ValidateExclusiveMaximum::validate_exclusive_maximum(&10, 9).is_err());
         assert!(ValidateExclusiveMaximum::validate_exclusive_maximum(&10, 10).is_err());
     }
 
     #[test]
     fn test_validate_numeric_exclusive_maximum_specified_type() {
-        assert!(ValidateExclusiveMaximum::validate_exclusive_maximum(&0.2, 0.5).is_ok());
-        assert!(ValidateExclusiveMaximum::validate_exclusive_maximum(&0, 5u8).is_ok());
-        assert!(ValidateExclusiveMaximum::validate_exclusive_maximum(&0, 4u16).is_ok());
-        assert!(ValidateExclusiveMaximum::validate_exclusive_maximum(&0, 6u32).is_ok());
+        assert!(ValidateExclusiveMaximum::validate_exclusive_maximum(&10, 11i8).is_ok());
+        assert!(ValidateExclusiveMaximum::validate_exclusive_maximum(&10, 11i16).is_ok());
+        assert!(ValidateExclusiveMaximum::validate_exclusive_maximum(&10, 11i32).is_ok());
+        assert!(ValidateExclusiveMaximum::validate_exclusive_maximum(&10, 11i64).is_ok());
+        assert!(ValidateExclusiveMaximum::validate_exclusive_maximum(&10, 11i128).is_ok());
+        assert!(ValidateExclusiveMaximum::validate_exclusive_maximum(&10, 11isize).is_ok());
+
+        assert!(ValidateExclusiveMaximum::validate_exclusive_maximum(&10, 11u8).is_ok());
+        assert!(ValidateExclusiveMaximum::validate_exclusive_maximum(&10, 11u16).is_ok());
+        assert!(ValidateExclusiveMaximum::validate_exclusive_maximum(&10, 11u32).is_ok());
+        assert!(ValidateExclusiveMaximum::validate_exclusive_maximum(&10, 11u64).is_ok());
+        assert!(ValidateExclusiveMaximum::validate_exclusive_maximum(&10, 11u128).is_ok());
+        assert!(ValidateExclusiveMaximum::validate_exclusive_maximum(&10, 11usize).is_ok());
+
+        assert!(ValidateExclusiveMaximum::validate_exclusive_maximum(
+            &std::num::NonZeroI8::new(10).unwrap(),
+            std::num::NonZeroI8::new(11).unwrap()
+        )
+        .is_ok());
+        assert!(ValidateExclusiveMaximum::validate_exclusive_maximum(
+            &std::num::NonZeroI16::new(10).unwrap(),
+            std::num::NonZeroI16::new(11).unwrap()
+        )
+        .is_ok());
+        assert!(ValidateExclusiveMaximum::validate_exclusive_maximum(
+            &std::num::NonZeroI32::new(10).unwrap(),
+            std::num::NonZeroI32::new(11).unwrap()
+        )
+        .is_ok());
+        assert!(ValidateExclusiveMaximum::validate_exclusive_maximum(
+            &std::num::NonZeroI64::new(10).unwrap(),
+            std::num::NonZeroI64::new(11).unwrap()
+        )
+        .is_ok());
+        assert!(ValidateExclusiveMaximum::validate_exclusive_maximum(
+            &std::num::NonZeroI128::new(10).unwrap(),
+            std::num::NonZeroI128::new(11).unwrap()
+        )
+        .is_ok());
+        assert!(ValidateExclusiveMaximum::validate_exclusive_maximum(
+            &std::num::NonZeroIsize::new(10).unwrap(),
+            std::num::NonZeroIsize::new(11).unwrap()
+        )
+        .is_ok());
+
+        assert!(ValidateExclusiveMaximum::validate_exclusive_maximum(
+            &std::num::NonZeroU8::new(10).unwrap(),
+            std::num::NonZeroU8::new(11).unwrap()
+        )
+        .is_ok());
+        assert!(ValidateExclusiveMaximum::validate_exclusive_maximum(
+            &std::num::NonZeroU16::new(10).unwrap(),
+            std::num::NonZeroU16::new(11).unwrap()
+        )
+        .is_ok());
+        assert!(ValidateExclusiveMaximum::validate_exclusive_maximum(
+            &std::num::NonZeroU32::new(10).unwrap(),
+            std::num::NonZeroU32::new(11).unwrap()
+        )
+        .is_ok());
+        assert!(ValidateExclusiveMaximum::validate_exclusive_maximum(
+            &std::num::NonZeroU64::new(10).unwrap(),
+            std::num::NonZeroU64::new(11).unwrap()
+        )
+        .is_ok());
+        assert!(ValidateExclusiveMaximum::validate_exclusive_maximum(
+            &std::num::NonZeroU128::new(10).unwrap(),
+            std::num::NonZeroU128::new(11).unwrap()
+        )
+        .is_ok());
+        assert!(ValidateExclusiveMaximum::validate_exclusive_maximum(
+            &std::num::NonZeroUsize::new(10).unwrap(),
+            std::num::NonZeroUsize::new(11).unwrap()
+        )
+        .is_ok());
+
+        assert!(ValidateExclusiveMaximum::validate_exclusive_maximum(&10.0, 10.1f32).is_ok());
+        assert!(ValidateExclusiveMaximum::validate_exclusive_maximum(&10.0, 10.1f64).is_ok());
     }
 }

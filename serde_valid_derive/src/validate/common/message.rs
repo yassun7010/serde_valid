@@ -52,7 +52,7 @@ fn extract_message_fn_tokens_from_meta_list(
         ..
     }: &syn::MetaList,
 ) -> Result<TokenStream, crate::Errors> {
-    let path_ident = SingleIdentPath::new(&path).ident();
+    let path_ident = SingleIdentPath::new(path).ident();
     let path_label = path_ident.to_string();
 
     match MetaListMessage::from_str(&path_label) {
@@ -79,7 +79,7 @@ fn extract_message_fn_tokens_from_meta_list(
 fn extract_message_fn_tokens_from_name_value(
     syn::MetaNameValue { path, lit, .. }: &syn::MetaNameValue,
 ) -> Result<TokenStream, crate::Errors> {
-    let path_ident = SingleIdentPath::new(&path).ident();
+    let path_ident = SingleIdentPath::new(path).ident();
     let path_label = path_ident.to_string();
 
     match MetaNameValueMessage::from_str(&path_label) {
@@ -115,20 +115,15 @@ fn get_message_fn_from_nested_meta(
         0 => Err(vec![crate::Error::message_fn_need_item(path)]),
         1 => {
             let fn_name = match &fn_define[0] {
-                syn::NestedMeta::Meta(ref meta) => match meta {
-                    syn::Meta::Path(fn_name) => Some(quote!(#fn_name)),
-                    _ => None,
-                },
+                syn::NestedMeta::Meta(syn::Meta::Path(fn_name)) => Some(quote!(#fn_name)),
                 _ => None,
             };
-            fn_name.ok_or(vec![crate::Error::message_fn_allow_name_path(
-                &fn_define[0],
-            )])
+            fn_name.ok_or_else(|| vec![crate::Error::message_fn_allow_name_path(&fn_define[0])])
         }
         _ => Err(fn_define
             .iter()
             .skip(1)
-            .map(|arg| crate::Error::message_fn_tail_error(arg))
+            .map(crate::Error::message_fn_tail_error)
             .collect()),
     }
 }

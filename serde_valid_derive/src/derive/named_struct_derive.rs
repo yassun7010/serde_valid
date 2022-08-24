@@ -104,26 +104,26 @@ fn collect_named_field_validators<'a>(
     let validators = named_field
         .attrs()
         .iter()
-        .filter(|attribute| attribute.path == parse_quote!(validate))
-        .filter_map(
-            |attribute| match extract_meta_validator(&named_field, attribute, rename_map) {
+        .filter_map(|attribute| {
+            if attribute.path != parse_quote!(validate) {
+                return None;
+            }
+            match extract_meta_validator(&named_field, attribute, rename_map) {
                 Ok(validator) => Some(validator),
                 Err(validator_error) => {
                     errors.extend(validator_error);
                     None
                 }
-            },
-        )
+            }
+        })
         .collect::<Vec<_>>();
 
     if !errors.is_empty() {
         return Err(errors);
     }
 
-    let mut field_validators = FieldValidators::new(Cow::Owned(named_field));
-    validators
-        .into_iter()
-        .for_each(|validator| field_validators.push(validator));
-
-    Ok(field_validators)
+    Ok(FieldValidators::new(
+        Cow::Owned(named_field.clone()),
+        validators,
+    ))
 }

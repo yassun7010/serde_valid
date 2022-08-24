@@ -22,7 +22,7 @@ impl ArrayErrors {
                 }
             };
         }
-        return self;
+        self
     }
 }
 

@@ -245,7 +245,8 @@ impl Error {
     }
 
     pub fn validate_unknown_type(path: &syn::Path, unknown: &str, candidates: &[&str]) -> Self {
-        let filterd_candidates = did_you_mean(unknown, candidates).unwrap_or(candidates.to_vec());
+        let filterd_candidates =
+            did_you_mean(unknown, candidates).unwrap_or_else(|| candidates.to_vec());
 
         Self::new(
             path.span(),
@@ -254,33 +255,30 @@ impl Error {
     }
 
     pub fn validate_enumerate_need_item(path: &syn::Path) -> Self {
-        Self::new(path.span(), format!("`enumerate` need items."))
+        Self::new(path.span(), "`enumerate` need items.")
     }
 
     pub fn validate_custom_need_item(path: &syn::Path) -> Self {
-        Self::new(path.span(), format!("`custom` need items."))
+        Self::new(path.span(), "`custom` need items.")
     }
 
     pub fn validate_custom_tail_error(nested: &CommaSeparatedNestedMetas) -> Self {
-        Self::new(nested.span(), format!("`custom` support only 1 item."))
+        Self::new(nested.span(), "`custom` support only 1 item.")
     }
 
     pub fn message_fn_need_item(path: &syn::Path) -> Self {
-        Self::new(path.span(), format!("`message_fn` need items."))
+        Self::new(path.span(), "`message_fn` need items.")
     }
 
     pub fn message_fn_allow_name_path(nested_meta: &syn::NestedMeta) -> Self {
         Self::new(
             nested_meta.span(),
-            format!("#[validate(..., message_fn(???))] allow only function name path."),
+            "#[validate(..., message_fn(???))] allow only function name path.",
         )
     }
 
     pub fn message_fn_tail_error(nested_meta: &syn::NestedMeta) -> Self {
-        Self::new(
-            nested_meta.span(),
-            format!("`message_fn` support only 1 item."),
-        )
+        Self::new(nested_meta.span(), "`message_fn` support only 1 item.")
     }
 
     pub fn literal_only(meta: &syn::Meta) -> Self {
@@ -332,7 +330,7 @@ where
         .filter(|(confidence, _)| *confidence > 0.8)
         .collect::<Vec<_>>();
 
-    if filterd.len() == 0 {
+    if filterd.is_empty() {
         None
     } else {
         filterd.sort_by(|a, b| b.0.partial_cmp(&a.0).unwrap_or(std::cmp::Ordering::Equal));

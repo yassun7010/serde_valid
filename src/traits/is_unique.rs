@@ -10,13 +10,13 @@ where
 {
     fn is_unique(&self) -> bool {
         let len = self.len();
-        let unique = self.into_iter().unique();
+        let unique = self.iter().unique();
         let (lower, upper) = unique.size_hint();
         if let Some(upper) = upper {
             if lower == len && upper == len {
                 return true;
             }
         }
-        unique.collect::<Vec<&T>>().len() == len
+        unique.count() == len
     }
 }

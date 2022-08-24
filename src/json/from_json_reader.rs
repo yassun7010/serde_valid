@@ -34,9 +34,7 @@ where
         R: std::io::Read,
     {
         let model: T = serde_json::from_reader(reader)?;
-        model
-            .validate()
-            .map_err(|err| crate::Error::ValidationError(err))?;
+        model.validate().map_err(crate::Error::ValidationError)?;
         Ok(model)
     }
 }

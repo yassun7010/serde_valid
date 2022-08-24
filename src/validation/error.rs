@@ -1,5 +1,5 @@
 mod array_erros;
-mod error;
+mod composited;
 mod errors;
 mod object_errors;
 
@@ -10,7 +10,7 @@ pub use crate::error::{
     MinimumError, MultipleOfError, PatternError, UniqueItemsError,
 };
 pub use array_erros::ArrayErrors;
-pub use error::Error;
+pub use composited::{Composited, IntoError};
 pub use errors::Errors;
 use indexmap::IndexMap;
 pub use object_errors::ObjectErrors;
