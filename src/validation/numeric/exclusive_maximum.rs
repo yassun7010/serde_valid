@@ -1,7 +1,7 @@
 use crate::validation::{
     impl_generic_composited_validation_1args, ValidateCompositedExclusiveMaximum,
 };
-use crate::ExclusiveMaximumErrorParams;
+use crate::ExclusiveMaximumError;
 
 /// Exclusive maximum validation of the number.
 ///
@@ -13,7 +13,7 @@ use crate::ExclusiveMaximumErrorParams;
 /// struct MyType(i32);
 ///
 /// impl ValidateExclusiveMaximum<i32> for MyType {
-///     fn validate_exclusive_maximum(&self, exclusive_maximum: i32) -> Result<(), serde_valid::ExclusiveMaximumErrorParams> {
+///     fn validate_exclusive_maximum(&self, exclusive_maximum: i32) -> Result<(), serde_valid::ExclusiveMaximumError> {
 ///         self.0.validate_exclusive_maximum(exclusive_maximum)
 ///     }
 /// }
@@ -43,10 +43,8 @@ pub trait ValidateExclusiveMaximum<T>
 where
     T: PartialOrd + PartialEq,
 {
-    fn validate_exclusive_maximum(
-        &self,
-        exclusive_maximum: T,
-    ) -> Result<(), ExclusiveMaximumErrorParams>;
+    fn validate_exclusive_maximum(&self, exclusive_maximum: T)
+        -> Result<(), ExclusiveMaximumError>;
 }
 
 macro_rules! impl_validate_numeric_exclusive_maximum {
@@ -55,11 +53,11 @@ macro_rules! impl_validate_numeric_exclusive_maximum {
             fn validate_exclusive_maximum(
                 &self,
                 exclusive_maximum: $type,
-            ) -> Result<(), crate::ExclusiveMaximumErrorParams> {
+            ) -> Result<(), crate::ExclusiveMaximumError> {
                 if *self < exclusive_maximum {
                     Ok(())
                 } else {
-                    Err(crate::ExclusiveMaximumErrorParams::new(exclusive_maximum))
+                    Err(crate::ExclusiveMaximumError::new(exclusive_maximum))
                 }
             }
         }

@@ -1,4 +1,4 @@
-use crate::{traits::Size, MaxPropertiesErrorParams};
+use crate::{traits::Size, MaxPropertiesError};
 
 /// Max size validation of the object properties.
 ///
@@ -16,7 +16,7 @@ use crate::{traits::Size, MaxPropertiesErrorParams};
 ///     fn validate_max_properties(
 ///         &self,
 ///         max_properties: usize,
-///     ) -> Result<(), serde_valid::MaxPropertiesErrorParams> {
+///     ) -> Result<(), serde_valid::MaxPropertiesError> {
 ///         self.0.validate_max_properties(max_properties)
 ///     }
 /// }
@@ -48,24 +48,18 @@ use crate::{traits::Size, MaxPropertiesErrorParams};
 /// );
 /// ```
 pub trait ValidateMaxProperties {
-    fn validate_max_properties(
-        &self,
-        max_properties: usize,
-    ) -> Result<(), MaxPropertiesErrorParams>;
+    fn validate_max_properties(&self, max_properties: usize) -> Result<(), MaxPropertiesError>;
 }
 
 impl<T> ValidateMaxProperties for T
 where
     T: Size,
 {
-    fn validate_max_properties(
-        &self,
-        max_properties: usize,
-    ) -> Result<(), MaxPropertiesErrorParams> {
+    fn validate_max_properties(&self, max_properties: usize) -> Result<(), MaxPropertiesError> {
         if max_properties >= self.size() {
             Ok(())
         } else {
-            Err(MaxPropertiesErrorParams::new(max_properties))
+            Err(MaxPropertiesError::new(max_properties))
         }
     }
 }

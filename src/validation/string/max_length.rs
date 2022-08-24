@@ -1,4 +1,4 @@
-use crate::{traits::Length, MaxLengthErrorParams};
+use crate::{traits::Length, MaxLengthError};
 
 /// Max length validation of the string.
 ///
@@ -14,7 +14,7 @@ use crate::{traits::Length, MaxLengthErrorParams};
 ///     fn validate_max_length(
 ///         &self,
 ///         max_length: usize,
-///     ) -> Result<(), serde_valid::MaxLengthErrorParams> {
+///     ) -> Result<(), serde_valid::MaxLengthError> {
 ///         self.0.validate_max_length(max_length)
 ///     }
 /// }
@@ -43,18 +43,18 @@ use crate::{traits::Length, MaxLengthErrorParams};
 /// );
 /// ```
 pub trait ValidateMaxLength {
-    fn validate_max_length(&self, max_length: usize) -> Result<(), MaxLengthErrorParams>;
+    fn validate_max_length(&self, max_length: usize) -> Result<(), MaxLengthError>;
 }
 
 impl<T> ValidateMaxLength for T
 where
     T: Length + ?Sized,
 {
-    fn validate_max_length(&self, max_length: usize) -> Result<(), MaxLengthErrorParams> {
+    fn validate_max_length(&self, max_length: usize) -> Result<(), MaxLengthError> {
         if max_length >= self.length() {
             Ok(())
         } else {
-            Err(MaxLengthErrorParams::new(max_length))
+            Err(MaxLengthError::new(max_length))
         }
     }
 }

@@ -3,11 +3,10 @@ mod composited;
 mod errors;
 mod object_errors;
 
-use crate::error::{
-    EnumerateErrorParams, ExclusiveMaximumErrorParams, ExclusiveMinimumErrorParams,
-    MaxItemsErrorParams, MaxLengthErrorParams, MaxPropertiesErrorParams, MaximumErrorParams,
-    Message, MinItemsErrorParams, MinLengthErrorParams, MinPropertiesErrorParams,
-    MinimumErrorParams, MultipleOfErrorParams, PatternErrorParams, UniqueItemsErrorParams,
+pub use crate::error::{
+    EnumerateError, ExclusiveMaximumError, ExclusiveMinimumError, MaxItemsError, MaxLengthError,
+    MaxPropertiesError, MaximumError, Message, MinItemsError, MinLengthError, MinPropertiesError,
+    MinimumError, MultipleOfError, PatternError, UniqueItemsError,
 };
 pub use array_erros::ArrayErrors;
 pub use composited::{Composited, IntoError};
@@ -15,70 +14,64 @@ pub use errors::Errors;
 use indexmap::IndexMap;
 pub use object_errors::ObjectErrors;
 
-pub type VecErrors = Vec<Error>;
-pub type ItemErrorsMap = IndexMap<usize, Errors>;
-pub type ItemVecErrorsMap = IndexMap<usize, VecErrors>;
-pub type PropertyErrorsMap = IndexMap<&'static str, Errors>;
-pub type PropertyVecErrorsMap = IndexMap<&'static str, VecErrors>;
-
 #[derive(Debug, Clone, serde::Serialize, thiserror::Error)]
 #[serde(untagged)]
 pub enum Error {
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    Minimum(Message<MinimumErrorParams>),
+    Minimum(Message<MinimumError>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    Maximum(Message<MaximumErrorParams>),
+    Maximum(Message<MaximumError>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    ExclusiveMinimum(Message<ExclusiveMinimumErrorParams>),
+    ExclusiveMinimum(Message<ExclusiveMinimumError>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    ExclusiveMaximum(Message<ExclusiveMaximumErrorParams>),
+    ExclusiveMaximum(Message<ExclusiveMaximumError>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    MultipleOf(Message<MultipleOfErrorParams>),
+    MultipleOf(Message<MultipleOfError>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    MinLength(Message<MinLengthErrorParams>),
+    MinLength(Message<MinLengthError>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    MaxLength(Message<MaxLengthErrorParams>),
+    MaxLength(Message<MaxLengthError>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    Pattern(Message<PatternErrorParams>),
+    Pattern(Message<PatternError>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    MinItems(Message<MinItemsErrorParams>),
+    MinItems(Message<MinItemsError>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    MaxItems(Message<MaxItemsErrorParams>),
+    MaxItems(Message<MaxItemsError>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    UniqueItems(Message<UniqueItemsErrorParams>),
+    UniqueItems(Message<UniqueItemsError>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    MinProperties(Message<MinPropertiesErrorParams>),
+    MinProperties(Message<MinPropertiesError>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    MaxProperties(Message<MaxPropertiesErrorParams>),
+    MaxProperties(Message<MaxPropertiesError>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
-    Enumerate(Message<EnumerateErrorParams>),
+    Enumerate(Message<EnumerateError>),
 
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
@@ -98,3 +91,9 @@ where
 {
     serializer.serialize_str(&message.to_string())
 }
+
+pub type VecErrors = Vec<Error>;
+pub type ItemErrorsMap = IndexMap<usize, Errors>;
+pub type ItemVecErrorsMap = IndexMap<usize, VecErrors>;
+pub type PropertyErrorsMap = IndexMap<&'static str, Errors>;
+pub type PropertyVecErrorsMap = IndexMap<&'static str, VecErrors>;

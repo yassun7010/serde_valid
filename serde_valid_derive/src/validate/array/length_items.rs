@@ -32,7 +32,7 @@ macro_rules! extract_array_length_validator{
                 let rename = rename_map.get(field_name).unwrap_or(&field_key);
                 let [<$ErrorType:snake>] = get_numeric(validation_value)?;
                 let message =
-                    message_fn.unwrap_or(quote!(::serde_valid::[<$ErrorType ErrorParams>]::to_default_message));
+                    message_fn.unwrap_or(quote!(::serde_valid::[<$ErrorType Error>]::to_default_message));
                 let errors = field.errors_variable();
 
                 Ok(quote!(

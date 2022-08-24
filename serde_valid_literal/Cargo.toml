@@ -1,6 +1,6 @@
 [package]
 name = "serde_valid_literal"
-version = "0.6.2"
+version = "0.7.0"
 authors = ["yassun4dev <yassun4dev@outlook.com>"]
 edition = "2021"
 license = "MIT"

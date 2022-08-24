@@ -11,7 +11,7 @@ use crate::traits::IsUnique;
 /// struct MyType(Vec<i32>);
 ///
 /// impl ValidateUniqueItems for MyType {
-///     fn validate_unique_items(&self) -> Result<(), serde_valid::UniqueItemsErrorParams> {
+///     fn validate_unique_items(&self) -> Result<(), serde_valid::UniqueItemsError> {
 ///         self.0.validate_unique_items()
 ///     }
 /// }
@@ -40,18 +40,18 @@ use crate::traits::IsUnique;
 /// );
 /// ```
 pub trait ValidateUniqueItems {
-    fn validate_unique_items(&self) -> Result<(), crate::UniqueItemsErrorParams>;
+    fn validate_unique_items(&self) -> Result<(), crate::UniqueItemsError>;
 }
 
 impl<T> ValidateUniqueItems for Vec<T>
 where
     T: std::cmp::Eq + std::hash::Hash + std::fmt::Debug,
 {
-    fn validate_unique_items(&self) -> Result<(), crate::UniqueItemsErrorParams> {
+    fn validate_unique_items(&self) -> Result<(), crate::UniqueItemsError> {
         if self.is_unique() {
             Ok(())
         } else {
-            Err(crate::UniqueItemsErrorParams {})
+            Err(crate::UniqueItemsError {})
         }
     }
 }
@@ -60,11 +60,11 @@ impl<T, const N: usize> ValidateUniqueItems for [T; N]
 where
     T: std::cmp::Eq + std::hash::Hash + std::fmt::Debug,
 {
-    fn validate_unique_items(&self) -> Result<(), crate::UniqueItemsErrorParams> {
+    fn validate_unique_items(&self) -> Result<(), crate::UniqueItemsError> {
         if self.is_unique() {
             Ok(())
         } else {
-            Err(crate::UniqueItemsErrorParams {})
+            Err(crate::UniqueItemsError {})
         }
     }
 }
@@ -73,7 +73,7 @@ impl<T> ValidateUniqueItems for Option<T>
 where
     T: ValidateUniqueItems,
 {
-    fn validate_unique_items(&self) -> Result<(), crate::UniqueItemsErrorParams> {
+    fn validate_unique_items(&self) -> Result<(), crate::UniqueItemsError> {
         match self {
             Some(value) => value.validate_unique_items(),
             None => Ok(()),

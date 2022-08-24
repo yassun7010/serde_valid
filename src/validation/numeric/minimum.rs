@@ -1,5 +1,5 @@
 use crate::validation::{impl_generic_composited_validation_1args, ValidateCompositedMinimum};
-use crate::MinimumErrorParams;
+use crate::MinimumError;
 
 /// Minimum validation of the number.
 ///
@@ -11,7 +11,7 @@ use crate::MinimumErrorParams;
 /// struct MyType(i32);
 ///
 /// impl ValidateMinimum<i32> for MyType {
-///     fn validate_minimum(&self, minimum: i32) -> Result<(), serde_valid::MinimumErrorParams> {
+///     fn validate_minimum(&self, minimum: i32) -> Result<(), serde_valid::MinimumError> {
 ///         self.0.validate_minimum(minimum)
 ///     }
 /// }
@@ -41,17 +41,17 @@ pub trait ValidateMinimum<T>
 where
     T: PartialOrd + PartialEq,
 {
-    fn validate_minimum(&self, minimum: T) -> Result<(), MinimumErrorParams>;
+    fn validate_minimum(&self, minimum: T) -> Result<(), MinimumError>;
 }
 
 macro_rules! impl_validate_numeric_minimum {
     ($type:ty) => {
         impl ValidateMinimum<$type> for $type {
-            fn validate_minimum(&self, minimum: $type) -> Result<(), MinimumErrorParams> {
+            fn validate_minimum(&self, minimum: $type) -> Result<(), MinimumError> {
                 if *self >= minimum {
                     Ok(())
                 } else {
-                    Err(MinimumErrorParams::new(minimum))
+                    Err(MinimumError::new(minimum))
                 }
             }
         }

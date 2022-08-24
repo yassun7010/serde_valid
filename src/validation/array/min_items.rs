@@ -12,7 +12,7 @@
 ///     fn validate_min_items(
 ///         &self,
 ///         min_items: usize,
-///     ) -> Result<(), serde_valid::MinItemsErrorParams> {
+///     ) -> Result<(), serde_valid::MinItemsError> {
 ///         self.0.validate_min_items(min_items)
 ///     }
 /// }
@@ -41,25 +41,25 @@
 /// );
 /// ```
 pub trait ValidateMinItems {
-    fn validate_min_items(&self, min_items: usize) -> Result<(), crate::MinItemsErrorParams>;
+    fn validate_min_items(&self, min_items: usize) -> Result<(), crate::MinItemsError>;
 }
 
 impl<T> ValidateMinItems for Vec<T> {
-    fn validate_min_items(&self, min_items: usize) -> Result<(), crate::MinItemsErrorParams> {
+    fn validate_min_items(&self, min_items: usize) -> Result<(), crate::MinItemsError> {
         if min_items <= self.len() {
             Ok(())
         } else {
-            Err(crate::MinItemsErrorParams::new(min_items))
+            Err(crate::MinItemsError::new(min_items))
         }
     }
 }
 
 impl<T, const N: usize> ValidateMinItems for [T; N] {
-    fn validate_min_items(&self, min_items: usize) -> Result<(), crate::MinItemsErrorParams> {
+    fn validate_min_items(&self, min_items: usize) -> Result<(), crate::MinItemsError> {
         if min_items <= self.len() {
             Ok(())
         } else {
-            Err(crate::MinItemsErrorParams::new(min_items))
+            Err(crate::MinItemsError::new(min_items))
         }
     }
 }

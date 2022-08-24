@@ -1,5 +1,5 @@
 use crate::validation::ValidateCompositedEnumerate;
-use crate::EnumerateErrorParams;
+use crate::EnumerateError;
 
 /// Enumerate validation.
 ///
@@ -15,7 +15,7 @@ use crate::EnumerateErrorParams;
 ///     fn validate_enumerate(
 ///         &self,
 ///         enumerate: &[&'static str],
-///     ) -> Result<(), serde_valid::EnumerateErrorParams> {
+///     ) -> Result<(), serde_valid::EnumerateError> {
 ///         self.0.validate_enumerate(enumerate)
 ///     }
 /// }
@@ -44,17 +44,17 @@ use crate::EnumerateErrorParams;
 /// );
 /// ```
 pub trait ValidateEnumerate<T> {
-    fn validate_enumerate(&self, enumerate: &[T]) -> Result<(), EnumerateErrorParams>;
+    fn validate_enumerate(&self, enumerate: &[T]) -> Result<(), EnumerateError>;
 }
 
 macro_rules! impl_validate_generic_enumerate_literal {
     ($type:ty) => {
         impl ValidateEnumerate<$type> for $type {
-            fn validate_enumerate(&self, enumerate: &[$type]) -> Result<(), EnumerateErrorParams> {
+            fn validate_enumerate(&self, enumerate: &[$type]) -> Result<(), EnumerateError> {
                 if enumerate.iter().any(|candidate| candidate == self) {
                     Ok(())
                 } else {
-                    Err(EnumerateErrorParams::new(enumerate))
+                    Err(EnumerateError::new(enumerate))
                 }
             }
         }
@@ -66,7 +66,7 @@ macro_rules! impl_validate_generic_enumerate_literal {
             fn validate_composited_enumerate(
                 &self,
                 limit: &[$type],
-            ) -> Result<(), crate::validation::Composited<EnumerateErrorParams>> {
+            ) -> Result<(), crate::validation::Composited<EnumerateError>> {
                 self.validate_enumerate(limit)
                     .map_err(|error| crate::validation::Composited::Single(error))
             }
@@ -105,14 +105,11 @@ impl_validate_generic_enumerate_literal!(char);
 macro_rules! impl_validate_generic_enumerate_str {
     ($type:ty) => {
         impl ValidateEnumerate<&'static str> for $type {
-            fn validate_enumerate(
-                &self,
-                enumerate: &[&'static str],
-            ) -> Result<(), EnumerateErrorParams> {
+            fn validate_enumerate(&self, enumerate: &[&'static str]) -> Result<(), EnumerateError> {
                 if enumerate.iter().any(|candidate| candidate == self) {
                     Ok(())
                 } else {
-                    Err(EnumerateErrorParams::new(enumerate))
+                    Err(EnumerateError::new(enumerate))
                 }
             }
         }
@@ -128,17 +125,14 @@ impl_validate_generic_enumerate_str!(std::ffi::OsString);
 macro_rules! impl_validate_generic_enumerate_path {
     ($type:ty) => {
         impl ValidateEnumerate<&'static str> for $type {
-            fn validate_enumerate(
-                &self,
-                enumerate: &[&'static str],
-            ) -> Result<(), EnumerateErrorParams> {
+            fn validate_enumerate(&self, enumerate: &[&'static str]) -> Result<(), EnumerateError> {
                 if enumerate
                     .iter()
                     .any(|candidate| &std::path::Path::new(candidate) == self)
                 {
                     Ok(())
                 } else {
-                    Err(EnumerateErrorParams::new(enumerate))
+                    Err(EnumerateError::new(enumerate))
                 }
             }
         }
@@ -155,7 +149,7 @@ where
     fn validate_composited_enumerate(
         &self,
         limit: &[&'static str],
-    ) -> Result<(), crate::validation::Composited<EnumerateErrorParams>> {
+    ) -> Result<(), crate::validation::Composited<EnumerateError>> {
         self.validate_enumerate(limit)
             .map_err(crate::validation::Composited::Single)
     }

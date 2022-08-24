@@ -33,7 +33,7 @@ macro_rules! extract_object_size_validator {
                 let errors = field.errors_variable();
                 let [<$ErrorType:snake>] = get_numeric(validation_value)?;
                 let message =
-                    message_fn.unwrap_or(quote!(::serde_valid::[<$ErrorType ErrorParams>]::to_default_message));
+                    message_fn.unwrap_or(quote!(::serde_valid::[<$ErrorType Error>]::to_default_message));
 
                 Ok(quote!(
                     if let Err(__composited_error_params) = ::serde_valid::validation::[<ValidateComposited $ErrorType>]::[<validate_composited_ $ErrorType:snake>](

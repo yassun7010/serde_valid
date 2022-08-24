@@ -119,7 +119,7 @@ use serde_json::json;
 use serde_valid::Validate;
 
 #[inline]
-fn min_error_message(_params: &serde_valid::MinItemsErrorParams) -> String {
+fn min_error_message(_params: &serde_valid::MinItemsError) -> String {
     "this is min custom message_fn.".to_string()
 }
 
@@ -238,7 +238,7 @@ use serde_valid::Validate;
 struct MyType(String);
 
 impl serde_valid::ValidateMaxLength for MyType {
-    fn validate_max_length(&self, max_length: usize) -> Result<(), serde_valid::MaxLengthErrorParams> {
+    fn validate_max_length(&self, max_length: usize) -> Result<(), serde_valid::MaxLengthError> {
         self.0.validate_max_length(max_length)
     }
 }

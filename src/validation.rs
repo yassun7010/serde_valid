@@ -6,9 +6,9 @@ mod object;
 mod string;
 
 use crate::{
-    EnumerateErrorParams, ExclusiveMaximumErrorParams, ExclusiveMinimumErrorParams,
-    MaxLengthErrorParams, MaxPropertiesErrorParams, MaximumErrorParams, MinLengthErrorParams,
-    MinPropertiesErrorParams, MinimumErrorParams, MultipleOfErrorParams, PatternErrorParams,
+    EnumerateError, ExclusiveMaximumError, ExclusiveMinimumError, MaxLengthError,
+    MaxPropertiesError, MaximumError, MinLengthError, MinPropertiesError, MinimumError,
+    MultipleOfError, PatternError,
 };
 pub use array::{ValidateMaxItems, ValidateMinItems, ValidateUniqueItems};
 pub use error::{
@@ -29,16 +29,16 @@ macro_rules! impl_composited_validation_1args {
         pub trait $ValidateCompositedTrait:ident {
             fn $validate_composited_method:ident(
                 &self,
-                $limit:ident: $limit_type:ty,
-            ) -> Result<(), Composited<$ErrorParams:ty>>;
+                $limit:ident: $limit_type:ty$(,)*
+            ) -> Result<(), Composited<$Error:ty>>;
         }
     ) => {
         paste::paste! {
             pub trait $ValidateCompositedTrait {
                 fn $validate_composited_method(
                     &self,
-                    $limit: $limit_type,
-                ) -> Result<(), Composited<$ErrorParams>>;
+                    $limit: $limit_type
+                ) -> Result<(), Composited<$Error>>;
             }
 
             impl<T> $ValidateCompositedTrait for T
@@ -48,7 +48,7 @@ macro_rules! impl_composited_validation_1args {
                 fn $validate_composited_method(
                     &self,
                     $limit: $limit_type,
-                ) -> Result<(), Composited<$ErrorParams>> {
+                ) -> Result<(), Composited<$Error>> {
                     self.[<validate_ $limit>]($limit)
                         .map_err(|error| Composited::Single(error))
                 }
@@ -61,7 +61,7 @@ macro_rules! impl_composited_validation_1args {
                 fn $validate_composited_method(
                     &self,
                     $limit: $limit_type,
-                ) -> Result<(), Composited<$ErrorParams>> {
+                ) -> Result<(), Composited<$Error>> {
                     let mut errors = vec![];
                     self.iter().for_each(|item| {
                         item.$validate_composited_method($limit)
@@ -84,7 +84,7 @@ macro_rules! impl_composited_validation_1args {
                 fn $validate_composited_method(
                     &self,
                     $limit: $limit_type,
-                ) -> Result<(), Composited<$ErrorParams>> {
+                ) -> Result<(), Composited<$Error>> {
                     let mut errors = vec![];
                     self.iter().for_each(|item| {
                         item.$validate_composited_method($limit)
@@ -107,7 +107,7 @@ macro_rules! impl_composited_validation_1args {
                 fn $validate_composited_method(
                     &self,
                     $limit: $limit_type,
-                ) -> Result<(), Composited<$ErrorParams>> {
+                ) -> Result<(), Composited<$Error>> {
                     match self {
                         Some(value) => value.$validate_composited_method($limit),
                         None => Ok(()),
@@ -120,15 +120,15 @@ macro_rules! impl_composited_validation_1args {
         pub trait $ValidateCompositedTrait:ident<T> {
             fn $validate_composited_method:ident(
                 &self,
-                $limit:ident: T,
-            ) -> Result<(), Composited<$ErrorParams:ty>>;
+                $limit:ident: T$(,)*
+            ) -> Result<(), Composited<$Error:ty>>;
         }
     ) => {
         pub trait $ValidateCompositedTrait<T> {
             fn $validate_composited_method(
                 &self,
                 limit: T,
-            ) -> Result<(), crate::validation::Composited<$ErrorParams>>;
+            ) -> Result<(), crate::validation::Composited<$Error>>;
         }
 
         impl<T, U> $ValidateCompositedTrait<T> for Vec<U>
@@ -139,7 +139,7 @@ macro_rules! impl_composited_validation_1args {
             fn $validate_composited_method(
                 &self,
                 limit: T,
-            ) -> Result<(), crate::validation::Composited<$ErrorParams>> {
+            ) -> Result<(), crate::validation::Composited<$Error>> {
                 let mut errors = vec![];
                 self.iter().for_each(|item| {
                     item.$validate_composited_method(limit)
@@ -163,7 +163,7 @@ macro_rules! impl_composited_validation_1args {
             fn $validate_composited_method(
                 &self,
                 limit: T,
-            ) -> Result<(), crate::validation::Composited<$ErrorParams>> {
+            ) -> Result<(), crate::validation::Composited<$Error>> {
                 let mut errors = vec![];
                 self.iter().for_each(|item| {
                     item.$validate_composited_method(limit)
@@ -187,7 +187,7 @@ macro_rules! impl_composited_validation_1args {
             fn $validate_composited_method(
                 &self,
                 limit: T,
-            ) -> Result<(), crate::validation::Composited<$ErrorParams>> {
+            ) -> Result<(), crate::validation::Composited<$Error>> {
                 match self {
                     Some(value) => value.$validate_composited_method(limit),
                     None => Ok(()),
@@ -210,7 +210,7 @@ macro_rules! impl_generic_composited_validation_1args {
                 fn [< validate_composited_ $ErrorType:snake>](
                     &self,
                     limit: $type,
-                ) -> Result<(), crate::validation::Composited<[<$ErrorType ErrorParams>]>> {
+                ) -> Result<(), crate::validation::Composited<[<$ErrorType Error>]>> {
                     self.[< validate_ $ErrorType:snake>](limit)
                         .map_err(|error| crate::validation::Composited::Single(error))
                 }
@@ -224,19 +224,13 @@ pub(crate) use impl_generic_composited_validation_1args;
 // Number
 impl_composited_validation_1args!(
     pub trait ValidateCompositedMaximum<T> {
-        fn validate_composited_maximum(
-            &self,
-            maximum: T,
-        ) -> Result<(), Composited<MaximumErrorParams>>;
+        fn validate_composited_maximum(&self, maximum: T) -> Result<(), Composited<MaximumError>>;
     }
 );
 
 impl_composited_validation_1args!(
     pub trait ValidateCompositedMinimum<T> {
-        fn validate_composited_minimum(
-            &self,
-            minimum: T,
-        ) -> Result<(), Composited<MinimumErrorParams>>;
+        fn validate_composited_minimum(&self, minimum: T) -> Result<(), Composited<MinimumError>>;
     }
 );
 
@@ -245,7 +239,7 @@ impl_composited_validation_1args!(
         fn validate_composited_exclusive_maximum(
             &self,
             exclusive_maximum: T,
-        ) -> Result<(), Composited<ExclusiveMaximumErrorParams>>;
+        ) -> Result<(), Composited<ExclusiveMaximumError>>;
     }
 );
 
@@ -254,7 +248,7 @@ impl_composited_validation_1args!(
         fn validate_composited_exclusive_minimum(
             &self,
             exclusive_minimum: T,
-        ) -> Result<(), Composited<ExclusiveMinimumErrorParams>>;
+        ) -> Result<(), Composited<ExclusiveMinimumError>>;
     }
 );
 
@@ -263,7 +257,7 @@ impl_composited_validation_1args!(
         fn validate_composited_multiple_of(
             &self,
             exclusive_minimum: T,
-        ) -> Result<(), Composited<MultipleOfErrorParams>>;
+        ) -> Result<(), Composited<MultipleOfError>>;
     }
 );
 
@@ -273,7 +267,7 @@ impl_composited_validation_1args!(
         fn validate_composited_max_length(
             &self,
             max_length: usize,
-        ) -> Result<(), Composited<MaxLengthErrorParams>>;
+        ) -> Result<(), Composited<MaxLengthError>>;
     }
 );
 
@@ -282,7 +276,7 @@ impl_composited_validation_1args!(
         fn validate_composited_min_length(
             &self,
             min_length: usize,
-        ) -> Result<(), Composited<MinLengthErrorParams>>;
+        ) -> Result<(), Composited<MinLengthError>>;
     }
 );
 
@@ -291,7 +285,7 @@ impl_composited_validation_1args!(
         fn validate_composited_pattern(
             &self,
             pattern: &regex::Regex,
-        ) -> Result<(), Composited<PatternErrorParams>>;
+        ) -> Result<(), Composited<PatternError>>;
     }
 );
 
@@ -301,7 +295,7 @@ impl_composited_validation_1args!(
         fn validate_composited_max_properties(
             &self,
             max_properties: usize,
-        ) -> Result<(), Composited<MaxPropertiesErrorParams>>;
+        ) -> Result<(), Composited<MaxPropertiesError>>;
     }
 );
 
@@ -310,7 +304,7 @@ impl_composited_validation_1args!(
         fn validate_composited_min_properties(
             &self,
             min_properties: usize,
-        ) -> Result<(), Composited<MinPropertiesErrorParams>>;
+        ) -> Result<(), Composited<MinPropertiesError>>;
     }
 );
 
@@ -320,6 +314,6 @@ impl_composited_validation_1args!(
         fn validate_composited_enumerate(
             &self,
             enumerate: T,
-        ) -> Result<(), Composited<EnumerateErrorParams>>;
+        ) -> Result<(), Composited<EnumerateError>>;
     }
 );
