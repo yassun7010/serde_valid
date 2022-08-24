@@ -9,41 +9,41 @@ impl ToDefaultMessage for String {
 }
 
 #[derive(Clone)]
-pub struct Message<Params>
+pub struct Message<E>
 where
-    Params: ToDefaultMessage,
+    E: ToDefaultMessage,
 {
-    params: Params,
-    format_fn: for<'a> fn(&'a Params) -> String,
+    error: E,
+    format_fn: for<'a> fn(&'a E) -> String,
 }
 
-impl<Params> Message<Params>
+impl<E> Message<E>
 where
-    Params: ToDefaultMessage,
+    E: ToDefaultMessage,
 {
-    pub fn new(params: Params, format_fn: fn(&Params) -> String) -> Self {
-        Self { params, format_fn }
+    pub fn new(error: E, format_fn: fn(&E) -> String) -> Self {
+        Self { error, format_fn }
     }
 
-    pub fn params(&self) -> &Params {
-        &self.params
+    pub fn error(&self) -> &E {
+        &self.error
     }
 }
 
-impl<Params> std::fmt::Debug for Message<Params>
+impl<E> std::fmt::Debug for Message<E>
 where
-    Params: ToDefaultMessage + std::fmt::Debug,
+    E: ToDefaultMessage + std::fmt::Debug,
 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "Message {{ params: {:?} }}", &self.params)
+        write!(f, "Message {{ error: {:?} }}", &self.error)
     }
 }
 
-impl<Params> std::fmt::Display for Message<Params>
+impl<E> std::fmt::Display for Message<E>
 where
-    Params: ToDefaultMessage,
+    E: ToDefaultMessage,
 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", { self.format_fn }(&self.params))
+        write!(f, "{}", { self.format_fn }(&self.error))
     }
 }

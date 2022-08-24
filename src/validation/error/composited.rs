@@ -14,15 +14,15 @@ pub enum Composited<Error> {
     Array(Vec<Composited<Error>>),
 }
 
-pub trait IntoError<Params>: Sized
+pub trait IntoError<E>: Sized
 where
-    Params: ToDefaultMessage,
+    E: ToDefaultMessage,
 {
     fn into_error(self) -> crate::validation::Error {
-        self.into_error_by(Params::to_default_message)
+        self.into_error_by(E::to_default_message)
     }
 
-    fn into_error_by(self, format_fn: fn(&Params) -> String) -> crate::validation::Error;
+    fn into_error_by(self, format_fn: fn(&E) -> String) -> crate::validation::Error;
 }
 
 macro_rules! impl_into_error {
