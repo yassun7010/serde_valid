@@ -13,5 +13,5 @@ cargo publish
 # wait tarball package publishment
 sleep 20
 
-cd ../
+cd ../serde_valid
 cargo publish

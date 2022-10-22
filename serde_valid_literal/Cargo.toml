@@ -1,13 +1,13 @@
 [package]
 name = "serde_valid_literal"
-version = "0.9.0"
-authors = ["yassun4dev <yassun4dev@outlook.com>"]
-edition = "2021"
 license = "MIT"
 repository = "https://github.com/yassun4dev/serde_valid.git"
 description = "Literal Value type based JSON."
 categories = ["encoding"]
-keywords = ["json", "literal"]
+authors.workspace = true
+edition.workspace = true
+keywords.workspace = true
+version.workspace = true
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
