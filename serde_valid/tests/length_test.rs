@@ -371,3 +371,50 @@ fn length_vec_err_message() {
         .to_string()
     );
 }
+
+#[test]
+fn multi_items_error() {
+    #[derive(Validate)]
+    struct TestStruct {
+        #[validate(min_items = 2)]
+        #[validate(max_items = 5)]
+        #[validate(min_length = 1)]
+        #[validate(max_length = 5)]
+        val: Vec<String>,
+    }
+
+    let s = TestStruct {
+        val: vec![
+            "user1",
+            "",
+            "user3",
+            "too_long",
+            "user5",
+            "bbb",
+            "last_error",
+        ]
+        .into_iter()
+        .map(Into::into)
+        .collect(),
+    };
+
+    assert_eq!(
+        s.validate().unwrap_err().to_string(),
+        json!(
+            {
+                "errors": [],
+                "properties": {
+                    "val": {
+                        "errors": ["The length of the items must be `<= 5`."],
+                        "items": {
+                            "1": { "errors": ["The length of the value must be `>= 1`."] },
+                            "3": { "errors": ["The length of the value must be `<= 5`."] },
+                            "6": { "errors": ["The length of the value must be `<= 5`."] }
+                        }
+                    }
+                }
+            }
+        )
+        .to_string()
+    );
+}

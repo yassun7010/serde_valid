@@ -11,7 +11,7 @@ use indexmap::IndexMap;
 #[derive(Debug)]
 pub enum Composited<Error> {
     Single(Error),
-    Array(Vec<Composited<Error>>),
+    Array(IndexMap<usize, Composited<Error>>),
 }
 
 pub trait IntoError<E>: Sized
@@ -32,16 +32,16 @@ macro_rules! impl_into_error {
                 fn into_error_by(self, format_fn: fn(&[<$ErrorType Error>]) -> String) -> Error {
                     match self {
                         Composited::Single(single) => Error::$ErrorType(crate::error::Message::new(single, format_fn)),
-                        Composited::Array(array) => Error::Items(crate::validation::ArrayErrors::new(
+                        Composited::Array(array) =>{
+                            Error::Items(crate::validation::ArrayErrors::new(
                             Vec::with_capacity(0),
                             array
                                 .into_iter()
-                                .enumerate()
                                 .map(|(index, params)| {
                                     (index, crate::validation::Errors::NewType(vec![params.into_error_by(format_fn)]))
                                 })
                                 .collect::<IndexMap<_, _>>(),
-                        )),
+                        ))},
                     }
                 }
             }

@@ -16,6 +16,7 @@ pub use error::{
     ObjectErrors, PropertyErrorsMap, PropertyVecErrorsMap, VecErrors,
 };
 pub use generic::ValidateEnumerate;
+use indexmap::IndexMap;
 pub use numeric::{
     ValidateExclusiveMaximum, ValidateExclusiveMinimum, ValidateMaximum, ValidateMinimum,
     ValidateMultipleOf,
@@ -62,12 +63,16 @@ macro_rules! impl_composited_validation_1args {
                     &self,
                     $limit: $limit_type,
                 ) -> Result<(), Composited<$Error>> {
-                    let mut errors = vec![];
-                    self.iter().for_each(|item| {
-                        item.$validate_composited_method($limit)
-                            .map_err(|error| errors.push(error))
-                            .ok();
-                    });
+                    let errors: IndexMap<usize, crate::validation::Composited<$Error>> = self
+                        .iter()
+                        .enumerate()
+                        .filter_map(
+                            |(index, item)| match item.$validate_composited_method($limit) {
+                                Ok(_) => None,
+                                Err(error) => Some((index, error)),
+                            },
+                        )
+                        .collect();
 
                     if errors.is_empty() {
                         Ok(())
@@ -85,12 +90,16 @@ macro_rules! impl_composited_validation_1args {
                     &self,
                     $limit: $limit_type,
                 ) -> Result<(), Composited<$Error>> {
-                    let mut errors = vec![];
-                    self.iter().for_each(|item| {
-                        item.$validate_composited_method($limit)
-                            .map_err(|error| errors.push(error))
-                            .ok();
-                    });
+                    let errors: IndexMap<usize, crate::validation::Composited<$Error>> = self
+                        .iter()
+                        .enumerate()
+                        .filter_map(
+                            |(index, item)| match item.$validate_composited_method($limit) {
+                                Ok(_) => None,
+                                Err(error) => Some((index, error)),
+                            },
+                        )
+                        .collect();
 
                     if errors.is_empty() {
                         Ok(())
@@ -138,19 +147,23 @@ macro_rules! impl_composited_validation_1args {
         {
             fn $validate_composited_method(
                 &self,
-                limit: T,
+                $limit: T,
             ) -> Result<(), crate::validation::Composited<$Error>> {
-                let mut errors = vec![];
-                self.iter().for_each(|item| {
-                    item.$validate_composited_method(limit)
-                        .map_err(|error| errors.push(error))
-                        .ok();
-                });
+                let errors: IndexMap<usize, crate::validation::Composited<$Error>> = self
+                    .iter()
+                    .enumerate()
+                    .filter_map(
+                        |(index, item)| match item.$validate_composited_method($limit) {
+                            Ok(_) => None,
+                            Err(error) => Some((index, error)),
+                        },
+                    )
+                    .collect();
 
                 if errors.is_empty() {
                     Ok(())
                 } else {
-                    Err(crate::validation::Composited::Array(errors))
+                    Err(Composited::Array(errors))
                 }
             }
         }
@@ -162,19 +175,23 @@ macro_rules! impl_composited_validation_1args {
         {
             fn $validate_composited_method(
                 &self,
-                limit: T,
+                $limit: T,
             ) -> Result<(), crate::validation::Composited<$Error>> {
-                let mut errors = vec![];
-                self.iter().for_each(|item| {
-                    item.$validate_composited_method(limit)
-                        .map_err(|error| errors.push(error))
-                        .ok();
-                });
+                let errors: IndexMap<usize, crate::validation::Composited<$Error>> = self
+                    .iter()
+                    .enumerate()
+                    .filter_map(
+                        |(index, item)| match item.$validate_composited_method($limit) {
+                            Ok(_) => None,
+                            Err(error) => Some((index, error)),
+                        },
+                    )
+                    .collect();
 
                 if errors.is_empty() {
                     Ok(())
                 } else {
-                    Err(crate::validation::Composited::Array(errors))
+                    Err(Composited::Array(errors))
                 }
             }
         }
