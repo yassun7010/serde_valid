@@ -400,31 +400,21 @@ fn multi_items_error() {
 
     assert_eq!(
         s.validate().unwrap_err().to_string(),
-        json!({
-            "errors": [],
-            "properties": {
-                "val": {
-                    "errors": ["The length of the items must be `<= 5`."],
-                    "items": {
-                        "1": {
-                            "errors": [
-                                "The length of the value must be `>= 1`."
-                            ]
-                        },
-                        "3": {
-                            "errors": [
-                                "The length of the value must be `<= 5`."
-                            ]
-                        },
-                        "5": {
-                            "errors": [
-                                "The length of the value must be `<= 5`."
-                            ]
+        json!(
+            {
+                "errors": [],
+                "properties": {
+                    "val": {
+                        "errors": ["The length of the items must be `<= 5`."],
+                        "items": {
+                            "1": { "errors": ["The length of the value must be `>= 1`."] },
+                            "3": { "errors": ["The length of the value must be `<= 5`."] },
+                            "6": { "errors": ["The length of the value must be `<= 5`."] }
                         }
                     }
                 }
             }
-        })
+        )
         .to_string()
     );
 }
