@@ -2,7 +2,7 @@ use jsonschema::paths::{JSONPointer, PathChunk};
 
 use crate::error::ToDefaultMessage;
 
-use super::{ItemErrorsMap, Message, PropertyErrorsMap};
+use super::{ArrayErrors, ItemErrorsMap, Message, ObjectErrors, PropertyErrorsMap};
 
 pub struct FlatErrors(Vec<FlatError>);
 
@@ -48,46 +48,65 @@ trait IntoFlatErrors
 where
     Self: Sized,
 {
-    fn into_flat_errors(self) -> FlatErrors {
-        self.into_flat_errors_at(&JSONPointer::default())
+    fn into_flat(self) -> FlatErrors {
+        self.into_flat_at(&JSONPointer::default())
     }
 
-    fn into_flat_errors_at(self, pointer: &JSONPointer) -> FlatErrors;
+    fn into_flat_at(self, pointer: &JSONPointer) -> FlatErrors;
 }
 
 impl IntoFlatErrors for crate::validation::Errors {
-    fn into_flat_errors_at(self, _pointer: &JSONPointer) -> FlatErrors {
-        unimplemented!()
-        // let errors = match self {
-        //     crate::validation::Errors::Array(array) => array.errors.into_iter().map(|error| error),
-        // };
-        // FlatErrors(errors)
+    fn into_flat_at(self, pointer: &JSONPointer) -> FlatErrors {
+        match self {
+            crate::validation::Errors::Array(errors) => errors.into_flat_at(pointer),
+            crate::validation::Errors::Object(errors) => errors.into_flat_at(pointer),
+            crate::validation::Errors::NewType(errors) => errors.into_flat_at(pointer),
+        }
     }
 }
 
 impl IntoFlatErrors for crate::validation::Error {
-    fn into_flat_errors_at(self, pointer: &JSONPointer) -> FlatErrors {
-        FlatErrors(into_flat(pointer.to_owned(), self))
+    fn into_flat_at(self, pointer: &JSONPointer) -> FlatErrors {
+        match self {
+            crate::validation::Error::Minimum(inner) => inner.into_flat_at(pointer),
+            crate::validation::Error::Maximum(inner) => inner.into_flat_at(pointer),
+            crate::validation::Error::ExclusiveMinimum(inner) => inner.into_flat_at(pointer),
+            crate::validation::Error::ExclusiveMaximum(inner) => inner.into_flat_at(pointer),
+            crate::validation::Error::MultipleOf(inner) => inner.into_flat_at(pointer),
+            crate::validation::Error::MinLength(inner) => inner.into_flat_at(pointer),
+            crate::validation::Error::MaxLength(inner) => inner.into_flat_at(pointer),
+            crate::validation::Error::Pattern(inner) => inner.into_flat_at(pointer),
+            crate::validation::Error::MinItems(inner) => inner.into_flat_at(pointer),
+            crate::validation::Error::MaxItems(inner) => inner.into_flat_at(pointer),
+            crate::validation::Error::UniqueItems(inner) => inner.into_flat_at(pointer),
+            crate::validation::Error::MinProperties(inner) => inner.into_flat_at(pointer),
+            crate::validation::Error::MaxProperties(inner) => inner.into_flat_at(pointer),
+            crate::validation::Error::Enumerate(inner) => inner.into_flat_at(pointer),
+            crate::validation::Error::Items(inner) => inner.into_flat_at(pointer),
+            crate::validation::Error::Properties(inner) => inner.into_flat_at(pointer),
+            crate::validation::Error::Custom(inner) => inner.into_flat_at(pointer),
+        }
     }
 }
 
 impl IntoFlatErrors for Vec<crate::validation::Error> {
-    fn into_flat_errors_at(self, pointer: &JSONPointer) -> FlatErrors {
-        FlatErrors(self.into_iter().fold(vec![], |pre, e| {
+    fn into_flat_at(self, pointer: &JSONPointer) -> FlatErrors {
+        FlatErrors(self.into_iter().fold(vec![], |pre, error| {
             pre.into_iter()
-                .chain(into_flat(pointer.clone(), e))
+                .chain(error.into_flat_at(pointer))
                 .collect::<Vec<_>>()
         }))
     }
 }
 
 impl IntoFlatErrors for ItemErrorsMap {
-    fn into_flat_errors_at(self, pointer: &JSONPointer) -> FlatErrors {
-        FlatErrors(self.into_iter().fold(vec![], |pre, (index, errs)| {
+    fn into_flat_at(self, pointer: &JSONPointer) -> FlatErrors {
+        FlatErrors(self.into_iter().fold(vec![], |pre, (index, errors)| {
             let parrent_pointer = merge_childs(pointer.clone(), [PathChunk::Index(index)]);
             pre.into_iter()
                 .chain(
-                    errs.into_flat_errors()
+                    errors
+                        .into_flat()
                         .into_iter()
                         .map(|e| e.merge_childs(parrent_pointer.clone())),
                 )
@@ -97,7 +116,7 @@ impl IntoFlatErrors for ItemErrorsMap {
 }
 
 impl IntoFlatErrors for PropertyErrorsMap {
-    fn into_flat_errors_at(self, pointer: &JSONPointer) -> FlatErrors {
+    fn into_flat_at(self, pointer: &JSONPointer) -> FlatErrors {
         FlatErrors(self.into_iter().fold(vec![], |pre, (property, errs)| {
             let parrent_pointer = merge_childs(
                 pointer.clone(),
@@ -105,7 +124,7 @@ impl IntoFlatErrors for PropertyErrorsMap {
             );
             pre.into_iter()
                 .chain(
-                    errs.into_flat_errors()
+                    errs.into_flat()
                         .into_iter()
                         .map(|e| e.merge_childs(parrent_pointer.clone())),
                 )
@@ -114,49 +133,49 @@ impl IntoFlatErrors for PropertyErrorsMap {
     }
 }
 
-fn into_flat(
-    pointer: jsonschema::paths::JSONPointer,
-    error: crate::validation::Error,
-) -> Vec<FlatError> {
-    match error {
-        crate::validation::Error::Minimum(message) => single_error(pointer, message),
-        crate::validation::Error::Maximum(message) => single_error(pointer, message),
-        crate::validation::Error::ExclusiveMinimum(message) => single_error(pointer, message),
-        crate::validation::Error::ExclusiveMaximum(message) => single_error(pointer, message),
-        crate::validation::Error::MultipleOf(message) => single_error(pointer, message),
-        crate::validation::Error::MinLength(message) => single_error(pointer, message),
-        crate::validation::Error::MaxLength(message) => single_error(pointer, message),
-        crate::validation::Error::Pattern(message) => single_error(pointer, message),
-        crate::validation::Error::MinItems(message) => single_error(pointer, message),
-        crate::validation::Error::MaxItems(message) => single_error(pointer, message),
-        crate::validation::Error::UniqueItems(message) => single_error(pointer, message),
-        crate::validation::Error::MinProperties(message) => single_error(pointer, message),
-        crate::validation::Error::MaxProperties(message) => single_error(pointer, message),
-        crate::validation::Error::Enumerate(message) => single_error(pointer, message),
-        crate::validation::Error::Items(err) => err
-            .errors
-            .into_flat_errors_at(&pointer)
-            .into_iter()
-            .chain(err.items.into_flat_errors_at(&pointer))
-            .collect(),
-        crate::validation::Error::Properties(err) => err
-            .errors
-            .into_flat_errors_at(&pointer)
-            .into_iter()
-            .chain(err.properties.into_flat_errors_at(&pointer))
-            .collect(),
-        crate::validation::Error::Custom(message) => vec![FlatError { pointer, message }],
-    }
-}
-
-fn single_error<T>(pointer: JSONPointer, message: Message<T>) -> Vec<FlatError>
+impl<T> IntoFlatErrors for Message<T>
 where
     T: ToDefaultMessage,
 {
-    vec![FlatError {
-        pointer,
-        message: message.to_string(),
-    }]
+    fn into_flat_at(self, pointer: &JSONPointer) -> FlatErrors {
+        FlatErrors(vec![FlatError {
+            pointer: pointer.to_owned(),
+            message: self.to_string(),
+        }])
+    }
+}
+
+impl IntoFlatErrors for ArrayErrors {
+    fn into_flat_at(self, pointer: &JSONPointer) -> FlatErrors {
+        FlatErrors(
+            self.errors
+                .into_flat_at(pointer)
+                .into_iter()
+                .chain(self.items.into_flat_at(pointer))
+                .collect(),
+        )
+    }
+}
+
+impl IntoFlatErrors for ObjectErrors {
+    fn into_flat_at(self, pointer: &JSONPointer) -> FlatErrors {
+        FlatErrors(
+            self.errors
+                .into_flat_at(pointer)
+                .into_iter()
+                .chain(self.properties.into_flat_at(pointer))
+                .collect(),
+        )
+    }
+}
+
+impl IntoFlatErrors for String {
+    fn into_flat_at(self, pointer: &JSONPointer) -> FlatErrors {
+        FlatErrors(vec![FlatError {
+            pointer: pointer.to_owned(),
+            message: self,
+        }])
+    }
 }
 
 fn merge_childs(pointer: JSONPointer, chunks: impl IntoIterator<Item = PathChunk>) -> JSONPointer {
