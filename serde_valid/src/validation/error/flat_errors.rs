@@ -4,6 +4,7 @@ use crate::error::ToDefaultMessage;
 
 use super::{ArrayErrors, ItemErrorsMap, Message, ObjectErrors, PropertyErrorsMap};
 
+#[derive(Debug, PartialEq, Eq)]
 pub struct FlatError {
     pointer: JSONPointer,
     message: String,
@@ -22,6 +23,7 @@ impl FlatError {
     }
 }
 
+#[derive(Debug, PartialEq, Eq)]
 pub struct FlatErrors(Vec<FlatError>);
 
 impl IntoIterator for FlatErrors {
@@ -144,7 +146,7 @@ where
     fn into_flat_at(self, pointer: &JSONPointer) -> FlatErrors {
         FlatErrors(vec![FlatError {
             pointer: pointer.to_owned(),
-            message: self.to_string(),
+            message: self.error().to_default_message(),
         }])
     }
 }
@@ -190,4 +192,35 @@ fn merge_childs(pointer: JSONPointer, chunks: impl IntoIterator<Item = PathChunk
             .collect::<Vec<_>>()
             .as_slice(),
     )
+}
+
+#[cfg(test)]
+mod tests {
+    use indexmap::IndexMap;
+
+    use super::*;
+
+    use crate::{
+        validation::{Error, Errors},
+        MinItemsError,
+    };
+
+    #[test]
+    fn array_errors_flatten() {
+        let min_items = Message::new(
+            MinItemsError { min_items: 1 },
+            MinItemsError::to_default_message,
+        );
+        assert_eq!(
+            Errors::Array(ArrayErrors {
+                errors: vec![Error::MinItems(min_items.clone())],
+                items: IndexMap::new(),
+            })
+            .into_flat(),
+            FlatErrors(vec![FlatError {
+                pointer: JSONPointer::default(),
+                message: min_items.error().to_default_message(),
+            }])
+        );
+    }
 }
