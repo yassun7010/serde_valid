@@ -5,7 +5,7 @@ use crate::{
     validation::{ArrayErrors, ItemErrorsMap, ObjectErrors, PropertyErrorsMap},
 };
 
-use super::{merge_childs, FlatError, FlatErrors};
+use super::{FlatError, FlatErrors};
 
 pub trait IntoFlat
 where
@@ -151,6 +151,16 @@ impl From<Vec<FlatError>> for FlatErrors {
     fn from(errors: Vec<FlatError>) -> Self {
         Self::new(errors)
     }
+}
+
+fn merge_childs(pointer: JSONPointer, chunks: impl IntoIterator<Item = PathChunk>) -> JSONPointer {
+    JSONPointer::from(
+        pointer
+            .into_iter()
+            .chain(chunks)
+            .collect::<Vec<_>>()
+            .as_slice(),
+    )
 }
 
 #[cfg(test)]
