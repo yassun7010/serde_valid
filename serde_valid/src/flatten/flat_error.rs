@@ -8,23 +8,22 @@ pub struct FlatError {
 }
 
 impl FlatError {
-    pub fn new(message: String, path: JSONPointer) -> Self {
-        Self { message, path }
+    pub fn new(message: String, path: impl Into<JSONPointer>) -> Self {
+        Self {
+            message,
+            path: path.into(),
+        }
     }
 
-    pub fn merge_childs(self, path: JSONPointer) -> Self {
-        Self::new(self.message, merge_childs(path, self.path.into_iter()))
+    pub fn merge_childs(self, path: impl IntoIterator<Item = PathChunk>) -> Self {
+        Self::new(
+            self.message,
+            JSONPointer::from(
+                path.into_iter()
+                    .chain(self.path.into_iter())
+                    .collect::<Vec<_>>()
+                    .as_slice(),
+            ),
+        )
     }
-}
-
-pub(crate) fn merge_childs(
-    path: JSONPointer,
-    chunks: impl IntoIterator<Item = PathChunk>,
-) -> JSONPointer {
-    JSONPointer::from(
-        path.into_iter()
-            .chain(chunks)
-            .collect::<Vec<_>>()
-            .as_slice(),
-    )
 }

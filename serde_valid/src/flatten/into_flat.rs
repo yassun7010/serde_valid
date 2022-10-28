@@ -5,7 +5,7 @@ use crate::{
     validation::{ArrayErrors, ItemErrorsMap, ObjectErrors, PropertyErrorsMap},
 };
 
-use super::{flat_error::merge_childs, FlatError, FlatErrors};
+use super::{FlatError, FlatErrors};
 
 pub trait IntoFlat
 where
@@ -67,14 +67,10 @@ impl IntoFlat for Vec<crate::validation::Error> {
 impl IntoFlat for ItemErrorsMap {
     fn into_flat_at(self, path: &JSONPointer) -> FlatErrors {
         FlatErrors::new(self.into_iter().fold(vec![], |pre, (index, errors)| {
-            let parrent_pointer = merge_childs(path.clone(), [PathChunk::Index(index)]);
             pre.into_iter()
-                .chain(
-                    errors
-                        .into_flat()
-                        .into_iter()
-                        .map(|e| e.merge_childs(parrent_pointer.clone())),
-                )
+                .chain(errors.into_flat().into_iter().map(|e| {
+                    e.merge_childs(path.clone().into_iter().chain([PathChunk::Index(index)]))
+                }))
                 .collect::<Vec<_>>()
         }))
     }
@@ -82,17 +78,15 @@ impl IntoFlat for ItemErrorsMap {
 
 impl IntoFlat for PropertyErrorsMap {
     fn into_flat_at(self, path: &JSONPointer) -> FlatErrors {
-        FlatErrors::new(self.into_iter().fold(vec![], |pre, (property, errs)| {
-            let parrent_pointer = merge_childs(
-                path.clone(),
-                [PathChunk::Property(property.to_string().into_boxed_str())],
-            );
+        FlatErrors::new(self.into_iter().fold(vec![], |pre, (property, errors)| {
             pre.into_iter()
-                .chain(
-                    errs.into_flat()
-                        .into_iter()
-                        .map(|e| e.merge_childs(parrent_pointer.clone())),
-                )
+                .chain(errors.into_flat().into_iter().map(|error| {
+                    error.merge_childs(
+                        path.clone()
+                            .into_iter()
+                            .chain([PathChunk::Property(property.to_string().into_boxed_str())]),
+                    )
+                }))
                 .collect::<Vec<_>>()
         }))
     }
