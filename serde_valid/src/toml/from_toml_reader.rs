@@ -39,12 +39,10 @@ where
         let mut reader = reader;
         reader
             .read_to_string(&mut buffer)
-            .map_err(|err| serde_toml::de::Error::custom(err))?;
+            .map_err(serde_toml::de::Error::custom)?;
 
         let model: T = serde_toml::from_str(&buffer)?;
-        model
-            .validate()
-            .map_err(|err| crate::Error::ValidationError(err))?;
+        model.validate().map_err(crate::Error::ValidationError)?;
         Ok(model)
     }
 }
