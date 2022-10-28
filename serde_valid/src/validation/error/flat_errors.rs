@@ -90,7 +90,10 @@ impl IntoFlat for crate::validation::Error {
             crate::validation::Error::Enumerate(inner) => inner.into_flat_at(pointer),
             crate::validation::Error::Items(inner) => inner.into_flat_at(pointer),
             crate::validation::Error::Properties(inner) => inner.into_flat_at(pointer),
-            crate::validation::Error::Custom(inner) => inner.into_flat_at(pointer),
+            crate::validation::Error::Custom(inner) => FlatErrors(vec![FlatError {
+                pointer: pointer.to_owned(),
+                message: inner,
+            }]),
         }
     }
 }
@@ -172,15 +175,6 @@ impl IntoFlat for ObjectErrors {
                 .chain(self.properties.into_flat_at(pointer))
                 .collect(),
         )
-    }
-}
-
-impl IntoFlat for String {
-    fn into_flat_at(self, pointer: &JSONPointer) -> FlatErrors {
-        FlatErrors(vec![FlatError {
-            pointer: pointer.to_owned(),
-            message: self,
-        }])
     }
 }
 
