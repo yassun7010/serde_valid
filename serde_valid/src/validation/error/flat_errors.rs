@@ -190,13 +190,14 @@ fn merge_childs(pointer: JSONPointer, chunks: impl IntoIterator<Item = PathChunk
 
 #[cfg(test)]
 mod tests {
-    use indexmap::IndexMap;
+    use indexmap::indexmap;
+    use serde_valid_literal::Number;
 
     use super::*;
 
     use crate::{
         validation::{Error, Errors},
-        MinItemsError,
+        MaximumError, MinItemsError,
     };
 
     #[test]
@@ -205,16 +206,65 @@ mod tests {
             MinItemsError { min_items: 1 },
             MinItemsError::to_default_message,
         );
+        let maximum = Message::new(
+            MaximumError {
+                maximum: Number::I32(1),
+            },
+            MaximumError::to_default_message,
+        );
         assert_eq!(
             Errors::Array(ArrayErrors {
                 errors: vec![Error::MinItems(min_items.clone())],
-                items: IndexMap::new(),
+                items: indexmap! {
+                    0 => Errors::Array(
+                        ArrayErrors {
+                            errors: vec![Error::Maximum(maximum.clone())],
+                            items: indexmap! {
+                                2 => Errors::NewType(vec![Error::Maximum(maximum.clone())]),
+                            }
+                        }
+                    ),
+                    3 => Errors::NewType(vec![Error::Maximum(maximum.clone())]),
+                    5 => Errors::Object(
+                        ObjectErrors {
+                            errors: vec![Error::Maximum(maximum.clone())],
+                            properties: indexmap! {
+                                "name" => Errors::NewType(vec![Error::Maximum(maximum.clone())]),
+                            }
+                        }
+                    ),
+
+                },
             })
             .into_flat(),
-            FlatErrors(vec![FlatError {
-                pointer: JSONPointer::default(),
-                message: min_items.error().to_default_message(),
-            }])
+            FlatErrors(vec![
+                FlatError {
+                    pointer: JSONPointer::default(),
+                    message: min_items.error().to_default_message(),
+                },
+                FlatError {
+                    pointer: JSONPointer::from([PathChunk::from(0)].as_ref()),
+                    message: maximum.error().to_default_message(),
+                },
+                FlatError {
+                    pointer: JSONPointer::from([PathChunk::from(0), PathChunk::from(2)].as_ref()),
+                    message: maximum.error().to_default_message(),
+                },
+                FlatError {
+                    pointer: JSONPointer::from([PathChunk::from(3)].as_ref()),
+                    message: maximum.error().to_default_message(),
+                },
+                FlatError {
+                    pointer: JSONPointer::from([PathChunk::from(5)].as_ref()),
+                    message: maximum.error().to_default_message(),
+                },
+                FlatError {
+                    pointer: JSONPointer::from(
+                        [PathChunk::from(5), PathChunk::from("name".to_owned())].as_ref()
+                    ),
+                    message: maximum.error().to_default_message(),
+                }
+            ])
         );
     }
 }
