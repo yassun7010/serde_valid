@@ -5,7 +5,7 @@ members = ["serde_valid", "serde_valid_derive", "serde_valid_literal"]
 
 [workspace.package]
 edition = "2021"
-version = "0.10.0"
+version = "0.10.1"
 authors = ["yassun4dev <yassun4dev@outlook.com>"]
 keywords = ["validation", "serde", "json_schema"]
 
