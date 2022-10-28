@@ -1,0 +1,24 @@
+{
+    "folders": [
+        {
+            "name": "root",
+            "path": "."
+        },
+        {
+            "name": "serde_valid_derive",
+            "path": "serde_valid_derive"
+        },
+        {
+            "name": "serde_valid_literal",
+            "path": "serde_valid_literal"
+        },
+        {
+            "name": "serde_valid",
+            "path": "serde_valid"
+        },
+    ],
+    "settings": {
+        "rust-analyzer.cargo.features": "all",
+        "rust-analyzer.checkOnSave.command": "clippy"
+    }
+}
