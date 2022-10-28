@@ -7,6 +7,10 @@ impl FlatErrors {
     pub fn new(errors: impl Into<Vec<FlatError>>) -> Self {
         Self(errors.into())
     }
+
+    pub fn errors(&self) -> &[FlatError] {
+        &self.0
+    }
 }
 
 impl IntoIterator for FlatErrors {
@@ -24,11 +28,5 @@ impl<'a> IntoIterator for &'a FlatErrors {
 
     fn into_iter(self) -> Self::IntoIter {
         self.0.iter()
-    }
-}
-
-impl From<Vec<FlatError>> for FlatErrors {
-    fn from(errors: Vec<FlatError>) -> Self {
-        Self(errors)
     }
 }

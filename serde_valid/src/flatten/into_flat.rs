@@ -134,6 +134,25 @@ impl IntoFlat for ObjectErrors {
     }
 }
 
+impl FlatError {
+    pub fn new(pointer: JSONPointer, message: String) -> Self {
+        Self { pointer, message }
+    }
+
+    pub fn merge_childs(self, pointer: JSONPointer) -> Self {
+        Self::new(
+            merge_childs(pointer, self.pointer.into_iter()),
+            self.message,
+        )
+    }
+}
+
+impl From<Vec<FlatError>> for FlatErrors {
+    fn from(errors: Vec<FlatError>) -> Self {
+        Self::new(errors)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use indexmap::indexmap;
