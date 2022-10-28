@@ -437,8 +437,15 @@
 //! ```
 
 pub mod error;
+#[cfg(feature = "flatten")]
+pub mod flatten;
+pub mod json;
+#[cfg(feature = "toml")]
+pub mod toml;
 mod traits;
 pub mod validation;
+#[cfg(feature = "yaml")]
+pub mod yaml;
 
 use indexmap::IndexMap;
 
@@ -518,9 +525,3 @@ where
 }
 
 pub use serde_valid_derive::Validate;
-
-pub mod json;
-#[cfg(feature = "toml")]
-pub mod toml;
-#[cfg(feature = "yaml")]
-pub mod yaml;

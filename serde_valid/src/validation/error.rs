@@ -1,7 +1,6 @@
 mod array_erros;
 mod composited;
 mod errors;
-mod flat_errors;
 mod object_errors;
 
 pub use crate::error::{
