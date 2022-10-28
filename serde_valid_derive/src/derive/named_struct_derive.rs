@@ -105,7 +105,9 @@ fn collect_named_field_validators<'a>(
         .attrs()
         .iter()
         .filter_map(|attribute| {
-            if attribute.path != parse_quote!(validate) {
+            if attribute.path != parse_quote!(validate)
+                && attribute.path != parse_quote!(serde_valid)
+            {
                 return None;
             }
             match extract_meta_validator(&named_field, attribute, rename_map) {

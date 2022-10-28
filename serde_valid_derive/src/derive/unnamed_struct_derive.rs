@@ -105,7 +105,9 @@ fn collect_unnamed_field_validators(
         .attrs()
         .iter()
         .filter_map(|attribute| {
-            if attribute.path != parse_quote!(validate) {
+            if attribute.path != parse_quote!(validate)
+                && attribute.path != parse_quote!(serde_valid)
+            {
                 return None;
             }
             match extract_meta_validator(&unnamed_field, attribute, &HashMap::new()) {
