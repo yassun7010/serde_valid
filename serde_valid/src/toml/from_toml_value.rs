@@ -32,9 +32,7 @@ where
         value: serde_toml::Value,
     ) -> Result<Self, crate::Error<serde_toml::de::Error>> {
         let model: T = serde::Deserialize::deserialize(value)?;
-        model
-            .validate()
-            .map_err(|err| crate::Error::ValidationError(err))?;
+        model.validate().map_err(crate::Error::ValidationError)?;
         Ok(model)
     }
 }

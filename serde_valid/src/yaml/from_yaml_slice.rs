@@ -28,9 +28,7 @@ where
 {
     fn from_yaml_slice(slice: &'de [u8]) -> Result<Self, crate::Error<serde_yaml::Error>> {
         let model: T = serde_yaml::from_slice(slice)?;
-        model
-            .validate()
-            .map_err(|err| crate::Error::ValidationError(err))?;
+        model.validate().map_err(crate::Error::ValidationError)?;
         Ok(model)
     }
 }

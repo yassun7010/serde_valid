@@ -28,9 +28,7 @@ where
 {
     fn from_toml_str(str: &'de str) -> Result<Self, crate::Error<serde_toml::de::Error>> {
         let model: T = serde_toml::from_str(str)?;
-        model
-            .validate()
-            .map_err(|err| crate::Error::ValidationError(err))?;
+        model.validate().map_err(crate::Error::ValidationError)?;
         Ok(model)
     }
 }
