@@ -1,6 +1,8 @@
+use serde::Serialize;
+
 use super::FlatError;
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Serialize)]
 pub struct FlatErrors(Vec<FlatError>);
 
 impl FlatErrors {
