@@ -437,15 +437,10 @@
 //! ```
 
 pub mod error;
-#[cfg(feature = "flatten")]
-pub mod flatten;
+mod features;
 pub mod json;
-#[cfg(feature = "toml")]
-pub mod toml;
 mod traits;
 pub mod validation;
-#[cfg(feature = "yaml")]
-pub mod yaml;
 
 use indexmap::IndexMap;
 
@@ -460,6 +455,13 @@ pub use validation::{
     ValidateMinProperties, ValidateMinimum, ValidateMultipleOf, ValidatePattern,
     ValidateUniqueItems,
 };
+
+#[cfg(feature = "flatten")]
+pub use features::flatten;
+#[cfg(feature = "toml")]
+pub use features::toml;
+#[cfg(feature = "yaml")]
+pub use features::yaml;
 
 pub trait Validate {
     fn validate(&self) -> std::result::Result<(), self::validation::Errors>;
