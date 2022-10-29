@@ -473,7 +473,6 @@ where
 {
     fn validate(&self) -> std::result::Result<(), self::validation::Errors> {
         let mut items = IndexMap::new();
-        println!("###### vec validate ######");
 
         for (index, item) in self.iter().enumerate() {
             if let Err(errors) = item.validate() {
@@ -497,7 +496,7 @@ where
 {
     fn validate(&self) -> std::result::Result<(), self::validation::Errors> {
         let mut items = IndexMap::new();
-        println!("###### [] validate ######");
+
         for (index, item) in self.iter().enumerate() {
             if let Err(errors) = item.validate() {
                 items.insert(index, errors);
