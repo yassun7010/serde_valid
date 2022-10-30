@@ -9,3 +9,4 @@ edition = "2021"
 serde_valid = { path = "../serde_valid" }
 jsonschema = { version = "^0.16", default-features = false }
 schemars = { version = "^0.8", default-features = false }
+aide = { version = "^0.6", optional = true, features = ["axum"] }
