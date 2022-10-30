@@ -11,7 +11,7 @@ members = [
 
 [workspace.package]
 edition = "2021"
-version = "0.11.3"
+version = "0.12.0-rc.1"
 authors = ["yassun4dev <yassun4dev@outlook.com>"]
 keywords = ["validation", "serde", "json_schema"]
 
