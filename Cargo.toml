@@ -6,7 +6,6 @@ members = [
     "serde_valid",
     "serde_valid_derive",
     "serde_valid_literal",
-    "examples/*",
 ]
 
 [workspace.package]
