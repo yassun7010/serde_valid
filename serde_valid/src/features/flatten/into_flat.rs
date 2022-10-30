@@ -48,7 +48,7 @@ impl IntoFlat for crate::validation::Error {
             crate::validation::Error::Items(inner) => inner.into_flat_at(path),
             crate::validation::Error::Properties(inner) => inner.into_flat_at(path),
             crate::validation::Error::Custom(inner) => {
-                FlatErrors::new(vec![FlatError::new(inner, path.to_owned())])
+                FlatErrors::new(vec![FlatError::new(path.to_owned(), inner)])
             }
         }
     }
@@ -98,8 +98,8 @@ where
 {
     fn into_flat_at(self, path: &JSONPointer) -> FlatErrors {
         FlatErrors::new(vec![FlatError::new(
-            self.error().to_default_message(),
             path.to_owned(),
+            self.error().to_default_message(),
         )])
     }
 }
@@ -185,30 +185,30 @@ mod tests {
             .into_flat(),
             FlatErrors::new(vec![
                 FlatError::new(
-                    min_items.error().to_default_message(),
                     JSONPointer::default(),
+                    min_items.error().to_default_message(),
                 ),
                 FlatError::new(
-                    maximum.error().to_default_message(),
                     JSONPointer::from([PathChunk::from(0)].as_ref()),
+                    maximum.error().to_default_message(),
                 ),
                 FlatError::new(
-                    maximum.error().to_default_message(),
                     JSONPointer::from([PathChunk::from(0), PathChunk::from(2)].as_ref()),
+                    maximum.error().to_default_message(),
                 ),
                 FlatError::new(
-                    maximum.error().to_default_message(),
                     JSONPointer::from([PathChunk::from(3)].as_ref()),
+                    maximum.error().to_default_message(),
                 ),
                 FlatError::new(
-                    maximum.error().to_default_message(),
                     JSONPointer::from([PathChunk::from(5)].as_ref()),
+                    maximum.error().to_default_message(),
                 ),
                 FlatError::new(
-                    maximum.error().to_default_message(),
                     JSONPointer::from(
                         [PathChunk::from(5), PathChunk::from("name".to_owned())].as_ref()
                     ),
+                    maximum.error().to_default_message(),
                 )
             ])
         );
