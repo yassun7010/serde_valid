@@ -5,10 +5,8 @@ edition = "2021"
 
 [dependencies]
 aide = { version = "0.6.2", features = ["axum", "macros"] }
-api-postgres = { path = "../api-postgres" }
 axum = { workspace = true, features = ["macros"] }
 config = "0.13.2"
-convert-map = { path = "../crates/convert-map" }
 dotenv = "0.15.0"
 schemars = { version = "0.8.10", features = ["uuid1"] }
 serde = { version = "1.0.147", features = ["derive"] }
