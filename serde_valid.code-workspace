@@ -5,6 +5,10 @@
             "path": "."
         },
         {
+            "name": "axum_serde_valid",
+            "path": "axum_serde_valid"
+        },
+        {
             "name": "serde_valid_derive",
             "path": "serde_valid_derive"
         },

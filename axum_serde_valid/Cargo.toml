@@ -1,0 +1,11 @@
+[package]
+name = "axum_serde_valid"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+serde_valid = { path = "../serde_valid" }
+jsonschema = { version = "^0.16", default-features = false }
+schemars = { version = "^0.8", default-features = false }
