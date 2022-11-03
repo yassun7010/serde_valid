@@ -19,7 +19,7 @@ jsonschema = { version = "^0.16", default-features = false }
 schemars = { version = "^0.8", default-features = false }
 serde = { workspace = true }
 serde_json = { workspace = true }
-serde_valid = { version = "0.12.0-beta.4", path = "../serde_valid", features = [
+serde_valid = { version = "0.12.0-beta.5", path = "../serde_valid", features = [
     "flatten",
 ] }
 tracing = "^0.1"
