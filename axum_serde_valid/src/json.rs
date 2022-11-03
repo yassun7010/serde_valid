@@ -13,11 +13,7 @@
 //!
 //! - aide: support for [aide](https://docs.rs/aide/latest/aide/)
 
-use std::{
-    any::{type_name, TypeId},
-    cell::RefCell,
-    collections::{HashMap, VecDeque},
-};
+use std::{any::type_name, collections::VecDeque};
 
 use async_trait::async_trait;
 use axum::http::{Request, StatusCode};
@@ -27,17 +23,15 @@ use axum::{
     BoxError,
 };
 use jsonschema::{
-    output::{BasicOutput, ErrorDescription, OutputUnit},
+    output::{ErrorDescription, OutputUnit},
     paths::JSONPointer,
-    JSONSchema,
 };
-use schemars::{
-    gen::{SchemaGenerator, SchemaSettings},
-    JsonSchema,
-};
+use schemars::JsonSchema;
 use serde::{de::DeserializeOwned, Serialize};
-use serde_json::{Map, Value};
+use serde_json::Value;
 use serde_valid::{flatten::IntoFlat, Validate};
+
+use crate::context::SchemaContext;
 
 /// Wrapper type over [`axum::Json`] that validates
 /// requests and responds with a more helpful validation
@@ -64,33 +58,7 @@ where
             }
         };
 
-        let validation_result = CONTEXT.with(|ctx| {
-            let ctx = &mut *ctx.borrow_mut();
-            let schema = ctx.schemas.entry(TypeId::of::<T>()).or_insert_with(|| {
-                match jsonschema::JSONSchema::compile(
-                    &serde_json::to_value(ctx.generator.root_schema_for::<T>()).unwrap(),
-                ) {
-                    Ok(s) => s,
-                    Err(error) => {
-                        tracing::error!(
-                            %error,
-                            type_name = type_name::<T>(),
-                            "invalid JSON schema for type"
-                        );
-                        JSONSchema::compile(&Value::Object(Map::default())).unwrap()
-                    }
-                }
-            });
-
-            let out = schema.apply(&value).basic();
-
-            match out {
-                BasicOutput::Valid(_) => Ok(()),
-                BasicOutput::Invalid(v) => Err(v),
-            }
-        });
-
-        if let Err(errors) = validation_result {
+        if let Err(errors) = SchemaContext::validate::<T>(&value) {
             return Err(JsonSchemaRejection::Schema(errors));
         }
 
@@ -118,26 +86,6 @@ where
 {
     fn into_response(self) -> axum::response::Response {
         axum::Json(self.0).into_response()
-    }
-}
-
-thread_local! {
-    static CONTEXT: RefCell<SchemaContext> = RefCell::new(SchemaContext::new());
-}
-
-struct SchemaContext {
-    generator: SchemaGenerator,
-    schemas: HashMap<TypeId, JSONSchema>,
-}
-
-impl SchemaContext {
-    fn new() -> Self {
-        Self {
-            generator: SchemaSettings::draft07()
-                .with(|g| g.inline_subschemas = true)
-                .into_generator(),
-            schemas: HashMap::default(),
-        }
     }
 }
 
