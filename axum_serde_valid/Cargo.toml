@@ -1,6 +1,9 @@
 [package]
 name = "axum_serde_valid"
+description = "Axum extractor sets of JSON validation."
 authors.workspace = true
+repository.workspace = true
+license.workspace = true
 edition.workspace = true
 keywords.workspace = true
 version.workspace = true

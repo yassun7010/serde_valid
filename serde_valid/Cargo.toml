@@ -1,10 +1,10 @@
 [package]
 name = "serde_valid"
-license = "MIT"
-repository = "https://github.com/yassun4dev/serde_valid.git"
 description = "JSON Schema based validation tool using with serde."
 categories = ["encoding"]
 authors.workspace = true
+repository.workspace = true
+license.workspace = true
 edition.workspace = true
 keywords.workspace = true
 version.workspace = true
