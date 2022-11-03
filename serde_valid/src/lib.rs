@@ -458,6 +458,8 @@ pub use validation::{
 
 #[cfg(feature = "flatten")]
 pub use features::flatten;
+#[cfg(feature = "fluent")]
+pub use features::fluent;
 #[cfg(feature = "toml")]
 pub use features::toml;
 #[cfg(feature = "yaml")]

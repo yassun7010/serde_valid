@@ -50,6 +50,8 @@ impl IntoFlat for crate::validation::Error {
             crate::validation::Error::Custom(inner) => {
                 FlatErrors::new(vec![FlatError::new(path.to_owned(), inner)])
             }
+            #[cfg(feature = "fluent")]
+            crate::validation::Error::Fluent(inner) => inner.into_flat_at(path),
         }
     }
 }

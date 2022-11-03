@@ -82,6 +82,11 @@ pub enum Error {
 
     #[error(transparent)]
     Properties(ObjectErrors),
+
+    #[cfg(feature = "fluent")]
+    #[error("{0}")]
+    #[serde(serialize_with = "serialize_error_message")]
+    Fluent(Message<crate::fluent::FluentError>),
 }
 
 fn serialize_error_message<T, S>(message: &T, serializer: S) -> Result<S::Ok, S::Error>
