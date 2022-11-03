@@ -1,5 +1,6 @@
 mod context;
 mod json;
+pub mod jsonschema;
 mod query;
 mod rejection;
 mod request;
