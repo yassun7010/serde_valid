@@ -50,7 +50,7 @@ where
     S: Send + Sync,
     T: DeserializeOwned + Validate + JsonSchema + 'static,
 {
-    type Rejection = crate::Rejection;
+    type Rejection = crate::rejection::Rejection;
 
     async fn from_request(req: Request<B>, state: &S) -> Result<Self, Self::Rejection> {
         crate::request::from_request::<_, _, T>(req, state)

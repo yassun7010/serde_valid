@@ -1,14 +1,12 @@
-use std::{collections::VecDeque, ops::Deref};
+use std::collections::VecDeque;
 
 use axum::{extract::rejection::JsonRejection, http::StatusCode, response::IntoResponse};
 use jsonschema::output::{ErrorDescription, OutputUnit};
-use schemars::{
-    gen::SchemaGenerator,
-    schema::{InstanceType, Schema, SchemaObject},
-    JsonSchema,
-};
+use schemars::JsonSchema;
 use serde::Serialize;
 use serde_valid::flatten::IntoFlat;
+
+use crate::json_pointer::JsonPointer;
 
 /// Rejection for [`Json`].
 #[derive(Debug)]
@@ -37,32 +35,6 @@ pub struct FormatErrorResponse {
 #[derive(Debug, Serialize, JsonSchema)]
 pub struct ValidationErrorResponse {
     errors: Vec<Error>,
-}
-
-#[derive(Debug, Default, Serialize)]
-pub struct JsonPointer(jsonschema::paths::JSONPointer);
-
-impl Deref for JsonPointer {
-    type Target = jsonschema::paths::JSONPointer;
-
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-impl JsonSchema for JsonPointer {
-    fn schema_name() -> String {
-        "JsonPointer".to_owned()
-    }
-
-    fn json_schema(_: &mut SchemaGenerator) -> Schema {
-        SchemaObject {
-            instance_type: Some(InstanceType::String.into()),
-            format: None,
-            ..Default::default()
-        }
-        .into()
-    }
 }
 
 /// The response that is returned by default.

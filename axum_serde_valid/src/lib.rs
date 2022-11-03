@@ -1,9 +1,9 @@
 mod context;
 mod json;
+pub mod json_pointer;
 mod query;
-mod rejection;
+pub mod rejection;
 mod request;
 
 pub use json::Json;
 pub use query::Query;
-pub use rejection::{Error, ErrorResponse, JsonPointer, Rejection};
