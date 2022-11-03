@@ -112,8 +112,16 @@ mod impl_aide {
             operation: &mut aide::openapi::Operation,
         ) -> Vec<(Option<u16>, aide::openapi::Response)> {
             let mut responses = vec![];
-            if let Some(res) = Self::operation_response(ctx, operation) {
-                responses.push((Some(422), res));
+
+            if let Some(response) =
+                axum::Json::<FormatErrorResponse>::operation_response(ctx, operation)
+            {
+                responses.push((Some(StatusCode::BAD_REQUEST.into()), response));
+            }
+            if let Some(response) =
+                axum::Json::<ValidationErrorResponse>::operation_response(ctx, operation)
+            {
+                responses.push((Some(StatusCode::UNPROCESSABLE_ENTITY.into()), response));
             }
 
             responses
