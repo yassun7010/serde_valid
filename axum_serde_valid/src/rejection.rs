@@ -22,18 +22,18 @@ pub enum Rejection {
 }
 
 #[derive(Debug, Serialize, JsonSchema)]
-pub enum ErrorResponse {
-    FormatError(FormatErrorResponse),
-    ValidationError(ValidationErrorResponse),
+pub enum JsonErrorResponse {
+    FormatError(JsonFormatErrorResponse),
+    ValidationError(JsonSchemaErrorResponse),
 }
 
 #[derive(Debug, Serialize, JsonSchema)]
-pub struct FormatErrorResponse {
+pub struct JsonFormatErrorResponse {
     error: String,
 }
 
 #[derive(Debug, Serialize, JsonSchema)]
-pub struct ValidationErrorResponse {
+pub struct JsonSchemaErrorResponse {
     errors: Vec<Error>,
 }
 
@@ -44,16 +44,16 @@ pub struct Error {
     pub message: String,
 }
 
-impl From<Rejection> for ErrorResponse {
+impl From<Rejection> for JsonErrorResponse {
     fn from(rejection: Rejection) -> Self {
         match rejection {
-            Rejection::Json(v) => Self::FormatError(FormatErrorResponse {
+            Rejection::Json(v) => Self::FormatError(JsonFormatErrorResponse {
                 error: v.to_string(),
             }),
-            Rejection::Serde(_) => Self::FormatError(FormatErrorResponse {
+            Rejection::Serde(_) => Self::FormatError(JsonFormatErrorResponse {
                 error: "invalid request".to_string(),
             }),
-            Rejection::Schema(errors) => Self::ValidationError(ValidationErrorResponse {
+            Rejection::Schema(errors) => Self::ValidationError(JsonSchemaErrorResponse {
                 errors: errors
                     .into_iter()
                     .map(|error| Error {
@@ -62,7 +62,7 @@ impl From<Rejection> for ErrorResponse {
                     })
                     .collect::<Vec<_>>(),
             }),
-            Rejection::SerdeValid(errors) => Self::ValidationError(ValidationErrorResponse {
+            Rejection::SerdeValid(errors) => Self::ValidationError(JsonSchemaErrorResponse {
                 errors: errors
                     .into_flat()
                     .into_iter()
@@ -78,13 +78,13 @@ impl From<Rejection> for ErrorResponse {
 
 impl IntoResponse for Rejection {
     fn into_response(self) -> axum::response::Response {
-        match ErrorResponse::from(self) {
-            ErrorResponse::FormatError(error) => {
+        match JsonErrorResponse::from(self) {
+            JsonErrorResponse::FormatError(error) => {
                 let mut response = axum::Json(error).into_response();
                 *response.status_mut() = StatusCode::BAD_REQUEST;
                 response
             }
-            ErrorResponse::ValidationError(error) => {
+            JsonErrorResponse::ValidationError(error) => {
                 let mut response = axum::Json(error).into_response();
                 *response.status_mut() = StatusCode::UNPROCESSABLE_ENTITY;
                 response
@@ -104,7 +104,7 @@ mod impl_aide {
             ctx: &mut aide::gen::GenContext,
             operation: &mut aide::openapi::Operation,
         ) -> Option<aide::openapi::Response> {
-            axum::Json::<ErrorResponse>::operation_response(ctx, operation)
+            axum::Json::<JsonErrorResponse>::operation_response(ctx, operation)
         }
 
         fn inferred_responses(
@@ -114,12 +114,12 @@ mod impl_aide {
             let mut responses = vec![];
 
             if let Some(response) =
-                axum::Json::<FormatErrorResponse>::operation_response(ctx, operation)
+                axum::Json::<JsonFormatErrorResponse>::operation_response(ctx, operation)
             {
                 responses.push((Some(StatusCode::BAD_REQUEST.into()), response));
             }
             if let Some(response) =
-                axum::Json::<ValidationErrorResponse>::operation_response(ctx, operation)
+                axum::Json::<JsonSchemaErrorResponse>::operation_response(ctx, operation)
             {
                 responses.push((Some(StatusCode::UNPROCESSABLE_ENTITY.into()), response));
             }
