@@ -2,9 +2,9 @@
 
 set -e
 
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")"
 
-cd serde_valid_derive
+cd ../serde_valid_derive
 cargo publish
 
 cd ../serde_valid_literal
