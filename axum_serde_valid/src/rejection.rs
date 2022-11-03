@@ -1,22 +1,12 @@
-use std::any::type_name;
 use std::collections::VecDeque;
 
-use axum::{
-    extract::{rejection::JsonRejection, FromRequest},
-    http::{Request, StatusCode},
-    response::IntoResponse,
-    BoxError,
-};
+use axum::{extract::rejection::JsonRejection, http::StatusCode, response::IntoResponse};
 use jsonschema::{
     output::{ErrorDescription, OutputUnit},
     paths::JSONPointer,
 };
-use schemars::JsonSchema;
-use serde::{de::DeserializeOwned, Serialize};
-use serde_json::Value;
-use serde_valid::{flatten::IntoFlat, Validate};
-
-use crate::context::SchemaContext;
+use serde::Serialize;
+use serde_valid::flatten::IntoFlat;
 
 /// Rejection for [`Json`].
 #[derive(Debug)]
@@ -29,40 +19,6 @@ pub enum Rejection {
     Schema(VecDeque<OutputUnit<ErrorDescription>>),
     /// A serde_valid validation error.
     SerdeValid(serde_valid::validation::Errors),
-}
-
-impl Rejection {
-    pub async fn from_value<S, B, T>(req: Request<B>, state: &S) -> Result<T, Rejection>
-    where
-        B: http_body::Body + Send + 'static,
-        B::Data: Send,
-        B::Error: Into<BoxError>,
-        S: Send + Sync,
-        T: DeserializeOwned + Validate + JsonSchema + 'static,
-    {
-        let value: Value = match axum::Json::from_request(req, state).await {
-            Ok(j) => j.0,
-            Err(error) => Err(crate::Rejection::Json(error))?,
-        };
-
-        SchemaContext::validate::<T>(&value).map_err(crate::Rejection::Schema)?;
-
-        match serde_json::from_value::<T>(value) {
-            Ok(v) => {
-                v.validate().map_err(crate::Rejection::SerdeValid)?;
-
-                Ok(v)
-            }
-            Err(error) => {
-                tracing::error!(
-                    %error,
-                    type_name = type_name::<T>(),
-                    "schema validation passed but serde failed"
-                );
-                Err(crate::Rejection::Serde(error))
-            }
-        }
-    }
 }
 
 #[derive(Debug, Serialize)]

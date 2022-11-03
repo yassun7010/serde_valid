@@ -53,7 +53,7 @@ where
     type Rejection = crate::Rejection;
 
     async fn from_request(req: Request<B>, state: &S) -> Result<Self, Self::Rejection> {
-        crate::Rejection::from_value::<_, _, T>(req, state)
+        crate::request::from_request::<_, _, T>(req, state)
             .await
             .map(Json)
     }
