@@ -41,7 +41,7 @@ impl Deref for JsonPointer {
 
 impl JsonSchema for JsonPointer {
     fn schema_name() -> String {
-        "string".to_owned()
+        "JsonPointer".to_owned()
     }
 
     fn json_schema(_: &mut SchemaGenerator) -> Schema {
