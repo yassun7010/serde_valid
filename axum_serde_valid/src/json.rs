@@ -45,14 +45,10 @@ where
     async fn from_request(req: Request<B>, state: &S) -> Result<Self, Self::Rejection> {
         let value: Value = match axum::Json::from_request(req, state).await {
             Ok(j) => j.0,
-            Err(error) => {
-                return Err(crate::Rejection::Json(error));
-            }
+            Err(error) => Err(crate::Rejection::Json(error))?,
         };
 
-        if let Err(errors) = SchemaContext::validate::<T>(&value) {
-            return Err(crate::Rejection::Schema(errors));
-        }
+        SchemaContext::validate::<T>(&value).map_err(crate::Rejection::Schema)?;
 
         match serde_json::from_value::<T>(value) {
             Ok(v) => {
