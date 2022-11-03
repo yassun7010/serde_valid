@@ -37,6 +37,7 @@ use schemars::{
 };
 use serde::{de::DeserializeOwned, Serialize};
 use serde_json::{Map, Value};
+use serde_valid::{flatten::IntoFlat, Validate};
 
 /// Wrapper type over [`axum::Json`] that validates
 /// requests and responds with a more helpful validation
@@ -50,7 +51,7 @@ where
     B::Data: Send,
     B::Error: Into<BoxError>,
     S: Send + Sync,
-    T: DeserializeOwned + JsonSchema + 'static,
+    T: DeserializeOwned + Validate + JsonSchema + 'static,
 {
     type Rejection = JsonSchemaRejection;
 
@@ -93,8 +94,12 @@ where
             return Err(JsonSchemaRejection::Schema(errors));
         }
 
-        match serde_json::from_value(value) {
-            Ok(v) => Ok(Json(v)),
+        match serde_json::from_value::<T>(value) {
+            Ok(v) => {
+                v.validate().map_err(JsonSchemaRejection::SerdeValid)?;
+
+                Ok(Json(v))
+            }
             Err(error) => {
                 tracing::error!(
                     %error,
@@ -145,6 +150,8 @@ pub enum JsonSchemaRejection {
     Serde(serde_json::Error),
     /// A schema validation error.
     Schema(VecDeque<OutputUnit<ErrorDescription>>),
+    /// A serde_valid validation error.
+    SerdeValid(serde_valid::validation::Errors),
 }
 
 #[derive(Debug, Serialize)]
@@ -180,6 +187,16 @@ impl From<JsonSchemaRejection> for JsonSchemaErrorResponse {
                     .map(|error| JsonError {
                         path: error.instance_location().to_owned(),
                         message: error.error_description().to_string(),
+                    })
+                    .collect::<Vec<_>>(),
+            },
+            JsonSchemaRejection::SerdeValid(errors) => Self {
+                errors: errors
+                    .into_flat()
+                    .into_iter()
+                    .map(|error| JsonError {
+                        path: error.path,
+                        message: error.message,
                     })
                     .collect::<Vec<_>>(),
             },
