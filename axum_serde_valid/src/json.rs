@@ -24,7 +24,6 @@ use serde_json::Value;
 use serde_valid::Validate;
 
 use crate::context::SchemaContext;
-use crate::rejection::JsonSchemaRejection;
 
 /// Wrapper type over [`axum::Json`] that validates
 /// requests and responds with a more helpful validation
@@ -40,24 +39,24 @@ where
     S: Send + Sync,
     T: DeserializeOwned + Validate + JsonSchema + 'static,
 {
-    type Rejection = JsonSchemaRejection;
+    type Rejection = crate::Rejection;
 
     /// Perform the extraction.
     async fn from_request(req: Request<B>, state: &S) -> Result<Self, Self::Rejection> {
         let value: Value = match axum::Json::from_request(req, state).await {
             Ok(j) => j.0,
             Err(error) => {
-                return Err(JsonSchemaRejection::Json(error));
+                return Err(crate::Rejection::Json(error));
             }
         };
 
         if let Err(errors) = SchemaContext::validate::<T>(&value) {
-            return Err(JsonSchemaRejection::Schema(errors));
+            return Err(crate::Rejection::Schema(errors));
         }
 
         match serde_json::from_value::<T>(value) {
             Ok(v) => {
-                v.validate().map_err(JsonSchemaRejection::SerdeValid)?;
+                v.validate().map_err(crate::Rejection::SerdeValid)?;
 
                 Ok(Json(v))
             }
@@ -67,7 +66,7 @@ where
                     type_name = type_name::<T>(),
                     "schema validation passed but serde failed"
                 );
-                Err(JsonSchemaRejection::Serde(error))
+                Err(crate::Rejection::Serde(error))
             }
         }
     }

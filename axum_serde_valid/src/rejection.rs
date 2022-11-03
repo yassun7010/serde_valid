@@ -10,7 +10,7 @@ use serde_valid::flatten::IntoFlat;
 
 /// Rejection for [`Json`].
 #[derive(Debug)]
-pub enum JsonSchemaRejection {
+pub enum Rejection {
     /// A rejection returned by [`axum::Json`].
     Json(JsonRejection),
     /// A serde error.
@@ -22,46 +22,46 @@ pub enum JsonSchemaRejection {
 }
 
 #[derive(Debug, Serialize)]
-pub struct JsonSchemaErrorResponse {
-    errors: Vec<JsonError>,
+pub struct ErrorResponse {
+    errors: Vec<Error>,
 }
 
 /// The response that is returned by default.
 #[derive(Debug, Serialize)]
-pub struct JsonError {
+pub struct Error {
     pub path: JSONPointer,
     pub message: String,
 }
 
-impl From<JsonSchemaRejection> for JsonSchemaErrorResponse {
-    fn from(rejection: JsonSchemaRejection) -> Self {
+impl From<Rejection> for ErrorResponse {
+    fn from(rejection: Rejection) -> Self {
         match rejection {
-            JsonSchemaRejection::Json(v) => Self {
-                errors: vec![JsonError {
+            Rejection::Json(v) => Self {
+                errors: vec![Error {
                     path: JSONPointer::default(),
                     message: v.to_string(),
                 }],
             },
-            JsonSchemaRejection::Serde(_) => Self {
-                errors: vec![JsonError {
+            Rejection::Serde(_) => Self {
+                errors: vec![Error {
                     path: JSONPointer::default(),
                     message: "invalid request".to_string(),
                 }],
             },
-            JsonSchemaRejection::Schema(errors) => Self {
+            Rejection::Schema(errors) => Self {
                 errors: errors
                     .into_iter()
-                    .map(|error| JsonError {
+                    .map(|error| Error {
                         path: error.instance_location().to_owned(),
                         message: error.error_description().to_string(),
                     })
                     .collect::<Vec<_>>(),
             },
-            JsonSchemaRejection::SerdeValid(errors) => Self {
+            Rejection::SerdeValid(errors) => Self {
                 errors: errors
                     .into_flat()
                     .into_iter()
-                    .map(|error| JsonError {
+                    .map(|error| Error {
                         path: error.path,
                         message: error.message,
                     })
@@ -71,9 +71,9 @@ impl From<JsonSchemaRejection> for JsonSchemaErrorResponse {
     }
 }
 
-impl IntoResponse for JsonSchemaRejection {
+impl IntoResponse for Rejection {
     fn into_response(self) -> axum::response::Response {
-        let mut res = axum::Json(JsonSchemaErrorResponse::from(self)).into_response();
+        let mut res = axum::Json(ErrorResponse::from(self)).into_response();
         *res.status_mut() = StatusCode::BAD_REQUEST;
         res
     }
