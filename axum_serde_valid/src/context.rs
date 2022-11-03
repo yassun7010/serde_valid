@@ -29,7 +29,7 @@ impl SchemaContext {
     pub fn new() -> Self {
         Self {
             generator: SchemaSettings::draft07()
-                .with(|g| g.inline_subschemas = true)
+                .with(|settings| settings.inline_subschemas = true)
                 .into_generator(),
             schemas: HashMap::default(),
         }
