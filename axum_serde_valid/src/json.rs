@@ -28,6 +28,7 @@ use axum::{
 };
 use jsonschema::{
     output::{BasicOutput, ErrorDescription, OutputUnit},
+    paths::JSONPointer,
     JSONSchema,
 };
 use schemars::{
@@ -146,30 +147,41 @@ pub enum JsonSchemaRejection {
     Schema(VecDeque<OutputUnit<ErrorDescription>>),
 }
 
+#[derive(Debug, Serialize)]
+pub struct JsonSchemaErrorResponse {
+    errors: Vec<JsonError>,
+}
+
 /// The response that is returned by default.
 #[derive(Debug, Serialize)]
-struct JsonSchemaErrorResponse {
-    /// The error reason.
-    pub error: String,
-    /// Additional error schema validation errors.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub schema_validation: Option<VecDeque<OutputUnit<ErrorDescription>>>,
+pub struct JsonError {
+    pub path: JSONPointer,
+    pub message: String,
 }
 
 impl From<JsonSchemaRejection> for JsonSchemaErrorResponse {
     fn from(rejection: JsonSchemaRejection) -> Self {
         match rejection {
             JsonSchemaRejection::Json(v) => Self {
-                error: v.to_string(),
-                schema_validation: None,
+                errors: vec![JsonError {
+                    path: JSONPointer::default(),
+                    message: v.to_string(),
+                }],
             },
             JsonSchemaRejection::Serde(_) => Self {
-                error: "invalid request".to_string(),
-                schema_validation: None,
+                errors: vec![JsonError {
+                    path: JSONPointer::default(),
+                    message: "invalid request".to_string(),
+                }],
             },
-            JsonSchemaRejection::Schema(s) => Self {
-                error: "request schema validation failed".to_string(),
-                schema_validation: Some(s),
+            JsonSchemaRejection::Schema(errors) => Self {
+                errors: errors
+                    .into_iter()
+                    .map(|error| JsonError {
+                        path: error.instance_location().to_owned(),
+                        message: error.error_description().to_string(),
+                    })
+                    .collect::<Vec<_>>(),
             },
         }
     }
