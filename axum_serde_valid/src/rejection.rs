@@ -24,7 +24,18 @@ pub enum Rejection {
 }
 
 #[derive(Debug, Serialize, JsonSchema)]
-pub struct ErrorResponse {
+pub enum ErrorResponse {
+    FormatError(FormatErrorResponse),
+    ValidationError(ValidationErrorResponse),
+}
+
+#[derive(Debug, Serialize, JsonSchema)]
+pub struct FormatErrorResponse {
+    error: String,
+}
+
+#[derive(Debug, Serialize, JsonSchema)]
+pub struct ValidationErrorResponse {
     errors: Vec<Error>,
 }
 
@@ -64,19 +75,13 @@ pub struct Error {
 impl From<Rejection> for ErrorResponse {
     fn from(rejection: Rejection) -> Self {
         match rejection {
-            Rejection::Json(v) => Self {
-                errors: vec![Error {
-                    path: JsonPointer::default(),
-                    message: v.to_string(),
-                }],
-            },
-            Rejection::Serde(_) => Self {
-                errors: vec![Error {
-                    path: JsonPointer::default(),
-                    message: "invalid request".to_string(),
-                }],
-            },
-            Rejection::Schema(errors) => Self {
+            Rejection::Json(v) => Self::FormatError(FormatErrorResponse {
+                error: v.to_string(),
+            }),
+            Rejection::Serde(_) => Self::FormatError(FormatErrorResponse {
+                error: "invalid request".to_string(),
+            }),
+            Rejection::Schema(errors) => Self::ValidationError(ValidationErrorResponse {
                 errors: errors
                     .into_iter()
                     .map(|error| Error {
@@ -84,8 +89,8 @@ impl From<Rejection> for ErrorResponse {
                         message: error.error_description().to_string(),
                     })
                     .collect::<Vec<_>>(),
-            },
-            Rejection::SerdeValid(errors) => Self {
+            }),
+            Rejection::SerdeValid(errors) => Self::ValidationError(ValidationErrorResponse {
                 errors: errors
                     .into_flat()
                     .into_iter()
@@ -94,16 +99,25 @@ impl From<Rejection> for ErrorResponse {
                         message: error.message,
                     })
                     .collect::<Vec<_>>(),
-            },
+            }),
         }
     }
 }
 
 impl IntoResponse for Rejection {
     fn into_response(self) -> axum::response::Response {
-        let mut res = axum::Json(ErrorResponse::from(self)).into_response();
-        *res.status_mut() = StatusCode::BAD_REQUEST;
-        res
+        match ErrorResponse::from(self) {
+            ErrorResponse::FormatError(error) => {
+                let mut response = axum::Json(error).into_response();
+                *response.status_mut() = StatusCode::BAD_REQUEST;
+                response
+            }
+            ErrorResponse::ValidationError(error) => {
+                let mut response = axum::Json(error).into_response();
+                *response.status_mut() = StatusCode::UNPROCESSABLE_ENTITY;
+                response
+            }
+        }
     }
 }
 
@@ -125,7 +139,12 @@ mod impl_aide {
             ctx: &mut aide::gen::GenContext,
             operation: &mut aide::openapi::Operation,
         ) -> Vec<(Option<u16>, aide::openapi::Response)> {
-            axum::Json::<ErrorResponse>::inferred_responses(ctx, operation)
+            let mut responses = vec![];
+            if let Some(res) = Self::operation_response(ctx, operation) {
+                responses.push((Some(422), res));
+            }
+
+            responses
         }
     }
 }
