@@ -13,6 +13,8 @@
 //!
 //! - aide: support for [aide](https://docs.rs/aide/latest/aide/)
 
+use std::ops::Deref;
+
 use async_trait::async_trait;
 use axum::http::Request;
 use axum::{extract::FromRequest, BoxError};
@@ -24,6 +26,14 @@ use serde_valid::Validate;
 /// requests with a more helpful validation
 /// message.
 pub struct Query<T>(pub T);
+
+impl<T> Deref for Query<T> {
+    type Target = T;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
 
 impl<T> From<T> for Query<T> {
     fn from(data: T) -> Self {

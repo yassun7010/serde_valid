@@ -13,6 +13,8 @@
 //!
 //! - aide: support for [aide](https://docs.rs/aide/latest/aide/)
 
+use std::ops::Deref;
+
 use async_trait::async_trait;
 use axum::http::Request;
 use axum::{extract::FromRequest, response::IntoResponse, BoxError};
@@ -24,6 +26,14 @@ use serde_valid::Validate;
 /// requests and responds with a more helpful validation
 /// message.
 pub struct Json<T>(pub T);
+
+impl<T> Deref for Json<T> {
+    type Target = T;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
 
 impl<T> From<T> for Json<T> {
     fn from(data: T) -> Self {
