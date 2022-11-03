@@ -25,6 +25,12 @@ use serde_valid::Validate;
 /// message.
 pub struct Json<T>(pub T);
 
+impl<T> From<T> for Json<T> {
+    fn from(data: T) -> Self {
+        Json(data)
+    }
+}
+
 #[async_trait]
 impl<S, B, T> FromRequest<S, B> for Json<T>
 where

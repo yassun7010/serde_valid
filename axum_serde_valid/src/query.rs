@@ -25,6 +25,12 @@ use serde_valid::Validate;
 /// message.
 pub struct Query<T>(pub T);
 
+impl<T> From<T> for Query<T> {
+    fn from(data: T) -> Self {
+        Query(data)
+    }
+}
+
 #[async_trait]
 impl<S, B, T> FromRequest<S, B> for Query<T>
 where
