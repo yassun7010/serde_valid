@@ -1,11 +1,11 @@
-use std::collections::HashMap;
+use fluent_0::FluentValue;
 
 use crate::error::ToDefaultMessage;
 
 #[derive(Debug, Clone)]
 pub struct FluentError {
     pub id: &'static str,
-    pub args: HashMap<&'static str, serde_valid_literal::Literal>,
+    pub args: Vec<(&'static str, FluentValue<'static>)>,
 }
 
 impl std::fmt::Display for FluentError {

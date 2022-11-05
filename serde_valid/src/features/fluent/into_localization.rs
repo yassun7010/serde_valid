@@ -81,12 +81,13 @@ impl IntoLocalization for crate::validation::Error {
         match self {
             Self::Fluent(error) => {
                 if let Some(message) = bundle.get_message(error.id) {
-                    let mut errors = vec![];
                     if let Some(pattern) = message.value() {
-                        let args = FluentArgs::new();
+                        let mut errors = vec![];
+                        let args = FluentArgs::from_iter(error.args);
                         let value = bundle
                             .format_pattern(pattern, Some(&args), &mut errors)
                             .to_string();
+
                         if errors.is_empty() {
                             value
                         } else {
