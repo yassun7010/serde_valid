@@ -31,7 +31,7 @@ macro_rules! extract_array_length_validator{
                 let field_key = field.key();
                 let rename = rename_map.get(field_name).unwrap_or(&field_key);
                 let [<$ErrorType:snake>] = get_numeric(validation_value)?;
-                let message =
+                let message_fn =
                     message_fn.unwrap_or(quote!(::serde_valid::[<$ErrorType Error>]::to_default_message));
                 let errors = field.errors_variable();
 
@@ -47,7 +47,7 @@ macro_rules! extract_array_length_validator{
                             .push(::serde_valid::validation::Error::$ErrorType(
                                 ::serde_valid::error::Message::new(
                                     error_params,
-                                    #message
+                                    #message_fn
                                 )
                             ));
                     }

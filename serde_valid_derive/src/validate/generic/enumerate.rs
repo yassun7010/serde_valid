@@ -27,7 +27,8 @@ fn inner_extract_generic_enumerate_validator(
     let rename = rename_map.get(field_name).unwrap_or(&field_key);
     let errors = field.errors_variable();
     let enumerate = get_enumerate(item_list)?;
-    let message = message_fn.unwrap_or(quote!(::serde_valid::EnumerateError::to_default_message));
+    let message_fn =
+        message_fn.unwrap_or(quote!(::serde_valid::EnumerateError::to_default_message));
 
     Ok(quote!(
         if let Err(__composited_error_params) = ::serde_valid::validation::ValidateCompositedEnumerate::validate_composited_enumerate(
@@ -40,7 +41,7 @@ fn inner_extract_generic_enumerate_validator(
             #errors
                 .entry(#rename)
                 .or_default()
-                .push(__composited_error_params.into_error_by(#message)
+                .push(__composited_error_params.into_error_by(#message_fn)
             );
         }
     ))

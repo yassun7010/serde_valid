@@ -32,7 +32,7 @@ macro_rules! extract_numeric_range_validator{
                 let rename = rename_map.get(field_name).unwrap_or(&field_key);
                 let errors = field.errors_variable();
                 let [<$ErrorType:snake>] = get_numeric(validation_value)?;
-                let message =
+                let message_fn =
                     message_fn.unwrap_or(quote!(::serde_valid::[<$ErrorType Error>]::to_default_message));
 
                 Ok(quote!(
@@ -46,7 +46,7 @@ macro_rules! extract_numeric_range_validator{
                         #errors
                             .entry(#rename)
                             .or_default()
-                            .push(__composited_error_params.into_error_by(#message)
+                            .push(__composited_error_params.into_error_by(#message_fn)
                         );
                     }
                 ))
