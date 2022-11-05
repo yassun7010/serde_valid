@@ -79,35 +79,66 @@ impl IntoLocalization for crate::validation::Error {
 
     fn into_localization(self, bundle: &FluentBundle<FluentResource>) -> Self::Target {
         match self {
-            Self::Fluent(error) => {
-                if let Some(message) = bundle.get_message(error.id) {
-                    if let Some(pattern) = message.value() {
-                        let mut errors = vec![];
-                        let args = FluentArgs::from_iter(error.args);
-                        let value = bundle
-                            .format_pattern(pattern, Some(&args), &mut errors)
-                            .to_string();
+            Self::Minimum(message) => localize_or_default(&message, bundle),
+            Self::Maximum(message) => localize_or_default(&message, bundle),
+            Self::ExclusiveMinimum(message) => localize_or_default(&message, bundle),
+            Self::ExclusiveMaximum(message) => localize_or_default(&message, bundle),
+            Self::MultipleOf(message) => localize_or_default(&message, bundle),
+            Self::MinLength(message) => localize_or_default(&message, bundle),
+            Self::MaxLength(message) => localize_or_default(&message, bundle),
+            Self::Pattern(message) => localize_or_default(&message, bundle),
+            Self::MinItems(message) => localize_or_default(&message, bundle),
+            Self::MaxItems(message) => localize_or_default(&message, bundle),
+            Self::UniqueItems(message) => localize_or_default(&message, bundle),
+            Self::MinProperties(message) => localize_or_default(&message, bundle),
+            Self::MaxProperties(message) => localize_or_default(&message, bundle),
+            Self::Enumerate(message) => localize_or_default(&message, bundle),
+            Self::Custom(message) => message,
+            Self::Items(message) => format!("{message}"),
+            Self::Properties(message) => format!("{message}"),
+            Self::Fluent(message) => {
+                localize(Some(&message), bundle).unwrap_or_else(|| format!("{message}"))
+            }
+        }
+    }
+}
 
-                        if errors.is_empty() {
-                            value
-                        } else {
-                            error.id.to_string()
-                        }
-                    } else {
-                        error.id.to_string()
-                    }
-                } else {
-                    error.id.to_string()
+fn localize(
+    message: Option<&crate::fluent::Message>,
+    bundle: &FluentBundle<FluentResource>,
+) -> Option<String> {
+    if let Some(fluent_message) = message {
+        if let Some(msg) = bundle.get_message(fluent_message.id) {
+            if let Some(pattern) = msg.value() {
+                let mut errors = vec![];
+                let args = FluentArgs::from_iter(fluent_message.args.to_owned());
+                let value = bundle
+                    .format_pattern(pattern, Some(&args), &mut errors)
+                    .to_string();
+
+                if errors.is_empty() {
+                    return Some(value);
                 }
             }
-            _ => format!("{self}"),
         }
+    }
+    None
+}
+
+fn localize_or_default<E>(
+    message: &crate::error::Message<E>,
+    bundle: &FluentBundle<FluentResource>,
+) -> String {
+    if let Some(value) = localize(message.fluent_message.as_ref(), bundle) {
+        value
+    } else {
+        format!("{message}")
     }
 }
 
 #[cfg(test)]
 mod test {
-    use crate::fluent::FluentError;
+    use crate::fluent::Message;
 
     use super::*;
     use fluent_0::{FluentResource, FluentValue};
@@ -122,7 +153,7 @@ mod test {
         let mut bundle = FluentBundle::new(vec![langid_en]);
         bundle.add_resource(res).unwrap();
 
-        let error = crate::validation::Error::Fluent(FluentError {
+        let error = crate::validation::Error::Fluent(Message {
             id: "hello-world",
             args: vec![],
         });
@@ -139,7 +170,7 @@ mod test {
         let mut bundle = FluentBundle::new(vec![langid_en]);
         bundle.add_resource(res).unwrap();
 
-        let error = crate::validation::Error::Fluent(FluentError {
+        let error = crate::validation::Error::Fluent(Message {
             id: "intro",
             args: vec![("name", FluentValue::from("John"))],
         });

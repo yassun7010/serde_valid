@@ -12,11 +12,18 @@ impl ToDefaultMessage for String {
 pub struct Message<E> {
     error: E,
     format_fn: for<'a> fn(&'a E) -> String,
+    #[cfg(feature = "fluent")]
+    pub fluent_message: Option<crate::fluent::Message>,
 }
 
 impl<E> Message<E> {
     pub fn new(error: E, format_fn: fn(&E) -> String) -> Self {
-        Self { error, format_fn }
+        Self {
+            error,
+            format_fn,
+            #[cfg(feature = "fluent")]
+            fluent_message: None,
+        }
     }
 
     pub fn error(&self) -> &E {
