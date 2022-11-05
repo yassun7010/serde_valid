@@ -69,7 +69,7 @@ where
                 }
             },
             Errors::Object(_) => {
-                unimplemented!("Object not support yet.")
+                unimplemented!("Object does not support yet.")
             }
         }
     }
