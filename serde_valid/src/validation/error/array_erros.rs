@@ -1,17 +1,39 @@
+use serde::ser::SerializeStruct;
+
 use super::{ItemErrorsMap, VecErrors};
 
-#[derive(Debug, Clone, serde::Serialize, thiserror::Error)]
-pub struct ArrayErrors {
-    pub errors: VecErrors,
-    pub items: ItemErrorsMap,
+#[derive(Debug, Clone, thiserror::Error)]
+pub struct ArrayErrors<Err = crate::validation::Error> {
+    pub errors: VecErrors<Err>,
+    pub items: ItemErrorsMap<Err>,
 }
 
-impl ArrayErrors {
-    pub fn new(errors: VecErrors, items: ItemErrorsMap) -> Self {
+impl<Err> serde::Serialize for ArrayErrors<Err>
+where
+    Err: serde::Serialize,
+{
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        let mut array_errors = serializer.serialize_struct("ArrayErrors", 2)?;
+        array_errors.serialize_field("errors", &self.errors)?;
+        array_errors.serialize_field("items", &self.items)?;
+        array_errors.end()
+    }
+}
+
+impl<Err> ArrayErrors<Err> {
+    pub fn new(errors: VecErrors<Err>, items: ItemErrorsMap<Err>) -> Self {
         Self { errors, items }
     }
+}
 
-    pub fn merge(mut self, other: ArrayErrors) -> Self {
+impl<Err> ArrayErrors<Err>
+where
+    Err: Clone,
+{
+    pub fn merge(mut self, other: ArrayErrors<Err>) -> Self {
         self.errors.extend(other.errors);
 
         for (index, item) in other.items {

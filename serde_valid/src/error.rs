@@ -15,7 +15,7 @@ where
     DeserializeError(#[from] E),
 
     #[error(transparent)]
-    ValidationError(crate::validation::Errors),
+    ValidationError(crate::validation::Errors<crate::validation::Error>),
 }
 
 impl<E> Error<E>

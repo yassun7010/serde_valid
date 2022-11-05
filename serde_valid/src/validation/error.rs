@@ -97,8 +97,8 @@ where
     serializer.serialize_str(&message.to_string())
 }
 
-pub type VecErrors = Vec<Error>;
-pub type ItemErrorsMap = IndexMap<usize, Errors>;
-pub type ItemVecErrorsMap = IndexMap<usize, VecErrors>;
-pub type PropertyErrorsMap = IndexMap<&'static str, Errors>;
-pub type PropertyVecErrorsMap = IndexMap<&'static str, VecErrors>;
+pub type VecErrors<Err = Error> = Vec<Err>;
+pub type ItemErrorsMap<Err = Error> = IndexMap<usize, Errors<Err>>;
+pub type ItemVecErrorsMap<Err = Error> = IndexMap<usize, VecErrors<Err>>;
+pub type PropertyErrorsMap<Err = Error> = IndexMap<&'static str, Errors<Err>>;
+pub type PropertyVecErrorsMap<Err = Error> = IndexMap<&'static str, VecErrors<Err>>;
