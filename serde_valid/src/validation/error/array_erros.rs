@@ -3,14 +3,14 @@ use serde::ser::SerializeStruct;
 use super::{ItemErrorsMap, VecErrors};
 
 #[derive(Debug, Clone, thiserror::Error)]
-pub struct ArrayErrors<Err = crate::validation::Error> {
-    pub errors: VecErrors<Err>,
-    pub items: ItemErrorsMap<Err>,
+pub struct ArrayErrors<E = crate::validation::Error> {
+    pub errors: VecErrors<E>,
+    pub items: ItemErrorsMap<E>,
 }
 
-impl<Err> serde::Serialize for ArrayErrors<Err>
+impl<E> serde::Serialize for ArrayErrors<E>
 where
-    Err: serde::Serialize,
+    E: serde::Serialize,
 {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
@@ -23,17 +23,17 @@ where
     }
 }
 
-impl<Err> ArrayErrors<Err> {
-    pub fn new(errors: VecErrors<Err>, items: ItemErrorsMap<Err>) -> Self {
+impl<E> ArrayErrors<E> {
+    pub fn new(errors: VecErrors<E>, items: ItemErrorsMap<E>) -> Self {
         Self { errors, items }
     }
 }
 
-impl<Err> ArrayErrors<Err>
+impl<E> ArrayErrors<E>
 where
-    Err: Clone,
+    E: Clone,
 {
-    pub fn merge(mut self, other: ArrayErrors<Err>) -> Self {
+    pub fn merge(mut self, other: ArrayErrors<E>) -> Self {
         self.errors.extend(other.errors);
 
         for (index, item) in other.items {

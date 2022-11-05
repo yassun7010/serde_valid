@@ -1,15 +1,15 @@
 use super::{ArrayErrors, ObjectErrors, VecErrors};
 
 #[derive(Debug, Clone, thiserror::Error)]
-pub enum Errors<Err = crate::validation::Error> {
-    Array(ArrayErrors<Err>),
-    Object(ObjectErrors<Err>),
-    NewType(VecErrors<Err>),
+pub enum Errors<E = crate::validation::Error> {
+    Array(ArrayErrors<E>),
+    Object(ObjectErrors<E>),
+    NewType(VecErrors<E>),
 }
 
-impl<Err> serde::Serialize for Errors<Err>
+impl<E> serde::Serialize for Errors<E>
 where
-    Err: serde::Serialize,
+    E: serde::Serialize,
 {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
@@ -20,8 +20,8 @@ where
             Self::Object(o) => serde::Serialize::serialize(o, serializer),
             Self::NewType(n) => {
                 #[derive(Debug, Clone, serde::Serialize)]
-                struct NewTypeErrors<'a, Err> {
-                    errors: &'a VecErrors<Err>,
+                struct NewTypeErrors<'a, E> {
+                    errors: &'a VecErrors<E>,
                 }
 
                 serde::Serialize::serialize(&NewTypeErrors { errors: n }, serializer)
@@ -30,11 +30,11 @@ where
     }
 }
 
-impl<Err> Errors<Err>
+impl<E> Errors<E>
 where
-    Err: Clone,
+    E: Clone,
 {
-    pub fn merge(&mut self, other: Errors<Err>) {
+    pub fn merge(&mut self, other: Errors<E>) {
         match self {
             Errors::Array(a) => match other {
                 Errors::Array(b) => {

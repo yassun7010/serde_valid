@@ -18,9 +18,9 @@ where
     fn into_flat_at(self, path: &JSONPointer) -> FlatErrors;
 }
 
-impl<Err> IntoFlat for crate::validation::Errors<Err>
+impl<E> IntoFlat for crate::validation::Errors<E>
 where
-    Err: IntoFlat,
+    E: IntoFlat,
 {
     fn into_flat_at(self, path: &JSONPointer) -> FlatErrors {
         match self {
@@ -59,9 +59,9 @@ impl IntoFlat for crate::validation::Error {
     }
 }
 
-impl<Err> IntoFlat for Vec<Err>
+impl<E> IntoFlat for Vec<E>
 where
-    Err: IntoFlat,
+    E: IntoFlat,
 {
     fn into_flat_at(self, path: &JSONPointer) -> FlatErrors {
         FlatErrors::new(self.into_iter().fold(vec![], |pre, error| {
@@ -72,9 +72,9 @@ where
     }
 }
 
-impl<Err> IntoFlat for ItemErrorsMap<Err>
+impl<E> IntoFlat for ItemErrorsMap<E>
 where
-    Err: IntoFlat,
+    E: IntoFlat,
 {
     fn into_flat_at(self, path: &JSONPointer) -> FlatErrors {
         FlatErrors::new(self.into_iter().fold(vec![], |pre, (index, errors)| {
@@ -87,9 +87,9 @@ where
     }
 }
 
-impl<Err> IntoFlat for PropertyErrorsMap<Err>
+impl<E> IntoFlat for PropertyErrorsMap<E>
 where
-    Err: IntoFlat,
+    E: IntoFlat,
 {
     fn into_flat_at(self, path: &JSONPointer) -> FlatErrors {
         FlatErrors::new(self.into_iter().fold(vec![], |pre, (property, errors)| {
@@ -118,9 +118,9 @@ where
     }
 }
 
-impl<Err> IntoFlat for ArrayErrors<Err>
+impl<E> IntoFlat for ArrayErrors<E>
 where
-    Err: IntoFlat,
+    E: IntoFlat,
 {
     fn into_flat_at(self, path: &JSONPointer) -> FlatErrors {
         FlatErrors::new(
@@ -133,9 +133,9 @@ where
     }
 }
 
-impl<Err> IntoFlat for ObjectErrors<Err>
+impl<E> IntoFlat for ObjectErrors<E>
 where
-    Err: IntoFlat,
+    E: IntoFlat,
 {
     fn into_flat_at(self, path: &JSONPointer) -> FlatErrors {
         FlatErrors::new(
