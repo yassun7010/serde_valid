@@ -173,16 +173,12 @@ mod tests {
         let min_items = Message::new(
             MinItemsError { min_items: 1 },
             MinItemsError::to_default_message,
-            #[cfg(feature = "fluent")]
-            None,
         );
         let maximum = Message::new(
             MaximumError {
                 maximum: Number::I32(1),
             },
             MaximumError::to_default_message,
-            #[cfg(feature = "fluent")]
-            None,
         );
         assert_eq!(
             Errors::Array(ArrayErrors {

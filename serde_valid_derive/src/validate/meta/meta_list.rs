@@ -3,7 +3,7 @@ use super::nested_meta_name_value::extract_validator_from_nested_meta_name_value
 use super::nested_meta_path::extract_validator_from_nested_meta_path;
 use crate::serde::rename::RenameMap;
 use crate::types::Field;
-use crate::validate::common::extract_message_fn_tokens;
+use crate::validate::common::{extract_message_fn_tokens, CustomMessage};
 use crate::validate::Validator;
 
 pub fn extract_validator_from_meta_list(
@@ -13,7 +13,7 @@ pub fn extract_validator_from_meta_list(
     rename_map: &RenameMap,
 ) -> Result<Validator, crate::Errors> {
     let mut errors = vec![];
-    let messaeg_fn = match nested.len() {
+    let message_fn = match nested.len() {
         0..=1 => None,
         2 => match extract_message_fn_tokens(&nested[1]) {
             Ok(message_fn) => Some(message_fn),
@@ -30,18 +30,28 @@ pub fn extract_validator_from_meta_list(
         }
     };
 
+    let custom_message = CustomMessage {
+        message_fn,
+        #[cfg(fluent)]
+        fluent_message: None,
+    };
+
     if !nested.is_empty() {
         let meta_item = &nested[0];
         match meta_item {
             syn::NestedMeta::Meta(meta) => match meta {
                 syn::Meta::Path(path) => {
-                    extract_validator_from_nested_meta_path(field, path, messaeg_fn, rename_map)
+                    extract_validator_from_nested_meta_path(field, path, custom_message, rename_map)
                 }
                 syn::Meta::List(list) => {
-                    extract_validator_from_nested_meta_list(field, list, messaeg_fn, rename_map)
+                    extract_validator_from_nested_meta_list(field, list, custom_message, rename_map)
                 }
                 syn::Meta::NameValue(name_value) => extract_validator_from_nested_meta_name_value(
-                    field, attribute, name_value, messaeg_fn, rename_map,
+                    field,
+                    attribute,
+                    name_value,
+                    custom_message,
+                    rename_map,
                 ),
             }
             .map_err(|validator_errors| {

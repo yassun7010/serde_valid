@@ -1,6 +1,6 @@
 use crate::serde::rename::RenameMap;
 use crate::types::Field;
-use crate::validate::common::get_numeric;
+use crate::validate::common::{get_numeric, CustomMessage};
 use crate::validate::Validator;
 use proc_macro2::TokenStream;
 use quote::quote;
@@ -8,16 +8,16 @@ use quote::quote;
 pub fn extract_numeric_multiple_of_validator(
     field: &impl Field,
     validation_value: &syn::Lit,
-    message_fn: Option<TokenStream>,
+    custom_message: CustomMessage,
     rename_map: &RenameMap,
 ) -> Result<Validator, crate::Errors> {
-    inner_extract_numeric_multiple_of_validator(field, validation_value, message_fn, rename_map)
+    inner_extract_numeric_multiple_of_validator(field, validation_value, custom_message, rename_map)
 }
 
 fn inner_extract_numeric_multiple_of_validator(
     field: &impl Field,
     validation_value: &syn::Lit,
-    message_fn: Option<TokenStream>,
+    custom_message: CustomMessage,
     rename_map: &RenameMap,
 ) -> Result<TokenStream, crate::Errors> {
     let field_name = field.name();
@@ -26,8 +26,9 @@ fn inner_extract_numeric_multiple_of_validator(
     let rename = rename_map.get(field_name).unwrap_or(&field_key);
     let errors = field.errors_variable();
     let multiple_of = get_numeric(validation_value)?;
-    let message_fn =
-        message_fn.unwrap_or(quote!(::serde_valid::MultipleOfError::to_default_message));
+    let message_fn = custom_message
+        .message_fn
+        .unwrap_or(quote!(::serde_valid::MultipleOfError::to_default_message));
 
     Ok(quote!(
         if let Err(__composited_error_params) = ::serde_valid::validation::ValidateCompositedMultipleOf::validate_composited_multiple_of(

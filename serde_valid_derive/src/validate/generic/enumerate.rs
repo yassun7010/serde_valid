@@ -1,5 +1,6 @@
 use crate::serde::rename::RenameMap;
 use crate::types::Field;
+use crate::validate::common::CustomMessage;
 use crate::validate::Validator;
 use proc_macro2::TokenStream;
 use quote::quote;
@@ -9,16 +10,16 @@ type Lits<'a> = syn::punctuated::Punctuated<&'a syn::Lit, syn::token::Comma>;
 pub fn extract_generic_enumerate_validator(
     field: &impl Field,
     item_list: &syn::MetaList,
-    message_fn: Option<TokenStream>,
+    custom_message: CustomMessage,
     rename_map: &RenameMap,
 ) -> Result<Validator, crate::Errors> {
-    inner_extract_generic_enumerate_validator(field, item_list, message_fn, rename_map)
+    inner_extract_generic_enumerate_validator(field, item_list, custom_message, rename_map)
 }
 
 fn inner_extract_generic_enumerate_validator(
     field: &impl Field,
     item_list: &syn::MetaList,
-    message_fn: Option<TokenStream>,
+    custom_message: CustomMessage,
     rename_map: &RenameMap,
 ) -> Result<TokenStream, crate::Errors> {
     let field_name = field.name();
@@ -27,8 +28,9 @@ fn inner_extract_generic_enumerate_validator(
     let rename = rename_map.get(field_name).unwrap_or(&field_key);
     let errors = field.errors_variable();
     let enumerate = get_enumerate(item_list)?;
-    let message_fn =
-        message_fn.unwrap_or(quote!(::serde_valid::EnumerateError::to_default_message));
+    let message_fn = custom_message
+        .message_fn
+        .unwrap_or(quote!(::serde_valid::EnumerateError::to_default_message));
 
     Ok(quote!(
         if let Err(__composited_error_params) = ::serde_valid::validation::ValidateCompositedEnumerate::validate_composited_enumerate(

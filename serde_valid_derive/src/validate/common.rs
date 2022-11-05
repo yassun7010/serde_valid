@@ -3,6 +3,13 @@ mod message;
 
 pub use lit::{get_numeric, get_str};
 pub use message::extract_message_fn_tokens;
+use proc_macro2::TokenStream;
+
+pub struct CustomMessage {
+    pub message_fn: Option<TokenStream>,
+    #[cfg(fluent)]
+    pub fluent_message: Option<TokenStream>,
+}
 
 macro_rules! count {
     () => (0usize);

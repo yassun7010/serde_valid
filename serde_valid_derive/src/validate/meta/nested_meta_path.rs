@@ -1,16 +1,16 @@
-use proc_macro2::TokenStream;
-
 use crate::serde::rename::RenameMap;
 use crate::types::{Field, SingleIdentPath};
 use crate::validate::array::extract_array_unique_items_validator;
-use crate::validate::common::{MetaListValidation, MetaNameValueValidation, MetaPathValidation};
+use crate::validate::common::{
+    CustomMessage, MetaListValidation, MetaNameValueValidation, MetaPathValidation,
+};
 use crate::validate::Validator;
 use std::str::FromStr;
 
 pub fn extract_validator_from_nested_meta_path(
     field: &impl Field,
     validation: &syn::Path,
-    message_fn: Option<TokenStream>,
+    custom_message: CustomMessage,
     rename_map: &RenameMap,
 ) -> Result<Validator, crate::Errors> {
     let mut errors = vec![];
@@ -19,7 +19,9 @@ pub fn extract_validator_from_nested_meta_path(
 
     match MetaPathValidation::from_str(&validation_name) {
         Ok(MetaPathValidation::UniqueItems) => Ok(extract_array_unique_items_validator(
-            field, message_fn, rename_map,
+            field,
+            custom_message,
+            rename_map,
         )),
         Err(unknown) => {
             let error = if MetaNameValueValidation::from_str(&validation_name).is_ok() {

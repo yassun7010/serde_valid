@@ -1,7 +1,10 @@
 use crate::{
     serde::rename::RenameMap,
     types::Field,
-    validate::{common::get_str, Validator},
+    validate::{
+        common::{get_str, CustomMessage},
+        Validator,
+    },
 };
 use proc_macro2::TokenStream;
 use quote::quote;
@@ -9,16 +12,16 @@ use quote::quote;
 pub fn extract_string_pattern_validator(
     field: &impl Field,
     validation_value: &syn::Lit,
-    message_fn: Option<TokenStream>,
+    custom_message: CustomMessage,
     rename_map: &RenameMap,
 ) -> Result<Validator, crate::Errors> {
-    inner_extract_string_pattern_validator(field, validation_value, message_fn, rename_map)
+    inner_extract_string_pattern_validator(field, validation_value, custom_message, rename_map)
 }
 
 fn inner_extract_string_pattern_validator(
     field: &impl Field,
     validation_value: &syn::Lit,
-    message_fn: Option<TokenStream>,
+    custom_message: CustomMessage,
     rename_map: &RenameMap,
 ) -> Result<TokenStream, crate::Errors> {
     let field_name = field.name();
@@ -27,11 +30,13 @@ fn inner_extract_string_pattern_validator(
     let rename = rename_map.get(field_name).unwrap_or(&field_key);
     let errors = field.errors_variable();
     let pattern = get_str(validation_value)?;
-    let message_fn = message_fn.unwrap_or(quote!(::serde_valid::PatternError::to_default_message));
     let pattern_ident = syn::Ident::new(
         &format!("{}_PATTERN", &field_ident).to_uppercase(),
         field_ident.span(),
     );
+    let message_fn = custom_message
+        .message_fn
+        .unwrap_or(quote!(::serde_valid::PatternError::to_default_message));
 
     Ok(quote!(
         static #pattern_ident : ::once_cell::sync::OnceCell<::regex::Regex> = ::once_cell::sync::OnceCell::new();

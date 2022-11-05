@@ -1,7 +1,7 @@
 use crate::serde::rename::RenameMap;
 use crate::types::Field;
 use crate::validate::common::get_numeric;
-use crate::validate::Validator;
+use crate::validate::{common::CustomMessage, Validator};
 use proc_macro2::TokenStream;
 use quote::quote;
 
@@ -14,16 +14,16 @@ macro_rules! extract_numeric_range_validator{
             pub fn [<extract_numeric_ $ErrorType:snake _validator>](
                 field: &impl Field,
                 validation_value: &syn::Lit,
-                message_fn: Option<TokenStream>,
+                custom_message: CustomMessage,
                 rename_map: &RenameMap,
             ) -> Result<Validator, crate::Errors> {
-                [<inner_extract_numeric_ $ErrorType:snake _validator>](field, validation_value, message_fn, rename_map)
+                [<inner_extract_numeric_ $ErrorType:snake _validator>](field, validation_value, custom_message, rename_map)
             }
 
             fn [<inner_extract_numeric_ $ErrorType:snake _validator>](
                 field: &impl Field,
                 validation_value: &syn::Lit,
-                message_fn: Option<TokenStream>,
+                custom_message: CustomMessage,
                 rename_map: &RenameMap,
             ) -> Result<TokenStream, crate::Errors> {
                 let field_name = field.name();
@@ -32,8 +32,8 @@ macro_rules! extract_numeric_range_validator{
                 let rename = rename_map.get(field_name).unwrap_or(&field_key);
                 let errors = field.errors_variable();
                 let [<$ErrorType:snake>] = get_numeric(validation_value)?;
-                let message_fn =
-                    message_fn.unwrap_or(quote!(::serde_valid::[<$ErrorType Error>]::to_default_message));
+                let message_fn = custom_message
+                    .message_fn.unwrap_or(quote!(::serde_valid::[<$ErrorType Error>]::to_default_message));
 
                 Ok(quote!(
                     if let Err(__composited_error_params) = ::serde_valid::validation::[<ValidateComposited $ErrorType>]::[<validate_composited_ $ErrorType:snake>](

@@ -1,18 +1,22 @@
-use crate::{serde::rename::RenameMap, types::Field, validate::Validator};
+use crate::{
+    serde::rename::RenameMap,
+    types::Field,
+    validate::{common::CustomMessage, Validator},
+};
 use proc_macro2::TokenStream;
 use quote::quote;
 
 pub fn extract_array_unique_items_validator(
     field: &impl Field,
-    message_fn: Option<TokenStream>,
+    custom_message: CustomMessage,
     rename_map: &RenameMap,
 ) -> Validator {
-    inner_extract_array_unique_items_validator(field, message_fn, rename_map)
+    inner_extract_array_unique_items_validator(field, custom_message, rename_map)
 }
 
 fn inner_extract_array_unique_items_validator(
     field: &impl Field,
-    message_fn: Option<TokenStream>,
+    custom_message: CustomMessage,
     rename_map: &RenameMap,
 ) -> TokenStream {
     let field_name = field.name();
@@ -20,8 +24,9 @@ fn inner_extract_array_unique_items_validator(
     let field_key = field.key();
     let rename = rename_map.get(field_name).unwrap_or(&field_key);
     let errors = field.errors_variable();
-    let message_fn =
-        message_fn.unwrap_or(quote!(::serde_valid::UniqueItemsError::to_default_message));
+    let message_fn = custom_message
+        .message_fn
+        .unwrap_or(quote!(::serde_valid::UniqueItemsError::to_default_message));
 
     quote!(
         if let Err(error_params) = ::serde_valid::ValidateUniqueItems::validate_unique_items(
@@ -35,8 +40,6 @@ fn inner_extract_array_unique_items_validator(
                     ::serde_valid::error::Message::new(
                         error_params,
                         #message_fn,
-                        #[cfg(feature = "fluent")]
-                        None
                     )
                 ));
         }

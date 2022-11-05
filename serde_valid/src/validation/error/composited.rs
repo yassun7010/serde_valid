@@ -35,8 +35,6 @@ macro_rules! impl_into_error {
                             crate::error::Message::new(
                                 single,
                                 format_fn,
-                                #[cfg(feature = "fluent")]
-                                None
                             )
                         ),
                         Composited::Array(array) =>{
