@@ -31,7 +31,14 @@ macro_rules! impl_into_error {
             impl IntoError<[<$ErrorType Error>]> for Composited<[<$ErrorType Error>]> {
                 fn into_error_by(self, format_fn: fn(&[<$ErrorType Error>]) -> String) -> Error {
                     match self {
-                        Composited::Single(single) => Error::$ErrorType(crate::error::Message::new(single, format_fn)),
+                        Composited::Single(single) => Error::$ErrorType(
+                            crate::error::Message::new(
+                                single,
+                                format_fn,
+                                #[cfg(feature = "fluent")]
+                                None
+                            )
+                        ),
                         Composited::Array(array) =>{
                             Error::Items(crate::validation::ArrayErrors::new(
                             Vec::with_capacity(0),

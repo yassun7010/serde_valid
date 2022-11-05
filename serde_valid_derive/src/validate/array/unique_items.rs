@@ -34,7 +34,9 @@ fn inner_extract_array_unique_items_validator(
                 .push(::serde_valid::validation::Error::UniqueItems(
                     ::serde_valid::error::Message::new(
                         error_params,
-                        #message_fn
+                        #message_fn,
+                        #[cfg(feature = "fluent")]
+                        None
                     )
                 ));
         }

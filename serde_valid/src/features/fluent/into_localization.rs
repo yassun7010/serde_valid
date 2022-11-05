@@ -129,7 +129,7 @@ fn localize_or_default<E>(
     message: &crate::error::Message<E>,
     bundle: &FluentBundle<FluentResource>,
 ) -> String {
-    if let Some(value) = localize(message.fluent_message.as_ref(), bundle) {
+    if let Some(value) = localize(message.fluent_message(), bundle) {
         value
     } else {
         format!("{message}")

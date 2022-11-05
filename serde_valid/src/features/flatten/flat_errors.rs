@@ -64,6 +64,8 @@ mod tests {
                     errors: vec![Error::MinItems(Message::new(
                         MinItemsError { min_items: 1 },
                         MinItemsError::to_default_message,
+                        #[cfg(feature = "fluent")]
+                        None,
                     ))],
                     items: indexmap! {},
                 })

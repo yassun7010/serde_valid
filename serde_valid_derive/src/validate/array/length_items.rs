@@ -47,7 +47,9 @@ macro_rules! extract_array_length_validator{
                             .push(::serde_valid::validation::Error::$ErrorType(
                                 ::serde_valid::error::Message::new(
                                     error_params,
-                                    #message_fn
+                                    #message_fn,
+                                    #[cfg(feature = "fluent")]
+                                    None
                                 )
                             ));
                     }

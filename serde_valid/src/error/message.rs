@@ -13,17 +13,25 @@ pub struct Message<E> {
     error: E,
     format_fn: for<'a> fn(&'a E) -> String,
     #[cfg(feature = "fluent")]
-    pub fluent_message: Option<crate::fluent::Message>,
+    fluent_message: Option<crate::fluent::Message>,
 }
 
 impl<E> Message<E> {
-    pub fn new(error: E, format_fn: fn(&E) -> String) -> Self {
+    pub fn new(
+        error: E,
+        format_fn: fn(&E) -> String,
+        #[cfg(feature = "fluent")] fluent_message: Option<crate::fluent::Message>,
+    ) -> Self {
         Self {
             error,
             format_fn,
             #[cfg(feature = "fluent")]
-            fluent_message: None,
+            fluent_message,
         }
+    }
+
+    pub fn fluent_message(&self) -> Option<&crate::fluent::Message> {
+        self.fluent_message.as_ref()
     }
 
     pub fn error(&self) -> &E {
