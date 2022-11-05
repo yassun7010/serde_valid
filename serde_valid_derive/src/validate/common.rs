@@ -5,7 +5,7 @@ pub use lit::{get_numeric, get_str};
 pub use message::extract_message_fn_tokens;
 use proc_macro2::TokenStream;
 
-pub struct CustomMessage {
+pub struct CustomMessageToken {
     pub message_fn: Option<TokenStream>,
     #[cfg(fluent)]
     pub fluent_message: Option<TokenStream>,

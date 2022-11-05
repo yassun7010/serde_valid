@@ -2,7 +2,7 @@ use crate::serde::rename::RenameMap;
 use crate::types::{Field, SingleIdentPath};
 use crate::validate::array::extract_array_unique_items_validator;
 use crate::validate::common::{
-    CustomMessage, MetaListValidation, MetaNameValueValidation, MetaPathValidation,
+    CustomMessageToken, MetaListValidation, MetaNameValueValidation, MetaPathValidation,
 };
 use crate::validate::Validator;
 use std::str::FromStr;
@@ -10,7 +10,7 @@ use std::str::FromStr;
 pub fn extract_validator_from_nested_meta_path(
     field: &impl Field,
     validation: &syn::Path,
-    custom_message: CustomMessage,
+    custom_message: CustomMessageToken,
     rename_map: &RenameMap,
 ) -> Result<Validator, crate::Errors> {
     let mut errors = vec![];

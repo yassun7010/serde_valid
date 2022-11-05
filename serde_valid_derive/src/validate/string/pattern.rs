@@ -2,7 +2,7 @@ use crate::{
     serde::rename::RenameMap,
     types::Field,
     validate::{
-        common::{get_str, CustomMessage},
+        common::{get_str, CustomMessageToken},
         Validator,
     },
 };
@@ -12,7 +12,7 @@ use quote::quote;
 pub fn extract_string_pattern_validator(
     field: &impl Field,
     validation_value: &syn::Lit,
-    custom_message: CustomMessage,
+    custom_message: CustomMessageToken,
     rename_map: &RenameMap,
 ) -> Result<Validator, crate::Errors> {
     inner_extract_string_pattern_validator(field, validation_value, custom_message, rename_map)
@@ -21,7 +21,7 @@ pub fn extract_string_pattern_validator(
 fn inner_extract_string_pattern_validator(
     field: &impl Field,
     validation_value: &syn::Lit,
-    custom_message: CustomMessage,
+    custom_message: CustomMessageToken,
     rename_map: &RenameMap,
 ) -> Result<TokenStream, crate::Errors> {
     let field_name = field.name();

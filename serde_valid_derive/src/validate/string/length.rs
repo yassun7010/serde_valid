@@ -1,7 +1,7 @@
 use crate::serde::rename::RenameMap;
 use crate::types::Field;
 use crate::validate::common::get_numeric;
-use crate::validate::{common::CustomMessage, Validator};
+use crate::validate::{common::CustomMessageToken, Validator};
 use proc_macro2::TokenStream;
 use quote::quote;
 
@@ -14,7 +14,7 @@ macro_rules! extract_string_length_validator{
             pub fn [<extract_string_ $ErrorType:snake _validator>](
                 field: &impl Field,
                 validation_value: &syn::Lit,
-                custom_message: CustomMessage,
+                custom_message: CustomMessageToken,
                 rename_map: &RenameMap,
             ) -> Result<Validator, crate::Errors> {
                 [<inner_extract_string_ $ErrorType:snake _validator>](field, validation_value, custom_message, rename_map)
@@ -23,7 +23,7 @@ macro_rules! extract_string_length_validator{
             fn [<inner_extract_string_ $ErrorType:snake _validator>](
                 field: &impl Field,
                 validation_value: &syn::Lit,
-                custom_message: CustomMessage,
+                custom_message: CustomMessageToken,
                 rename_map: &RenameMap,
             ) -> Result<TokenStream, crate::Errors> {
                 let field_name = field.name();

@@ -3,7 +3,7 @@ use super::nested_meta_name_value::extract_validator_from_nested_meta_name_value
 use super::nested_meta_path::extract_validator_from_nested_meta_path;
 use crate::serde::rename::RenameMap;
 use crate::types::Field;
-use crate::validate::common::{extract_message_fn_tokens, CustomMessage};
+use crate::validate::common::{extract_message_fn_tokens, CustomMessageToken};
 use crate::validate::Validator;
 
 pub fn extract_validator_from_meta_list(
@@ -30,7 +30,7 @@ pub fn extract_validator_from_meta_list(
         }
     };
 
-    let custom_message = CustomMessage {
+    let custom_message = CustomMessageToken {
         message_fn,
         #[cfg(fluent)]
         fluent_message: None,

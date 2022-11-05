@@ -3,7 +3,7 @@ use crate::types::{Field, SingleIdentPath};
 use crate::validate::array::{
     extract_array_max_items_validator, extract_array_min_items_validator,
 };
-use crate::validate::common::{CustomMessage, MetaNameValueValidation};
+use crate::validate::common::{CustomMessageToken, MetaNameValueValidation};
 use crate::validate::numeric::{
     extract_numeric_exclusive_maximum_validator, extract_numeric_exclusive_minimum_validator,
     extract_numeric_maximum_validator, extract_numeric_minimum_validator,
@@ -27,7 +27,7 @@ pub fn extract_validator_from_nested_meta_name_value(
         lit: validation_value,
         ..
     }: &syn::MetaNameValue,
-    custom_message: CustomMessage,
+    custom_message: CustomMessageToken,
     rename_map: &RenameMap,
 ) -> Result<Validator, crate::Errors> {
     let validation_name_ident = SingleIdentPath::new(validation_name).ident();

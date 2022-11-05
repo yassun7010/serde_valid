@@ -1,6 +1,6 @@
 use crate::serde::rename::RenameMap;
 use crate::types::Field;
-use crate::validate::common::{get_numeric, CustomMessage};
+use crate::validate::common::{get_numeric, CustomMessageToken};
 use crate::validate::Validator;
 use proc_macro2::TokenStream;
 use quote::quote;
@@ -8,7 +8,7 @@ use quote::quote;
 pub fn extract_numeric_multiple_of_validator(
     field: &impl Field,
     validation_value: &syn::Lit,
-    custom_message: CustomMessage,
+    custom_message: CustomMessageToken,
     rename_map: &RenameMap,
 ) -> Result<Validator, crate::Errors> {
     inner_extract_numeric_multiple_of_validator(field, validation_value, custom_message, rename_map)
@@ -17,7 +17,7 @@ pub fn extract_numeric_multiple_of_validator(
 fn inner_extract_numeric_multiple_of_validator(
     field: &impl Field,
     validation_value: &syn::Lit,
-    custom_message: CustomMessage,
+    custom_message: CustomMessageToken,
     rename_map: &RenameMap,
 ) -> Result<TokenStream, crate::Errors> {
     let field_name = field.name();

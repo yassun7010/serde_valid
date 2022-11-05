@@ -1,14 +1,14 @@
 use crate::{
     serde::rename::RenameMap,
     types::Field,
-    validate::{common::CustomMessage, Validator},
+    validate::{common::CustomMessageToken, Validator},
 };
 use proc_macro2::TokenStream;
 use quote::quote;
 
 pub fn extract_array_unique_items_validator(
     field: &impl Field,
-    custom_message: CustomMessage,
+    custom_message: CustomMessageToken,
     rename_map: &RenameMap,
 ) -> Validator {
     inner_extract_array_unique_items_validator(field, custom_message, rename_map)
@@ -16,7 +16,7 @@ pub fn extract_array_unique_items_validator(
 
 fn inner_extract_array_unique_items_validator(
     field: &impl Field,
-    custom_message: CustomMessage,
+    custom_message: CustomMessageToken,
     rename_map: &RenameMap,
 ) -> TokenStream {
     let field_name = field.name();

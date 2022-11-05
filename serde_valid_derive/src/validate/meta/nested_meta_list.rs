@@ -1,6 +1,6 @@
 use crate::serde::rename::RenameMap;
 use crate::types::{Field, SingleIdentPath};
-use crate::validate::common::{CustomMessage, MetaListValidation};
+use crate::validate::common::{CustomMessageToken, MetaListValidation};
 use crate::validate::generic::{
     extract_generic_custom_validator, extract_generic_enumerate_validator,
 };
@@ -10,7 +10,7 @@ use std::str::FromStr;
 pub fn extract_validator_from_nested_meta_list(
     field: &impl Field,
     validation_list: &syn::MetaList,
-    custom_message: CustomMessage,
+    custom_message: CustomMessageToken,
     rename_map: &RenameMap,
 ) -> Result<Validator, crate::Errors> {
     let syn::MetaList {
