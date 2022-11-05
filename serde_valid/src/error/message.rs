@@ -9,18 +9,12 @@ impl ToDefaultMessage for String {
 }
 
 #[derive(Clone)]
-pub struct Message<E>
-where
-    E: ToDefaultMessage,
-{
+pub struct Message<E> {
     error: E,
     format_fn: for<'a> fn(&'a E) -> String,
 }
 
-impl<E> Message<E>
-where
-    E: ToDefaultMessage,
-{
+impl<E> Message<E> {
     pub fn new(error: E, format_fn: fn(&E) -> String) -> Self {
         Self { error, format_fn }
     }
@@ -32,17 +26,14 @@ where
 
 impl<E> std::fmt::Debug for Message<E>
 where
-    E: ToDefaultMessage + std::fmt::Debug,
+    E: std::fmt::Debug,
 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "Message {{ error: {:?} }}", &self.error)
     }
 }
 
-impl<E> std::fmt::Display for Message<E>
-where
-    E: ToDefaultMessage,
-{
+impl<E> std::fmt::Display for Message<E> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", { self.format_fn }(&self.error))
     }
