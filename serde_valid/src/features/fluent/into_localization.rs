@@ -104,3 +104,49 @@ impl IntoLocalization for crate::validation::Error {
         }
     }
 }
+
+#[cfg(test)]
+mod test {
+    use crate::fluent::FluentError;
+
+    use super::*;
+    use fluent_0::{FluentResource, FluentValue};
+    use unic_langid::LanguageIdentifier;
+
+    #[test]
+    fn into_localization_without_args() {
+        let ftl_string = "hello-world = Hello, world!".to_string();
+        let res = FluentResource::try_new(ftl_string).expect("Failed to parse an FTL string.");
+
+        let langid_en: LanguageIdentifier = "en-US".parse().expect("Parsing failed");
+        let mut bundle = FluentBundle::new(vec![langid_en]);
+        bundle.add_resource(res).unwrap();
+
+        let error = crate::validation::Error::Fluent(FluentError {
+            id: "hello-world",
+            args: vec![],
+        });
+
+        assert_eq!(error.into_localization(&bundle), "Hello, world!");
+    }
+
+    #[test]
+    fn into_localization_with_args() {
+        let ftl_string = "intro = Welcome, { $name }.".to_string();
+        let res = FluentResource::try_new(ftl_string).expect("Failed to parse an FTL string.");
+
+        let langid_en: LanguageIdentifier = "en-US".parse().expect("Parsing failed");
+        let mut bundle = FluentBundle::new(vec![langid_en]);
+        bundle.add_resource(res).unwrap();
+
+        let error = crate::validation::Error::Fluent(FluentError {
+            id: "intro",
+            args: vec![("name", FluentValue::from("John"))],
+        });
+
+        assert_eq!(
+            error.into_localization(&bundle),
+            "Welcome, \u{2068}John\u{2069}."
+        );
+    }
+}

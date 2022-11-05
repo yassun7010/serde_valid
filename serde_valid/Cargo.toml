@@ -35,3 +35,6 @@ toml = ["serde_toml"]
 yaml = ["serde_yaml"]
 flatten = ["jsonschema"]
 fluent = ["fluent_0"]
+
+[dev-dependencies]
+unic-langid = "0.9.1"
