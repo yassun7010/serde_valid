@@ -26,9 +26,9 @@ fn inner_extract_numeric_multiple_of_validator(
     let rename = rename_map.get(field_name).unwrap_or(&field_key);
     let errors = field.errors_variable();
     let multiple_of = get_numeric(validation_value)?;
-    let message_fn = custom_message
-        .message_fn
-        .unwrap_or(quote!(::serde_valid::MultipleOfError::to_default_message));
+    let message_fn = custom_message.message_fn.unwrap_or(quote!(
+        ::serde_valid::error::ToDefaultMessage::to_default_message
+    ));
     #[cfg(feature = "fluent")]
     let fluent_message = quote!(fluent_message: None,);
     #[cfg(not(feature = "fluent"))]

@@ -3,7 +3,7 @@ use super::nested_meta_name_value::extract_validator_from_nested_meta_name_value
 use super::nested_meta_path::extract_validator_from_nested_meta_path;
 use crate::serde::rename::RenameMap;
 use crate::types::Field;
-use crate::validate::common::{extract_message_fn_tokens, CustomMessageToken};
+use crate::validate::common::{extract_custom_message_tokens, CustomMessageToken};
 use crate::validate::Validator;
 
 pub fn extract_validator_from_meta_list(
@@ -15,7 +15,7 @@ pub fn extract_validator_from_meta_list(
     let mut errors = vec![];
     let custom_message = match nested.len() {
         0..=1 => CustomMessageToken::default(),
-        2 => match extract_message_fn_tokens(&nested[1]) {
+        2 => match extract_custom_message_tokens(&nested[1]) {
             Ok(custom_message) => custom_message,
             Err(message_fn_errors) => {
                 errors.extend(message_fn_errors);

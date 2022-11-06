@@ -1,34 +1,8 @@
+mod custom_message;
 mod lit;
-mod message;
 
+pub use custom_message::{extract_custom_message_tokens, CustomMessageToken};
 pub use lit::{get_numeric, get_str};
-pub use message::extract_message_fn_tokens;
-use proc_macro2::TokenStream;
-
-#[derive(Debug, Default)]
-pub struct CustomMessageToken {
-    pub message_fn: Option<TokenStream>,
-    #[cfg(feature = "fluent")]
-    pub fluent_message: Option<TokenStream>,
-}
-
-impl CustomMessageToken {
-    pub fn new_message_fn(message_fn: TokenStream) -> Self {
-        Self {
-            message_fn: Some(message_fn),
-            #[cfg(feature = "fluent")]
-            fluent_message: None,
-        }
-    }
-
-    #[cfg(feature = "fluent")]
-    pub fn new_fluent_message(fluent_message: TokenStream) -> Self {
-        Self {
-            message_fn: None,
-            fluent_message: Some(fluent_message),
-        }
-    }
-}
 
 macro_rules! count {
     () => (0usize);

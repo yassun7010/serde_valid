@@ -3,18 +3,43 @@ use proc_macro2::TokenStream;
 use quote::quote;
 use std::str::FromStr;
 
-use super::{get_str, CustomMessageToken, MetaListMessage, MetaNameValueMessage, MetaPathMessage};
+use super::{get_str, MetaListMessage, MetaNameValueMessage, MetaPathMessage};
 
-pub fn extract_message_fn_tokens(
+#[derive(Debug, Default)]
+pub struct CustomMessageToken {
+    pub message_fn: Option<TokenStream>,
+    #[cfg(feature = "fluent")]
+    pub fluent_message: Option<TokenStream>,
+}
+
+impl CustomMessageToken {
+    pub fn new_message_fn(message_fn: TokenStream) -> Self {
+        Self {
+            message_fn: Some(message_fn),
+            #[cfg(feature = "fluent")]
+            fluent_message: None,
+        }
+    }
+
+    #[cfg(feature = "fluent")]
+    pub fn new_fluent_message(fluent_message: TokenStream) -> Self {
+        Self {
+            message_fn: None,
+            fluent_message: Some(fluent_message),
+        }
+    }
+}
+
+pub fn extract_custom_message_tokens(
     nested_meta: &syn::NestedMeta,
 ) -> Result<CustomMessageToken, crate::Errors> {
     match nested_meta {
         syn::NestedMeta::Meta(meta) => match meta {
             syn::Meta::List(message_fn_list) => {
-                extract_message_fn_tokens_from_meta_list(message_fn_list)
+                extract_custom_message_tokens_from_meta_list(message_fn_list)
             }
             syn::Meta::NameValue(name_value) => {
-                extract_message_fn_tokens_from_name_value(name_value)
+                extract_custom_message_tokens_from_name_value(name_value)
             }
             syn::Meta::Path(path) => {
                 let path_label = SingleIdentPath::new(path).ident().to_string();
@@ -45,7 +70,7 @@ pub fn extract_message_fn_tokens(
     }
 }
 
-fn extract_message_fn_tokens_from_meta_list(
+fn extract_custom_message_tokens_from_meta_list(
     syn::MetaList {
         path,
         nested: message_fn_define,
@@ -60,7 +85,7 @@ fn extract_message_fn_tokens_from_meta_list(
             .map(CustomMessageToken::new_message_fn),
         #[cfg(feature = "fluent")]
         Ok(MetaListMessage::I18n) | Ok(MetaListMessage::Fluent) => {
-            get_fluent_from_nested_meta(path, message_fn_define)
+            get_fluent_message_from_nested_meta(path, message_fn_define)
                 .map(CustomMessageToken::new_fluent_message)
         }
         Err(unknown) => {
@@ -82,7 +107,7 @@ fn extract_message_fn_tokens_from_meta_list(
     }
 }
 
-fn extract_message_fn_tokens_from_name_value(
+fn extract_custom_message_tokens_from_name_value(
     syn::MetaNameValue { path, lit, .. }: &syn::MetaNameValue,
 ) -> Result<CustomMessageToken, crate::Errors> {
     let path_ident = SingleIdentPath::new(path).ident();
@@ -141,7 +166,7 @@ fn get_message_fn_from_lit(lit: &syn::Lit) -> Result<TokenStream, crate::Errors>
 }
 
 #[cfg(feature = "fluent")]
-fn get_fluent_from_nested_meta(
+fn get_fluent_message_from_nested_meta(
     path: &syn::Path,
     fn_define: &CommaSeparatedNestedMetas,
 ) -> Result<TokenStream, crate::Errors> {
