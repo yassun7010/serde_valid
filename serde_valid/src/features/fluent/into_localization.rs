@@ -138,10 +138,11 @@ fn localize_or_default<E>(
 
 #[cfg(test)]
 mod test {
-    use crate::fluent::Message;
+    use crate::{fluent::Message, validation::CustomMessage};
 
     use super::*;
     use fluent_0::{FluentResource, FluentValue};
+    use serde_valid_literal::Number;
     use unic_langid::LanguageIdentifier;
 
     #[test]
@@ -174,6 +175,34 @@ mod test {
             id: "intro",
             args: vec![("name", FluentValue::from("John"))],
         });
+
+        assert_eq!(
+            error.into_localization(&bundle),
+            "Welcome, \u{2068}John\u{2069}."
+        );
+    }
+
+    #[test]
+    fn into_localization_from_validation_error() {
+        let ftl_string = "intro = Welcome, { $name }.".to_string();
+        let res = FluentResource::try_new(ftl_string).expect("Failed to parse an FTL string.");
+
+        let langid_en: LanguageIdentifier = "en-US".parse().expect("Parsing failed");
+        let mut bundle = FluentBundle::new(vec![langid_en]);
+        bundle.add_resource(res).unwrap();
+
+        let error = crate::validation::Error::Maximum(
+            CustomMessage {
+                message_fn: crate::error::ToDefaultMessage::to_default_message,
+                fluent_message: Some(Message {
+                    id: "intro",
+                    args: vec![("name", FluentValue::from("John"))],
+                }),
+            }
+            .into_message(crate::MaximumError {
+                maximum: Number::I32(10),
+            }),
+        );
 
         assert_eq!(
             error.into_localization(&bundle),

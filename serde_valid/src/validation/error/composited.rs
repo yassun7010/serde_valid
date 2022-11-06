@@ -17,21 +17,18 @@ macro_rules! impl_into_error {
     ($ErrorType:ident) => {
         paste::paste! {
             impl IntoError<[<$ErrorType Error>]> for Composited<[<$ErrorType Error>]> {
-                fn into_error_by(self, custom: &CustomMessage<[<$ErrorType Error>]>) -> Error {
+                fn into_error_by(self, custom: CustomMessage<[<$ErrorType Error>]>) -> Error {
                     match self {
-                        Composited::Single(single) => Error::$ErrorType(
-                            crate::error::Message::new(
-                                single,
-                                custom.message_fn,
-                            )
-                        ),
+                        Composited::Single(single) => {
+                            Error::$ErrorType(custom.into_message(single))
+                        },
                         Composited::Array(array) =>{
                             Error::Items(crate::validation::ArrayErrors::new(
                             Vec::with_capacity(0),
                             array
                                 .into_iter()
                                 .map(|(index, params)| {
-                                    (index, crate::validation::Errors::NewType(vec![params.into_error_by(custom)]))
+                                    (index, crate::validation::Errors::NewType(vec![params.into_error_by(custom.clone())]))
                                 })
                                 .collect::<IndexMap<_, _>>(),
                         ))},
