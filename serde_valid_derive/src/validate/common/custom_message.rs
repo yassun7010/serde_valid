@@ -28,6 +28,24 @@ impl CustomMessageToken {
             fluent_message: Some(fluent_message),
         }
     }
+
+    pub fn into_token(self) -> TokenStream {
+        let message_fn = self.message_fn.unwrap_or(quote!(
+            ::serde_valid::error::ToDefaultMessage::to_default_message
+        ));
+
+        #[cfg(feature = "fluent")]
+        let fluent_message = quote!(fluent_message: None,);
+        #[cfg(not(feature = "fluent"))]
+        let fluent_message = quote!();
+
+        quote!(
+            ::serde_valid::validation::CustomMessage{
+                message_fn: #message_fn,
+                #fluent_message
+            }
+        )
+    }
 }
 
 pub fn extract_custom_message_tokens(
