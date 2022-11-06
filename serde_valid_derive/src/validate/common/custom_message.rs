@@ -84,8 +84,8 @@ fn extract_custom_message_tokens_from_meta_list(
         Ok(MetaListMessage::MessageFn) => get_message_fn_from_nested_meta(path, message_fn_define)
             .map(CustomMessageToken::new_message_fn),
         #[cfg(feature = "fluent")]
-        Ok(MetaListMessage::I18n) | Ok(MetaListMessage::Fluent) => {
-            get_fluent_message_from_nested_meta(path, message_fn_define)
+        Ok(ref message_type @ (MetaListMessage::I18n | MetaListMessage::Fluent)) => {
+            get_fluent_message_from_nested_meta(message_type, path, message_fn_define)
                 .map(CustomMessageToken::new_fluent_message)
         }
         Err(unknown) => {
@@ -167,11 +167,12 @@ fn get_message_fn_from_lit(lit: &syn::Lit) -> Result<TokenStream, crate::Errors>
 
 #[cfg(feature = "fluent")]
 fn get_fluent_message_from_nested_meta(
+    message_type: &MetaListMessage,
     path: &syn::Path,
     fn_define: &CommaSeparatedNestedMetas,
 ) -> Result<TokenStream, crate::Errors> {
     match fn_define.len() {
-        0 => Err(vec![crate::Error::fluent_need_item(path)]),
+        0 => Err(vec![crate::Error::fluent_need_item(message_type, path)]),
         1 => match &fn_define[0] {
             syn::NestedMeta::Lit(syn::Lit::Str(id)) => Ok(quote!(
                 ::serde_valid::fluent::Message{
@@ -179,12 +180,15 @@ fn get_fluent_message_from_nested_meta(
                     args: vec![]
                 }
             )),
-            _ => Err(vec![crate::Error::fluent_allow_key(&fn_define[0])]),
+            _ => Err(vec![crate::Error::fluent_allow_key(
+                message_type,
+                &fn_define[0],
+            )]),
         },
         _ => Err(fn_define
             .iter()
             .skip(1)
-            .map(crate::Error::fluent_allow_args)
+            .map(|args| crate::Error::fluent_allow_args(message_type, args))
             .collect()),
     }
 }

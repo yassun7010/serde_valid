@@ -3,6 +3,7 @@ use quote::quote;
 use syn::spanned::Spanned;
 
 use crate::types::CommaSeparatedNestedMetas;
+use crate::validate::MetaListMessage;
 
 pub fn object_errors_tokens() -> TokenStream {
     quote!(::serde_valid::validation::Errors::Object(
@@ -271,15 +272,21 @@ impl Error {
     }
 
     #[cfg(feature = "fluent")]
-    pub fn fluent_need_item(path: &syn::Path) -> Self {
-        Self::new(path.span(), "`fluent` need items.")
+    pub fn fluent_need_item(message_type: &MetaListMessage, path: &syn::Path) -> Self {
+        Self::new(
+            path.span(),
+            format!("`{}` need items.", message_type.name()),
+        )
     }
 
     #[cfg(feature = "fluent")]
-    pub fn fluent_allow_key(nested_meta: &syn::NestedMeta) -> Self {
+    pub fn fluent_allow_key(message_type: &MetaListMessage, nested_meta: &syn::NestedMeta) -> Self {
         Self::new(
             nested_meta.span(),
-            "#[validate(..., fluent(???, ...))] allow only fluent key str",
+            format!(
+                "#[validate(..., {}(???, ...))] allow only fluent key str",
+                message_type.name()
+            ),
         )
     }
 
@@ -291,10 +298,16 @@ impl Error {
     }
 
     #[cfg(feature = "fluent")]
-    pub fn fluent_allow_args(nested_meta: &syn::NestedMeta) -> Self {
+    pub fn fluent_allow_args(
+        message_type: &MetaListMessage,
+        nested_meta: &syn::NestedMeta,
+    ) -> Self {
         Self::new(
             nested_meta.span(),
-            "#[validate(..., fluent(..., ???))] allow only fluent args key value.",
+            format!(
+                "#[validate(..., {}(..., ???))] allow only fluent args key value.",
+                message_type.name()
+            ),
         )
     }
 
