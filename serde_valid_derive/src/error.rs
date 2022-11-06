@@ -276,7 +276,7 @@ impl Error {
     }
 
     #[cfg(feature = "fluent")]
-    pub fn fluent_need_key(nested_meta: &syn::NestedMeta) -> Self {
+    pub fn fluent_allow_key(nested_meta: &syn::NestedMeta) -> Self {
         Self::new(
             nested_meta.span(),
             "#[validate(..., fluent(???, ...))] allow only fluent key str",
@@ -287,6 +287,14 @@ impl Error {
         Self::new(
             nested_meta.span(),
             "#[validate(..., message_fn(???))] allow only function name path.",
+        )
+    }
+
+    #[cfg(feature = "fluent")]
+    pub fn fluent_allow_args(nested_meta: &syn::NestedMeta) -> Self {
+        Self::new(
+            nested_meta.span(),
+            "#[validate(..., fluent(..., ???))] allow only fluent args key value.",
         )
     }
 

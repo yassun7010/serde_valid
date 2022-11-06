@@ -179,12 +179,12 @@ fn get_fluent_message_from_nested_meta(
                     args: vec![]
                 }
             )),
-            _ => Err(vec![crate::Error::fluent_need_key(&fn_define[0])]),
+            _ => Err(vec![crate::Error::fluent_allow_key(&fn_define[0])]),
         },
         _ => Err(fn_define
             .iter()
             .skip(1)
-            .map(crate::Error::message_fn_tail_error)
+            .map(crate::Error::fluent_allow_args)
             .collect()),
     }
 }
