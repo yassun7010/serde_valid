@@ -1,10 +1,8 @@
-mod message;
-
 use itertools::Itertools;
 use serde_valid_literal::Literal;
 
+use crate::validation::ToDefaultMessage;
 use crate::validation::{Number, Pattern};
-pub use message::{Message, ToDefaultMessage};
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error<E>

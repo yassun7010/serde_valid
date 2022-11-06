@@ -40,12 +40,13 @@ macro_rules! extract_array_length_validator{
                         #field_ident,
                         #[<$ErrorType:snake>],
                     ) {
-                        use ::serde_valid::error::ToDefaultMessage;
+                        use ::serde_valid::validation::ToDefaultMessage;
+
                         #errors
                             .entry(#rename)
                             .or_default()
                             .push(::serde_valid::validation::Error::$ErrorType(
-                                ::serde_valid::error::Message::new(
+                                ::serde_valid::validation::Message::new(
                                     error_params,
                                     #message_fn,
                                 )

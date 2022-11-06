@@ -126,7 +126,7 @@ fn localize(
 }
 
 fn localize_or_default<E>(
-    message: &crate::error::Message<E>,
+    message: &crate::validation::Message<E>,
     bundle: &FluentBundle<FluentResource>,
 ) -> String {
     if let Some(value) = localize(message.fluent_message.as_ref(), bundle) {
@@ -193,7 +193,7 @@ mod test {
 
         let error = crate::validation::Error::Maximum(
             CustomMessage {
-                message_fn: crate::error::ToDefaultMessage::to_default_message,
+                message_fn: crate::validation::ToDefaultMessage::to_default_message,
                 fluent_message: Some(Message {
                     id: "intro",
                     args: vec![("name", FluentValue::from("John"))],

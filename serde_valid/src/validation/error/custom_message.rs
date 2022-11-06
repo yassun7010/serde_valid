@@ -6,8 +6,8 @@ pub struct CustomMessage<E> {
 }
 
 impl<E> CustomMessage<E> {
-    pub fn into_message(self, error: E) -> crate::error::Message<E> {
-        let mut message = crate::error::Message::new(error, self.message_fn);
+    pub fn into_message(self, error: E) -> crate::validation::Message<E> {
+        let mut message = crate::validation::Message::new(error, self.message_fn);
 
         #[cfg(feature = "fluent")]
         {

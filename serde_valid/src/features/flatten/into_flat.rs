@@ -1,8 +1,7 @@
 use jsonschema::paths::{JSONPointer, PathChunk};
 
-use crate::{
-    error::{Message, ToDefaultMessage},
-    validation::{ArrayErrors, ItemErrorsMap, ObjectErrors, PropertyErrorsMap},
+use crate::validation::{
+    ArrayErrors, ItemErrorsMap, Message, ObjectErrors, PropertyErrorsMap, ToDefaultMessage,
 };
 
 use super::{FlatError, FlatErrors};

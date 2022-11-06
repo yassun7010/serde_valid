@@ -50,9 +50,8 @@ mod tests {
     use serde_json::json;
 
     use crate::{
-        error::{Message, ToDefaultMessage},
         flatten::IntoFlat,
-        validation::{ArrayErrors, Error, Errors},
+        validation::{ArrayErrors, Error, Errors, Message, ToDefaultMessage},
         MinItemsError,
     };
 

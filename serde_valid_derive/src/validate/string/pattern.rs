@@ -44,8 +44,7 @@ fn inner_extract_string_pattern_validator(
             __pattern,
         ) {
 
-            use ::serde_valid::error::ToDefaultMessage;
-            use ::serde_valid::validation::IntoError;
+            use ::serde_valid::validation::{IntoError, ToDefaultMessage};
 
             #errors
                 .entry(#rename)

@@ -35,8 +35,7 @@ fn inner_extract_generic_enumerate_validator(
             #field_ident,
             &[#enumerate],
         ) {
-            use ::serde_valid::error::ToDefaultMessage;
-            use ::serde_valid::validation::IntoError;
+            use ::serde_valid::validation::{IntoError, ToDefaultMessage};
 
             #errors
                 .entry(#rename)

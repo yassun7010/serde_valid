@@ -13,7 +13,8 @@ use crate::{
 pub use array::{ValidateMaxItems, ValidateMinItems, ValidateUniqueItems};
 pub use error::{
     ArrayErrors, Composited, CustomMessage, Error, Errors, IntoError, ItemErrorsMap,
-    ItemVecErrorsMap, ObjectErrors, PropertyErrorsMap, PropertyVecErrorsMap, VecErrors,
+    ItemVecErrorsMap, Message, ObjectErrors, PropertyErrorsMap, PropertyVecErrorsMap,
+    ToDefaultMessage, VecErrors,
 };
 pub use generic::ValidateEnumerate;
 use indexmap::IndexMap;

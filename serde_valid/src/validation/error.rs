@@ -3,11 +3,12 @@ mod composited;
 mod custom_message;
 mod errors;
 mod into_error;
+mod message;
 mod object_errors;
 
 pub use crate::error::{
     EnumerateError, ExclusiveMaximumError, ExclusiveMinimumError, MaxItemsError, MaxLengthError,
-    MaxPropertiesError, MaximumError, Message, MinItemsError, MinLengthError, MinPropertiesError,
+    MaxPropertiesError, MaximumError, MinItemsError, MinLengthError, MinPropertiesError,
     MinimumError, MultipleOfError, PatternError, UniqueItemsError,
 };
 pub use array_erros::ArrayErrors;
@@ -16,6 +17,7 @@ pub use custom_message::CustomMessage;
 pub use errors::Errors;
 use indexmap::IndexMap;
 pub use into_error::IntoError;
+pub use message::{Message, ToDefaultMessage};
 pub use object_errors::ObjectErrors;
 
 #[derive(Debug, Clone, serde::Serialize, thiserror::Error)]

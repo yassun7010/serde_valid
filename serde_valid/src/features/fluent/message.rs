@@ -1,6 +1,6 @@
 use fluent_0::FluentValue;
 
-use crate::error::ToDefaultMessage;
+use crate::validation::ToDefaultMessage;
 
 #[derive(Debug, Clone)]
 pub struct Message {

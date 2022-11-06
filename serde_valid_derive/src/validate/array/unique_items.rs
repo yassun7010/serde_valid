@@ -32,12 +32,13 @@ fn inner_extract_array_unique_items_validator(
         if let Err(error_params) = ::serde_valid::ValidateUniqueItems::validate_unique_items(
             #field_ident
         ) {
-            use ::serde_valid::error::ToDefaultMessage;
+            use ::serde_valid::validation::ToDefaultMessage;
+
             #errors
                 .entry(#rename)
                 .or_default()
                 .push(::serde_valid::validation::Error::UniqueItems(
-                    ::serde_valid::error::Message::new(
+                    ::serde_valid::validation::Message::new(
                         error_params,
                         #message_fn,
                     )

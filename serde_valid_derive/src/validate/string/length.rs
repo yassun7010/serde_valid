@@ -39,8 +39,7 @@ macro_rules! extract_string_length_validator{
                         #field_ident,
                         #[<$ErrorType:snake>],
                     ) {
-                        use ::serde_valid::error::ToDefaultMessage;
-                        use ::serde_valid::validation::IntoError;
+                        use ::serde_valid::validation::{IntoError, ToDefaultMessage};
 
                         #errors
                             .entry(#rename)

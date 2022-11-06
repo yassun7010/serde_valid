@@ -1,4 +1,4 @@
-use crate::error::ToDefaultMessage;
+use crate::validation::ToDefaultMessage;
 
 use super::CustomMessage;
 
