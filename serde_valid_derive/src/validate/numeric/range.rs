@@ -46,7 +46,12 @@ macro_rules! extract_numeric_range_validator{
                         #errors
                             .entry(#rename)
                             .or_default()
-                            .push(__composited_error_params.into_error_by(#message_fn)
+                            .push(__composited_error_params.into_error_by(
+                                &::serde_valid::validation::CustomMessage{
+                                    message_fn: #message_fn,
+                                    fluent_message: None,
+                                }
+                            )
                         );
                     }
                 ))

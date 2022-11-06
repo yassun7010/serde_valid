@@ -12,8 +12,8 @@ use crate::{
 };
 pub use array::{ValidateMaxItems, ValidateMinItems, ValidateUniqueItems};
 pub use error::{
-    ArrayErrors, Composited, Error, Errors, IntoError, ItemErrorsMap, ItemVecErrorsMap,
-    ObjectErrors, PropertyErrorsMap, PropertyVecErrorsMap, VecErrors,
+    ArrayErrors, Composited, CustomMessage, Error, Errors, IntoError, ItemErrorsMap,
+    ItemVecErrorsMap, ObjectErrors, PropertyErrorsMap, PropertyVecErrorsMap, VecErrors,
 };
 pub use generic::ValidateEnumerate;
 use indexmap::IndexMap;

@@ -1,5 +1,6 @@
 mod array_erros;
 mod composited;
+mod custom_message;
 mod errors;
 mod object_errors;
 
@@ -10,6 +11,7 @@ pub use crate::error::{
 };
 pub use array_erros::ArrayErrors;
 pub use composited::{Composited, IntoError};
+pub use custom_message::CustomMessage;
 pub use errors::Errors;
 use indexmap::IndexMap;
 pub use object_errors::ObjectErrors;

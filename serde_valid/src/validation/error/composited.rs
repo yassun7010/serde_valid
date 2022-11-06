@@ -1,6 +1,6 @@
 use crate::error::ToDefaultMessage;
 
-use super::Error;
+use super::{custom_message::CustomMessage, Error};
 use crate::error::{
     EnumerateError, ExclusiveMaximumError, ExclusiveMinimumError, MaxItemsError, MaxLengthError,
     MaxPropertiesError, MaximumError, MinItemsError, MinLengthError, MinPropertiesError,
@@ -19,22 +19,25 @@ where
     E: ToDefaultMessage,
 {
     fn into_error(self) -> crate::validation::Error {
-        self.into_error_by(E::to_default_message)
+        self.into_error_by(&CustomMessage {
+            message_fn: E::to_default_message,
+            fluent_message: None,
+        })
     }
 
-    fn into_error_by(self, format_fn: fn(&E) -> String) -> crate::validation::Error;
+    fn into_error_by(self, custom: &CustomMessage<E>) -> crate::validation::Error;
 }
 
 macro_rules! impl_into_error {
     ($ErrorType:ident) => {
         paste::paste! {
             impl IntoError<[<$ErrorType Error>]> for Composited<[<$ErrorType Error>]> {
-                fn into_error_by(self, format_fn: fn(&[<$ErrorType Error>]) -> String) -> Error {
+                fn into_error_by(self, custom: &CustomMessage<[<$ErrorType Error>]>) -> Error {
                     match self {
                         Composited::Single(single) => Error::$ErrorType(
                             crate::error::Message::new(
                                 single,
-                                format_fn,
+                                custom.message_fn,
                             )
                         ),
                         Composited::Array(array) =>{
@@ -43,7 +46,7 @@ macro_rules! impl_into_error {
                             array
                                 .into_iter()
                                 .map(|(index, params)| {
-                                    (index, crate::validation::Errors::NewType(vec![params.into_error_by(format_fn)]))
+                                    (index, crate::validation::Errors::NewType(vec![params.into_error_by(custom)]))
                                 })
                                 .collect::<IndexMap<_, _>>(),
                         ))},
