@@ -270,6 +270,19 @@ impl Error {
         Self::new(path.span(), "`message_fn` need items.")
     }
 
+    #[cfg(feature = "fluent")]
+    pub fn fluent_need_item(path: &syn::Path) -> Self {
+        Self::new(path.span(), "`fluent` need items.")
+    }
+
+    #[cfg(feature = "fluent")]
+    pub fn fluent_need_key(nested_meta: &syn::NestedMeta) -> Self {
+        Self::new(
+            nested_meta.span(),
+            "#[validate(..., fluent(???, ...))] allow only fluent key str",
+        )
+    }
+
     pub fn message_fn_allow_name_path(nested_meta: &syn::NestedMeta) -> Self {
         Self::new(
             nested_meta.span(),

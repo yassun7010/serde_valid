@@ -3,11 +3,11 @@ use proc_macro2::TokenStream;
 use quote::quote;
 use std::str::FromStr;
 
-use super::{get_str, MetaListMessage, MetaNameValueMessage, MetaPathMessage};
+use super::{get_str, CustomMessageToken, MetaListMessage, MetaNameValueMessage, MetaPathMessage};
 
 pub fn extract_message_fn_tokens(
     nested_meta: &syn::NestedMeta,
-) -> Result<TokenStream, crate::Errors> {
+) -> Result<CustomMessageToken, crate::Errors> {
     match nested_meta {
         syn::NestedMeta::Meta(meta) => match meta {
             syn::Meta::List(message_fn_list) => {
@@ -51,12 +51,18 @@ fn extract_message_fn_tokens_from_meta_list(
         nested: message_fn_define,
         ..
     }: &syn::MetaList,
-) -> Result<TokenStream, crate::Errors> {
+) -> Result<CustomMessageToken, crate::Errors> {
     let path_ident = SingleIdentPath::new(path).ident();
     let path_label = path_ident.to_string();
 
     match MetaListMessage::from_str(&path_label) {
-        Ok(MetaListMessage::MessageFn) => get_message_fn_from_nested_meta(path, message_fn_define),
+        Ok(MetaListMessage::MessageFn) => get_message_fn_from_nested_meta(path, message_fn_define)
+            .map(CustomMessageToken::new_message_fn),
+        #[cfg(feature = "fluent")]
+        Ok(MetaListMessage::I18n) | Ok(MetaListMessage::Fluent) => {
+            get_fluent_from_nested_meta(path, message_fn_define)
+                .map(CustomMessageToken::new_fluent_message)
+        }
         Err(unknown) => {
             let error = if MetaNameValueMessage::from_str(&path_label).is_ok() {
                 crate::Error::validate_meta_list_need_value(path, &path_label)
@@ -78,12 +84,14 @@ fn extract_message_fn_tokens_from_meta_list(
 
 fn extract_message_fn_tokens_from_name_value(
     syn::MetaNameValue { path, lit, .. }: &syn::MetaNameValue,
-) -> Result<TokenStream, crate::Errors> {
+) -> Result<CustomMessageToken, crate::Errors> {
     let path_ident = SingleIdentPath::new(path).ident();
     let path_label = path_ident.to_string();
 
     match MetaNameValueMessage::from_str(&path_label) {
-        Ok(MetaNameValueMessage::Message) => get_message_fn_from_lit(lit),
+        Ok(MetaNameValueMessage::Message) => {
+            get_message_fn_from_lit(lit).map(CustomMessageToken::new_message_fn)
+        }
         Err(unknown) => if MetaListMessage::from_str(&path_label).is_ok() {
             Err(crate::Error::validate_meta_list_need_value(
                 path,
@@ -130,4 +138,28 @@ fn get_message_fn_from_nested_meta(
 
 fn get_message_fn_from_lit(lit: &syn::Lit) -> Result<TokenStream, crate::Errors> {
     get_str(lit).map(|lit_str| quote!(|_| { #lit_str.to_string() }))
+}
+
+#[cfg(feature = "fluent")]
+fn get_fluent_from_nested_meta(
+    path: &syn::Path,
+    fn_define: &CommaSeparatedNestedMetas,
+) -> Result<TokenStream, crate::Errors> {
+    match fn_define.len() {
+        0 => Err(vec![crate::Error::fluent_need_item(path)]),
+        1 => match &fn_define[0] {
+            syn::NestedMeta::Lit(syn::Lit::Str(id)) => Ok(quote!(
+                ::serde_valid::fluent::Message{
+                    id: #id,
+                    args: vec![]
+                }
+            )),
+            _ => Err(vec![crate::Error::fluent_need_key(&fn_define[0])]),
+        },
+        _ => Err(fn_define
+            .iter()
+            .skip(1)
+            .map(crate::Error::message_fn_tail_error)
+            .collect()),
+    }
 }

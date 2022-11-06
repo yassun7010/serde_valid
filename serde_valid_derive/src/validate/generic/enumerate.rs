@@ -31,6 +31,10 @@ fn inner_extract_generic_enumerate_validator(
     let message_fn = custom_message
         .message_fn
         .unwrap_or(quote!(::serde_valid::EnumerateError::to_default_message));
+    #[cfg(feature = "fluent")]
+    let fluent_message = quote!(fluent_message: None,);
+    #[cfg(not(feature = "fluent"))]
+    let fluent_message = quote!();
 
     Ok(quote!(
         if let Err(__composited_error_params) = ::serde_valid::validation::ValidateCompositedEnumerate::validate_composited_enumerate(
@@ -46,7 +50,7 @@ fn inner_extract_generic_enumerate_validator(
                 .push(__composited_error_params.into_error_by(
                     &::serde_valid::validation::CustomMessage{
                         message_fn: #message_fn,
-                        fluent_message: None,
+                        #fluent_message
                     }
                 )
             );

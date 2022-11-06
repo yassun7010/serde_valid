@@ -37,6 +37,10 @@ fn inner_extract_string_pattern_validator(
     let message_fn = custom_message
         .message_fn
         .unwrap_or(quote!(::serde_valid::PatternError::to_default_message));
+    #[cfg(feature = "fluent")]
+    let fluent_message = quote!(fluent_message: None,);
+    #[cfg(not(feature = "fluent"))]
+    let fluent_message = quote!();
 
     Ok(quote!(
         static #pattern_ident : ::once_cell::sync::OnceCell<::regex::Regex> = ::once_cell::sync::OnceCell::new();
@@ -55,7 +59,7 @@ fn inner_extract_string_pattern_validator(
                 .push(__composited_error_params.into_error_by(
                     &::serde_valid::validation::CustomMessage{
                         message_fn: #message_fn,
-                        fluent_message: None,
+                        #fluent_message
                     }
                 )
             );

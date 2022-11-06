@@ -34,6 +34,10 @@ macro_rules! extract_numeric_range_validator{
                 let [<$ErrorType:snake>] = get_numeric(validation_value)?;
                 let message_fn = custom_message
                     .message_fn.unwrap_or(quote!(::serde_valid::[<$ErrorType Error>]::to_default_message));
+                #[cfg(feature = "fluent")]
+                let fluent_message = quote!(fluent_message: None,);
+                #[cfg(not(feature = "fluent"))]
+                let fluent_message = quote!();
 
                 Ok(quote!(
                     if let Err(__composited_error_params) = ::serde_valid::validation::[<ValidateComposited $ErrorType>]::[<validate_composited_ $ErrorType:snake>](
@@ -49,7 +53,7 @@ macro_rules! extract_numeric_range_validator{
                             .push(__composited_error_params.into_error_by(
                                 &::serde_valid::validation::CustomMessage{
                                     message_fn: #message_fn,
-                                    fluent_message: None,
+                                    #fluent_message
                                 }
                             )
                         );

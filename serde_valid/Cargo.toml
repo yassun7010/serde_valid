@@ -34,7 +34,7 @@ default = []
 toml = ["serde_toml"]
 yaml = ["serde_yaml"]
 flatten = ["jsonschema"]
-fluent = ["fluent_0"]
+fluent = ["fluent_0", "serde_valid_derive/fluent"]
 
 [dev-dependencies]
 unic-langid = "0.9.1"
