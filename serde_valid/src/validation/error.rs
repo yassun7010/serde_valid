@@ -2,6 +2,7 @@ mod array_erros;
 mod composited;
 mod custom_message;
 mod errors;
+mod into_error;
 mod object_errors;
 
 pub use crate::error::{
@@ -10,10 +11,11 @@ pub use crate::error::{
     MinimumError, MultipleOfError, PatternError, UniqueItemsError,
 };
 pub use array_erros::ArrayErrors;
-pub use composited::{Composited, IntoError};
+pub use composited::Composited;
 pub use custom_message::CustomMessage;
 pub use errors::Errors;
 use indexmap::IndexMap;
+pub use into_error::IntoError;
 pub use object_errors::ObjectErrors;
 
 #[derive(Debug, Clone, serde::Serialize, thiserror::Error)]

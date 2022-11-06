@@ -1,5 +1,4 @@
-use crate::error::ToDefaultMessage;
-
+use super::into_error::IntoError;
 use super::{custom_message::CustomMessage, Error};
 use crate::error::{
     EnumerateError, ExclusiveMaximumError, ExclusiveMinimumError, MaxItemsError, MaxLengthError,
@@ -12,21 +11,6 @@ use indexmap::IndexMap;
 pub enum Composited<Error> {
     Single(Error),
     Array(IndexMap<usize, Composited<Error>>),
-}
-
-pub trait IntoError<E>: Sized
-where
-    E: ToDefaultMessage,
-{
-    fn into_error(self) -> crate::validation::Error {
-        self.into_error_by(&CustomMessage {
-            message_fn: E::to_default_message,
-            #[cfg(feature = "fluent")]
-            fluent_message: None,
-        })
-    }
-
-    fn into_error_by(self, custom: &CustomMessage<E>) -> crate::validation::Error;
 }
 
 macro_rules! impl_into_error {
