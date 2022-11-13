@@ -3,27 +3,28 @@ use serde::Serialize;
 
 #[derive(Debug, PartialEq, Eq, Serialize)]
 pub struct FlatError {
-    pub path: JSONPointer,
-    pub message: String,
+    pub error: String,
+    pub instance_location: JSONPointer,
 }
 
 impl FlatError {
-    pub fn new(path: impl Into<JSONPointer>, message: String) -> Self {
+    pub fn new(instance_location: impl Into<JSONPointer>, error: String) -> Self {
         Self {
-            message,
-            path: path.into(),
+            error,
+            instance_location: instance_location.into(),
         }
     }
 
-    pub fn merge_childs(self, path: impl IntoIterator<Item = PathChunk>) -> Self {
+    pub fn merge_childs(self, instance_location: impl IntoIterator<Item = PathChunk>) -> Self {
         Self::new(
             JSONPointer::from(
-                path.into_iter()
-                    .chain(self.path.into_iter())
+                instance_location
+                    .into_iter()
+                    .chain(self.instance_location.into_iter())
                     .collect::<Vec<_>>()
                     .as_slice(),
             ),
-            self.message,
+            self.error,
         )
     }
 }

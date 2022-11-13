@@ -16,8 +16,8 @@ impl<E> Message<E> {
         }
     }
 
-    pub fn error(&self) -> &E {
-        &self.error
+    pub fn error(&self) -> String {
+        (self.format_fn)(&self.error)
     }
 }
 

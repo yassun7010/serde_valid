@@ -112,10 +112,7 @@ where
     T: ToDefaultMessage,
 {
     fn into_flat_at(self, path: &JSONPointer) -> FlatErrors {
-        FlatErrors::new(vec![FlatError::new(
-            path.to_owned(),
-            self.error().to_default_message(),
-        )])
+        FlatErrors::new(vec![FlatError::new(path.to_owned(), self.error())])
     }
 }
 

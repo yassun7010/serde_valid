@@ -72,8 +72,8 @@ mod tests {
             json!({
                 "errors": [
                     {
-                        "path": "",
-                        "message": "The length of the items must be `>= 1`."
+                        "error": "The length of the items must be `>= 1`.",
+                        "instance_location": "",
                     }
                 ]
             })

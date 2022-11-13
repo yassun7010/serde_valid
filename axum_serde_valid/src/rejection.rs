@@ -40,8 +40,8 @@ pub struct JsonSchemaErrorResponse {
 /// The response that is returned by default.
 #[derive(Debug, Serialize, JsonSchema)]
 pub struct Error {
-    pub path: JsonPointer,
-    pub message: String,
+    pub error: String,
+    pub instance_location: JsonPointer,
 }
 
 impl From<Rejection> for JsonErrorResponse {
@@ -57,8 +57,8 @@ impl From<Rejection> for JsonErrorResponse {
                 errors: errors
                     .into_iter()
                     .map(|error| Error {
-                        path: JsonPointer(error.instance_location().to_owned()),
-                        message: error.error_description().to_string(),
+                        error: error.error_description().to_string(),
+                        instance_location: JsonPointer(error.instance_location().to_owned()),
                     })
                     .collect::<Vec<_>>(),
             }),
@@ -67,8 +67,8 @@ impl From<Rejection> for JsonErrorResponse {
                     .into_flat()
                     .into_iter()
                     .map(|error| Error {
-                        path: JsonPointer(error.path),
-                        message: error.message,
+                        error: error.error,
+                        instance_location: JsonPointer(error.instance_location),
                     })
                     .collect::<Vec<_>>(),
             }),
