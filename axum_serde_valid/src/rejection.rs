@@ -42,6 +42,7 @@ pub struct JsonSchemaErrorResponse {
 pub struct Error {
     pub error: String,
     pub instance_location: JsonPointer,
+    pub keyword_location: Option<JsonPointer>,
 }
 
 impl From<Rejection> for JsonErrorResponse {
@@ -59,6 +60,7 @@ impl From<Rejection> for JsonErrorResponse {
                     .map(|error| Error {
                         error: error.error_description().to_string(),
                         instance_location: JsonPointer(error.instance_location().to_owned()),
+                        keyword_location: Some(JsonPointer(error.keyword_location().to_owned())),
                     })
                     .collect::<Vec<_>>(),
             }),
@@ -69,6 +71,7 @@ impl From<Rejection> for JsonErrorResponse {
                     .map(|error| Error {
                         error: error.error,
                         instance_location: JsonPointer(error.instance_location),
+                        keyword_location: None,
                     })
                     .collect::<Vec<_>>(),
             }),
