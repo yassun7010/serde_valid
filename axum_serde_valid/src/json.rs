@@ -18,9 +18,7 @@ use std::ops::Deref;
 use async_trait::async_trait;
 use axum::http::Request;
 use axum::{extract::FromRequest, response::IntoResponse, BoxError};
-use schemars::JsonSchema;
 use serde::{de::DeserializeOwned, Serialize};
-use serde_valid::Validate;
 
 /// Wrapper type over [`axum::Json`] that validates
 /// requests and responds with a more helpful validation
@@ -42,13 +40,13 @@ impl<T> From<T> for Json<T> {
 }
 
 #[async_trait]
-impl<S, B, T> FromRequest<S, B> for Json<T>
+impl<T, S, B> FromRequest<S, B> for Json<T>
 where
+    T: DeserializeOwned + schemars::JsonSchema + serde_valid::Validate + 'static,
     B: http_body::Body + Send + 'static,
     B::Data: Send,
     B::Error: Into<BoxError>,
     S: Send + Sync,
-    T: DeserializeOwned + Validate + JsonSchema + 'static,
 {
     type Rejection = crate::rejection::Rejection;
 
@@ -103,5 +101,44 @@ mod impl_aide {
         ) -> Vec<(Option<u16>, aide::openapi::Response)> {
             axum::Json::<T>::inferred_responses(ctx, operation)
         }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::Json;
+    use axum::{
+        body::Body,
+        http::{self, Request},
+    };
+    use axum::{routing::post, Router};
+    use schemars::JsonSchema;
+    use serde::Deserialize;
+    use serde_json::json;
+    use serde_valid::Validate;
+    use tower::ServiceExt;
+
+    type TestResult = Result<(), Box<dyn std::error::Error>>;
+
+    #[derive(Deserialize, Validate, JsonSchema)]
+    struct User {
+        #[validate(max_length = 3)]
+        name: String,
+    }
+
+    #[tokio::test]
+    async fn test_json() -> TestResult {
+        let app = Router::new().route("/json", post(|_user: Json<User>| async move { "hello" }));
+
+        app.oneshot(
+            Request::builder()
+                .method(http::Method::POST)
+                .uri("/json")
+                .header(http::header::CONTENT_TYPE, mime::APPLICATION_JSON.as_ref())
+                .body(Body::from(serde_json::to_vec(&json!({"name": "taro"}))?))?,
+        )
+        .await?;
+
+        Ok(())
     }
 }
