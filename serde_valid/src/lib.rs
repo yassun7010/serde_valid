@@ -465,6 +465,10 @@ pub use features::toml;
 #[cfg(feature = "yaml")]
 pub use features::yaml;
 
+pub mod export {
+    pub use once_cell::sync::OnceCell;
+}
+
 pub trait Validate {
     fn validate(&self) -> std::result::Result<(), self::validation::Errors>;
 }
