@@ -3,6 +3,7 @@ use quote::quote;
 use syn::spanned::Spanned;
 
 use crate::types::CommaSeparatedNestedMetas;
+#[cfg(feature = "fluent")]
 use crate::validate::MetaListMessage;
 
 pub fn object_errors_tokens() -> TokenStream {
