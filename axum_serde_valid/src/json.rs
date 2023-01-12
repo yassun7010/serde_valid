@@ -18,7 +18,7 @@ use std::ops::Deref;
 use async_trait::async_trait;
 use axum::http::Request;
 use axum::{extract::FromRequest, response::IntoResponse, BoxError};
-use serde::{de::DeserializeOwned, Serialize};
+use serde::Serialize;
 
 /// Wrapper type over [`axum::Json`] that validates
 /// requests and responds with a more helpful validation
@@ -42,7 +42,7 @@ impl<T> From<T> for Json<T> {
 #[async_trait]
 impl<T, S, B> FromRequest<S, B> for Json<T>
 where
-    T: DeserializeOwned + schemars::JsonSchema + serde_valid::Validate + 'static,
+    T: crate::validated::Deserialize + 'static,
     B: http_body::Body + Send + 'static,
     B::Data: Send,
     B::Error: Into<BoxError>,
@@ -72,7 +72,7 @@ mod impl_aide {
 
     impl<T> aide::OperationInput for Json<T>
     where
-        T: JsonSchema,
+        T: schemars::JsonSchema,
     {
         fn operation_input(
             ctx: &mut aide::gen::GenContext,
@@ -84,7 +84,7 @@ mod impl_aide {
 
     impl<T> aide::OperationOutput for Json<T>
     where
-        T: JsonSchema,
+        T: schemars::JsonSchema,
     {
         type Inner = <axum::Json<T> as aide::OperationOutput>::Inner;
 

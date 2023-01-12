@@ -8,13 +8,8 @@ use jsonschema::{
     output::{BasicOutput, ErrorDescription, OutputUnit},
     JSONSchema,
 };
-use schemars::{
-    gen::{SchemaGenerator, SchemaSettings},
-    JsonSchema,
-};
-use serde::de::DeserializeOwned;
+use schemars::gen::{SchemaGenerator, SchemaSettings};
 use serde_json::{Map, Value};
-use serde_valid::Validate;
 
 thread_local! {
     static CONTEXT: RefCell<SchemaContext> = RefCell::new(SchemaContext::new());
@@ -37,7 +32,7 @@ impl SchemaContext {
 
     pub fn validate<T>(value: &Value) -> Result<(), VecDeque<OutputUnit<ErrorDescription>>>
     where
-        T: DeserializeOwned + Validate + JsonSchema + 'static,
+        T: crate::validated::Deserialize + schemars::JsonSchema + 'static,
     {
         CONTEXT.with(|ctx| {
             let ctx = &mut *ctx.borrow_mut();
