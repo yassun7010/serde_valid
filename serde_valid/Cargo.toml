@@ -29,12 +29,12 @@ serde_yaml = { version = "^0.9", optional = true }
 thiserror = "^1.0"
 unicode-segmentation = "^1.7"
 
+[dev-dependencies]
+unic-langid = "0.9.1"
+
 [features]
 default = []
 toml = ["serde_toml"]
 yaml = ["serde_yaml"]
 flatten = ["jsonschema"]
 fluent = ["fluent_0", "serde_valid_derive/fluent"]
-
-[dev-dependencies]
-unic-langid = "0.9.1"

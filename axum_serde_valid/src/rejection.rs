@@ -1,7 +1,6 @@
 use std::collections::VecDeque;
 
 use axum::{extract::rejection::JsonRejection, http::StatusCode, response::IntoResponse};
-use jsonschema::output::{ErrorDescription, OutputUnit};
 use schemars::JsonSchema;
 use serde::Serialize;
 use serde_valid::flatten::IntoFlat;
@@ -15,10 +14,11 @@ pub enum Rejection {
     Json(JsonRejection),
     /// A serde error.
     Serde(serde_json::Error),
-    /// A schema validation error.
-    Schema(VecDeque<OutputUnit<ErrorDescription>>),
     /// A serde_valid validation error.
     SerdeValid(serde_valid::validation::Errors),
+    #[cfg(feature = "jsonschema")]
+    /// A schema validation error.
+    Jsonschema(VecDeque<jsonschema::output::OutputUnit<jsonschema::output::ErrorDescription>>),
 }
 
 #[derive(Debug, Serialize, JsonSchema)]
@@ -54,24 +54,25 @@ impl From<Rejection> for JsonErrorResponse {
             Rejection::Serde(_) => Self::FormatError(JsonFormatErrorResponse {
                 error: "invalid request".to_string(),
             }),
-            Rejection::Schema(errors) => Self::ValidationError(JsonSchemaErrorResponse {
-                errors: errors
-                    .into_iter()
-                    .map(|error| Error {
-                        error: error.error_description().to_string(),
-                        instance_location: JsonPointer(error.instance_location().to_owned()),
-                        keyword_location: Some(JsonPointer(error.keyword_location().to_owned())),
-                    })
-                    .collect::<Vec<_>>(),
-            }),
             Rejection::SerdeValid(errors) => Self::ValidationError(JsonSchemaErrorResponse {
                 errors: errors
                     .into_flat()
                     .into_iter()
                     .map(|error| Error {
                         error: error.error,
-                        instance_location: JsonPointer(error.instance_location),
+                        instance_location: JsonPointer(error.instance_location.to_string()),
                         keyword_location: None,
+                    })
+                    .collect::<Vec<_>>(),
+            }),
+            #[cfg(feature = "jsonschema")]
+            Rejection::Jsonschema(errors) => Self::ValidationError(JsonSchemaErrorResponse {
+                errors: errors
+                    .into_iter()
+                    .map(|error| Error {
+                        error: error.error_description().to_string(),
+                        instance_location: JsonPointer(error.instance_location().to_string()),
+                        keyword_location: Some(JsonPointer(error.keyword_location().to_string())),
                     })
                     .collect::<Vec<_>>(),
             }),

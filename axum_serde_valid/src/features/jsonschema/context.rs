@@ -52,9 +52,7 @@ impl SchemaContext {
                 }
             });
 
-            let out = schema.apply(value).basic();
-
-            match out {
+            match schema.apply(value).basic() {
                 BasicOutput::Valid(_) => Ok(()),
                 BasicOutput::Invalid(v) => Err(v),
             }

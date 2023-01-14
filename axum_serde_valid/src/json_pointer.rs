@@ -8,10 +8,10 @@ use schemars::{
 use serde::Serialize;
 
 #[derive(Debug, Default, Serialize)]
-pub struct JsonPointer(pub jsonschema::paths::JSONPointer);
+pub struct JsonPointer(pub String);
 
 impl Deref for JsonPointer {
-    type Target = jsonschema::paths::JSONPointer;
+    type Target = String;
 
     fn deref(&self) -> &Self::Target {
         &self.0

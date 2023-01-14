@@ -3,8 +3,6 @@ use std::any::type_name;
 use axum::{extract::FromRequest, BoxError};
 use serde_json::Value;
 
-use crate::context::SchemaContext;
-
 pub async fn from_request<S, B, T>(
     req: axum::http::Request<B>,
     state: &S,
@@ -21,7 +19,11 @@ where
         Err(error) => Err(crate::rejection::Rejection::Json(error))?,
     };
 
-    // SchemaContext::validate::<T>(&value).map_err(crate::rejection::Rejection::Schema)?;
+    #[cfg(feature = "jsonschema")]
+    {
+        crate::jsonschema::context::SchemaContext::validate::<T>(&value)
+            .map_err(crate::rejection::Rejection::Jsonschema)?;
+    }
 
     match serde_json::from_value::<T>(value) {
         Ok(v) => {

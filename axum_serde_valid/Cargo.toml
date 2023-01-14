@@ -15,7 +15,7 @@ aide = { version = "^0.9", optional = true, features = ["axum"] }
 async-trait = "^0.1"
 axum = "^0.6"
 http-body = "^0.4"
-jsonschema = { version = "^0.16", default-features = false }
+jsonschema = { version = "^0.16", optional = true }
 schemars = { version = "^0.8" }
 serde = { workspace = true }
 serde_json = { workspace = true }
@@ -28,3 +28,8 @@ tracing = "^0.1"
 mime = "0.3"
 tokio = { version = "1.24", features = ["full"] }
 tower = { version = "0.4", features = ["util"] }
+
+[features]
+default = []
+jsonschema = ["dep:jsonschema"]
+aide = ["dep:jsonschema", "dep:aide"]
