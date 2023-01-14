@@ -112,7 +112,6 @@ mod test {
         body::Body,
         http::{self, Request},
     };
-    use axum::{routing::post, Router};
     use serde::Deserialize;
     use serde_json::json;
     use serde_valid::Validate;
@@ -123,7 +122,49 @@ mod test {
     #[cfg(all(not(feature = "jsonschema"), not(feature = "aide")))]
     #[tokio::test]
     async fn test_json() -> TestResult {
+        use axum::{routing::post, Router};
+
         #[derive(Deserialize, Validate)]
+        struct User {
+            #[validate(max_length = 3)]
+            name: String,
+        }
+
+        let app = Router::new().route("/json", post(|_user: Json<User>| async move { "hello" }));
+
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .method(http::Method::POST)
+                    .uri("/json")
+                    .header(http::header::CONTENT_TYPE, mime::APPLICATION_JSON.as_ref())
+                    .body(Body::from(serde_json::to_vec(&json!({"name": "taro"}))?))?,
+            )
+            .await?;
+
+        assert_eq!(response.status(), StatusCode::UNPROCESSABLE_ENTITY);
+        assert_eq!(
+            serde_json::from_slice::<serde_json::Value>(
+                &hyper::body::to_bytes(response.into_body()).await?[..],
+            )?,
+            json!({"errors": [
+                {
+                    "error": "The length of the value must be `<= 3`.",
+                    "instance_location": "/name",
+                    "keyword_location": null
+                }
+            ]})
+        );
+
+        Ok(())
+    }
+
+    #[cfg(feature = "jsonschema")]
+    #[tokio::test]
+    async fn test_json_with_jsonschema() -> TestResult {
+        use axum::{routing::post, Router};
+
+        #[derive(Deserialize, Validate, schemars::JsonSchema)]
         struct User {
             #[validate(max_length = 3)]
             name: String,
@@ -161,13 +202,15 @@ mod test {
     #[cfg(feature = "aide")]
     #[tokio::test]
     async fn test_json_with_aide() -> TestResult {
+        use aide::axum::{routing::post, ApiRouter};
+
         #[derive(Deserialize, Validate, schemars::JsonSchema)]
         struct User {
             #[validate(max_length = 3)]
             name: String,
         }
 
-        let app = Router::new().route("/json", post(|_user: Json<User>| async move { "hello" }));
+        let app = ApiRouter::new().route("/json", post(|_user: Json<User>| async move { "hello" }));
 
         let response = app
             .oneshot(

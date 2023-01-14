@@ -32,5 +32,5 @@ tower = { version = "0.4", features = ["util"] }
 
 [features]
 default = []
-jsonschema = ["dep:jsonschema"]
-aide = ["dep:jsonschema", "dep:aide", "dep:schemars"]
+jsonschema = ["dep:jsonschema", "dep:schemars"]
+aide = ["dep:aide", "dep:jsonschema", "dep:schemars"]
