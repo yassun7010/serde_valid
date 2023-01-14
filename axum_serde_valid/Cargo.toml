@@ -16,7 +16,7 @@ async-trait = "^0.1"
 axum = "^0.6"
 http-body = "^0.4"
 jsonschema = { version = "^0.16", optional = true }
-schemars = { version = "^0.8" }
+schemars = { version = "^0.8", optional = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 serde_valid = { version = "0.12.0", path = "../serde_valid", features = [
@@ -32,4 +32,4 @@ tower = { version = "0.4", features = ["util"] }
 [features]
 default = []
 jsonschema = ["dep:jsonschema"]
-aide = ["dep:jsonschema", "dep:aide"]
+aide = ["dep:jsonschema", "dep:aide", "dep:schemars"]

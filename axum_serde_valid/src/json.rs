@@ -112,7 +112,6 @@ mod test {
         http::{self, Request},
     };
     use axum::{routing::post, Router};
-    use schemars::JsonSchema;
     use serde::Deserialize;
     use serde_json::json;
     use serde_valid::Validate;
@@ -120,14 +119,37 @@ mod test {
 
     type TestResult = Result<(), Box<dyn std::error::Error>>;
 
-    #[derive(Deserialize, Validate, JsonSchema)]
-    struct User {
-        #[validate(max_length = 3)]
-        name: String,
-    }
-
     #[tokio::test]
     async fn test_json() -> TestResult {
+        #[derive(Deserialize, Validate)]
+        struct User {
+            #[validate(max_length = 3)]
+            name: String,
+        }
+
+        let app = Router::new().route("/json", post(|_user: Json<User>| async move { "hello" }));
+
+        app.oneshot(
+            Request::builder()
+                .method(http::Method::POST)
+                .uri("/json")
+                .header(http::header::CONTENT_TYPE, mime::APPLICATION_JSON.as_ref())
+                .body(Body::from(serde_json::to_vec(&json!({"name": "taro"}))?))?,
+        )
+        .await?;
+
+        Ok(())
+    }
+
+    #[cfg(feature = "aide")]
+    #[tokio::test]
+    async fn test_json_with_aide() -> TestResult {
+        #[derive(Deserialize, Validate, schemars::JsonSchema)]
+        struct User {
+            #[validate(max_length = 3)]
+            name: String,
+        }
+
         let app = Router::new().route("/json", post(|_user: Json<User>| async move { "hello" }));
 
         app.oneshot(

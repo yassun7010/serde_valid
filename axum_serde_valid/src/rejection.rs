@@ -1,7 +1,4 @@
-use std::collections::VecDeque;
-
 use axum::{extract::rejection::JsonRejection, http::StatusCode, response::IntoResponse};
-use schemars::JsonSchema;
 use serde::Serialize;
 use serde_valid::flatten::IntoFlat;
 
@@ -18,27 +15,49 @@ pub enum Rejection {
     SerdeValid(serde_valid::validation::Errors),
     #[cfg(feature = "jsonschema")]
     /// A schema validation error.
-    Jsonschema(VecDeque<jsonschema::output::OutputUnit<jsonschema::output::ErrorDescription>>),
+    Jsonschema(
+        std::collections::VecDeque<
+            jsonschema::output::OutputUnit<jsonschema::output::ErrorDescription>,
+        >,
+    ),
 }
 
-#[derive(Debug, Serialize, JsonSchema)]
+#[cfg(not(feature = "aide"))]
+#[derive(Debug, Serialize)]
 pub enum JsonErrorResponse {
-    FormatError(JsonFormatErrorResponse),
+    FormatError(String),
     ValidationError(JsonSchemaErrorResponse),
 }
 
-#[derive(Debug, Serialize, JsonSchema)]
-pub struct JsonFormatErrorResponse {
-    error: String,
+#[cfg(feature = "aide")]
+#[derive(Debug, Serialize, schemars::JsonSchema)]
+pub enum JsonErrorResponse {
+    FormatError(String),
+    ValidationError(JsonSchemaErrorResponse),
 }
 
-#[derive(Debug, Serialize, JsonSchema)]
+#[cfg(not(feature = "aide"))]
+#[derive(Debug, Serialize)]
 pub struct JsonSchemaErrorResponse {
     errors: Vec<Error>,
 }
 
-/// The response that is returned by default.
-#[derive(Debug, Serialize, JsonSchema)]
+#[cfg(feature = "aide")]
+#[derive(Debug, Serialize, schemars::JsonSchema)]
+pub struct JsonSchemaErrorResponse {
+    errors: Vec<Error>,
+}
+
+#[cfg(not(feature = "aide"))]
+#[derive(Debug, Serialize)]
+pub struct Error {
+    pub error: String,
+    pub instance_location: JsonPointer,
+    pub keyword_location: Option<JsonPointer>,
+}
+
+#[cfg(feature = "aide")]
+#[derive(Debug, Serialize, schemars::JsonSchema)]
 pub struct Error {
     pub error: String,
     pub instance_location: JsonPointer,
@@ -48,12 +67,8 @@ pub struct Error {
 impl From<Rejection> for JsonErrorResponse {
     fn from(rejection: Rejection) -> Self {
         match rejection {
-            Rejection::Json(v) => Self::FormatError(JsonFormatErrorResponse {
-                error: v.to_string(),
-            }),
-            Rejection::Serde(_) => Self::FormatError(JsonFormatErrorResponse {
-                error: "invalid request".to_string(),
-            }),
+            Rejection::Json(v) => Self::FormatError(v.to_string()),
+            Rejection::Serde(_) => Self::FormatError("invalid request".to_string()),
             Rejection::SerdeValid(errors) => Self::ValidationError(JsonSchemaErrorResponse {
                 errors: errors
                     .into_flat()
@@ -117,9 +132,7 @@ mod impl_aide {
         ) -> Vec<(Option<u16>, aide::openapi::Response)> {
             let mut responses = vec![];
 
-            if let Some(response) =
-                axum::Json::<JsonFormatErrorResponse>::operation_response(ctx, operation)
-            {
+            if let Some(response) = String::operation_response(ctx, operation) {
                 responses.push((Some(StatusCode::BAD_REQUEST.into()), response));
             }
             if let Some(response) =

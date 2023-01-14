@@ -18,9 +18,6 @@ use std::ops::Deref;
 use async_trait::async_trait;
 use axum::http::Request;
 use axum::{extract::FromRequest, BoxError};
-use schemars::JsonSchema;
-use serde::de::DeserializeOwned;
-use serde_valid::Validate;
 
 /// Wrapper type over [`axum::extract::Query`] that validates
 /// requests with a more helpful validation
@@ -48,7 +45,7 @@ where
     B::Data: Send,
     B::Error: Into<BoxError>,
     S: Send + Sync,
-    T: DeserializeOwned + Validate + JsonSchema + 'static,
+    T: crate::validated::Deserialize + 'static,
 {
     type Rejection = crate::rejection::Rejection;
 
@@ -65,7 +62,7 @@ mod impl_aide {
 
     impl<T> aide::OperationInput for Query<T>
     where
-        T: JsonSchema,
+        T: schemars::JsonSchema,
     {
         fn operation_input(
             ctx: &mut aide::gen::GenContext,
