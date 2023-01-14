@@ -107,6 +107,7 @@ mod impl_aide {
 #[cfg(test)]
 mod test {
     use crate::Json;
+    use axum::http::StatusCode;
     use axum::{
         body::Body,
         http::{self, Request},
@@ -119,6 +120,7 @@ mod test {
 
     type TestResult = Result<(), Box<dyn std::error::Error>>;
 
+    #[cfg(all(not(feature = "jsonschema"), not(feature = "aide")))]
     #[tokio::test]
     async fn test_json() -> TestResult {
         #[derive(Deserialize, Validate)]
@@ -129,14 +131,29 @@ mod test {
 
         let app = Router::new().route("/json", post(|_user: Json<User>| async move { "hello" }));
 
-        app.oneshot(
-            Request::builder()
-                .method(http::Method::POST)
-                .uri("/json")
-                .header(http::header::CONTENT_TYPE, mime::APPLICATION_JSON.as_ref())
-                .body(Body::from(serde_json::to_vec(&json!({"name": "taro"}))?))?,
-        )
-        .await?;
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .method(http::Method::POST)
+                    .uri("/json")
+                    .header(http::header::CONTENT_TYPE, mime::APPLICATION_JSON.as_ref())
+                    .body(Body::from(serde_json::to_vec(&json!({"name": "taro"}))?))?,
+            )
+            .await?;
+
+        assert_eq!(response.status(), StatusCode::UNPROCESSABLE_ENTITY);
+        assert_eq!(
+            serde_json::from_slice::<serde_json::Value>(
+                &hyper::body::to_bytes(response.into_body()).await?[..],
+            )?,
+            json!({"errors": [
+                {
+                    "error": "The length of the value must be `<= 3`.",
+                    "instance_location": "/name",
+                    "keyword_location": null
+                }
+            ]})
+        );
 
         Ok(())
     }
@@ -152,14 +169,29 @@ mod test {
 
         let app = Router::new().route("/json", post(|_user: Json<User>| async move { "hello" }));
 
-        app.oneshot(
-            Request::builder()
-                .method(http::Method::POST)
-                .uri("/json")
-                .header(http::header::CONTENT_TYPE, mime::APPLICATION_JSON.as_ref())
-                .body(Body::from(serde_json::to_vec(&json!({"name": "taro"}))?))?,
-        )
-        .await?;
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .method(http::Method::POST)
+                    .uri("/json")
+                    .header(http::header::CONTENT_TYPE, mime::APPLICATION_JSON.as_ref())
+                    .body(Body::from(serde_json::to_vec(&json!({"name": "taro"}))?))?,
+            )
+            .await?;
+
+        assert_eq!(response.status(), StatusCode::UNPROCESSABLE_ENTITY);
+        assert_eq!(
+            serde_json::from_slice::<serde_json::Value>(
+                &hyper::body::to_bytes(response.into_body()).await?[..],
+            )?,
+            json!({"errors": [
+                {
+                    "error": "The length of the value must be `<= 3`.",
+                    "instance_location": "/name",
+                    "keyword_location": null
+                }
+            ]})
+        );
 
         Ok(())
     }
