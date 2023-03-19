@@ -10,14 +10,14 @@ where
     /// use serde_valid::toml::FromTomlSlice;
     ///
     /// #[derive(Debug, Validate, Deserialize)]
-    /// struct TestStruct<'a> {
+    /// struct TestStruct {
     ///     #[validate(min_length = 1)]
-    ///     val: &'a str,
+    ///     val: String,
     /// }
     ///
     /// let s = TestStruct::from_toml_slice(br#"val= "abcde""#);
     ///
-    /// assert!(s.is_ok())
+    /// s.unwrap();
     /// ```
     fn from_toml_slice(slice: &'de [u8]) -> Result<Self, crate::Error<serde_toml::de::Error>>;
 }

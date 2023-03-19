@@ -10,9 +10,9 @@ where
     /// use serde_valid::toml::FromTomlStr;
     ///
     /// #[derive(Debug, Validate, Deserialize)]
-    /// struct TestStruct<'a> {
+    /// struct TestStruct {
     ///     #[validate(min_length = 1)]
-    ///     val: &'a str,
+    ///     val: String,
     /// }
     ///
     /// let s = TestStruct::from_toml_str(r#"val = "abcde""#);
