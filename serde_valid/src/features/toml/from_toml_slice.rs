@@ -27,7 +27,11 @@ where
     T: serde::de::Deserialize<'de> + crate::Validate,
 {
     fn from_toml_slice(slice: &'de [u8]) -> Result<Self, crate::Error<serde_toml::de::Error>> {
-        let model: T = serde_toml::from_slice(slice)?;
+        let model = T::deserialize(serde_toml::Deserializer::new(
+            // unwrap for backward compatibility.
+            // `toml` crate no longer provides `from_slice`.
+            std::str::from_utf8(slice).unwrap(),
+        ))?;
         model.validate().map_err(crate::Error::ValidationError)?;
         Ok(model)
     }
