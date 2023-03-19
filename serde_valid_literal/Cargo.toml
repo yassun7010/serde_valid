@@ -14,3 +14,7 @@ version.workspace = true
 [dependencies]
 paste = { workspace = true }
 regex = { workspace = true }
+
+[features]
+default = []
+i128 = []

@@ -33,8 +33,9 @@ unicode-segmentation = "^1.7"
 unic-langid = "0.9.1"
 
 [features]
-default = []
+default = ["i128"]
 toml = ["serde_toml"]
 yaml = ["serde_yaml"]
+i128 = ["num-traits/i128", "indexmap/std", "serde_valid_literal/i128"]
 flatten = ["jsonschema"]
 fluent = ["fluent_0", "serde_valid_derive/fluent"]

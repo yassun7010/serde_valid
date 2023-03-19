@@ -64,24 +64,28 @@ impl_validate_numeric_maximum!(i8);
 impl_validate_numeric_maximum!(i16);
 impl_validate_numeric_maximum!(i32);
 impl_validate_numeric_maximum!(i64);
+#[cfg(feature = "i128")]
 impl_validate_numeric_maximum!(i128);
 impl_validate_numeric_maximum!(isize);
 impl_validate_numeric_maximum!(u8);
 impl_validate_numeric_maximum!(u16);
 impl_validate_numeric_maximum!(u32);
 impl_validate_numeric_maximum!(u64);
+#[cfg(feature = "i128")]
 impl_validate_numeric_maximum!(u128);
 impl_validate_numeric_maximum!(usize);
 impl_validate_numeric_maximum!(std::num::NonZeroI8);
 impl_validate_numeric_maximum!(std::num::NonZeroI16);
 impl_validate_numeric_maximum!(std::num::NonZeroI32);
 impl_validate_numeric_maximum!(std::num::NonZeroI64);
+#[cfg(feature = "i128")]
 impl_validate_numeric_maximum!(std::num::NonZeroI128);
 impl_validate_numeric_maximum!(std::num::NonZeroIsize);
 impl_validate_numeric_maximum!(std::num::NonZeroU8);
 impl_validate_numeric_maximum!(std::num::NonZeroU16);
 impl_validate_numeric_maximum!(std::num::NonZeroU32);
 impl_validate_numeric_maximum!(std::num::NonZeroU64);
+#[cfg(feature = "i128")]
 impl_validate_numeric_maximum!(std::num::NonZeroU128);
 impl_validate_numeric_maximum!(std::num::NonZeroUsize);
 impl_validate_numeric_maximum!(f32);
@@ -109,14 +113,12 @@ mod tests {
         assert!(ValidateMaximum::validate_maximum(&10, 10i16).is_ok());
         assert!(ValidateMaximum::validate_maximum(&10, 10i32).is_ok());
         assert!(ValidateMaximum::validate_maximum(&10, 10i64).is_ok());
-        assert!(ValidateMaximum::validate_maximum(&10, 10i128).is_ok());
         assert!(ValidateMaximum::validate_maximum(&10, 10isize).is_ok());
 
         assert!(ValidateMaximum::validate_maximum(&10, 10u8).is_ok());
         assert!(ValidateMaximum::validate_maximum(&10, 10u16).is_ok());
         assert!(ValidateMaximum::validate_maximum(&10, 10u32).is_ok());
         assert!(ValidateMaximum::validate_maximum(&10, 10u64).is_ok());
-        assert!(ValidateMaximum::validate_maximum(&10, 10u128).is_ok());
         assert!(ValidateMaximum::validate_maximum(&10, 10usize).is_ok());
 
         assert!(ValidateMaximum::validate_maximum(
@@ -137,11 +139,6 @@ mod tests {
         assert!(ValidateMaximum::validate_maximum(
             &std::num::NonZeroI64::new(10).unwrap(),
             std::num::NonZeroI64::new(10).unwrap()
-        )
-        .is_ok());
-        assert!(ValidateMaximum::validate_maximum(
-            &std::num::NonZeroI128::new(10).unwrap(),
-            std::num::NonZeroI128::new(10).unwrap()
         )
         .is_ok());
         assert!(ValidateMaximum::validate_maximum(
@@ -171,11 +168,6 @@ mod tests {
         )
         .is_ok());
         assert!(ValidateMaximum::validate_maximum(
-            &std::num::NonZeroU128::new(10).unwrap(),
-            std::num::NonZeroU128::new(10).unwrap()
-        )
-        .is_ok());
-        assert!(ValidateMaximum::validate_maximum(
             &std::num::NonZeroUsize::new(10).unwrap(),
             std::num::NonZeroUsize::new(10).unwrap()
         )
@@ -183,5 +175,21 @@ mod tests {
 
         assert!(ValidateMaximum::validate_maximum(&10.0, 10.0f32).is_ok());
         assert!(ValidateMaximum::validate_maximum(&10.0, 10.0f64).is_ok());
+    }
+
+    #[test]
+    fn test_validate_numeric_maximum_128() {
+        assert!(ValidateMaximum::validate_maximum(&10, 10i128).is_ok());
+        assert!(ValidateMaximum::validate_maximum(&10, 10u128).is_ok());
+        assert!(ValidateMaximum::validate_maximum(
+            &std::num::NonZeroI128::new(10).unwrap(),
+            std::num::NonZeroI128::new(10).unwrap()
+        )
+        .is_ok());
+        assert!(ValidateMaximum::validate_maximum(
+            &std::num::NonZeroU128::new(10).unwrap(),
+            std::num::NonZeroU128::new(10).unwrap()
+        )
+        .is_ok());
     }
 }

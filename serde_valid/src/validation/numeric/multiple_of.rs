@@ -74,14 +74,14 @@ impl_validate_numeric_multiple_of!(i8);
 impl_validate_numeric_multiple_of!(i16);
 impl_validate_numeric_multiple_of!(i32);
 impl_validate_numeric_multiple_of!(i64);
-#[cfg(all(feature = "indexmap/std", feature = "num-traits/i128"))]
+#[cfg(feature = "i128")]
 impl_validate_numeric_multiple_of!(i128);
 impl_validate_numeric_multiple_of!(isize);
 impl_validate_numeric_multiple_of!(u8);
 impl_validate_numeric_multiple_of!(u16);
 impl_validate_numeric_multiple_of!(u32);
 impl_validate_numeric_multiple_of!(u64);
-#[cfg(all(feature = "indexmap/std", feature = "num-traits/i128"))]
+#[cfg(feature = "i128")]
 impl_validate_numeric_multiple_of!(u128);
 impl_validate_numeric_multiple_of!(usize);
 impl_validate_numeric_multiple_of!(f32);
@@ -97,14 +97,12 @@ mod tests {
         assert!(ValidateMultipleOf::validate_multiple_of(&10i16, 5).is_ok());
         assert!(ValidateMultipleOf::validate_multiple_of(&10i32, 5).is_ok());
         assert!(ValidateMultipleOf::validate_multiple_of(&10i64, 5).is_ok());
-        assert!(ValidateMultipleOf::validate_multiple_of(&10i128, 5).is_ok());
         assert!(ValidateMultipleOf::validate_multiple_of(&10isize, 5).is_ok());
 
         assert!(ValidateMultipleOf::validate_multiple_of(&10u8, 5).is_ok());
         assert!(ValidateMultipleOf::validate_multiple_of(&10u16, 5).is_ok());
         assert!(ValidateMultipleOf::validate_multiple_of(&10u32, 5).is_ok());
         assert!(ValidateMultipleOf::validate_multiple_of(&10u64, 5).is_ok());
-        assert!(ValidateMultipleOf::validate_multiple_of(&10u128, 5).is_ok());
         assert!(ValidateMultipleOf::validate_multiple_of(&10usize, 5).is_ok());
     }
 
@@ -115,14 +113,12 @@ mod tests {
         assert!(ValidateMultipleOf::validate_multiple_of(&10i16, 3).is_err());
         assert!(ValidateMultipleOf::validate_multiple_of(&10i32, 3).is_err());
         assert!(ValidateMultipleOf::validate_multiple_of(&10i64, 3).is_err());
-        assert!(ValidateMultipleOf::validate_multiple_of(&10i128, 3).is_err());
         assert!(ValidateMultipleOf::validate_multiple_of(&10isize, 3).is_err());
 
         assert!(ValidateMultipleOf::validate_multiple_of(&10u8, 3).is_err());
         assert!(ValidateMultipleOf::validate_multiple_of(&10u16, 3).is_err());
         assert!(ValidateMultipleOf::validate_multiple_of(&10u32, 3).is_err());
         assert!(ValidateMultipleOf::validate_multiple_of(&10u64, 3).is_err());
-        assert!(ValidateMultipleOf::validate_multiple_of(&10u128, 3).is_err());
         assert!(ValidateMultipleOf::validate_multiple_of(&10usize, 3).is_err());
     }
 
@@ -131,9 +127,24 @@ mod tests {
         assert!(ValidateMultipleOf::validate_multiple_of(&12.0, 1.0).is_ok());
         assert!(ValidateMultipleOf::validate_multiple_of(&12.5, 0.5).is_ok());
     }
+
     #[test]
     fn test_validate_numeric_multiple_of_float_is_false() {
         assert!(ValidateMultipleOf::validate_multiple_of(&12.0, 5.0).is_err());
         assert!(ValidateMultipleOf::validate_multiple_of(&12.5, 0.3).is_err());
+    }
+
+    #[test]
+    #[cfg(feature = "i128")]
+    fn test_validate_numeric_multiple_of_128bit_integer_is_true() {
+        assert!(ValidateMultipleOf::validate_multiple_of(&10i128, 5).is_ok());
+        assert!(ValidateMultipleOf::validate_multiple_of(&10u128, 5).is_ok());
+    }
+
+    #[test]
+    #[cfg(feature = "i128")]
+    fn test_validate_numeric_multiple_of_128bit_integer_is_false() {
+        assert!(ValidateMultipleOf::validate_multiple_of(&10i128, 3).is_err());
+        assert!(ValidateMultipleOf::validate_multiple_of(&10u128, 3).is_err());
     }
 }

@@ -64,24 +64,28 @@ impl_validate_numeric_minimum!(i8);
 impl_validate_numeric_minimum!(i16);
 impl_validate_numeric_minimum!(i32);
 impl_validate_numeric_minimum!(i64);
+#[cfg(feature = "i128")]
 impl_validate_numeric_minimum!(i128);
 impl_validate_numeric_minimum!(isize);
 impl_validate_numeric_minimum!(u8);
 impl_validate_numeric_minimum!(u16);
 impl_validate_numeric_minimum!(u32);
 impl_validate_numeric_minimum!(u64);
+#[cfg(feature = "i128")]
 impl_validate_numeric_minimum!(u128);
 impl_validate_numeric_minimum!(usize);
 impl_validate_numeric_minimum!(std::num::NonZeroI8);
 impl_validate_numeric_minimum!(std::num::NonZeroI16);
 impl_validate_numeric_minimum!(std::num::NonZeroI32);
 impl_validate_numeric_minimum!(std::num::NonZeroI64);
+#[cfg(feature = "i128")]
 impl_validate_numeric_minimum!(std::num::NonZeroI128);
 impl_validate_numeric_minimum!(std::num::NonZeroIsize);
 impl_validate_numeric_minimum!(std::num::NonZeroU8);
 impl_validate_numeric_minimum!(std::num::NonZeroU16);
 impl_validate_numeric_minimum!(std::num::NonZeroU32);
 impl_validate_numeric_minimum!(std::num::NonZeroU64);
+#[cfg(feature = "i128")]
 impl_validate_numeric_minimum!(std::num::NonZeroU128);
 impl_validate_numeric_minimum!(std::num::NonZeroUsize);
 impl_validate_numeric_minimum!(f32);
@@ -108,14 +112,12 @@ mod tests {
         assert!(ValidateMinimum::validate_minimum(&10, 10i16).is_ok());
         assert!(ValidateMinimum::validate_minimum(&10, 10i32).is_ok());
         assert!(ValidateMinimum::validate_minimum(&10, 10i64).is_ok());
-        assert!(ValidateMinimum::validate_minimum(&10, 10i128).is_ok());
         assert!(ValidateMinimum::validate_minimum(&10, 10isize).is_ok());
 
         assert!(ValidateMinimum::validate_minimum(&10, 10u8).is_ok());
         assert!(ValidateMinimum::validate_minimum(&10, 10u16).is_ok());
         assert!(ValidateMinimum::validate_minimum(&10, 10u32).is_ok());
         assert!(ValidateMinimum::validate_minimum(&10, 10u64).is_ok());
-        assert!(ValidateMinimum::validate_minimum(&10, 10u128).is_ok());
         assert!(ValidateMinimum::validate_minimum(&10, 10usize).is_ok());
 
         assert!(ValidateMinimum::validate_minimum(
@@ -136,11 +138,6 @@ mod tests {
         assert!(ValidateMinimum::validate_minimum(
             &std::num::NonZeroI64::new(10).unwrap(),
             std::num::NonZeroI64::new(10).unwrap()
-        )
-        .is_ok());
-        assert!(ValidateMinimum::validate_minimum(
-            &std::num::NonZeroI128::new(10).unwrap(),
-            std::num::NonZeroI128::new(10).unwrap()
         )
         .is_ok());
         assert!(ValidateMinimum::validate_minimum(
@@ -170,11 +167,6 @@ mod tests {
         )
         .is_ok());
         assert!(ValidateMinimum::validate_minimum(
-            &std::num::NonZeroU128::new(10).unwrap(),
-            std::num::NonZeroU128::new(10).unwrap()
-        )
-        .is_ok());
-        assert!(ValidateMinimum::validate_minimum(
             &std::num::NonZeroUsize::new(10).unwrap(),
             std::num::NonZeroUsize::new(10).unwrap()
         )
@@ -182,5 +174,22 @@ mod tests {
 
         assert!(ValidateMinimum::validate_minimum(&10.0, 10.0f32).is_ok());
         assert!(ValidateMinimum::validate_minimum(&10.0, 10.0f64).is_ok());
+    }
+
+    #[test]
+    #[cfg(feature = "i128")]
+    fn test_validate_numeric_minimum_128() {
+        assert!(ValidateMinimum::validate_minimum(&10, 10i128).is_ok());
+        assert!(ValidateMinimum::validate_minimum(&10, 10u128).is_ok());
+        assert!(ValidateMinimum::validate_minimum(
+            &std::num::NonZeroI128::new(10).unwrap(),
+            std::num::NonZeroI128::new(10).unwrap()
+        )
+        .is_ok());
+        assert!(ValidateMinimum::validate_minimum(
+            &std::num::NonZeroU128::new(10).unwrap(),
+            std::num::NonZeroU128::new(10).unwrap()
+        )
+        .is_ok());
     }
 }
