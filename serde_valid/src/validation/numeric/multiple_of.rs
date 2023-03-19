@@ -74,14 +74,14 @@ impl_validate_numeric_multiple_of!(i8);
 impl_validate_numeric_multiple_of!(i16);
 impl_validate_numeric_multiple_of!(i32);
 impl_validate_numeric_multiple_of!(i64);
-#[cfg(feature = "num-traits/i128")]
+#[cfg(all(feature = "indexmap/std", feature = "num-traits/i128"))]
 impl_validate_numeric_multiple_of!(i128);
 impl_validate_numeric_multiple_of!(isize);
 impl_validate_numeric_multiple_of!(u8);
 impl_validate_numeric_multiple_of!(u16);
 impl_validate_numeric_multiple_of!(u32);
 impl_validate_numeric_multiple_of!(u64);
-#[cfg(feature = "num-traits/i128")]
+#[cfg(all(feature = "indexmap/std", feature = "num-traits/i128"))]
 impl_validate_numeric_multiple_of!(u128);
 impl_validate_numeric_multiple_of!(usize);
 impl_validate_numeric_multiple_of!(f32);
