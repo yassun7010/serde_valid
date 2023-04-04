@@ -442,6 +442,8 @@ pub mod json;
 mod traits;
 pub mod validation;
 
+use std::collections::HashMap;
+
 use indexmap::IndexMap;
 
 pub use error::{
@@ -482,6 +484,29 @@ where
 
         for (index, item) in self.iter().enumerate() {
             if let Err(errors) = item.validate() {
+                items.insert(index, errors);
+            }
+        }
+
+        if items.is_empty() {
+            Ok(())
+        } else {
+            Err(self::validation::Errors::Array(
+                validation::ArrayErrors::new(vec![], items),
+            ))
+        }
+    }
+}
+
+impl<K, V> Validate for HashMap<K, V>
+where
+    V: Validate,
+{
+    fn validate(&self) -> std::result::Result<(), self::validation::Errors> {
+        let mut items = IndexMap::new();
+
+        for (index, (_key, value)) in self.iter().enumerate() {
+            if let Err(errors) = value.validate() {
                 items.insert(index, errors);
             }
         }
