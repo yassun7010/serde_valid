@@ -127,6 +127,52 @@ macro_rules! impl_composited_validation_1args {
         }
     };
     (
+        pub trait $ValidateCompositedTrait:ident {
+            fn $validate_composited_method:ident(
+                &self,
+                $limit:ident: $limit_type:ty$(,)*
+            ) -> Result<(), Composited<$Error:ty>>;
+        },
+        "safe_for_hashmap"
+    ) => {
+        impl_composited_validation_1args!(
+            pub trait $ValidateCompositedTrait {
+                fn $validate_composited_method(
+                    &self,
+                    $limit: $limit_type
+                ) -> Result<(), Composited<$Error>>;
+            }
+        );
+        paste::paste! {
+            impl<K, V> $ValidateCompositedTrait for std::collections::HashMap<K, V>
+            where
+                V: $ValidateCompositedTrait,
+            {
+                fn $validate_composited_method(
+                    &self,
+                    $limit: $limit_type,
+                ) -> Result<(), Composited<$Error>> {
+                    let errors: IndexMap<usize, crate::validation::Composited<$Error>> = self
+                        .iter()
+                        .enumerate()
+                        .filter_map(
+                            |(index, (_key, value))| match value.$validate_composited_method($limit) {
+                                Ok(_) => None,
+                                Err(error) => Some((index, error)),
+                            },
+                        )
+                        .collect();
+
+                    if errors.is_empty() {
+                        Ok(())
+                    } else {
+                        Err(Composited::Array(errors))
+                    }
+                }
+            }
+        }
+    };
+    (
         pub trait $ValidateCompositedTrait:ident<T> {
             fn $validate_composited_method:ident(
                 &self,
@@ -159,6 +205,31 @@ macro_rules! impl_composited_validation_1args {
                             Err(error) => Some((index, error)),
                         },
                     )
+                    .collect();
+
+                if errors.is_empty() {
+                    Ok(())
+                } else {
+                    Err(Composited::Array(errors))
+                }
+            }
+        }
+
+        impl<T, K, V> $ValidateCompositedTrait<T> for std::collections::HashMap<K, V>
+        where
+            T: Copy,
+            V: $ValidateCompositedTrait<T>,
+        {
+            fn $validate_composited_method(&self, $limit: T) -> Result<(), Composited<$Error>> {
+                let errors: IndexMap<usize, crate::validation::Composited<$Error>> = self
+                    .iter()
+                    .enumerate()
+                    .filter_map(|(index, (_key, value))| {
+                        match value.$validate_composited_method($limit) {
+                            Ok(_) => None,
+                            Err(error) => Some((index, error)),
+                        }
+                    })
                     .collect();
 
                 if errors.is_empty() {
@@ -286,7 +357,8 @@ impl_composited_validation_1args!(
             &self,
             max_length: usize,
         ) -> Result<(), Composited<MaxLengthError>>;
-    }
+    },
+    "safe_for_hashmap"
 );
 
 impl_composited_validation_1args!(
@@ -295,7 +367,8 @@ impl_composited_validation_1args!(
             &self,
             min_length: usize,
         ) -> Result<(), Composited<MinLengthError>>;
-    }
+    },
+    "safe_for_hashmap"
 );
 
 impl_composited_validation_1args!(
@@ -304,7 +377,8 @@ impl_composited_validation_1args!(
             &self,
             pattern: &regex::Regex,
         ) -> Result<(), Composited<PatternError>>;
-    }
+    },
+    "safe_for_hashmap"
 );
 
 // Object

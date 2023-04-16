@@ -39,8 +39,10 @@
 //! Serde Valid support standard validation based JSON Schema.
 //!
 //! | Type | Serde Valid(validate derive) | Serde Valid(validate trait) | Json Schema |
-//! | :-----: | :----------------------------------- | :----------------------------------------------------- | :----------------------------------------------------------------------------------------------------- |
-//! | String  | `#[validate(max_length = 5)]`        | [`ValidateMaxLength`](ValidateMaxLength)               | [maxLength](https://json-schema.org/understanding-json-schema/reference/string.html#length)            |
+//! | :-----: | :----------------------------------- |
+//! :----------------------------------------------------- |
+//! :-----------------------------------------------------------------------------------------------------
+//! | | String  | `#[validate(max_length = 5)]`        | [`ValidateMaxLength`](ValidateMaxLength)               | [maxLength](https://json-schema.org/understanding-json-schema/reference/string.html#length)            |
 //! | String  | `#[validate(min_length = 5)]`        | [`ValidateMinLength`](ValidateMinLength)               | [minLength](https://json-schema.org/understanding-json-schema/reference/string.html#length)            |
 //! | String  | `#[validate(pattern = r"^\d{5}$")]`  | [`ValidatePattern`](ValidatePattern)                   | [pattern](https://json-schema.org/understanding-json-schema/reference/string.html#regular-expressions) |
 //! | Numeric | `#[validate(maximum = 5)]`           | [`ValidateMaximum`](ValidateMaximum)                   | [maximum](https://json-schema.org/understanding-json-schema/reference/numeric.html#range)              |
@@ -57,7 +59,8 @@
 //!
 //! ## Complete Constructor (Deserialization)
 //!
-//! Serde Valid support complete constructor method using by [`serde_valid::json::FromJsonValue`](json::FromJsonValue) trait.
+//! Serde Valid support complete constructor method using by
+//! [`serde_valid::json::FromJsonValue`](json::FromJsonValue) trait.
 //!
 //! ```rust
 //! use serde::Deserialize;
@@ -87,7 +90,8 @@
 //! );
 //! ```
 //!
-//! You can force validation by only deserialization through `serde_valid`, and removing `serde_json` from `Cargo.toml` of your project.
+//! You can force validation by only deserialization through `serde_valid`, and removing
+//! `serde_json` from `Cargo.toml` of your project.
 //!
 //! ## Serialization
 //!
@@ -287,7 +291,8 @@
 //! ```
 //!
 //! ### Unnamed Struct
-//! Field errors are output to `items`. The key for `items` is guaranteed to be a string of positive numbers.
+//! Field errors are output to `items`. The key for `items` is guaranteed to be a string of positive
+//! numbers.
 //!
 //! ```rust
 //! use serde_json::json;
@@ -378,7 +383,8 @@
 //! ```
 //!
 //! ### Unnamed Enum
-//! Variant errors are output to `items`. The key for `items` is guaranteed to be a string of positive numbers.
+//! Variant errors are output to `items`. The key for `items` is guaranteed to be a string of
+//! positive numbers.
 //!
 //! ```rust
 //! use serde_json::json;
@@ -442,6 +448,8 @@ pub mod json;
 mod traits;
 pub mod validation;
 
+use std::collections::HashMap;
+
 use indexmap::IndexMap;
 
 pub use error::{
@@ -491,6 +499,29 @@ where
         } else {
             Err(self::validation::Errors::Array(
                 validation::ArrayErrors::new(vec![], items),
+            ))
+        }
+    }
+}
+
+impl<V> Validate for HashMap<&'static str, V>
+where
+    V: Validate,
+{
+    fn validate(&self) -> std::result::Result<(), self::validation::Errors> {
+        let mut items = IndexMap::new();
+
+        for (key, value) in self.iter() {
+            if let Err(errors) = value.validate() {
+                items.insert(*key, errors);
+            }
+        }
+
+        if items.is_empty() {
+            Ok(())
+        } else {
+            Err(self::validation::Errors::Object(
+                validation::ObjectErrors::new(vec![], items),
             ))
         }
     }
