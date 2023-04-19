@@ -504,24 +504,24 @@ where
     }
 }
 
-impl<V> Validate for HashMap<&'static str, V>
+impl<K, V> Validate for HashMap<K, V>
 where
     V: Validate,
 {
     fn validate(&self) -> std::result::Result<(), self::validation::Errors> {
         let mut items = IndexMap::new();
 
-        for (key, value) in self.iter() {
+        for (index, (_key, value)) in self.iter().enumerate() {
             if let Err(errors) = value.validate() {
-                items.insert(*key, errors);
+                items.insert(index, errors);
             }
         }
 
         if items.is_empty() {
             Ok(())
         } else {
-            Err(self::validation::Errors::Object(
-                validation::ObjectErrors::new(vec![], items),
+            Err(self::validation::Errors::Array(
+                validation::ArrayErrors::new(vec![], items),
             ))
         }
     }

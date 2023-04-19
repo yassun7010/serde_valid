@@ -38,6 +38,18 @@ struct TestStruct {
     hashmap_of_strings: HashMap<String, String>,
 }
 
+#[derive(Debug, Validate)]
+struct DeriveValidateHashmap {
+    #[validate]
+    hashmap_of_object: HashMap<String, Object>,
+}
+
+#[derive(Debug, Validate)]
+struct Object {
+    #[validate(maximum = 5)]
+    number: i32,
+}
+
 #[test]
 fn hashmap_validation() {
     // Create basic valid hashmaps.
@@ -99,4 +111,42 @@ fn hashmap_validation() {
         ]})
         .to_string()
     ));
+}
+
+#[test]
+fn hashmap_object_validation() {
+    let object = Object { number: 5 };
+    let hashmap_of_object = HashMap::from([("object".to_string(), object)]);
+    let test_struct = DeriveValidateHashmap {
+        hashmap_of_object: hashmap_of_object,
+    };
+    assert!(test_struct.validate().is_ok());
+
+    let object2 = Object { number: 6 };
+    let hashmap_of_object2 = HashMap::from([("object".to_string(), object2)]);
+    let test_struct2 = DeriveValidateHashmap {
+        hashmap_of_object: hashmap_of_object2,
+    };
+    assert_eq!(
+        test_struct2.validate().unwrap_err().to_string(),
+        json!({"errors":[],
+        "properties":{
+            "hashmap_of_object":{
+                "errors":[],
+                "items":{
+                    "0":{
+                        "errors":[],
+                        "properties":{
+                            "number":{
+                                "errors":
+                                ["The number must be `<= 5`."]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        })
+        .to_string()
+    );
 }
