@@ -14,7 +14,7 @@ struct TestStruct {
     // Checks hashmap not number
     #[validate(max_properties = 2)]
     #[validate(min_properties = 2)]
-    hashmap_of_hashmap: HashMap<String, HashMap<String, i32>>,
+    hashmap_of_hashmap: HashMap<&'static str, HashMap<String, i32>>,
 
     // Generic validator
     #[validate(enumerate(5, 10, 15))]
@@ -61,8 +61,8 @@ fn hashmap_validation() {
     let mut hashmap_of_numbers_2 =
         HashMap::from([("five".to_string(), 5), ("ten".to_string(), 10)]);
     let mut hashmap_of_hashmap = HashMap::from([
-        ("H_One".to_string(), hashmap_of_numbers.clone()),
-        ("H_two".to_string(), hashmap_of_numbers_2.clone()),
+        ("H_One", hashmap_of_numbers.clone()),
+        ("H_two", hashmap_of_numbers_2.clone()),
     ]);
 
     // Test valid set
@@ -77,7 +77,7 @@ fn hashmap_validation() {
     hashmap_of_numbers.insert("twenty".to_string(), 20);
     hashmap_of_strings.insert("three".to_string(), "ff".to_string());
     hashmap_of_numbers_2.insert("nineteen".to_string(), 19);
-    hashmap_of_hashmap.insert("H_three".to_string(), hashmap_of_numbers_2);
+    hashmap_of_hashmap.insert("H_three", hashmap_of_numbers_2);
     let test_struct2 = TestStruct {
         hashmap_of_hashmap,
         hashmap_of_numbers,
@@ -117,9 +117,7 @@ fn hashmap_validation() {
 fn hashmap_object_validation() {
     let object = Object { number: 5 };
     let hashmap_of_object = HashMap::from([("object".to_string(), object)]);
-    let test_struct = DeriveValidateHashmap {
-        hashmap_of_object: hashmap_of_object,
-    };
+    let test_struct = DeriveValidateHashmap { hashmap_of_object };
     assert!(test_struct.validate().is_ok());
 
     let object2 = Object { number: 6 };
