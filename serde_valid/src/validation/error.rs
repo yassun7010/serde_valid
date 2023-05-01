@@ -108,5 +108,5 @@ where
 pub type VecErrors<E = crate::validation::Error> = Vec<E>;
 pub type ItemErrorsMap<E> = IndexMap<usize, Errors<E>>;
 pub type ItemVecErrorsMap<E> = IndexMap<usize, VecErrors<E>>;
-pub type PropertyErrorsMap<E> = IndexMap<&'static str, Errors<E>>;
-pub type PropertyVecErrorsMap<E> = IndexMap<&'static str, VecErrors<E>>;
+pub type PropertyErrorsMap<E> = IndexMap<String, Errors<E>>;
+pub type PropertyVecErrorsMap<E> = IndexMap<String, VecErrors<E>>;

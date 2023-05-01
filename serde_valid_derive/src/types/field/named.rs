@@ -33,7 +33,7 @@ impl<'a> Field for NamedField<'a> {
 
     fn key(&self) -> proc_macro2::TokenStream {
         let name = &self.name;
-        quote!(#name)
+        quote!(#name.to_string())
     }
 
     fn errors_variable(&self) -> proc_macro2::TokenStream {

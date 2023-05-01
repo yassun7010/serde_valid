@@ -193,11 +193,10 @@ mod tests {
                         ObjectErrors {
                             errors: vec![Error::Maximum(maximum.clone())],
                             properties: indexmap! {
-                                "name" => Errors::NewType(vec![Error::Maximum(maximum.clone())]),
+                                "name".to_owned() => Errors::NewType(vec![Error::Maximum(maximum.clone())]),
                             }
                         }
                     ),
-
                 },
             })
             .into_flat(),

@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::types::{Field, NamedField};
 use proc_macro2::TokenStream;
-use quote::ToTokens;
+use quote::{quote, ToTokens};
 use syn::parse_quote;
 
 pub type RenameMap = HashMap<String, TokenStream>;
@@ -14,7 +14,10 @@ pub fn collect_serde_rename_map(fields: &syn::FieldsNamed) -> RenameMap {
         for attribute in named_field.attrs() {
             if attribute.path == parse_quote!(serde) {
                 if let Some(rename) = find_rename_from_serde_attributes(attribute) {
-                    renames.insert(field.ident.to_token_stream().to_string(), rename);
+                    renames.insert(
+                        field.ident.to_token_stream().to_string(),
+                        quote!(#rename.to_string()),
+                    );
                 }
             }
         }
