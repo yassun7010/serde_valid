@@ -507,21 +507,22 @@ where
 impl<K, V> Validate for HashMap<K, V>
 where
     V: Validate,
+    for<'a> &'a K: Into<String>,
 {
     fn validate(&self) -> std::result::Result<(), self::validation::Errors> {
         let mut items = IndexMap::new();
 
-        for (index, (_key, value)) in self.iter().enumerate() {
+        for (key, value) in self.iter() {
             if let Err(errors) = value.validate() {
-                items.insert(index, errors);
+                items.insert(key.into(), errors);
             }
         }
 
         if items.is_empty() {
             Ok(())
         } else {
-            Err(self::validation::Errors::Array(
-                validation::ArrayErrors::new(vec![], items),
+            Err(self::validation::Errors::Object(
+                validation::ObjectErrors::new(vec![], items),
             ))
         }
     }

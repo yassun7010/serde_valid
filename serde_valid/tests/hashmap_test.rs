@@ -133,8 +133,8 @@ fn hashmap_object_validation() {
         "properties":{
             "hashmap_of_object":{
                 "errors":[],
-                "items":{
-                    "0":{
+                "properties":{
+                    "object":{
                         "errors":[],
                         "properties":{
                             "number":{
