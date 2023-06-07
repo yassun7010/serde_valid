@@ -38,7 +38,9 @@ where
                 type_name = type_name::<T>(),
                 "schema validation passed but serde failed"
             );
-            Err(crate::rejection::Rejection::Serde(error))
+            Err(crate::rejection::Rejection::Serde(
+                crate::rejection::SerdeError::SerdeJson(error),
+            ))
         }
     }
 }

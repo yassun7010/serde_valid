@@ -23,6 +23,7 @@ serde_valid = { version = "0.16.1", path = "../serde_valid", features = [
     "flatten",
 ] }
 tracing = "^0.1"
+serde_urlencoded="0.7.1"
 
 [dev-dependencies]
 hyper = "0.14.23"
