@@ -16,13 +16,38 @@
 use std::ops::Deref;
 
 use async_trait::async_trait;
-use axum::http::Request;
-use axum::{extract::FromRequest, BoxError};
+use axum::extract::FromRequestParts;
+use axum::http::request::Parts;
+use serde::de::DeserializeOwned;
 
 /// Wrapper type over [`axum::extract::Query`] that validates
 /// requests with a more helpful validation
 /// message.
 pub struct Query<T>(pub T);
+
+#[async_trait]
+impl<T, S> FromRequestParts<S> for Query<T>
+where
+    T: DeserializeOwned + serde_valid::Validate,
+    S: Send + Sync,
+{
+    type Rejection = crate::rejection::Rejection;
+
+    async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
+        let query = parts.uri.query().unwrap_or_default();
+        match serde_urlencoded::from_str::<T>(query) {
+            Ok(v) => {
+                v.validate()
+                    .map_err(crate::rejection::Rejection::SerdeValid)?;
+
+                Ok(Query(v))
+            }
+            Err(error) => Err(crate::rejection::Rejection::Serde(
+                crate::rejection::SerdeError::SerdeUrlEncoded(error),
+            )),
+        }
+    }
+}
 
 impl<T> Deref for Query<T> {
     type Target = T;
@@ -35,24 +60,6 @@ impl<T> Deref for Query<T> {
 impl<T> From<T> for Query<T> {
     fn from(data: T) -> Self {
         Query(data)
-    }
-}
-
-#[async_trait]
-impl<S, B, T> FromRequest<S, B> for Query<T>
-where
-    B: http_body::Body + Send + 'static,
-    B::Data: Send,
-    B::Error: Into<BoxError>,
-    S: Send + Sync,
-    T: crate::validated::Deserialize + 'static,
-{
-    type Rejection = crate::rejection::Rejection;
-
-    async fn from_request(req: Request<B>, state: &S) -> Result<Self, Self::Rejection> {
-        crate::request::from_request::<_, _, T>(req, state)
-            .await
-            .map(Query)
     }
 }
 
