@@ -1,32 +1,18 @@
 use axum::{extract::rejection::JsonRejection, http::StatusCode, response::IntoResponse};
-use core::fmt::{self, Display};
 use serde::Serialize;
 use serde_valid::flatten::IntoFlat;
 
 use crate::json_pointer::JsonPointer;
-
-#[derive(Debug)]
-pub enum SerdeError {
-    SerdeJson(serde_json::Error),
-    SerdeUrlEncoded(serde_urlencoded::de::Error),
-}
-
-impl Display for SerdeError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Self::SerdeJson(err) => Display::fmt(err, f),
-            Self::SerdeUrlEncoded(err) => Display::fmt(err, f),
-        }
-    }
-}
 
 /// Rejection for [`Json`].
 #[derive(Debug)]
 pub enum Rejection {
     /// A rejection returned by [`axum::Json`].
     Json(JsonRejection),
-    /// A serde error.
-    Serde(SerdeError),
+    /// A serde json error.
+    SerdeJson(serde_json::Error),
+    /// A serde url encoded error.
+    SerdeUrlEncoded(serde_urlencoded::de::Error),
     /// A serde_valid validation error.
     SerdeValid(serde_valid::validation::Errors),
     #[cfg(feature = "jsonschema")]
@@ -83,8 +69,9 @@ pub struct Error {
 impl From<Rejection> for JsonErrorResponse {
     fn from(rejection: Rejection) -> Self {
         match rejection {
-            Rejection::Json(v) => Self::FormatError(v.to_string()),
-            Rejection::Serde(e) => Self::FormatError(e.to_string()),
+            Rejection::Json(error) => Self::FormatError(error.to_string()),
+            Rejection::SerdeJson(error) => Self::FormatError(error.to_string()),
+            Rejection::SerdeUrlEncoded(error) => Self::FormatError(error.to_string()),
             Rejection::SerdeValid(errors) => Self::ValidationError(JsonSchemaErrorResponse {
                 errors: errors
                     .into_flat()

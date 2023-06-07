@@ -42,9 +42,7 @@ where
 
                 Ok(Query(v))
             }
-            Err(error) => Err(crate::rejection::Rejection::Serde(
-                crate::rejection::SerdeError::SerdeUrlEncoded(error),
-            )),
+            Err(error) => Err(crate::rejection::Rejection::SerdeUrlEncoded(error)),
         }
     }
 }
