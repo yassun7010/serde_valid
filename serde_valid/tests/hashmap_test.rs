@@ -98,8 +98,8 @@ fn hashmap_validation() {
     assert!(errors.contains("The value must be multiple of `5`."));
     assert!(errors.contains(
         &json!({"errors":[
-        "The value must match the pattern of \"d.*\".",
-        "The length of the value must be `>= 5`."
+            r#"The value must match the pattern of "d.*"."#,
+            "The length of the value must be `>= 5`."
         ]})
         .to_string()
     ));
