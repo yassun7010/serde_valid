@@ -1,8 +1,8 @@
 use itertools::Itertools;
 use serde_valid_literal::Literal;
 
+use crate::validation::Number;
 use crate::validation::ToDefaultMessage;
-use crate::validation::{Number, Pattern};
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error<E>
@@ -179,9 +179,9 @@ struct_error_params!(
 
 struct_error_params!(
     #[derive(Debug, Clone)]
-    #[default_message = "The value must match the pattern of \"{}\"."]
+    #[default_message = "The value must match the pattern of \"{0}\"."]
     pub struct PatternError {
-        pub pattern: Pattern,
+        pub pattern: String,
     }
 );
 

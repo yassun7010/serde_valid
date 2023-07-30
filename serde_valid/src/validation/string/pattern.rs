@@ -55,7 +55,7 @@ where
         if self.is_match(pattern) {
             Ok(())
         } else {
-            Err(PatternError::new(pattern))
+            Err(PatternError::new(pattern.to_string()))
         }
     }
 }
