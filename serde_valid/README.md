@@ -34,6 +34,13 @@ let s = SampleEnum::Named {
 assert!(s.validate().is_ok());
 ```
 
+## Feature Flags
+
+- `toml` - provides serialization/deserialization in `toml` format.
+- `yaml` - provides serialization/deserialization in `yaml` format.
+- `i128` - support i128/u128 type.
+- `flatten` - change formatting to flattened error messages.
+
 ## Validations
 
 Serde Valid support standard validation based JSON Schema.
