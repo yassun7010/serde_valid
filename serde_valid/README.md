@@ -38,7 +38,7 @@ assert!(s.validate().is_ok());
 
 - `toml` - provide serialization/deserialization in `toml` format.
 - `yaml` - provide serialization/deserialization in `yaml` format.
-- `i128` - support `i128`/`u128` type.
+- `i128` - support `i128`/`u128` type (default).
 - `flatten` - change formatting to flattened error messages ( [jsonschema](https://docs.rs/jsonschema/latest/jsonschema/) crate style).
 
 ## Validations
