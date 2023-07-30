@@ -46,10 +46,8 @@
 //! Serde Valid support standard validation based JSON Schema.
 //!
 //! | Type | Serde Valid(validate derive) | Serde Valid(validate trait) | Json Schema |
-//! | :-----: | :----------------------------------- |
-//! :----------------------------------------------------- |
-//! :-----------------------------------------------------------------------------------------------------
-//! | | String  | `#[validate(max_length = 5)]`        | [`ValidateMaxLength`](ValidateMaxLength)               | [maxLength](https://json-schema.org/understanding-json-schema/reference/string.html#length)            |
+//! | :-----: | :----------------------------------- | :----------------------------------------------------- | :----------------------------------------------------------------------------------------------------- |
+//! | String  | `#[validate(max_length = 5)]`        | [`ValidateMaxLength`](ValidateMaxLength)               | [maxLength](https://json-schema.org/understanding-json-schema/reference/string.html#length)            |
 //! | String  | `#[validate(min_length = 5)]`        | [`ValidateMinLength`](ValidateMinLength)               | [minLength](https://json-schema.org/understanding-json-schema/reference/string.html#length)            |
 //! | String  | `#[validate(pattern = r"^\d{5}$")]`  | [`ValidatePattern`](ValidatePattern)                   | [pattern](https://json-schema.org/understanding-json-schema/reference/string.html#regular-expressions) |
 //! | Numeric | `#[validate(maximum = 5)]`           | [`ValidateMaximum`](ValidateMaximum)                   | [maximum](https://json-schema.org/understanding-json-schema/reference/numeric.html#range)              |
