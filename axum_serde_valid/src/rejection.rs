@@ -4,7 +4,7 @@ use serde_valid::flatten::IntoFlat;
 
 use crate::json_pointer::JsonPointer;
 
-/// Rejection for [`Json`].
+/// Rejection for [`axum::Json`].
 #[derive(Debug)]
 pub enum Rejection {
     /// A rejection returned by [`axum::Json`].
