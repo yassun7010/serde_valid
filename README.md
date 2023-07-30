@@ -34,6 +34,13 @@ let s = SampleEnum::Named {
 assert!(s.validate().is_ok());
 ```
 
+## Feature Flags
+
+- `toml` - provide serialization/deserialization in `toml` format.
+- `yaml` - provide serialization/deserialization in `yaml` format.
+- `i128` - support `i128`/`u128` type.
+- `flatten` - change formatting to flattened error messages ( [jsonschema](https://docs.rs/jsonschema/latest/jsonschema/) crate style).
+
 ## Validations
 
 Serde Valid support standard validation based JSON Schema.
@@ -257,7 +264,9 @@ assert!(s.validate().is_ok());
 ```
 
 ## Validation Errors Format
+
 ### Named Struct
+
 Field errors are output to `properties`.
 
 ```rust
@@ -287,6 +296,7 @@ assert_eq!(
 ```
 
 ### Unnamed Struct
+
 Field errors are output to `items`. The key for `items` is guaranteed to be a string of positive numbers.
 
 ```rust
@@ -319,6 +329,7 @@ assert_eq!(
 ```
 
 ### New Type
+
 Field errors are output to `errors`.
 
 ```rust
@@ -342,6 +353,7 @@ assert_eq!(
 ```
 
 ### Named Enum
+
 Variant errors are output to `properties`.
 
 ```rust
@@ -378,6 +390,7 @@ assert_eq!(
 ```
 
 ### Unnamed Enum
+
 Variant errors are output to `items`. The key for `items` is guaranteed to be a string of positive numbers.
 
 ```rust
@@ -412,6 +425,7 @@ assert_eq!(
 ```
 
 ### Newtype Enum
+
 Variant errors are output to `errors`.
 
 ```rust

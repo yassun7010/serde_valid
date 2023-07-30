@@ -23,7 +23,7 @@ schemars  = "0.8"
 
 ### Feature Flags
 
-- `jsonschema` - provides [jsonschema](https://github.com/Stranger6667/jsonschema-rs) validation.
+- `jsonschema` - provide [jsonschema](https://github.com/Stranger6667/jsonschema-rs) validation.
 - `aide` - support [aide](https://github.com/tamasfe/aide).
 
 ### Example

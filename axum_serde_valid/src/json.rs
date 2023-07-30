@@ -1,7 +1,7 @@
 #![cfg_attr(docsrs, feature(doc_auto_cfg))]
 //! A simple crate provides a drop-in replacement for [`axum::Json`]
-//! that uses [`jsonschema`] to validate requests schemas
-//! generated via [`schemars`].
+//! that uses [jsonschema](https://docs.rs/jsonschema/latest/jsonschema/) to validate requests schemas
+//! generated via [schemars](https://docs.rs/schemars/latest/schemars/).
 //!
 //! You might want to do this in order to provide a better
 //! experience for your clients and not leak serde's error messages.
