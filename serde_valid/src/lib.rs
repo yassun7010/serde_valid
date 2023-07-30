@@ -36,8 +36,8 @@
 //!
 //! ## Feature Flags
 //!
-//! - `toml` - provides serialization/deserialization in `toml` format.
-//! - `yaml` - provides serialization/deserialization in `yaml` format.
+//! - `toml` - provide serialization/deserialization in `toml` format.
+//! - `yaml` - provide serialization/deserialization in `yaml` format.
 //! - `i128` - support `i128`/`u128` type.
 //! - `flatten` - change formatting to flattened error messages.
 //!
