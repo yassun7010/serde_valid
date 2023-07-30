@@ -179,9 +179,9 @@ struct_error_params!(
 
 struct_error_params!(
     #[derive(Debug, Clone)]
-    #[default_message = "The value must match the pattern of \"{}\"."]
+    #[default_message = "The value must match the pattern of \"{0}\"."]
     pub struct PatternError {
-        pub pattern: Pattern,
+        pub pattern: String,
     }
 );
 
