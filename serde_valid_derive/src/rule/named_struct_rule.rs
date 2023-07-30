@@ -104,11 +104,14 @@ fn extract_rule_from_meta_list(
         .filter_map(|nested_meta| {
             let arg = match nested_meta {
                 syn::NestedMeta::Meta(syn::Meta::Path(path)) => {
-                    arg_idents.insert(syn::Ident::new(
-                        &path.to_token_stream().to_string(),
-                        path.span(),
-                    ));
-                    Some(quote!(#path))
+                    let ident = path.to_token_stream().to_string();
+                    if ident == "type" {
+                        arg_idents.insert(syn::Ident::new_raw("type", path.span()));
+                        Some(quote!(r#type))
+                    } else {
+                        arg_idents.insert(syn::Ident::new(&ident, path.span()));
+                        Some(quote!(#path))
+                    }
                 }
                 _ => None,
             };
