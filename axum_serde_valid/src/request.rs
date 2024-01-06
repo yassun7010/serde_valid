@@ -1,16 +1,13 @@
 use std::any::type_name;
 
-use axum::{extract::FromRequest, BoxError};
+use axum::extract::FromRequest;
 use serde_json::Value;
 
-pub async fn from_request<S, B, T>(
-    req: axum::http::Request<B>,
+pub async fn from_request<S, T>(
+    req: axum::extract::Request,
     state: &S,
 ) -> Result<T, crate::rejection::Rejection>
 where
-    B: http_body::Body + Send + 'static,
-    B::Data: Send,
-    B::Error: Into<BoxError>,
     S: Send + Sync,
     T: crate::validated::Deserialize + 'static,
 {
