@@ -14,6 +14,7 @@ pub fn extract_validator_from_nested_meta_path(
     rename_map: &RenameMap,
 ) -> Result<Validator, crate::Errors> {
     let mut errors = vec![];
+
     let validation_ident = SingleIdentPath::new(validation).ident();
     let validation_name = validation_ident.to_string();
 

@@ -50,7 +50,6 @@ pub fn extract_validator_from_meta_list(
             }
             syn::Meta::NameValue(name_value) => extract_validator_from_nested_meta_name_value(
                 field,
-                attribute,
                 name_value,
                 custom_message,
                 rename_map,

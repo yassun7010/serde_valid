@@ -16,21 +16,22 @@ use crate::validate::string::{
     extract_string_max_length_validator, extract_string_min_length_validator,
     extract_string_pattern_validator,
 };
-use crate::validate::Validator;
+use crate::validate::{MetaListValidation, MetaPathValidation, Validator};
 use std::str::FromStr;
 
 pub fn extract_validator_from_nested_meta_name_value(
     field: &impl Field,
-    _attribute: &syn::Attribute,
-    name_value: &syn::MetaNameValue,
+    validation: &syn::MetaNameValue,
     custom_message: CustomMessageToken,
     rename_map: &RenameMap,
 ) -> Result<Validator, crate::Errors> {
-    let validation_name = &name_value.path;
-    let validation_name_ident = SingleIdentPath::new(validation_name).ident();
-    let validation_value = get_lit(&name_value.value)?;
+    let mut errors = vec![];
 
-    match MetaNameValueValidation::from_str(&validation_name_ident.to_string()) {
+    let validation_ident = SingleIdentPath::new(&validation.path).ident();
+    let validation_name = validation_ident.to_string();
+    let validation_value = get_lit(&validation.value)?;
+
+    match MetaNameValueValidation::from_str(&validation_name) {
         Ok(MetaNameValueValidation::Minimum) => {
             extract_numeric_minimum_validator(field, validation_value, custom_message, rename_map)
         }
@@ -86,12 +87,27 @@ pub fn extract_validator_from_nested_meta_name_value(
         Ok(MetaNameValueValidation::Pattern) => {
             extract_string_pattern_validator(field, validation_value, custom_message, rename_map)
         }
-        Err(unknown) => Err(vec![crate::Error::validate_unknown_type(
-            validation_name,
-            &unknown,
-            &MetaNameValueValidation::iter()
-                .map(|x| x.name())
-                .collect::<Vec<_>>(),
-        )]),
+        Err(unknown) => {
+            let error = if MetaListValidation::from_str(&validation_name).is_ok() {
+                crate::Error::validate_meta_name_value_need_value(
+                    &validation.path,
+                    &validation_name,
+                )
+            } else if MetaPathValidation::from_str(&validation_name).is_ok() {
+                crate::Error::validate_meta_path_need_value(&validation.path, &validation_name)
+            } else {
+                crate::Error::validate_unknown_type(
+                    &validation.path,
+                    &unknown,
+                    &(MetaPathValidation::iter().map(|x| x.name()))
+                        .chain(MetaNameValueValidation::iter().map(|x| x.name()))
+                        .chain(MetaListValidation::iter().map(|x| x.name()))
+                        .collect::<Vec<_>>(),
+                )
+            };
+            errors.push(error);
+
+            Err(errors)
+        }
     }
 }
