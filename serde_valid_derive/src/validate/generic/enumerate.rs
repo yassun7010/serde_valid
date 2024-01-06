@@ -5,7 +5,7 @@ use crate::validate::Validator;
 use proc_macro2::TokenStream;
 use quote::quote;
 
-type Lits<'a> = syn::punctuated::Punctuated<&'a syn::Lit, syn::token::Comma>;
+type Lits<'a> = syn::punctuated::Punctuated<syn::Lit, syn::token::Comma>;
 
 pub fn extract_generic_enumerate_validator(
     field: &impl Field,
@@ -45,19 +45,27 @@ fn inner_extract_generic_enumerate_validator(
     ))
 }
 
-fn get_enumerate(
-    syn::MetaList { path, nested, .. }: &syn::MetaList,
-) -> Result<Lits, crate::Errors> {
+fn get_enumerate(meta_list: &syn::MetaList) -> Result<Lits, crate::Errors> {
     let mut errors = vec![];
     let mut enumerate = Lits::new();
+    let nested = meta_list
+        .parse_args_with(crate::types::CommaSeparatedNestedMetas::parse_terminated)
+        .map_err(|error| {
+            vec![crate::Error::validate_enumerate_parse_error(
+                &meta_list.path,
+                &error,
+            )]
+        })?;
 
     if nested.is_empty() {
-        errors.push(crate::Error::validate_enumerate_need_item(path));
+        errors.push(crate::Error::validate_enumerate_need_item(&meta_list.path));
     }
     for item in nested {
-        match item {
-            syn::NestedMeta::Lit(lit) => enumerate.push(lit),
-            syn::NestedMeta::Meta(meta) => errors.push(crate::Error::literal_only(meta)),
+        match &item {
+            crate::types::NestedMeta::Lit(lit) => enumerate.push(lit.clone()),
+            crate::types::NestedMeta::Meta(meta) => {
+                errors.push(crate::Error::literal_only_from_meta(meta))
+            }
         }
     }
 

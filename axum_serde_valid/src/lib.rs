@@ -6,6 +6,7 @@ pub mod rejection;
 mod request;
 mod validated;
 
+#[allow(unused_imports)]
 pub use features::*;
 pub use json::Json;
 pub use query::Query;

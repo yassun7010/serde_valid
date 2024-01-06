@@ -15,6 +15,13 @@ impl<'a> ToTokens for LitNumeric<'a> {
     }
 }
 
+pub fn get_lit(expr: &syn::Expr) -> Result<&syn::Lit, crate::Errors> {
+    match expr {
+        syn::Expr::Lit(expr_lit) => Ok(&expr_lit.lit),
+        _ => Err(vec![crate::Error::literal_only(expr)]),
+    }
+}
+
 pub fn get_numeric(lit: &syn::Lit) -> Result<LitNumeric, crate::Errors> {
     match lit {
         syn::Lit::Int(int) => Ok(LitNumeric::Int(int)),

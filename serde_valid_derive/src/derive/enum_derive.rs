@@ -81,7 +81,7 @@ fn expand_enum_variant_named_fields(
     let (rule_fields, rules) = match collect_rules_from_named_struct(&variant.attrs) {
         Ok(field_rules) => field_rules,
         Err(variant_errors) => {
-            errors.extend(variant_errors.into_iter());
+            errors.extend(variant_errors);
             (HashSet::new(), quote!())
         }
     };
@@ -105,7 +105,7 @@ fn expand_enum_variant_named_fields(
             }))
         }
         Err(fields_errors) => {
-            errors.extend(fields_errors.into_iter());
+            errors.extend(fields_errors);
             quote!()
         }
     };
@@ -146,7 +146,7 @@ fn expand_enum_variant_unnamed_fields_varidation(
     let (rule_fields, rules) = match collect_rules_from_unnamed_struct(&variant.attrs) {
         Ok(field_rules) => field_rules,
         Err(variant_errors) => {
-            errors.extend(variant_errors.into_iter());
+            errors.extend(variant_errors);
             (HashSet::new(), quote!())
         }
     };
@@ -170,7 +170,7 @@ fn expand_enum_variant_unnamed_fields_varidation(
             }))
         }
         Err(fields_errors) => {
-            errors.extend(fields_errors.into_iter());
+            errors.extend(fields_errors);
             quote!()
         }
     };

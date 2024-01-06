@@ -16,18 +16,15 @@ pub fn extract_meta_validator(
     attribute: &syn::Attribute,
     rename_map: &RenameMap,
 ) -> Result<Validator, crate::Errors> {
-    match attribute.parse_meta() {
-        Ok(syn::Meta::List(list)) => {
-            extract_validator_from_meta_list(field, attribute, &list, rename_map)
+    match &attribute.meta {
+        syn::Meta::List(list) => {
+            extract_validator_from_meta_list(field, attribute, list, rename_map)
         }
-        Ok(syn::Meta::Path(_)) => extract_validator_from_meta_path(field, rename_map),
-        Ok(syn::Meta::NameValue(name_value)) => {
+        syn::Meta::Path(_) => extract_validator_from_meta_path(field, rename_map),
+        syn::Meta::NameValue(name_value) => {
             Err(vec![crate::Error::validate_meta_name_value_not_support(
                 name_value,
             )])
         }
-        Err(error) => Err(vec![crate::Error::validate_attribute_parse_error(
-            attribute, &error,
-        )]),
     }
 }

@@ -9,10 +9,18 @@ use crate::validate::Validator;
 pub fn extract_validator_from_meta_list(
     field: &impl Field,
     attribute: &syn::Attribute,
-    syn::MetaList { nested, .. }: &syn::MetaList,
+    meta_list: &syn::MetaList,
     rename_map: &RenameMap,
 ) -> Result<Validator, crate::Errors> {
     let mut errors = vec![];
+    let nested = meta_list
+        .parse_args_with(crate::types::CommaSeparatedMetas::parse_terminated)
+        .map_err(|error| {
+            vec![crate::Error::validate_attribute_parse_error(
+                attribute, &error,
+            )]
+        })?;
+
     let custom_message = match nested.len() {
         0..=1 => CustomMessageToken::default(),
         2 => match extract_custom_message_tokens(&nested[1]) {
@@ -31,48 +39,33 @@ pub fn extract_validator_from_meta_list(
     };
 
     if !nested.is_empty() {
-        let meta_item = &nested[0];
-        match meta_item {
-            syn::NestedMeta::Meta(meta) => {
-                let validator = match meta {
-                    syn::Meta::Path(path) => extract_validator_from_nested_meta_path(
-                        field,
-                        path,
-                        custom_message,
-                        rename_map,
-                    ),
-                    syn::Meta::List(list) => extract_validator_from_nested_meta_list(
-                        field,
-                        list,
-                        custom_message,
-                        rename_map,
-                    ),
-                    syn::Meta::NameValue(name_value) => {
-                        extract_validator_from_nested_meta_name_value(
-                            field,
-                            attribute,
-                            name_value,
-                            custom_message,
-                            rename_map,
-                        )
-                    }
-                };
-                match validator {
-                    Ok(validator) => {
-                        if errors.is_empty() {
-                            Ok(validator)
-                        } else {
-                            Err(errors)
-                        }
-                    }
-                    Err(validator_errors) => {
-                        errors.extend(validator_errors);
-                        Err(errors)
-                    }
+        let meta = &nested[0];
+
+        let validator = match meta {
+            syn::Meta::Path(path) => {
+                extract_validator_from_nested_meta_path(field, path, custom_message, rename_map)
+            }
+            syn::Meta::List(list) => {
+                extract_validator_from_nested_meta_list(field, list, custom_message, rename_map)
+            }
+            syn::Meta::NameValue(name_value) => extract_validator_from_nested_meta_name_value(
+                field,
+                attribute,
+                name_value,
+                custom_message,
+                rename_map,
+            ),
+        };
+        match validator {
+            Ok(validator) => {
+                if errors.is_empty() {
+                    Ok(validator)
+                } else {
+                    Err(errors)
                 }
             }
-            syn::NestedMeta::Lit(lit) => {
-                errors.push(crate::Error::validate_meta_literal_not_support(lit));
+            Err(validator_errors) => {
+                errors.extend(validator_errors);
                 Err(errors)
             }
         }

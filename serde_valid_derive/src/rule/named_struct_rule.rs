@@ -2,10 +2,9 @@ use std::collections::HashSet;
 
 use proc_macro2::TokenStream;
 use quote::{quote, ToTokens};
-use syn::parse_quote;
 use syn::spanned::Spanned;
 
-use crate::types::CommaSeparatedTokenStreams;
+use crate::types::{CommaSeparatedMetas, CommaSeparatedTokenStreams};
 
 pub fn collect_rules_from_named_struct(
     attributes: &[syn::Attribute],
@@ -15,9 +14,9 @@ pub fn collect_rules_from_named_struct(
     let mut rule_fields = HashSet::new();
     let rules = attributes
         .iter()
-        .filter(|attribute| attribute.path == parse_quote!(rule))
-        .filter_map(|attribute| match attribute.parse_meta() {
-            Ok(syn::Meta::List(list)) => match collect_rule(&list) {
+        .filter(|attribute| attribute.path().is_ident("rule"))
+        .filter_map(|attribute| match &attribute.meta {
+            syn::Meta::List(list) => match collect_rule(list) {
                 Ok((field_ident, stream)) => {
                     rule_fields.extend(field_ident);
                     Some(stream)
@@ -27,14 +26,8 @@ pub fn collect_rules_from_named_struct(
                     None
                 }
             },
-            Ok(_) => {
-                errors.push(crate::Error::rule_need_function(&attribute.path));
-                None
-            }
-            Err(error) => {
-                errors.push(crate::Error::rule_validate_attribute_parse_error(
-                    attribute, &error,
-                ));
+            _ => {
+                errors.push(crate::Error::rule_need_function(attribute.meta.path()));
                 None
             }
         })
@@ -48,14 +41,16 @@ pub fn collect_rules_from_named_struct(
 }
 
 fn collect_rule(
-    syn::MetaList {
-        path, ref nested, ..
-    }: &syn::MetaList,
+    metalist: &syn::MetaList,
 ) -> Result<(HashSet<syn::Ident>, TokenStream), crate::Errors> {
     let mut errors = vec![];
 
+    let nested = metalist
+        .parse_args_with(CommaSeparatedMetas::parse_terminated)
+        .map_err(|error| vec![crate::Error::rule_args_parse_error(metalist, &error)])?;
+
     match nested.len() {
-        0 => Err(vec![crate::Error::rule_need_function(path)])?,
+        0 => Err(vec![crate::Error::rule_need_function(&metalist.path)])?,
         2.. => nested.iter().skip(1).for_each(|nested_meta| {
             errors.push(crate::Error::rule_allow_single_function(nested_meta))
         }),
@@ -63,14 +58,11 @@ fn collect_rule(
     }
 
     let rule = match &nested[0] {
-        syn::NestedMeta::Meta(meta) => match meta {
-            syn::Meta::List(list) => extract_rule_from_meta_list(list),
-            syn::Meta::NameValue(name_value) => {
-                Err(vec![crate::Error::meta_name_value_not_support(name_value)])
-            }
-            syn::Meta::Path(path) => Err(vec![crate::Error::meta_path_not_support(path)]),
-        },
-        syn::NestedMeta::Lit(lit) => Err(vec![crate::Error::literal_not_support(lit)]),
+        syn::Meta::List(list) => extract_rule_from_meta_list(list),
+        syn::Meta::NameValue(name_value) => {
+            Err(vec![crate::Error::meta_name_value_not_support(name_value)])
+        }
+        syn::Meta::Path(path) => Err(vec![crate::Error::meta_path_not_support(path)]),
     };
 
     match rule {
@@ -81,18 +73,19 @@ fn collect_rule(
                 Err(errors)
             }
         }
-        Err(rule_errors) => Err(errors.into_iter().chain(rule_errors.into_iter()).collect()),
+        Err(rule_errors) => Err(errors.into_iter().chain(rule_errors).collect()),
     }
 }
 
 fn extract_rule_from_meta_list(
-    syn::MetaList {
-        path: rule_fn_name,
-        ref nested,
-        ..
-    }: &syn::MetaList,
+    metalist: &syn::MetaList,
 ) -> Result<(HashSet<syn::Ident>, TokenStream), crate::Errors> {
     let mut errors = vec![];
+
+    let rule_fn_name = &metalist.path;
+    let nested = metalist
+        .parse_args_with(syn::punctuated::Punctuated::<syn::Path, syn::Token![,]>::parse_terminated)
+        .map_err(|error| vec![crate::Error::rule_args_parse_error(metalist, &error)])?;
 
     if nested.is_empty() {
         errors.push(crate::Error::rule_need_arguments(rule_fn_name));
@@ -101,24 +94,21 @@ fn extract_rule_from_meta_list(
     let mut arg_idents = HashSet::new();
     let rule_fn_args = nested
         .iter()
-        .filter_map(|nested_meta| {
-            let arg = match nested_meta {
-                syn::NestedMeta::Meta(syn::Meta::Path(path)) => {
-                    let ident = path.to_token_stream().to_string();
-                    if ident == "type" {
-                        arg_idents.insert(syn::Ident::new_raw("type", path.span()));
-                        Some(quote!(r#type))
-                    } else {
-                        arg_idents.insert(syn::Ident::new(&ident, path.span()));
-                        Some(quote!(#path))
-                    }
+        .filter_map(|path| {
+            let arg = {
+                let ident = path.to_token_stream().to_string();
+                if ident == "r#type" {
+                    arg_idents.insert(syn::Ident::new_raw("type", path.span()));
+                    Some(quote!(r#type))
+                } else {
+                    arg_idents.insert(syn::Ident::new(&ident, path.span()));
+                    Some(quote!(#path))
                 }
-                _ => None,
             };
             if arg.is_none() {
                 errors.push(crate::Error::rule_allow_path_arguments(
                     rule_fn_name,
-                    nested_meta,
+                    &nested,
                 ));
             }
             arg
