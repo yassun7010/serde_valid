@@ -68,6 +68,12 @@ macro_rules! enum_str {
 }
 
 enum_str! {
+    pub enum MetaPathValidation {
+        UniqueItems = "unique_items",
+    }
+}
+
+enum_str! {
     pub enum MetaListValidation {
         Enumerate = "enumerate",
         Custom = "custom",
@@ -92,21 +98,20 @@ enum_str! {
 }
 
 enum_str! {
-    pub enum MetaPathValidation {
-        UniqueItems = "unique_items",
+    pub enum MetaPathCustomMessage {
     }
 }
 
 #[cfg(not(feature = "fluent"))]
 enum_str! {
-    pub enum MetaListMessage {
+    pub enum MetaListCustomMessage {
         MessageFn = "message_fn",
     }
 }
 
 #[cfg(feature = "fluent")]
 enum_str! {
-    pub enum MetaListMessage {
+    pub enum MetaListCustomMessage {
         MessageFn = "message_fn",
         I18n = "i18n",
         Fluent = "fluent",
@@ -114,12 +119,7 @@ enum_str! {
 }
 
 enum_str! {
-    pub enum MetaNameValueMessage {
+    pub enum MetaNameValueCustomMessage {
         Message = "message",
-    }
-}
-
-enum_str! {
-    pub enum MetaPathMessage {
     }
 }

@@ -1,11 +1,13 @@
-use crate::validate::{MetaListValidation, MetaNameValueValidation, MetaPathValidation};
+use crate::validate::{
+    MetaListValidation, MetaNameValueCustomMessage, MetaNameValueValidation, MetaPathCustomMessage,
+    MetaPathValidation,
+};
 use proc_macro2::TokenStream;
 use quote::quote;
 use syn::spanned::Spanned;
 
 use crate::types::CommaSeparatedNestedMetas;
-#[cfg(feature = "fluent")]
-use crate::validate::MetaListMessage;
+use crate::validate::MetaListCustomMessage;
 
 pub fn object_errors_tokens() -> TokenStream {
     quote!(::serde_valid::validation::Errors::Object(
@@ -213,24 +215,54 @@ impl Error {
         )
     }
 
-    pub fn validate_meta_name_value_need_value(path: &syn::Path, validation_type: &str) -> Self {
-        Self::new(
-            path.span(),
-            format!("#[validate({validation_type} = ???)] needs validation value."),
-        )
-    }
-
-    pub fn validate_meta_path_need_value(path: &syn::Path, validation_type: &str) -> Self {
+    pub fn meta_path_validation_need_value(path: &syn::Path, validation_type: &str) -> Self {
         Self::new(
             path.span(),
             format!("#[validate({validation_type}(???))] needs validation path."),
         )
     }
 
-    pub fn validate_meta_list_need_value(path: &syn::Path, validation_type: &str) -> Self {
+    pub fn meta_path_custom_message_need_value(
+        path: &syn::Path,
+        custom_message_type: &str,
+    ) -> Self {
+        Self::new(
+            path.span(),
+            format!("#[validate(..., {custom_message_type}(???))] needs custom message path."),
+        )
+    }
+
+    pub fn meta_list_validation_need_value(path: &syn::Path, validation_type: &str) -> Self {
         Self::new(
             path.span(),
             format!("#[validate({validation_type}(???, ...))] needs validation list."),
+        )
+    }
+
+    pub fn meta_list_custom_message_need_value(
+        path: &syn::Path,
+        custom_message_type: &str,
+    ) -> Self {
+        Self::new(
+            path.span(),
+            format!("#[validate(..., {custom_message_type}(???, ...))] needs custom message list."),
+        )
+    }
+
+    pub fn meta_name_value_validation_need_value(path: &syn::Path, validation_type: &str) -> Self {
+        Self::new(
+            path.span(),
+            format!("#[validate({validation_type} = ???)] needs validation value."),
+        )
+    }
+
+    pub fn meta_name_value_custom_message_need_value(
+        path: &syn::Path,
+        validation_type: &str,
+    ) -> Self {
+        Self::new(
+            path.span(),
+            format!("#[validate(..., {validation_type} = ???)] needs custom message value."),
         )
     }
 
@@ -253,13 +285,33 @@ impl Error {
         )
     }
 
-    pub fn validate_unknown_type(path: &syn::Path, unknown: &str, candidates: &[&str]) -> Self {
+    pub fn unknown_validation_type(path: &syn::Path, unknown: &str) -> Self {
+        let candidates = &(MetaPathValidation::iter().map(|x| x.name()))
+            .chain(MetaListValidation::iter().map(|x| x.name()))
+            .chain(MetaNameValueValidation::iter().map(|x| x.name()))
+            .collect::<Vec<_>>();
+
         let filterd_candidates =
             did_you_mean(unknown, candidates).unwrap_or_else(|| candidates.to_vec());
 
         Self::new(
             path.span(),
             format!("Unknown: `{unknown}` validation type. Is it one of the following?\n{filterd_candidates:#?}"),
+        )
+    }
+
+    pub fn unknown_custom_message_type(path: &syn::Path, unknown: &str) -> Self {
+        let candidates = &(MetaPathCustomMessage::iter().map(|x| x.name()))
+            .chain(MetaListCustomMessage::iter().map(|x| x.name()))
+            .chain(MetaNameValueCustomMessage::iter().map(|x| x.name()))
+            .collect::<Vec<_>>();
+
+        let filterd_candidates =
+            did_you_mean(unknown, candidates).unwrap_or_else(|| candidates.to_vec());
+
+        Self::new(
+            path.span(),
+            format!("Unknown: `{unknown}` error message type. Is it one of the following?\n{filterd_candidates:#?}"),
         )
     }
 
@@ -294,7 +346,7 @@ impl Error {
     }
 
     #[cfg(feature = "fluent")]
-    pub fn fluent_need_item(message_type: &MetaListMessage, path: &syn::Path) -> Self {
+    pub fn fluent_need_item(message_type: &MetaListCustomMessage, path: &syn::Path) -> Self {
         Self::new(
             path.span(),
             format!("`{}` need items.", message_type.name()),
@@ -303,7 +355,7 @@ impl Error {
 
     #[cfg(feature = "fluent")]
     pub fn fluent_allow_key(
-        message_type: &MetaListMessage,
+        message_type: &MetaListCustomMessage,
         nested_meta: &crate::types::NestedMeta,
     ) -> Self {
         Self::new(
@@ -324,7 +376,7 @@ impl Error {
 
     #[cfg(feature = "fluent")]
     pub fn fluent_allow_args(
-        message_type: &MetaListMessage,
+        message_type: &MetaListCustomMessage,
         nested_meta: &crate::types::NestedMeta,
     ) -> Self {
         Self::new(

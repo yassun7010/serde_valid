@@ -1,5 +1,5 @@
 use crate::serde::rename::RenameMap;
-use crate::types::{Field, SingleIdentPath};
+use crate::types::Field;
 use crate::validate::array::{
     extract_array_max_items_validator, extract_array_min_items_validator,
 };
@@ -17,81 +17,67 @@ use crate::validate::string::{
     extract_string_pattern_validator,
 };
 use crate::validate::Validator;
-use std::str::FromStr;
 
 pub fn extract_validator_from_nested_meta_name_value(
     field: &impl Field,
-    _attribute: &syn::Attribute,
-    name_value: &syn::MetaNameValue,
+    validation_type: MetaNameValueValidation,
+    validation: &syn::MetaNameValue,
     custom_message: CustomMessageToken,
     rename_map: &RenameMap,
 ) -> Result<Validator, crate::Errors> {
-    let validation_name = &name_value.path;
-    let validation_name_ident = SingleIdentPath::new(validation_name).ident();
-    let validation_value = get_lit(&name_value.value)?;
+    let validation_value = get_lit(&validation.value)?;
 
-    match MetaNameValueValidation::from_str(&validation_name_ident.to_string()) {
-        Ok(MetaNameValueValidation::Minimum) => {
+    match validation_type {
+        MetaNameValueValidation::Minimum => {
             extract_numeric_minimum_validator(field, validation_value, custom_message, rename_map)
         }
-        Ok(MetaNameValueValidation::Maximum) => {
+        MetaNameValueValidation::Maximum => {
             extract_numeric_maximum_validator(field, validation_value, custom_message, rename_map)
         }
-        Ok(MetaNameValueValidation::ExclusiveMinimum) => {
-            extract_numeric_exclusive_minimum_validator(
-                field,
-                validation_value,
-                custom_message,
-                rename_map,
-            )
-        }
-        Ok(MetaNameValueValidation::ExclusiveMaximum) => {
-            extract_numeric_exclusive_maximum_validator(
-                field,
-                validation_value,
-                custom_message,
-                rename_map,
-            )
-        }
-        Ok(MetaNameValueValidation::MinLength) => {
+        MetaNameValueValidation::ExclusiveMinimum => extract_numeric_exclusive_minimum_validator(
+            field,
+            validation_value,
+            custom_message,
+            rename_map,
+        ),
+        MetaNameValueValidation::ExclusiveMaximum => extract_numeric_exclusive_maximum_validator(
+            field,
+            validation_value,
+            custom_message,
+            rename_map,
+        ),
+        MetaNameValueValidation::MinLength => {
             extract_string_min_length_validator(field, validation_value, custom_message, rename_map)
         }
-        Ok(MetaNameValueValidation::MaxLength) => {
+        MetaNameValueValidation::MaxLength => {
             extract_string_max_length_validator(field, validation_value, custom_message, rename_map)
         }
-        Ok(MetaNameValueValidation::MinItems) => {
+        MetaNameValueValidation::MinItems => {
             extract_array_min_items_validator(field, validation_value, custom_message, rename_map)
         }
-        Ok(MetaNameValueValidation::MaxItems) => {
+        MetaNameValueValidation::MaxItems => {
             extract_array_max_items_validator(field, validation_value, custom_message, rename_map)
         }
-        Ok(MetaNameValueValidation::MinProperties) => extract_object_min_properties_validator(
+        MetaNameValueValidation::MinProperties => extract_object_min_properties_validator(
             field,
             validation_value,
             custom_message,
             rename_map,
         ),
-        Ok(MetaNameValueValidation::MaxProperties) => extract_object_max_properties_validator(
+        MetaNameValueValidation::MaxProperties => extract_object_max_properties_validator(
             field,
             validation_value,
             custom_message,
             rename_map,
         ),
-        Ok(MetaNameValueValidation::MultipleOf) => extract_numeric_multiple_of_validator(
+        MetaNameValueValidation::MultipleOf => extract_numeric_multiple_of_validator(
             field,
             validation_value,
             custom_message,
             rename_map,
         ),
-        Ok(MetaNameValueValidation::Pattern) => {
+        MetaNameValueValidation::Pattern => {
             extract_string_pattern_validator(field, validation_value, custom_message, rename_map)
         }
-        Err(unknown) => Err(vec![crate::Error::validate_unknown_type(
-            validation_name,
-            &unknown,
-            &MetaNameValueValidation::iter()
-                .map(|x| x.name())
-                .collect::<Vec<_>>(),
-        )]),
     }
 }
