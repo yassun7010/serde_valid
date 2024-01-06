@@ -6,7 +6,6 @@ use proc_macro2::TokenStream;
 use quote::quote;
 use syn::spanned::Spanned;
 
-use crate::types::CommaSeparatedNestedMetas;
 use crate::validate::MetaListCustomMessage;
 
 pub fn object_errors_tokens() -> TokenStream {
@@ -174,16 +173,19 @@ impl Error {
         Self::new(path.span(), "#[rule(???)] needs rule_fn.")
     }
 
-    pub fn rule_allow_single_function(nested_meta: &syn::Meta) -> Self {
-        Self::new(nested_meta.span(), "#[rule] allow single function.")
+    pub fn rule_allow_single_function(meta: &syn::Meta) -> Self {
+        Self::new(meta.span(), "#[rule] allows single function.")
     }
 
     pub fn rule_need_arguments(path: &syn::Path) -> Self {
         Self::new(path.span(), "`rule` function needs arguments.")
     }
 
-    pub fn rule_args_parse_error(path: &syn::MetaList, error: &syn::Error) -> Self {
-        Self::new(path.span(), format!("#[rule(...)] parse error: {error}"))
+    pub fn rule_args_parse_error(metalist: &syn::MetaList, error: &syn::Error) -> Self {
+        Self::new(
+            metalist.span(),
+            format!("#[rule(???)] parse error: {error}"),
+        )
     }
 
     pub fn rule_allow_path_arguments(
@@ -193,7 +195,7 @@ impl Error {
         let rule_fn_name = quote!(#rule_fn_name_path).to_string();
         Self::new(
             meta.span(),
-            format!("#[rule({rule_fn_name}(???, ...))] allow field path only."),
+            format!("#[rule({rule_fn_name}(???, ...))] allows field path only."),
         )
     }
 
@@ -204,7 +206,7 @@ impl Error {
         let rule_fn_name = quote!(#rule_fn_name_path).to_string();
         Self::new(
             meta.span(),
-            format!("#[rule({rule_fn_name}(???, ...))] allow index integer only."),
+            format!("#[rule({rule_fn_name}(???, ...))] allows index integer only."),
         )
     }
 
@@ -296,7 +298,7 @@ impl Error {
 
         Self::new(
             path.span(),
-            format!("Unknown: `{unknown}` validation type. Is it one of the following?\n{filterd_candidates:#?}"),
+            format!("`{unknown}` is unknown validation type. Is it one of the following?\n{filterd_candidates:#?}"),
         )
     }
 
@@ -311,37 +313,57 @@ impl Error {
 
         Self::new(
             path.span(),
-            format!("Unknown: `{unknown}` error message type. Is it one of the following?\n{filterd_candidates:#?}"),
+            format!("`{unknown}` is unkown error message type. Is it one of the following?\n{filterd_candidates:#?}"),
         )
     }
 
-    pub fn validate_enumerate_parse_error(path: &syn::Path, error: &syn::Error) -> Self {
+    pub fn validate_enumerate_parse_error(metalist: &syn::MetaList, error: &syn::Error) -> Self {
         Self::new(
-            path.span(),
-            format!("#[validate(enumerate(...)] parse error: {error}"),
+            metalist.span(),
+            format!("#[validate(enumerate(???))] parse error: {error}"),
         )
     }
 
     pub fn validate_enumerate_need_item(path: &syn::Path) -> Self {
-        Self::new(path.span(), "`enumerate` need items.")
+        Self::new(path.span(), "#[validate(enumerate(???))] needs items.")
     }
 
-    pub fn validate_custom_need_item(path: &syn::Path) -> Self {
-        Self::new(path.span(), "`custom` need items.")
+    pub fn validate_custom_need_function(path: &syn::Path) -> Self {
+        Self::new(path.span(), "#[validate(custom(???))] needs function.")
     }
 
-    pub fn validate_custom_tail_error(nested: &CommaSeparatedNestedMetas) -> Self {
-        Self::new(nested.span(), "`custom` support only 1 item.")
+    pub fn validate_custom_tail_error(nested: &crate::types::NestedMeta) -> Self {
+        Self::new(
+            nested.span(),
+            "#[validate(custom(???)] supports only 1 item.",
+        )
     }
 
-    pub fn message_fn_need_item(path: &syn::Path) -> Self {
-        Self::new(path.span(), "`message_fn` need items.")
-    }
-
-    pub fn message_fn_parse_error(ident: &syn::Ident, error: &syn::Error) -> Self {
+    pub fn custom_message_parse_error(ident: &syn::Ident, error: &syn::Error) -> Self {
         Self::new(
             ident.span(),
             format!("#[validate(..., {ident})] parse error: {error}"),
+        )
+    }
+
+    pub fn message_fn_need_item(path: &syn::Path) -> Self {
+        Self::new(
+            path.span(),
+            "#[validate(..., message_fn(???))] needs function.",
+        )
+    }
+
+    pub fn message_fn_allow_name_path(nested_meta: &crate::types::NestedMeta) -> Self {
+        Self::new(
+            nested_meta.span(),
+            "#[validate(..., message_fn(???))] allows only function name path.",
+        )
+    }
+
+    pub fn message_fn_tail_error(nested_meta: &crate::types::NestedMeta) -> Self {
+        Self::new(
+            nested_meta.span(),
+            "#[validate(..., message_fn(???))] allows only 1 item.",
         )
     }
 
@@ -349,7 +371,7 @@ impl Error {
     pub fn fluent_need_item(message_type: &MetaListCustomMessage, path: &syn::Path) -> Self {
         Self::new(
             path.span(),
-            format!("`{}` need items.", message_type.name()),
+            format!("`{}` needs items.", message_type.name()),
         )
     }
 
@@ -361,16 +383,9 @@ impl Error {
         Self::new(
             nested_meta.span(),
             format!(
-                "#[validate(..., {}(???, ...))] allow only fluent key str",
+                "#[validate(..., {}(???, ...))] allows only fluent key str",
                 message_type.name()
             ),
-        )
-    }
-
-    pub fn message_fn_allow_name_path(nested_meta: &crate::types::NestedMeta) -> Self {
-        Self::new(
-            nested_meta.span(),
-            "#[validate(..., message_fn(???))] allow only function name path.",
         )
     }
 
@@ -382,14 +397,10 @@ impl Error {
         Self::new(
             nested_meta.span(),
             format!(
-                "#[validate(..., {}(..., ???))] allow only fluent args key value.",
+                "#[validate(..., {}(..., ???))] allows only fluent args key value.",
                 message_type.name()
             ),
         )
-    }
-
-    pub fn message_fn_tail_error(nested_meta: &crate::types::NestedMeta) -> Self {
-        Self::new(nested_meta.span(), "`message_fn` support only 1 item.")
     }
 
     pub fn literal_only(expr: &syn::Expr) -> Self {
@@ -409,15 +420,15 @@ impl Error {
     }
 
     pub fn literal_not_support(lit: &syn::Lit) -> Self {
-        Self::new(lit.span(), "Literal does not support.")
+        Self::new(lit.span(), "Literal not support.")
     }
 
     pub fn meta_name_value_not_support(name_value: &syn::MetaNameValue) -> Self {
-        Self::new(name_value.span(), "Name value does not support.")
+        Self::new(name_value.span(), "Name value not support.")
     }
 
     pub fn meta_path_not_support(path: &syn::Path) -> Self {
-        Self::new(path.span(), "Path does not support.")
+        Self::new(path.span(), "Path not support.")
     }
 
     pub fn too_many_list_items(nested_meta: &syn::Meta) -> Self {

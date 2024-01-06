@@ -51,9 +51,10 @@ fn collect_rule(
 
     match nested.len() {
         0 => Err(vec![crate::Error::rule_need_function(&metalist.path)])?,
-        2.. => nested.iter().skip(1).for_each(|nested_meta| {
-            errors.push(crate::Error::rule_allow_single_function(nested_meta))
-        }),
+        2.. => nested
+            .iter()
+            .skip(1)
+            .for_each(|error| errors.push(crate::Error::rule_allow_single_function(error))),
         _ => {}
     }
 

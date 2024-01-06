@@ -51,8 +51,7 @@ fn get_enumerate(meta_list: &syn::MetaList) -> Result<Lits, crate::Errors> {
         .parse_args_with(crate::types::CommaSeparatedNestedMetas::parse_terminated)
         .map_err(|error| {
             vec![crate::Error::validate_enumerate_parse_error(
-                &meta_list.path,
-                &error,
+                meta_list, &error,
             )]
         })?;
 
