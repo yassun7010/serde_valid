@@ -13,12 +13,11 @@
 //!
 //! - aide: support for [aide](https://docs.rs/aide/latest/aide/)
 
-use std::ops::Deref;
-
 use async_trait::async_trait;
-use axum::http::Request;
-use axum::{extract::FromRequest, response::IntoResponse, BoxError};
+use axum::extract::Request;
+use axum::{extract::FromRequest, response::IntoResponse};
 use serde::Serialize;
+use std::ops::Deref;
 
 /// Wrapper type over [`axum::Json`] that validates
 /// requests and responds with a more helpful validation
@@ -40,18 +39,15 @@ impl<T> From<T> for Json<T> {
 }
 
 #[async_trait]
-impl<T, S, B> FromRequest<S, B> for Json<T>
+impl<T, S> FromRequest<S> for Json<T>
 where
     T: crate::validated::Deserialize + 'static,
-    B: http_body::Body + Send + 'static,
-    B::Data: Send,
-    B::Error: Into<BoxError>,
     S: Send + Sync,
 {
     type Rejection = crate::rejection::Rejection;
 
-    async fn from_request(req: Request<B>, state: &S) -> Result<Self, Self::Rejection> {
-        crate::request::from_request::<_, _, T>(req, state)
+    async fn from_request(req: Request, state: &S) -> Result<Self, Self::Rejection> {
+        crate::request::from_request::<_, T>(req, state)
             .await
             .map(Json)
     }
@@ -145,7 +141,7 @@ mod test {
         assert_eq!(response.status(), StatusCode::UNPROCESSABLE_ENTITY);
         assert_eq!(
             serde_json::from_slice::<serde_json::Value>(
-                &hyper::body::to_bytes(response.into_body()).await?[..],
+                &axum::body::to_bytes(response.into_body(), 1_000_000).await?,
             )?,
             json!({"errors": [
                 {
@@ -185,7 +181,7 @@ mod test {
         assert_eq!(response.status(), StatusCode::UNPROCESSABLE_ENTITY);
         assert_eq!(
             serde_json::from_slice::<serde_json::Value>(
-                &hyper::body::to_bytes(response.into_body()).await?[..],
+                &axum::body::to_bytes(response.into_body(), 1_000_000).await?
             )?,
             json!({"errors": [
                 {
@@ -225,7 +221,7 @@ mod test {
         assert_eq!(response.status(), StatusCode::UNPROCESSABLE_ENTITY);
         assert_eq!(
             serde_json::from_slice::<serde_json::Value>(
-                &hyper::body::to_bytes(response.into_body()).await?[..],
+                &axum::body::to_bytes(response.into_body(), 1_000_000).await?,
             )?,
             json!({"errors": [
                 {
