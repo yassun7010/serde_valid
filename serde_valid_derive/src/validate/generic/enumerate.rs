@@ -2,7 +2,6 @@ use crate::serde::rename::RenameMap;
 use crate::types::Field;
 use crate::validate::common::CustomMessageToken;
 use crate::validate::Validator;
-use proc_macro2::TokenStream;
 use quote::quote;
 
 type Lits<'a> = syn::punctuated::Punctuated<syn::Lit, syn::token::Comma>;
@@ -21,7 +20,7 @@ fn inner_extract_generic_enumerate_validator(
     item_list: &syn::MetaList,
     custom_message: CustomMessageToken,
     rename_map: &RenameMap,
-) -> Result<TokenStream, crate::Errors> {
+) -> Result<Validator, crate::Errors> {
     let field_name = field.name();
     let field_ident = field.ident();
     let field_key = field.key();
