@@ -56,52 +56,52 @@ pub fn extract_validator_from_meta_list(
             MetaNameValueValidation::from_str(&validation_name),
             meta,
         ) {
-            (Ok(validation_type), _, _, syn::Meta::Path(path)) => {
+            (Ok(validation_type), _, _, syn::Meta::Path(validation)) => {
                 extract_validator_from_nested_meta_path(
                     field,
                     validation_type,
-                    path,
+                    validation,
                     custom_message,
                     rename_map,
                 )
             }
 
-            (_, Ok(validation_type), _, syn::Meta::List(list)) => {
+            (_, Ok(validation_type), _, syn::Meta::List(validation)) => {
                 extract_validator_from_nested_meta_list(
                     field,
                     validation_type,
-                    list,
+                    validation,
                     custom_message,
                     rename_map,
                 )
             }
 
-            (_, _, Ok(validation_type), syn::Meta::NameValue(name_value)) => {
+            (_, _, Ok(validation_type), syn::Meta::NameValue(validation)) => {
                 extract_validator_from_nested_meta_name_value(
                     field,
                     validation_type,
-                    name_value,
+                    validation,
                     custom_message,
                     rename_map,
                 )
             }
 
-            (Ok(_), _, _, _) => Err(vec![crate::Error::validate_meta_path_need_value(
+            (Ok(_), _, _, _) => Err(vec![crate::Error::meta_path_validation_need_value(
                 validation_path,
                 &validation_name,
             )]),
 
-            (_, Ok(_), _, _) => Err(vec![crate::Error::validate_meta_list_need_value(
+            (_, Ok(_), _, _) => Err(vec![crate::Error::meta_list_validation_need_value(
                 validation_path,
                 &validation_name,
             )]),
 
-            (_, _, Ok(_), _) => Err(vec![crate::Error::validate_meta_name_value_need_value(
+            (_, _, Ok(_), _) => Err(vec![crate::Error::meta_name_value_validation_need_value(
                 validation_path,
                 &validation_name,
             )]),
 
-            _ => Err(vec![crate::Error::validate_unknown_type(
+            _ => Err(vec![crate::Error::unknown_validation_type(
                 validation_path,
                 &validation_name,
                 &(MetaPathValidation::iter().map(|x| x.name()))

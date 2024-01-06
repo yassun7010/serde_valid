@@ -3,7 +3,7 @@ use proc_macro2::TokenStream;
 use quote::quote;
 use std::str::FromStr;
 
-use super::{get_str, MetaListMessage, MetaNameValueMessage, MetaPathMessage};
+use super::{get_str, MetaListCustomMessage, MetaNameValueCustomMessage, MetaPathCustomMessage};
 
 #[derive(Debug, Default)]
 pub struct CustomMessageToken {
@@ -51,37 +51,52 @@ impl CustomMessageToken {
 pub fn extract_custom_message_tokens(
     meta: &syn::Meta,
 ) -> Result<CustomMessageToken, crate::Errors> {
-    match meta {
-        syn::Meta::List(message_fn_list) => {
-            extract_custom_message_tokens_from_meta_list(message_fn_list)
+    let custom_message_path = match meta {
+        syn::Meta::Path(path) => path,
+        syn::Meta::List(list) => &list.path,
+        syn::Meta::NameValue(name_value) => &name_value.path,
+    };
+    let custom_message_name = SingleIdentPath::new(custom_message_path)
+        .ident()
+        .to_string();
+
+    match (
+        MetaPathCustomMessage::from_str(&custom_message_name),
+        MetaListCustomMessage::from_str(&custom_message_name),
+        MetaNameValueCustomMessage::from_str(&custom_message_name),
+        meta,
+    ) {
+        (Ok(_), _, _, syn::Meta::Path(_)) => {
+            unreachable!()
         }
-        syn::Meta::NameValue(name_value) => {
-            extract_custom_message_tokens_from_name_value(name_value)
+        (_, Ok(_), _, syn::Meta::List(custom_message)) => {
+            extract_custom_message_tokens_from_meta_list(custom_message)
         }
-        syn::Meta::Path(path) => {
-            let path_label = SingleIdentPath::new(path).ident().to_string();
-            if MetaNameValueMessage::from_str(&path_label).is_ok() {
-                Err(crate::Error::validate_meta_name_value_need_value(
-                    path,
-                    &path_label,
-                ))
-            } else if MetaListMessage::from_str(&path_label).is_ok() {
-                Err(crate::Error::validate_meta_list_need_value(
-                    path,
-                    &path_label,
-                ))
-            } else {
-                Err(crate::Error::validate_unknown_type(
-                    path,
-                    &path_label,
-                    &(MetaNameValueMessage::iter().map(|x| x.name()))
-                        .chain(MetaListMessage::iter().map(|x| x.name()))
-                        .chain(MetaPathMessage::iter().map(|x| x.name()))
-                        .collect::<Vec<_>>(),
-                ))
-            }
+        (_, _, Ok(_), syn::Meta::NameValue(custom_message)) => {
+            extract_custom_message_tokens_from_name_value(custom_message)
         }
-        .map_err(|error| vec![error]),
+        (Ok(_), _, _, _) => Err(vec![crate::Error::meta_path_custom_message_need_value(
+            custom_message_path,
+            &custom_message_name,
+        )]),
+        (_, Ok(_), _, _) => Err(vec![crate::Error::meta_list_custom_message_need_value(
+            custom_message_path,
+            &custom_message_name,
+        )]),
+        (_, _, Ok(_), _) => Err(vec![
+            crate::Error::meta_name_value_custom_message_need_value(
+                custom_message_path,
+                &custom_message_name,
+            ),
+        ]),
+        _ => Err(vec![crate::Error::unknown_custom_message_type(
+            custom_message_path,
+            &custom_message_name,
+            &(MetaPathCustomMessage::iter().map(|x| x.name()))
+                .chain(MetaListCustomMessage::iter().map(|x| x.name()))
+                .chain(MetaNameValueCustomMessage::iter().map(|x| x.name()))
+                .collect::<Vec<_>>(),
+        )]),
     }
 }
 
@@ -95,24 +110,26 @@ fn extract_custom_message_tokens_from_meta_list(
         .parse_args_with(CommaSeparatedNestedMetas::parse_terminated)
         .map_err(|error| vec![crate::Error::message_fn_parse_error(path_ident, &error)])?;
 
-    match MetaListMessage::from_str(&path_label) {
-        Ok(MetaListMessage::MessageFn) => get_message_fn_from_nested_meta(path, &message_fn_define)
-            .map(CustomMessageToken::new_message_fn),
+    match MetaListCustomMessage::from_str(&path_label) {
+        Ok(MetaListCustomMessage::MessageFn) => {
+            get_message_fn_from_nested_meta(path, &message_fn_define)
+                .map(CustomMessageToken::new_message_fn)
+        }
         #[cfg(feature = "fluent")]
-        Ok(ref message_type @ (MetaListMessage::I18n | MetaListMessage::Fluent)) => {
+        Ok(ref message_type @ (MetaListCustomMessage::I18n | MetaListCustomMessage::Fluent)) => {
             get_fluent_message_from_nested_meta(message_type, path, &message_fn_define)
                 .map(CustomMessageToken::new_fluent_message)
         }
         Err(unknown) => {
-            let error = if MetaNameValueMessage::from_str(&path_label).is_ok() {
-                crate::Error::validate_meta_list_need_value(path, &path_label)
-            } else if MetaPathMessage::from_str(&path_label).is_ok() {
-                crate::Error::validate_meta_path_need_value(path, &path_label)
+            let error = if MetaNameValueCustomMessage::from_str(&path_label).is_ok() {
+                crate::Error::meta_list_validation_need_value(path, &path_label)
+            } else if MetaPathCustomMessage::from_str(&path_label).is_ok() {
+                crate::Error::meta_path_validation_need_value(path, &path_label)
             } else {
-                crate::Error::validate_unknown_type(
+                crate::Error::unknown_validation_type(
                     path,
                     &unknown,
-                    &MetaListMessage::iter()
+                    &MetaListCustomMessage::iter()
                         .map(|x| x.name())
                         .collect::<Vec<_>>(),
                 )
@@ -129,25 +146,25 @@ fn extract_custom_message_tokens_from_name_value(
     let path_ident = SingleIdentPath::new(path).ident();
     let path_label = path_ident.to_string();
 
-    match MetaNameValueMessage::from_str(&path_label) {
-        Ok(MetaNameValueMessage::Message) => {
+    match MetaNameValueCustomMessage::from_str(&path_label) {
+        Ok(MetaNameValueCustomMessage::Message) => {
             get_message_from_expr(&name_value.value).map(CustomMessageToken::new_message_fn)
         }
-        Err(unknown) => if MetaListMessage::from_str(&path_label).is_ok() {
-            Err(crate::Error::validate_meta_list_need_value(
+        Err(unknown) => if MetaListCustomMessage::from_str(&path_label).is_ok() {
+            Err(crate::Error::meta_list_validation_need_value(
                 path,
                 &path_label,
             ))
-        } else if MetaPathMessage::from_str(&path_label).is_ok() {
-            Err(crate::Error::validate_meta_path_need_value(
+        } else if MetaPathCustomMessage::from_str(&path_label).is_ok() {
+            Err(crate::Error::meta_path_validation_need_value(
                 path,
                 &path_label,
             ))
         } else {
-            Err(crate::Error::validate_unknown_type(
+            Err(crate::Error::unknown_validation_type(
                 path,
                 &unknown,
-                &MetaNameValueMessage::iter()
+                &MetaNameValueCustomMessage::iter()
                     .map(|x| x.name())
                     .collect::<Vec<_>>(),
             ))
@@ -190,7 +207,7 @@ fn get_message_from_lit(lit: &syn::Lit) -> Result<TokenStream, crate::Errors> {
 
 #[cfg(feature = "fluent")]
 fn get_fluent_message_from_nested_meta(
-    message_type: &MetaListMessage,
+    message_type: &MetaListCustomMessage,
     path: &syn::Path,
     fn_define: &CommaSeparatedNestedMetas,
 ) -> Result<TokenStream, crate::Errors> {
