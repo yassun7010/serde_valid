@@ -104,10 +104,6 @@ pub fn extract_validator_from_meta_list(
             _ => Err(vec![crate::Error::unknown_validation_type(
                 validation_path,
                 &validation_name,
-                &(MetaPathValidation::iter().map(|x| x.name()))
-                    .chain(MetaListValidation::iter().map(|x| x.name()))
-                    .chain(MetaNameValueValidation::iter().map(|x| x.name()))
-                    .collect::<Vec<_>>(),
             )]),
         };
 

@@ -7,10 +7,10 @@ mod numeric;
 mod object;
 mod string;
 
-pub use common::{MetaListValidation, MetaNameValueValidation, MetaPathValidation};
+pub use common::{
+    MetaListCustomMessage, MetaListValidation, MetaNameValueCustomMessage, MetaNameValueValidation,
+    MetaPathCustomMessage, MetaPathValidation,
+};
 
 pub use field::{FieldValidators, Validator};
 pub use meta::extract_meta_validator;
-
-#[cfg(feature = "fluent")]
-pub use common::MetaListCustomMessage;

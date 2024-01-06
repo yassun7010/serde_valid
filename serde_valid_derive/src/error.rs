@@ -1,10 +1,12 @@
-use crate::validate::{MetaListValidation, MetaNameValueValidation, MetaPathValidation};
+use crate::validate::{
+    MetaListValidation, MetaNameValueCustomMessage, MetaNameValueValidation, MetaPathCustomMessage,
+    MetaPathValidation,
+};
 use proc_macro2::TokenStream;
 use quote::quote;
 use syn::spanned::Spanned;
 
 use crate::types::CommaSeparatedNestedMetas;
-#[cfg(feature = "fluent")]
 use crate::validate::MetaListCustomMessage;
 
 pub fn object_errors_tokens() -> TokenStream {
@@ -283,7 +285,12 @@ impl Error {
         )
     }
 
-    pub fn unknown_validation_type(path: &syn::Path, unknown: &str, candidates: &[&str]) -> Self {
+    pub fn unknown_validation_type(path: &syn::Path, unknown: &str) -> Self {
+        let candidates = &(MetaPathValidation::iter().map(|x| x.name()))
+            .chain(MetaListValidation::iter().map(|x| x.name()))
+            .chain(MetaNameValueValidation::iter().map(|x| x.name()))
+            .collect::<Vec<_>>();
+
         let filterd_candidates =
             did_you_mean(unknown, candidates).unwrap_or_else(|| candidates.to_vec());
 
@@ -293,11 +300,12 @@ impl Error {
         )
     }
 
-    pub fn unknown_custom_message_type(
-        path: &syn::Path,
-        unknown: &str,
-        candidates: &[&str],
-    ) -> Self {
+    pub fn unknown_custom_message_type(path: &syn::Path, unknown: &str) -> Self {
+        let candidates = &(MetaPathCustomMessage::iter().map(|x| x.name()))
+            .chain(MetaListCustomMessage::iter().map(|x| x.name()))
+            .chain(MetaNameValueCustomMessage::iter().map(|x| x.name()))
+            .collect::<Vec<_>>();
+
         let filterd_candidates =
             did_you_mean(unknown, candidates).unwrap_or_else(|| candidates.to_vec());
 
