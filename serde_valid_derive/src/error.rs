@@ -1,3 +1,4 @@
+use crate::validate::{MetaListValidation, MetaNameValueValidation, MetaPathValidation};
 use proc_macro2::TokenStream;
 use quote::quote;
 use syn::spanned::Spanned;
@@ -241,7 +242,15 @@ impl Error {
     }
 
     pub fn validate_type_required_error(attribute: &syn::Attribute) -> Self {
-        Self::new(attribute.span(), "#[validate(???)] needs validation type.")
+        let filterd_candidates: Vec<&str> = (MetaPathValidation::iter().map(|x| x.name()))
+            .chain(MetaNameValueValidation::iter().map(|x| x.name()))
+            .chain(MetaListValidation::iter().map(|x| x.name()))
+            .collect::<Vec<_>>();
+
+        Self::new(
+            attribute.meta.span(),
+            format!("#[validate(???)] needs validation type. Is it one of the following?\n{filterd_candidates:#?}"),
+        )
     }
 
     pub fn validate_unknown_type(path: &syn::Path, unknown: &str, candidates: &[&str]) -> Self {
@@ -250,7 +259,7 @@ impl Error {
 
         Self::new(
             path.span(),
-            format!("Unknown: `{unknown}`. Is it one of the following?\n{filterd_candidates:#?}"),
+            format!("Unknown: `{unknown}` validation type. Is it one of the following?\n{filterd_candidates:#?}"),
         )
     }
 
