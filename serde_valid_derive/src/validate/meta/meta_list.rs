@@ -32,7 +32,7 @@ pub fn extract_validator_from_meta_list(
             }
         },
         _ => {
-            for meta in nested.iter().skip(1) {
+            for meta in nested.iter().skip(2) {
                 errors.push(crate::Error::too_many_list_items(meta));
             }
             CustomMessageToken::default()
