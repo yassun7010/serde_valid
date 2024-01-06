@@ -3,7 +3,7 @@ use crate::types::{Field, SingleIdentPath};
 use crate::validate::array::{
     extract_array_max_items_validator, extract_array_min_items_validator,
 };
-use crate::validate::common::{CustomMessageToken, MetaNameValueValidation};
+use crate::validate::common::{get_lit, CustomMessageToken, MetaNameValueValidation};
 use crate::validate::numeric::{
     extract_numeric_exclusive_maximum_validator, extract_numeric_exclusive_minimum_validator,
     extract_numeric_maximum_validator, extract_numeric_minimum_validator,
@@ -22,15 +22,14 @@ use std::str::FromStr;
 pub fn extract_validator_from_nested_meta_name_value(
     field: &impl Field,
     _attribute: &syn::Attribute,
-    syn::MetaNameValue {
-        path: validation_name,
-        lit: validation_value,
-        ..
-    }: &syn::MetaNameValue,
+    name_value: &syn::MetaNameValue,
     custom_message: CustomMessageToken,
     rename_map: &RenameMap,
 ) -> Result<Validator, crate::Errors> {
+    let validation_name = &name_value.path;
     let validation_name_ident = SingleIdentPath::new(validation_name).ident();
+    let validation_value = get_lit(&name_value.value)?;
+
     match MetaNameValueValidation::from_str(&validation_name_ident.to_string()) {
         Ok(MetaNameValueValidation::Minimum) => {
             extract_numeric_minimum_validator(field, validation_value, custom_message, rename_map)

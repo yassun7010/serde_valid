@@ -53,7 +53,7 @@ where
                     unreachable!("conflict Array and Object in serde_valid::validation::Errors")
                 }
                 Errors::NewType(errors) => {
-                    a.errors.extend(errors.into_iter());
+                    a.errors.extend(errors);
                 }
             },
             Errors::NewType(a) => match other {

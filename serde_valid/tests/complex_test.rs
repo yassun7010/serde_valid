@@ -78,59 +78,59 @@ struct TestStruct<'a> {
 #[derive(Debug, Validate)]
 struct TestInnerStruct<'a> {
     // Generic validator
-    #[serde_valid(enumerate(5, 10, 15))]
+    #[validate(enumerate(5, 10, 15))]
     // Numeric validator
-    #[serde_valid(multiple_of = 5)]
-    #[serde_valid(minimum = 5)]
-    #[serde_valid(maximum = 5)]
-    #[serde_valid(exclusive_minimum = 4)]
-    #[serde_valid(exclusive_maximum = 6)]
+    #[validate(multiple_of = 5)]
+    #[validate(minimum = 5)]
+    #[validate(maximum = 5)]
+    #[validate(exclusive_minimum = 4)]
+    #[validate(exclusive_maximum = 6)]
     inner_int_value: i32,
 
     // Generic validator
-    #[serde_valid(enumerate(5.0, 10.0, 15.0))]
+    #[validate(enumerate(5.0, 10.0, 15.0))]
     // Numeric validator
-    #[serde_valid(multiple_of = 5.0)]
-    #[serde_valid(minimum = 5.0)]
-    #[serde_valid(maximum = 5.0)]
-    #[serde_valid(exclusive_minimum = 4.0)]
-    #[serde_valid(exclusive_maximum = 6.0)]
+    #[validate(multiple_of = 5.0)]
+    #[validate(minimum = 5.0)]
+    #[validate(maximum = 5.0)]
+    #[validate(exclusive_minimum = 4.0)]
+    #[validate(exclusive_maximum = 6.0)]
     inner_float_value: f32,
 
     // Generic validator
-    #[serde_valid(enumerate("12345", "67890"))]
+    #[validate(enumerate("12345", "67890"))]
     // String validator
-    #[serde_valid(min_length = 5)]
-    #[serde_valid(max_length = 5)]
-    #[serde_valid(pattern = r"^\d{5}$")]
+    #[validate(min_length = 5)]
+    #[validate(max_length = 5)]
+    #[validate(pattern = r"^\d{5}$")]
     inner_string_value: String,
 
     // Generic validator
-    #[serde_valid(enumerate("12345", "67890"))]
+    #[validate(enumerate("12345", "67890"))]
     // String validator
-    #[serde_valid(min_length = 5)]
-    #[serde_valid(max_length = 5)]
-    #[serde_valid(pattern = r"^\d{5}$")]
+    #[validate(min_length = 5)]
+    #[validate(max_length = 5)]
+    #[validate(pattern = r"^\d{5}$")]
     inner_str_value: &'a str,
 
     // Generic validator
-    #[serde_valid(enumerate(5, 10, 15))]
+    #[validate(enumerate(5, 10, 15))]
     // Numeric validator
-    #[serde_valid(multiple_of = 5)]
-    #[serde_valid(minimum = 5)]
-    #[serde_valid(maximum = 5)]
+    #[validate(multiple_of = 5)]
+    #[validate(minimum = 5)]
+    #[validate(maximum = 5)]
     inner_optional_value: Option<i32>,
 
     // Generic validator
-    #[serde_valid(enumerate(5, 10, 15))]
+    #[validate(enumerate(5, 10, 15))]
     // Array validator
-    #[serde_valid(unique_items)]
-    #[serde_valid(min_items = 3)]
-    #[serde_valid(max_items = 3)]
+    #[validate(unique_items)]
+    #[validate(min_items = 3)]
+    #[validate(max_items = 3)]
     // Numeric validator
-    #[serde_valid(multiple_of = 5)]
-    #[serde_valid(minimum = 5)]
-    #[serde_valid(maximum = 15)]
+    #[validate(multiple_of = 5)]
+    #[validate(minimum = 5)]
+    #[validate(maximum = 15)]
     inner_vec_value: Vec<i32>,
 }
 

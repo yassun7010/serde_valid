@@ -8,7 +8,6 @@ use quote::quote;
 use std::borrow::Cow;
 use std::collections::HashSet;
 use std::iter::FromIterator;
-use syn::parse_quote;
 
 pub fn expand_named_struct_derive(
     input: &syn::DeriveInput,
@@ -37,7 +36,7 @@ pub fn expand_named_struct_derive(
             }
         })),
         Err(validation_errors) => {
-            errors.extend(validation_errors.into_iter());
+            errors.extend(validation_errors);
             quote!()
         }
     };
@@ -105,9 +104,7 @@ fn collect_named_field_validators<'a>(
         .attrs()
         .iter()
         .filter_map(|attribute| {
-            if attribute.path == parse_quote!(validate)
-                || attribute.path == parse_quote!(serde_valid)
-            {
+            if attribute.path().is_ident("validate") {
                 match extract_meta_validator(&named_field, attribute, rename_map) {
                     Ok(validator) => Some(validator),
                     Err(validator_error) => {

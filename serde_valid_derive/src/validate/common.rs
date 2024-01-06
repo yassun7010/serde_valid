@@ -2,7 +2,7 @@ mod custom_message;
 mod lit;
 
 pub use custom_message::{extract_custom_message_tokens, CustomMessageToken};
-pub use lit::{get_numeric, get_str};
+pub use lit::{get_lit, get_numeric, get_str};
 
 macro_rules! count {
     () => (0usize);

@@ -151,6 +151,11 @@ impl Error {
         Self(syn::Error::new(span, message.into()))
     }
 
+    #[allow(dead_code)]
+    pub fn macro_debug<Message: Into<String>>(span: proc_macro2::Span, message: Message) -> Self {
+        Error::new(span, message)
+    }
+
     pub fn unit_struct_not_support(input: &syn::DeriveInput) -> Self {
         Self::new(
             input.span(),
@@ -166,7 +171,7 @@ impl Error {
         Self::new(path.span(), "#[rule(???)] needs rule_fn.")
     }
 
-    pub fn rule_allow_single_function(nested_meta: &syn::NestedMeta) -> Self {
+    pub fn rule_allow_single_function(nested_meta: &syn::Meta) -> Self {
         Self::new(nested_meta.span(), "#[rule] allow single function.")
     }
 
@@ -174,9 +179,13 @@ impl Error {
         Self::new(path.span(), "`rule` function needs arguments.")
     }
 
+    pub fn rule_args_parse_error(path: &syn::MetaList, error: &syn::Error) -> Self {
+        Self::new(path.span(), format!("#[rule(...)] parse error: {error}"))
+    }
+
     pub fn rule_allow_path_arguments(
         rule_fn_name_path: &syn::Path,
-        meta: &syn::NestedMeta,
+        meta: &syn::punctuated::Punctuated<syn::Path, syn::Token![,]>,
     ) -> Self {
         let rule_fn_name = quote!(#rule_fn_name_path).to_string();
         Self::new(
@@ -187,7 +196,7 @@ impl Error {
 
     pub fn rule_allow_index_arguments(
         rule_fn_name_path: &syn::Path,
-        meta: &syn::NestedMeta,
+        meta: &crate::types::NestedMeta,
     ) -> Self {
         let rule_fn_name = quote!(#rule_fn_name_path).to_string();
         Self::new(
@@ -196,18 +205,7 @@ impl Error {
         )
     }
 
-    pub fn rule_validate_attribute_parse_error(
-        attribute: &syn::Attribute,
-        error: &syn::Error,
-    ) -> Self {
-        Self::new(attribute.span(), format!("#[rule] parse error: {error}"))
-    }
-
-    pub fn validate_meta_literal_not_support(lit: &syn::Lit) -> Self {
-        Self::new(lit.span(), "#[validate(???)] does not support literal.")
-    }
-
-    pub fn validate_meta_name_value_not_support(name_value: syn::MetaNameValue) -> Self {
+    pub fn validate_meta_name_value_not_support(name_value: &syn::MetaNameValue) -> Self {
         Self::new(
             name_value.span(),
             "#[validate = ???] format does not support.",
@@ -256,6 +254,13 @@ impl Error {
         )
     }
 
+    pub fn validate_enumerate_parse_error(path: &syn::Path, error: &syn::Error) -> Self {
+        Self::new(
+            path.span(),
+            format!("#[validate(enumerate(...)] parse error: {error}"),
+        )
+    }
+
     pub fn validate_enumerate_need_item(path: &syn::Path) -> Self {
         Self::new(path.span(), "`enumerate` need items.")
     }
@@ -272,6 +277,13 @@ impl Error {
         Self::new(path.span(), "`message_fn` need items.")
     }
 
+    pub fn message_fn_parse_error(ident: &syn::Ident, error: &syn::Error) -> Self {
+        Self::new(
+            ident.span(),
+            format!("#[validate(..., {ident})] parse error: {error}"),
+        )
+    }
+
     #[cfg(feature = "fluent")]
     pub fn fluent_need_item(message_type: &MetaListMessage, path: &syn::Path) -> Self {
         Self::new(
@@ -281,7 +293,10 @@ impl Error {
     }
 
     #[cfg(feature = "fluent")]
-    pub fn fluent_allow_key(message_type: &MetaListMessage, nested_meta: &syn::NestedMeta) -> Self {
+    pub fn fluent_allow_key(
+        message_type: &MetaListMessage,
+        nested_meta: &crate::types::NestedMeta,
+    ) -> Self {
         Self::new(
             nested_meta.span(),
             format!(
@@ -291,7 +306,7 @@ impl Error {
         )
     }
 
-    pub fn message_fn_allow_name_path(nested_meta: &syn::NestedMeta) -> Self {
+    pub fn message_fn_allow_name_path(nested_meta: &crate::types::NestedMeta) -> Self {
         Self::new(
             nested_meta.span(),
             "#[validate(..., message_fn(???))] allow only function name path.",
@@ -301,7 +316,7 @@ impl Error {
     #[cfg(feature = "fluent")]
     pub fn fluent_allow_args(
         message_type: &MetaListMessage,
-        nested_meta: &syn::NestedMeta,
+        nested_meta: &crate::types::NestedMeta,
     ) -> Self {
         Self::new(
             nested_meta.span(),
@@ -312,11 +327,15 @@ impl Error {
         )
     }
 
-    pub fn message_fn_tail_error(nested_meta: &syn::NestedMeta) -> Self {
+    pub fn message_fn_tail_error(nested_meta: &crate::types::NestedMeta) -> Self {
         Self::new(nested_meta.span(), "`message_fn` support only 1 item.")
     }
 
-    pub fn literal_only(meta: &syn::Meta) -> Self {
+    pub fn literal_only(expr: &syn::Expr) -> Self {
+        Self::new(expr.span(), "Allow literal only.")
+    }
+
+    pub fn literal_only_from_meta(meta: &syn::Meta) -> Self {
         Self::new(meta.span(), "Allow literal only.")
     }
 
@@ -340,7 +359,7 @@ impl Error {
         Self::new(path.span(), "Path does not support.")
     }
 
-    pub fn too_many_list_items(nested_meta: &syn::NestedMeta) -> Self {
+    pub fn too_many_list_items(nested_meta: &syn::Meta) -> Self {
         Self::new(nested_meta.span(), "Too many list items.")
     }
 
