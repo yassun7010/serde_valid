@@ -104,7 +104,7 @@ fn extract_custom_message_tokens_from_meta_list(
     let path_ident = SingleIdentPath::new(path).ident();
     let message_fn_define = meta_list
         .parse_args_with(CommaSeparatedNestedMetas::parse_terminated)
-        .map_err(|error| vec![crate::Error::message_fn_parse_error(path_ident, &error)])?;
+        .map_err(|error| vec![crate::Error::custom_message_parse_error(path_ident, &error)])?;
 
     match custom_message_type {
         MetaListCustomMessage::MessageFn => {
