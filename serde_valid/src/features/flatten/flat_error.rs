@@ -20,7 +20,7 @@ impl FlatError {
             JSONPointer::from(
                 instance_location
                     .into_iter()
-                    .chain(self.instance_location.into_iter())
+                    .chain(self.instance_location)
                     .collect::<Vec<_>>()
                     .as_slice(),
             ),
