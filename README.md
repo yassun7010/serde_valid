@@ -178,6 +178,26 @@ let s = SampleStruct { val: 1 };
 assert!(s.validate().is_ok());
 ```
 
+You can also use closure.
+
+```rust
+use serde_valid::Validate;
+
+fn user_validation(_val: &i32, param1: bool) -> Result<(), serde_valid::validation::Error> {
+    Ok(())
+}
+
+#[derive(Validate)]
+struct SampleStruct {
+    #[validate(custom(|v| user_validation(v, true)))]
+    val: i32,
+}
+
+let s = SampleStruct { val: 1 };
+
+assert!(s.validate().is_ok());
+```
+
 ## Rules
 
 If you want to check multi fields validation, can use `#[rule]`.
@@ -228,6 +248,48 @@ fn sample_rule(_val1: &i32, _val2: &str) -> Result<(), serde_valid::validation::
 
 #[derive(Validate)]
 #[rule(sample_rule(0, 1))]
+struct SampleStruct(i32, String);
+
+let s = SampleStruct(0, "1".to_owned());
+
+assert!(s.validate().is_ok());
+```
+
+And you can also use closure.
+
+```rust
+use serde_json::json;
+use serde_valid::Validate;
+
+fn sample_rule(_val1: &i32, _val2: &str) -> Result<(), serde_valid::validation::Error> {
+    Ok(())
+}
+
+#[derive(Validate)]
+#[rule(|val1, val2| sample_rule(val2, val1))]
+struct SampleStruct {
+    val1: String,
+    val2: i32,
+}
+
+let s = SampleStruct {
+    val1: "val1".to_owned(),
+    val2: 1,
+};
+
+assert!(s.validate().is_ok());
+```
+
+```rust
+use serde_json::json;
+use serde_valid::Validate;
+
+fn sample_rule(_val1: &i32, _val2: &str) -> Result<(), serde_valid::validation::Error> {
+    Ok(())
+}
+
+#[derive(Validate)]
+#[rule(|_0, _1| sample_rule(_0, _1))]
 struct SampleStruct(i32, String);
 
 let s = SampleStruct(0, "1".to_owned());
