@@ -9,19 +9,17 @@ mod parenthesized {
 
 #[test]
 fn custom_validation_is_ok() {
-    fn user_validation(_val: &[i32]) -> Result<(), serde_valid::validation::Error> {
+    fn user_validation(_val: &i32) -> Result<(), serde_valid::validation::Error> {
         Ok(())
     }
 
     #[derive(Validate)]
     struct TestStruct {
         #[validate(custom(user_validation))]
-        val: Vec<i32>,
+        val: i32,
     }
 
-    let s = TestStruct {
-        val: vec![1, 2, 3, 4],
-    };
+    let s = TestStruct { val: 1 };
     assert!(s.validate().is_ok());
 }
 
