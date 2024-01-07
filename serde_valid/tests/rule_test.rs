@@ -9,6 +9,14 @@ fn sample_ok_rule2(_val1: &i32, _val2: &str) -> Result<(), serde_valid::validati
     Ok(())
 }
 
+fn sample_ok_rule3(
+    _val1: &i32,
+    _val2: &str,
+    _val3: bool,
+) -> Result<(), serde_valid::validation::Error> {
+    Ok(())
+}
+
 fn sample_err_rule(_val1: &i32, _val2: &str) -> Result<(), serde_valid::validation::Error> {
     Err(serde_valid::validation::Error::Custom(
         "Rule error.".to_owned(),
@@ -111,4 +119,52 @@ fn rule_enum_is_ok() {
     assert!(s3.validate().is_ok());
     let s4 = TestEnum::NoField;
     assert!(s4.validate().is_ok());
+}
+
+#[test]
+fn rule_closure_struct_named_fields_is_ok() {
+    #[derive(Validate)]
+    #[rule(|val| sample_ok_rule2(val, "abcd"))]
+    struct TestStruct {
+        val: i32,
+    }
+
+    let s = TestStruct { val: 5 };
+    assert!(s.validate().is_ok());
+}
+
+#[test]
+fn rule_clousure2_struct_named_fields_is_ok() {
+    #[derive(Validate)]
+    #[rule(|val1, val2| sample_ok_rule3(val1, val2, true))]
+    struct TestStruct {
+        val1: i32,
+        val2: String,
+    }
+
+    let s = TestStruct {
+        val1: 5,
+        val2: "val2".to_owned(),
+    };
+    assert!(s.validate().is_ok());
+}
+
+#[test]
+fn rule_closure_struct_unnamed_fields_is_ok() {
+    #[derive(Validate)]
+    #[rule(|_0| sample_ok_rule2(_0, "abcd"))]
+    struct TestStruct(i32);
+
+    let s = TestStruct(5);
+    assert!(s.validate().is_ok());
+}
+
+#[test]
+fn rule_clousure2_struct_unnamed_fields_is_ok() {
+    #[derive(Validate)]
+    #[rule(|_0, _1| sample_ok_rule3(_0, _1, true))]
+    struct TestStruct(i32, String);
+
+    let s = TestStruct(5, "val2".to_owned());
+    assert!(s.validate().is_ok());
 }

@@ -2,8 +2,9 @@ use std::collections::HashSet;
 
 use proc_macro2::TokenStream;
 use quote::quote;
+use syn::spanned::Spanned;
 
-use crate::types::CommaSeparatedTokenStreams;
+use crate::types::{CommaSeparatedNestedMetas, CommaSeparatedTokenStreams, NestedMeta};
 
 pub fn collect_rules_from_unnamed_struct(
     attributes: &[syn::Attribute],
@@ -26,7 +27,9 @@ pub fn collect_rules_from_unnamed_struct(
                 }
             },
             _ => {
-                errors.push(crate::Error::rule_need_function(attribute.meta.path()));
+                errors.push(crate::Error::rule_allow_function_call_or_closure(
+                    attribute.meta.path(),
+                ));
                 None
             }
         })
@@ -45,11 +48,13 @@ fn collect_rule(
     let mut errors = vec![];
 
     let nested = metalist
-        .parse_args_with(syn::punctuated::Punctuated::<syn::Meta, syn::Token![,]>::parse_terminated)
+        .parse_args_with(CommaSeparatedNestedMetas::parse_terminated)
         .map_err(|error| vec![crate::Error::rule_args_parse_error(metalist, &error)])?;
 
     match nested.len() {
-        0 => Err(vec![crate::Error::rule_need_function(&metalist.path)])?,
+        0 => Err(vec![crate::Error::rule_allow_function_call_or_closure(
+            metalist.path.span(),
+        )])?,
         2.. => nested.iter().skip(1).for_each(|nested_meta| {
             errors.push(crate::Error::rule_allow_single_function(nested_meta))
         }),
@@ -57,11 +62,12 @@ fn collect_rule(
     }
 
     let rule = match &nested[0] {
-        syn::Meta::List(list) => extract_rule_from_meta_list(list),
-        syn::Meta::NameValue(name_value) => {
-            Err(vec![crate::Error::meta_name_value_not_support(name_value)])
-        }
-        syn::Meta::Path(path) => Err(vec![crate::Error::meta_path_not_support(path)]),
+        crate::types::NestedMeta::Meta(syn::Meta::List(list)) => extract_rule_from_meta_list(list),
+
+        crate::types::NestedMeta::Closure(closure) => extract_rule_from_closure(closure),
+        _ => Err(vec![crate::Error::rule_allow_function_call_or_closure(
+            &nested[0],
+        )]),
     };
 
     match rule {
@@ -83,9 +89,7 @@ fn extract_rule_from_meta_list(
 
     let rule_fn_name = &metalist.path;
     let nested = metalist
-        .parse_args_with(
-            syn::punctuated::Punctuated::<crate::types::NestedMeta, syn::Token![,]>::parse_terminated,
-        )
+        .parse_args_with(CommaSeparatedNestedMetas::parse_terminated)
         .map_err(|error| vec![crate::Error::rule_args_parse_error(metalist, &error)])?;
     if nested.is_empty() {
         errors.push(crate::Error::rule_need_arguments(rule_fn_name));
@@ -94,25 +98,20 @@ fn extract_rule_from_meta_list(
     let mut arg_idents = HashSet::new();
     let rule_fn_args = nested
         .iter()
-        .filter_map(|nested_meta| {
-            let arg = match nested_meta {
-                crate::types::NestedMeta::Lit(lit) => match lit {
-                    syn::Lit::Int(int) => {
-                        let index = syn::Ident::new(&format!("__{}", int), int.span());
-                        arg_idents.insert(index.clone());
-                        Some(quote!(#index))
-                    }
-                    _ => None,
-                },
-                crate::types::NestedMeta::Meta(_) => None,
-            };
-            if arg.is_none() {
-                errors.push(crate::Error::rule_allow_index_arguments(
+        .filter_map(|nested_meta| match nested_meta {
+            NestedMeta::Lit(syn::Lit::Int(int)) => {
+                let index = syn::Ident::new(&format!("__{}", int), int.span());
+                arg_idents.insert(index.clone());
+                Some(quote!(#index))
+            }
+            _ => {
+                errors.push(crate::Error::rule_args_allow_field_index(
                     rule_fn_name,
                     nested_meta,
                 ));
+
+                None
             }
-            arg
         })
         .collect::<CommaSeparatedTokenStreams>();
 
@@ -126,6 +125,44 @@ fn extract_rule_from_meta_list(
             if let Err(__error) = #rule_fn_name(#rule_fn_args) {
                 __rule_vec_errors
                     .push(__error);
+            };
+        ),
+    ))
+}
+
+fn extract_rule_from_closure(
+    closure: &syn::ExprClosure,
+) -> Result<(HashSet<syn::Ident>, TokenStream), crate::Errors> {
+    let mut errors = vec![];
+
+    let mut arg_idents = HashSet::new();
+    let rule_fn_args = closure
+        .inputs
+        .iter()
+        .filter_map(|input| match input {
+            syn::Pat::Ident(syn::PatIdent { ident, .. }) => {
+                let index = syn::Ident::new(&format!("_{}", ident), ident.span());
+                arg_idents.insert(index.clone());
+
+                Some(quote!(#index))
+            }
+            _ => {
+                errors.push(crate::Error::rule_unnamed_clousure_input(input));
+
+                None
+            }
+        })
+        .collect::<CommaSeparatedTokenStreams>();
+
+    if !errors.is_empty() {
+        return Err(errors);
+    }
+
+    Ok((
+        arg_idents,
+        quote!(
+            if let Err(__error) = (#closure)(#rule_fn_args) {
+                __rule_vec_errors.push(__error);
             };
         ),
     ))

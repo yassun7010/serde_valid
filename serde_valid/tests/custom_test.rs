@@ -40,6 +40,48 @@ fn custom_parenthesized_path_validation_is_ok() {
 }
 
 #[test]
+fn custom_clouser_validation_is_ok() {
+    fn user_validation(_val: &[i32], _maximum: i32) -> Result<(), serde_valid::validation::Error> {
+        Ok(())
+    }
+
+    #[derive(Validate)]
+    struct TestStruct {
+        #[validate(custom(|x| user_validation(x, 10)))]
+        val: Vec<i32>,
+    }
+
+    let s = TestStruct {
+        val: vec![1, 2, 3, 4],
+    };
+    assert!(s.validate().is_ok());
+}
+
+#[test]
+fn custom_clouser_validation_is_err() {
+    fn user_validation(val: &[i32], maximum: i32) -> Result<(), serde_valid::validation::Error> {
+        if val.iter().all(|v| v <= &maximum) {
+            Ok(())
+        } else {
+            Err(serde_valid::validation::Error::Custom(
+                "this is custom message.".to_string(),
+            ))
+        }
+    }
+
+    #[derive(Validate)]
+    struct TestStruct {
+        #[validate(custom(|x| user_validation(x, 10)))]
+        val: Vec<i32>,
+    }
+
+    let s = TestStruct {
+        val: vec![1, 2, 3, 11],
+    };
+    assert!(s.validate().is_err());
+}
+
+#[test]
 fn custom_validation_error() {
     fn user_validation(_val: &[i32]) -> Result<(), serde_valid::validation::Error> {
         Err(serde_valid::validation::Error::Custom(

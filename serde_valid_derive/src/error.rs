@@ -3,7 +3,7 @@ use crate::validate::{
     MetaPathValidation,
 };
 use proc_macro2::TokenStream;
-use quote::quote;
+use quote::{quote, ToTokens};
 use syn::spanned::Spanned;
 
 use crate::validate::MetaListCustomMessage;
@@ -169,12 +169,12 @@ impl Error {
         Self::new(input.span(), "#[derive(Validate)] does not support Union.")
     }
 
-    pub fn rule_need_function(path: &syn::Path) -> Self {
-        Self::new(path.span(), "#[rule(???)] needs rule_fn.")
+    pub fn rule_allow_function_call_or_closure(span: impl Spanned) -> Self {
+        Self::new(span.span(), "#[rule(???)] allows function call or closure.")
     }
 
-    pub fn rule_allow_single_function(meta: &syn::Meta) -> Self {
-        Self::new(meta.span(), "#[rule] allows single function.")
+    pub fn rule_allow_single_function(meta: &crate::types::NestedMeta) -> Self {
+        Self::new(meta.span(), "#[rule(???)] allows single function.")
     }
 
     pub fn rule_need_arguments(path: &syn::Path) -> Self {
@@ -188,25 +188,36 @@ impl Error {
         )
     }
 
-    pub fn rule_allow_path_arguments(
-        rule_fn_name_path: &syn::Path,
-        meta: &syn::punctuated::Punctuated<syn::Path, syn::Token![,]>,
-    ) -> Self {
-        let rule_fn_name = quote!(#rule_fn_name_path).to_string();
-        Self::new(
-            meta.span(),
-            format!("#[rule({rule_fn_name}(???, ...))] allows field path only."),
-        )
-    }
-
-    pub fn rule_allow_index_arguments(
+    pub fn rule_args_allow_field_name(
         rule_fn_name_path: &syn::Path,
         meta: &crate::types::NestedMeta,
     ) -> Self {
         let rule_fn_name = quote!(#rule_fn_name_path).to_string();
         Self::new(
             meta.span(),
-            format!("#[rule({rule_fn_name}(???, ...))] allows index integer only."),
+            format!("#[rule({rule_fn_name}(???, ...))] allows field name only."),
+        )
+    }
+
+    pub fn rule_args_allow_field_index(
+        rule_fn_name_path: &syn::Path,
+        meta: &crate::types::NestedMeta,
+    ) -> Self {
+        let rule_fn_name = quote!(#rule_fn_name_path).to_string();
+        Self::new(
+            meta.span(),
+            format!("#[rule({rule_fn_name}(???, ...))] allows field index only."),
+        )
+    }
+
+    pub fn rule_named_clousure_input(meta: &syn::Pat) -> Self {
+        Self::new(meta.span(), "Inputs of closure allows filed name only.")
+    }
+
+    pub fn rule_unnamed_clousure_input(meta: &syn::Pat) -> Self {
+        Self::new(
+            meta.span(),
+            "Inputs of closure allows field index (like _0, _1, etc...) only.",
         )
     }
 
@@ -328,8 +339,8 @@ impl Error {
         Self::new(path.span(), "#[validate(enumerate(???))] needs items.")
     }
 
-    pub fn validate_custom_need_function(path: &syn::Path) -> Self {
-        Self::new(path.span(), "#[validate(custom(???))] needs function.")
+    pub fn validate_custom_need_function(span: impl Spanned) -> Self {
+        Self::new(span.span(), "#[validate(custom(???))] needs function.")
     }
 
     pub fn validate_custom_tail_error(nested: &crate::types::NestedMeta) -> Self {
@@ -403,12 +414,8 @@ impl Error {
         )
     }
 
-    pub fn literal_only(expr: &syn::Expr) -> Self {
-        Self::new(expr.span(), "Allow literal only.")
-    }
-
-    pub fn literal_only_from_meta(meta: &syn::Meta) -> Self {
-        Self::new(meta.span(), "Allow literal only.")
+    pub fn literal_only(span: impl Spanned) -> Self {
+        Self::new(span.span(), "Allow literal only.")
     }
 
     pub fn numeric_literal_only(lit: &syn::Lit) -> Self {
@@ -423,12 +430,11 @@ impl Error {
         Self::new(lit.span(), "Literal not support.")
     }
 
-    pub fn meta_name_value_not_support(name_value: &syn::MetaNameValue) -> Self {
-        Self::new(name_value.span(), "Name value not support.")
-    }
-
-    pub fn meta_path_not_support(path: &syn::Path) -> Self {
-        Self::new(path.span(), "Path not support.")
+    pub fn closure_not_support(closure: &syn::ExprClosure) -> Self {
+        Self::new(
+            closure.or1_token.span(),
+            format!("Closure not support. {}", closure.to_token_stream()),
+        )
     }
 
     pub fn too_many_list_items(nested_meta: &syn::Meta) -> Self {
