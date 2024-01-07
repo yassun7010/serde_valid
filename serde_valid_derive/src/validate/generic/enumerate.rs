@@ -61,8 +61,9 @@ fn get_enumerate(meta_list: &syn::MetaList) -> Result<Lits, crate::Errors> {
     for item in nested {
         match &item {
             crate::types::NestedMeta::Lit(lit) => enumerate.push(lit.clone()),
-            crate::types::NestedMeta::Meta(meta) => {
-                errors.push(crate::Error::literal_only_from_meta(meta))
+            crate::types::NestedMeta::Meta(meta) => errors.push(crate::Error::literal_only(meta)),
+            crate::types::NestedMeta::Closure(closure) => {
+                errors.push(crate::Error::closure_not_support(closure))
             }
         }
     }

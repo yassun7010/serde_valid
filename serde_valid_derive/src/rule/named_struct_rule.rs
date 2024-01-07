@@ -4,7 +4,7 @@ use proc_macro2::TokenStream;
 use quote::{quote, ToTokens};
 use syn::spanned::Spanned;
 
-use crate::types::{CommaSeparatedMetas, CommaSeparatedTokenStreams};
+use crate::types::{CommaSeparatedNestedMetas, CommaSeparatedTokenStreams};
 
 pub fn collect_rules_from_named_struct(
     attributes: &[syn::Attribute],
@@ -27,7 +27,7 @@ pub fn collect_rules_from_named_struct(
                 }
             },
             _ => {
-                errors.push(crate::Error::rule_need_function(attribute.meta.path()));
+                errors.push(crate::Error::rule_need_function_call(attribute.meta.path()));
                 None
             }
         })
@@ -46,11 +46,11 @@ fn collect_rule(
     let mut errors = vec![];
 
     let nested = metalist
-        .parse_args_with(CommaSeparatedMetas::parse_terminated)
+        .parse_args_with(CommaSeparatedNestedMetas::parse_terminated)
         .map_err(|error| vec![crate::Error::rule_args_parse_error(metalist, &error)])?;
 
     match nested.len() {
-        0 => Err(vec![crate::Error::rule_need_function(&metalist.path)])?,
+        0 => Err(vec![crate::Error::rule_need_function_call(metalist)])?,
         2.. => nested
             .iter()
             .skip(1)
@@ -59,11 +59,17 @@ fn collect_rule(
     }
 
     let rule = match &nested[0] {
-        syn::Meta::List(list) => extract_rule_from_meta_list(list),
-        syn::Meta::NameValue(name_value) => {
-            Err(vec![crate::Error::meta_name_value_not_support(name_value)])
+        crate::types::NestedMeta::Lit(lit) => Err(vec![crate::Error::rule_need_function_call(lit)]),
+        crate::types::NestedMeta::Meta(meta) => match meta {
+            syn::Meta::List(list) => extract_rule_from_meta_list(list),
+            syn::Meta::NameValue(name_value) => {
+                Err(vec![crate::Error::rule_need_function_call(name_value)])
+            }
+            syn::Meta::Path(path) => Err(vec![crate::Error::rule_need_function_call(path)]),
+        },
+        crate::types::NestedMeta::Closure(closure) => {
+            Err(vec![crate::Error::rule_need_function_call(closure)])
         }
-        syn::Meta::Path(path) => Err(vec![crate::Error::meta_path_not_support(path)]),
     };
 
     match rule {

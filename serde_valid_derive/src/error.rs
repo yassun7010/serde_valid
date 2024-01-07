@@ -3,7 +3,7 @@ use crate::validate::{
     MetaPathValidation,
 };
 use proc_macro2::TokenStream;
-use quote::quote;
+use quote::{quote, ToTokens};
 use syn::spanned::Spanned;
 
 use crate::validate::MetaListCustomMessage;
@@ -169,11 +169,11 @@ impl Error {
         Self::new(input.span(), "#[derive(Validate)] does not support Union.")
     }
 
-    pub fn rule_need_function(path: &syn::Path) -> Self {
-        Self::new(path.span(), "#[rule(???)] needs rule_fn.")
+    pub fn rule_need_function_call(span: impl Spanned) -> Self {
+        Self::new(span.span(), "#[rule(???(???, ...))] needs function call.")
     }
 
-    pub fn rule_allow_single_function(meta: &syn::Meta) -> Self {
+    pub fn rule_allow_single_function(meta: &crate::types::NestedMeta) -> Self {
         Self::new(meta.span(), "#[rule] allows single function.")
     }
 
@@ -328,8 +328,8 @@ impl Error {
         Self::new(path.span(), "#[validate(enumerate(???))] needs items.")
     }
 
-    pub fn validate_custom_need_function(path: &syn::Path) -> Self {
-        Self::new(path.span(), "#[validate(custom(???))] needs function.")
+    pub fn validate_custom_need_function(span: impl Spanned) -> Self {
+        Self::new(span.span(), "#[validate(custom(???))] needs function.")
     }
 
     pub fn validate_custom_tail_error(nested: &crate::types::NestedMeta) -> Self {
@@ -403,12 +403,8 @@ impl Error {
         )
     }
 
-    pub fn literal_only(expr: &syn::Expr) -> Self {
-        Self::new(expr.span(), "Allow literal only.")
-    }
-
-    pub fn literal_only_from_meta(meta: &syn::Meta) -> Self {
-        Self::new(meta.span(), "Allow literal only.")
+    pub fn literal_only(span: impl Spanned) -> Self {
+        Self::new(span.span(), "Allow literal only.")
     }
 
     pub fn numeric_literal_only(lit: &syn::Lit) -> Self {
@@ -423,12 +419,11 @@ impl Error {
         Self::new(lit.span(), "Literal not support.")
     }
 
-    pub fn meta_name_value_not_support(name_value: &syn::MetaNameValue) -> Self {
-        Self::new(name_value.span(), "Name value not support.")
-    }
-
-    pub fn meta_path_not_support(path: &syn::Path) -> Self {
-        Self::new(path.span(), "Path not support.")
+    pub fn closure_not_support(closure: &syn::ExprClosure) -> Self {
+        Self::new(
+            closure.or1_token.span(),
+            format!("Closure not support. {}", closure.to_token_stream()),
+        )
     }
 
     pub fn too_many_list_items(nested_meta: &syn::Meta) -> Self {

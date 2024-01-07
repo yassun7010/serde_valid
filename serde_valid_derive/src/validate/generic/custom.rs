@@ -50,10 +50,13 @@ fn extract_custom_fn_name(
                 Ok(quote!(#fn_name))
             }
             syn::Meta::NameValue(name_value) => {
-                Err(vec![crate::Error::meta_name_value_not_support(name_value)])
+                Err(vec![crate::Error::validate_custom_need_function(
+                    name_value,
+                )])
             }
             syn::Meta::Path(fn_name) => Ok(quote!(#fn_name)),
         },
         crate::types::NestedMeta::Lit(lit) => Err(vec![crate::Error::literal_not_support(lit)]),
+        crate::types::NestedMeta::Closure(closure) => Ok(quote!((#closure))),
     }
 }
