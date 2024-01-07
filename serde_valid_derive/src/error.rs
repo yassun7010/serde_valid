@@ -169,12 +169,12 @@ impl Error {
         Self::new(input.span(), "#[derive(Validate)] does not support Union.")
     }
 
-    pub fn rule_need_function_call(span: impl Spanned) -> Self {
-        Self::new(span.span(), "#[rule(???(???, ...))] needs function call.")
+    pub fn rule_allow_function_call_or_closure(span: impl Spanned) -> Self {
+        Self::new(span.span(), "#[rule(???)] allows function call or closure.")
     }
 
     pub fn rule_allow_single_function(meta: &crate::types::NestedMeta) -> Self {
-        Self::new(meta.span(), "#[rule] allows single function.")
+        Self::new(meta.span(), "#[rule(???)] allows single function.")
     }
 
     pub fn rule_need_arguments(path: &syn::Path) -> Self {
@@ -188,25 +188,36 @@ impl Error {
         )
     }
 
-    pub fn rule_allow_path_arguments(
-        rule_fn_name_path: &syn::Path,
-        meta: &syn::punctuated::Punctuated<syn::Path, syn::Token![,]>,
-    ) -> Self {
-        let rule_fn_name = quote!(#rule_fn_name_path).to_string();
-        Self::new(
-            meta.span(),
-            format!("#[rule({rule_fn_name}(???, ...))] allows field path only."),
-        )
-    }
-
-    pub fn rule_allow_index_arguments(
+    pub fn rule_args_allow_field_name(
         rule_fn_name_path: &syn::Path,
         meta: &crate::types::NestedMeta,
     ) -> Self {
         let rule_fn_name = quote!(#rule_fn_name_path).to_string();
         Self::new(
             meta.span(),
-            format!("#[rule({rule_fn_name}(???, ...))] allows index integer only."),
+            format!("#[rule({rule_fn_name}(???, ...))] allows field name only."),
+        )
+    }
+
+    pub fn rule_args_allow_field_index(
+        rule_fn_name_path: &syn::Path,
+        meta: &crate::types::NestedMeta,
+    ) -> Self {
+        let rule_fn_name = quote!(#rule_fn_name_path).to_string();
+        Self::new(
+            meta.span(),
+            format!("#[rule({rule_fn_name}(???, ...))] allows field index only."),
+        )
+    }
+
+    pub fn rule_named_clousure_input(meta: &syn::Pat) -> Self {
+        Self::new(meta.span(), "Inputs of closure allows filed name only.")
+    }
+
+    pub fn rule_unnamed_clousure_input(meta: &syn::Pat) -> Self {
+        Self::new(
+            meta.span(),
+            "Inputs of closure allows field index (like _0, _1, etc...) only.",
         )
     }
 
