@@ -64,7 +64,8 @@ Serde Valid support standard validation based JSON Schema.
 
 ## Complete Constructor (Deserialization)
 
-Serde Valid support complete constructor method using by [`serde_valid::json::FromJsonValue`](json::FromJsonValue) trait.
+Serde Valid support complete constructor method using by
+[`serde_valid::json::FromJsonValue`](json::FromJsonValue) trait.
 
 ```rust
 use serde::Deserialize;
@@ -94,7 +95,8 @@ assert_eq!(
 );
 ```
 
-You can force validation by only deserialization through `serde_valid`, and removing `serde_json` from `Cargo.toml` of your project.
+You can force validation by only deserialization through `serde_valid`, and removing
+`serde_json` from `Cargo.toml` of your project.
 
 ## Serialization
 
@@ -355,9 +357,7 @@ assert!(s.validate().is_ok());
 ```
 
 ## Validation Errors Format
-
 ### Named Struct
-
 Field errors are output to `properties`.
 
 ```rust
@@ -387,8 +387,8 @@ assert_eq!(
 ```
 
 ### Unnamed Struct
-
-Field errors are output to `items`. The key for `items` is guaranteed to be a string of positive numbers.
+Field errors are output to `items`. The key for `items` is guaranteed to be a string of positive
+numbers.
 
 ```rust
 use serde_json::json;
@@ -420,7 +420,6 @@ assert_eq!(
 ```
 
 ### New Type
-
 Field errors are output to `errors`.
 
 ```rust
@@ -444,7 +443,6 @@ assert_eq!(
 ```
 
 ### Named Enum
-
 Variant errors are output to `properties`.
 
 ```rust
@@ -481,8 +479,8 @@ assert_eq!(
 ```
 
 ### Unnamed Enum
-
-Variant errors are output to `items`. The key for `items` is guaranteed to be a string of positive numbers.
+Variant errors are output to `items`. The key for `items` is guaranteed to be a string of
+positive numbers.
 
 ```rust
 use serde_json::json;
@@ -516,7 +514,6 @@ assert_eq!(
 ```
 
 ### Newtype Enum
-
 Variant errors are output to `errors`.
 
 ```rust
