@@ -211,8 +211,8 @@ fn sample_validation(val1: i32, val2: &str) -> Result<(), serde_valid::validatio
 }
 
 #[derive(Validate)]
+#[validate(custom(|s| sample_validation(s.val1, &s.val2)))]
 struct SampleStruct {
-    #[validate(custom(|s| sample_validation(s.val1, &s.val2)))]
     val1: i32,
     val2: String,
 }
