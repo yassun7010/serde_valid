@@ -108,12 +108,11 @@ fn extract_custom_message_tokens_from_meta_list(
 
     match custom_message_type {
         MetaListCustomMessage::MessageFn => {
-            get_message_fn_from_nested_meta(path, &message_fn_define)
-                .map(CustomMessageToken::new_message_fn)
+            get_message_fn(path, &message_fn_define).map(CustomMessageToken::new_message_fn)
         }
         #[cfg(feature = "fluent")]
         message_type @ (MetaListCustomMessage::I18n | MetaListCustomMessage::Fluent) => {
-            get_fluent_message_from_nested_meta(message_type, path, &message_fn_define)
+            get_fluent_message(message_type, path, &message_fn_define)
                 .map(CustomMessageToken::new_fluent_message)
         }
     }
@@ -125,12 +124,12 @@ fn extract_custom_message_tokens_from_name_value(
 ) -> Result<CustomMessageToken, crate::Errors> {
     match custom_message_type {
         MetaNameValueCustomMessage::Message => {
-            get_message_from_expr(&name_value.value).map(CustomMessageToken::new_message_fn)
+            get_message(&name_value.value).map(CustomMessageToken::new_message_fn)
         }
     }
 }
 
-fn get_message_fn_from_nested_meta(
+fn get_message_fn(
     path: &syn::Path,
     fn_define: &CommaSeparatedNestedMetas,
 ) -> Result<TokenStream, crate::Errors> {
@@ -151,19 +150,17 @@ fn get_message_fn_from_nested_meta(
     }
 }
 
-fn get_message_from_expr(expr: &syn::Expr) -> Result<TokenStream, crate::Errors> {
+fn get_message(expr: &syn::Expr) -> Result<TokenStream, crate::Errors> {
     match expr {
-        syn::Expr::Lit(lit) => get_message_from_lit(&lit.lit),
+        syn::Expr::Lit(lit) => {
+            get_str(&lit.lit).map(|lit_str| quote!(|_| { #lit_str.to_string() }))
+        }
         _ => Err(vec![crate::Error::literal_only(expr)]),
     }
 }
 
-fn get_message_from_lit(lit: &syn::Lit) -> Result<TokenStream, crate::Errors> {
-    get_str(lit).map(|lit_str| quote!(|_| { #lit_str.to_string() }))
-}
-
 #[cfg(feature = "fluent")]
-fn get_fluent_message_from_nested_meta(
+fn get_fluent_message(
     message_type: &MetaListCustomMessage,
     path: &syn::Path,
     fn_define: &CommaSeparatedNestedMetas,

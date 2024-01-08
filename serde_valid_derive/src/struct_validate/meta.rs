@@ -13,9 +13,9 @@ use quote::quote;
 use std::str::FromStr;
 
 use self::{
-    meta_list::extract_struct_validator_from_nested_meta_list,
-    meta_name_value::extract_struct_validator_from_nested_meta_name_value,
-    meta_path::extract_struct_validator_from_nested_meta_path,
+    meta_list::extract_struct_validator_from_meta_list,
+    meta_name_value::extract_struct_validator_from_meta_name_value,
+    meta_path::extract_struct_validator_from_meta_path,
 };
 
 pub fn extract_struct_validator(attribute: &syn::Attribute) -> Result<Validator, crate::Errors> {
@@ -70,15 +70,15 @@ fn inner_extract_struct_validator(
         meta,
     ) {
         (Ok(validation_type), _, _, syn::Meta::Path(validation)) => {
-            extract_struct_validator_from_nested_meta_path(validation_type, validation)
+            extract_struct_validator_from_meta_path(validation_type, validation)
         }
 
         (_, Ok(validation_type), _, syn::Meta::List(validation)) => {
-            extract_struct_validator_from_nested_meta_list(validation_type, validation)
+            extract_struct_validator_from_meta_list(validation_type, validation)
         }
 
         (_, _, Ok(validation_type), syn::Meta::NameValue(validation)) => {
-            extract_struct_validator_from_nested_meta_name_value(validation_type, validation)
+            extract_struct_validator_from_meta_name_value(validation_type, validation)
         }
 
         (Ok(_), _, _, _) => Err(vec![crate::Error::meta_path_validation_need_value(
