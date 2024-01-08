@@ -227,7 +227,7 @@ assert!(s.validate().is_ok());
 
 ### Rules
 
-**Warning**: this feature is deprecated. Please use `#[validate(custom)]` instead.
+🚸 **Warning** 🚸 : this feature is deprecated. Please use `#[validate(custom)]` instead.
 
 If you want to check multi fields validation, can use `#[rule]`.
 
