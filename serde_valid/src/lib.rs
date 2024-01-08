@@ -686,6 +686,8 @@ where
 pub use serde_valid_derive::Validate;
 
 pub mod helpers {
+    #[doc(hidden)]
+    /// This function is used to avoid [rustc(E0282)](https://doc.rust-lang.org/error_codes/E0282.html) error in `#[validate(custom)]` validator on the struct.
     pub fn wrap_closure_validation<T>(
         data: &T,
         f: impl FnOnce(&T) -> Result<(), crate::validation::Error>,
