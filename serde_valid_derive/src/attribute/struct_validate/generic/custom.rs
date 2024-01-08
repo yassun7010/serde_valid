@@ -1,6 +1,7 @@
 use quote::quote;
 
-use crate::{field_validate::Validator, types::CommaSeparatedNestedMetas};
+use crate::attribute::field_validate::Validator;
+use crate::types::CommaSeparatedNestedMetas;
 
 pub fn extract_generic_struct_custom_validator(
     meta_path: &syn::MetaList,

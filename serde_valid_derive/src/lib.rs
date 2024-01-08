@@ -1,10 +1,8 @@
 #[warn(clippy::needless_collect)]
+mod attribute;
 mod derive;
 mod error;
-mod field_validate;
-mod rule;
 mod serde;
-mod struct_validate;
 mod types;
 
 use derive::expand_derive;

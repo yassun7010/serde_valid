@@ -1,7 +1,7 @@
 use super::named_struct_derive::collect_named_fields_validators_list;
 use super::unnamed_struct_derive::collect_unnamed_fields_validators_list;
+use crate::attribute::rule::{collect_rules_from_named_struct, collect_rules_from_unnamed_struct};
 use crate::error::{array_errors_tokens, new_type_errors_tokens, object_errors_tokens};
-use crate::rule::{collect_rules_from_named_struct, collect_rules_from_unnamed_struct};
 use crate::serde::rename::collect_serde_rename_map;
 use crate::types::CommaSeparatedTokenStreams;
 use proc_macro2::TokenStream;

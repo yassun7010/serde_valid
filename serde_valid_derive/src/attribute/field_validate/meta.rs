@@ -2,8 +2,8 @@ mod meta_list;
 mod meta_name_value;
 mod meta_path;
 
-use crate::field_validate::common::{extract_custom_message_tokens, CustomMessageToken};
-use crate::field_validate::{
+use crate::attribute::field_validate::common::{extract_custom_message_tokens, CustomMessageToken};
+use crate::attribute::field_validate::{
     MetaListFieldValidation, MetaNameValueFieldValidation, MetaPathFieldValidation, Validator,
 };
 use crate::serde::rename::RenameMap;

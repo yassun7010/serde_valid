@@ -1,5 +1,5 @@
-use crate::field_validate::common::get_numeric;
-use crate::field_validate::{common::CustomMessageToken, Validator};
+use crate::attribute::field_validate::common::get_numeric;
+use crate::attribute::field_validate::{common::CustomMessageToken, Validator};
 use crate::serde::rename::RenameMap;
 use crate::types::Field;
 use proc_macro2::TokenStream;
@@ -7,20 +7,20 @@ use quote::quote;
 
 /// Length validation.
 ///
-/// See <https://json-schema.org/understanding-json-schema/reference/object.html#size>
-macro_rules! extract_object_size_validator {
+/// See <https://json-schema.org/understanding-json-schema/reference/string.html#length>
+macro_rules! extract_string_length_validator{
     ($ErrorType:ident) => {
         paste::paste! {
-            pub fn [<extract_object_ $ErrorType:snake _validator>](
+            pub fn [<extract_string_ $ErrorType:snake _validator>](
                 field: &impl Field,
                 validation_value: &syn::Lit,
                 custom_message: CustomMessageToken,
                 rename_map: &RenameMap,
             ) -> Result<Validator, crate::Errors> {
-                [<inner_extract_object_ $ErrorType:snake _validator>](field, validation_value, custom_message, rename_map)
+                [<inner_extract_string_ $ErrorType:snake _validator>](field, validation_value, custom_message, rename_map)
             }
 
-            fn [<inner_extract_object_ $ErrorType:snake _validator>](
+            fn [<inner_extract_string_ $ErrorType:snake _validator>](
                 field: &impl Field,
                 validation_value: &syn::Lit,
                 custom_message: CustomMessageToken,
@@ -37,7 +37,7 @@ macro_rules! extract_object_size_validator {
                 Ok(quote!(
                     if let Err(__composited_error_params) = ::serde_valid::validation::[<ValidateComposited $ErrorType>]::[<validate_composited_ $ErrorType:snake>](
                         #field_ident,
-                        #[<$ErrorType:snake>]
+                        #[<$ErrorType:snake>],
                     ) {
                         use ::serde_valid::validation::{IntoError, ToDefaultMessage};
 
@@ -52,5 +52,5 @@ macro_rules! extract_object_size_validator {
     }
 }
 
-extract_object_size_validator!(MaxProperties);
-extract_object_size_validator!(MinProperties);
+extract_string_length_validator!(MaxLength);
+extract_string_length_validator!(MinLength);

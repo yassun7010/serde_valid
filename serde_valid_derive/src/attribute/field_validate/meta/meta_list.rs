@@ -1,8 +1,8 @@
-use crate::field_validate::common::{CustomMessageToken, MetaListFieldValidation};
-use crate::field_validate::generic::{
+use crate::attribute::field_validate::common::{CustomMessageToken, MetaListFieldValidation};
+use crate::attribute::field_validate::generic::{
     extract_generic_custom_validator, extract_generic_enumerate_validator,
 };
-use crate::field_validate::Validator;
+use crate::attribute::field_validate::Validator;
 use crate::serde::rename::RenameMap;
 use crate::types::Field;
 

@@ -1,4 +1,4 @@
-use crate::field_validate::Validator;
+use crate::attribute::field_validate::Validator;
 use crate::serde::rename::RenameMap;
 use crate::types::{CommaSeparatedNestedMetas, Field, SingleIdentPath};
 use proc_macro2::TokenStream;

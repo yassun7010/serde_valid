@@ -1,4 +1,4 @@
-use crate::field_validate::{MetaPathStructValidation, Validator};
+use crate::attribute::field_validate::{MetaPathStructValidation, Validator};
 
 #[inline]
 pub fn extract_struct_validator_from_meta_path(
