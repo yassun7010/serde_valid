@@ -1,5 +1,5 @@
-use crate::field_validate::common::CustomMessageToken;
-use crate::field_validate::Validator;
+use crate::attribute::field_validate::common::CustomMessageToken;
+use crate::attribute::field_validate::Validator;
 use crate::serde::rename::RenameMap;
 use crate::types::Field;
 use quote::quote;

@@ -1,9 +1,9 @@
-use crate::field_validate::Validator;
-
-use self::meta::extract_struct_validator;
-
 mod generic;
 mod meta;
+
+use crate::attribute::field_validate::Validator;
+
+use self::meta::extract_struct_validator;
 
 pub fn collect_struct_custom_from_named_struct(
     attributes: &[syn::Attribute],

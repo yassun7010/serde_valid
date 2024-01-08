@@ -1,4 +1,4 @@
-use crate::field_validate::{MetaNameValueStructValidation, Validator};
+use crate::attribute::field_validate::{MetaNameValueStructValidation, Validator};
 
 #[inline]
 pub fn extract_struct_validator_from_meta_name_value(

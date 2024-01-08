@@ -1,8 +1,8 @@
+use crate::attribute::field_validate::{extract_field_validator, FieldValidators};
+use crate::attribute::rule::collect_rules_from_named_struct;
+use crate::attribute::struct_validate::collect_struct_custom_from_named_struct;
 use crate::error::object_errors_tokens;
-use crate::field_validate::{extract_field_validator, FieldValidators};
-use crate::rule::collect_rules_from_named_struct;
 use crate::serde::rename::{collect_serde_rename_map, RenameMap};
-use crate::struct_validate::collect_struct_custom_from_named_struct;
 use crate::types::{Field, NamedField};
 use proc_macro2::TokenStream;
 use quote::quote;

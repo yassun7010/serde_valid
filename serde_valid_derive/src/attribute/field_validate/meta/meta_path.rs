@@ -1,6 +1,6 @@
-use crate::field_validate::array::extract_array_unique_items_validator;
-use crate::field_validate::common::{CustomMessageToken, MetaPathFieldValidation};
-use crate::field_validate::Validator;
+use crate::attribute::field_validate::array::extract_array_unique_items_validator;
+use crate::attribute::field_validate::common::{CustomMessageToken, MetaPathFieldValidation};
+use crate::attribute::field_validate::Validator;
 use crate::serde::rename::RenameMap;
 use crate::types::Field;
 
