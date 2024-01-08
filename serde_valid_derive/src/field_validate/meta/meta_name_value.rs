@@ -18,7 +18,7 @@ use crate::field_validate::Validator;
 use crate::serde::rename::RenameMap;
 use crate::types::Field;
 
-pub fn extract_field_validator_from_nested_meta_name_value(
+pub fn extract_field_validator_from_meta_name_value(
     field: &impl Field,
     validation_type: MetaNameValueFieldValidation,
     validation: &syn::MetaNameValue,
