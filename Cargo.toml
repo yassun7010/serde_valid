@@ -2,6 +2,7 @@
 resolver = "2"
 
 members = [
+    "docs",
     "axum_serde_valid",
     "serde_valid",
     "serde_valid_derive",
