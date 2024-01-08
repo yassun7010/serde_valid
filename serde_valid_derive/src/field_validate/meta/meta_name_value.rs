@@ -1,24 +1,24 @@
-use crate::serde::rename::RenameMap;
-use crate::types::Field;
-use crate::validate::array::{
+use crate::field_validate::array::{
     extract_array_max_items_validator, extract_array_min_items_validator,
 };
-use crate::validate::common::{get_lit, CustomMessageToken, MetaNameValueFieldValidation};
-use crate::validate::numeric::{
+use crate::field_validate::common::{get_lit, CustomMessageToken, MetaNameValueFieldValidation};
+use crate::field_validate::numeric::{
     extract_numeric_exclusive_maximum_validator, extract_numeric_exclusive_minimum_validator,
     extract_numeric_maximum_validator, extract_numeric_minimum_validator,
     extract_numeric_multiple_of_validator,
 };
-use crate::validate::object::{
+use crate::field_validate::object::{
     extract_object_max_properties_validator, extract_object_min_properties_validator,
 };
-use crate::validate::string::{
+use crate::field_validate::string::{
     extract_string_max_length_validator, extract_string_min_length_validator,
     extract_string_pattern_validator,
 };
-use crate::validate::Validator;
+use crate::field_validate::Validator;
+use crate::serde::rename::RenameMap;
+use crate::types::Field;
 
-pub fn extract_field_validator_from_nested_meta_name_value(
+pub fn extract_field_validator_from_meta_name_value(
     field: &impl Field,
     validation_type: MetaNameValueFieldValidation,
     validation: &syn::MetaNameValue,

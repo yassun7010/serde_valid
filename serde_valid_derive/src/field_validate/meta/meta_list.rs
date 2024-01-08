@@ -1,12 +1,12 @@
-use crate::serde::rename::RenameMap;
-use crate::types::Field;
-use crate::validate::common::{CustomMessageToken, MetaListFieldValidation};
-use crate::validate::generic::{
+use crate::field_validate::common::{CustomMessageToken, MetaListFieldValidation};
+use crate::field_validate::generic::{
     extract_generic_custom_validator, extract_generic_enumerate_validator,
 };
-use crate::validate::Validator;
+use crate::field_validate::Validator;
+use crate::serde::rename::RenameMap;
+use crate::types::Field;
 
-pub fn extract_field_validator_from_nested_meta_list(
+pub fn extract_field_validator_from_meta_list(
     field: &impl Field,
     validation_type: MetaListFieldValidation,
     validation: &syn::MetaList,

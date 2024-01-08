@@ -1,7 +1,7 @@
+use crate::field_validate::common::CustomMessageToken;
+use crate::field_validate::Validator;
 use crate::serde::rename::RenameMap;
 use crate::types::Field;
-use crate::validate::common::CustomMessageToken;
-use crate::validate::Validator;
 use quote::quote;
 
 type Lits<'a> = syn::punctuated::Punctuated<syn::Lit, syn::token::Comma>;

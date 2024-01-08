@@ -1,10 +1,11 @@
 #[warn(clippy::needless_collect)]
 mod derive;
 mod error;
+mod field_validate;
 mod rule;
 mod serde;
+mod struct_validate;
 mod types;
-mod validate;
 
 use derive::expand_derive;
 use error::to_compile_errors;

@@ -1,7 +1,7 @@
+use crate::field_validate::common::get_numeric;
+use crate::field_validate::{common::CustomMessageToken, Validator};
 use crate::serde::rename::RenameMap;
 use crate::types::Field;
-use crate::validate::common::get_numeric;
-use crate::validate::{common::CustomMessageToken, Validator};
 use proc_macro2::TokenStream;
 use quote::quote;
 
