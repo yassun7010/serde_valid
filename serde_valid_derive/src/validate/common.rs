@@ -15,10 +15,12 @@ macro_rules! enum_str {
         }
 
         impl $name {
+            #[allow(dead_code)]
             pub fn name(&self) -> &'static str {
                 unimplemented!()
             }
 
+            #[allow(dead_code)]
             pub fn iter() -> std::array::IntoIter<Self, 0> {
                 [].into_iter()
             }
@@ -41,12 +43,14 @@ macro_rules! enum_str {
         }
 
         impl $name {
+            #[allow(dead_code)]
             pub fn name(&self) -> &'static str {
                 match *self {
                     $($name::$variant => $val),*
                 }
             }
 
+            #[allow(dead_code)]
             pub fn iter() -> std::array::IntoIter<Self, {count!($($val)*)} > {
                 [
                     $($name::$variant),*
@@ -68,20 +72,36 @@ macro_rules! enum_str {
 }
 
 enum_str! {
-    pub enum MetaPathValidation {
+    pub enum MetaPathStructValidation {
+    }
+}
+
+enum_str! {
+    pub enum MetaListStructValidation {
+        Custom = "custom",
+    }
+}
+
+enum_str! {
+    pub enum MetaNameValueStructValidation {
+    }
+}
+
+enum_str! {
+    pub enum MetaPathFieldValidation {
         UniqueItems = "unique_items",
     }
 }
 
 enum_str! {
-    pub enum MetaListValidation {
+    pub enum MetaListFieldValidation {
         Enumerate = "enumerate",
         Custom = "custom",
     }
 }
 
 enum_str! {
-    pub enum MetaNameValueValidation {
+    pub enum MetaNameValueFieldValidation {
         Minimum = "minimum",
         Maximum = "maximum",
         ExclusiveMinimum = "exclusive_minimum",

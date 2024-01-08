@@ -8,9 +8,10 @@ mod object;
 mod string;
 
 pub use common::{
-    MetaListCustomMessage, MetaListValidation, MetaNameValueCustomMessage, MetaNameValueValidation,
-    MetaPathCustomMessage, MetaPathValidation,
+    MetaListCustomMessage, MetaListFieldValidation, MetaListStructValidation,
+    MetaNameValueCustomMessage, MetaNameValueFieldValidation, MetaNameValueStructValidation,
+    MetaPathCustomMessage, MetaPathFieldValidation, MetaPathStructValidation,
 };
 
 pub use field::{FieldValidators, Validator};
-pub use meta::extract_meta_validator;
+pub use meta::extract_field_validator;

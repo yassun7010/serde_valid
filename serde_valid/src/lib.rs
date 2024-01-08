@@ -593,3 +593,12 @@ where
 }
 
 pub use serde_valid_derive::Validate;
+
+pub mod helpers {
+    pub fn wrap_closure_validation<T>(
+        data: &T,
+        f: impl FnOnce(&T) -> Result<(), crate::validation::Error>,
+    ) -> Result<(), crate::validation::Error> {
+        f(data)
+    }
+}

@@ -1,7 +1,7 @@
 use crate::error::{array_errors_tokens, new_type_errors_tokens};
-use crate::rule::collect_rules_from_unnamed_struct;
+use crate::rule::{collect_rules_from_unnamed_struct, collect_struct_custom_from_named_struct};
 use crate::types::{Field, UnnamedField};
-use crate::validate::{extract_meta_validator, FieldValidators};
+use crate::validate::{extract_field_validator, FieldValidators};
 use proc_macro2::TokenStream;
 use quote::quote;
 use std::borrow::Cow;
@@ -25,7 +25,15 @@ pub fn expand_unnamed_struct_derive(
         }
     };
 
-    let validates = match collect_unnamed_fields_validators_list(fields) {
+    let struct_validations = match collect_struct_custom_from_named_struct(&input.attrs) {
+        Ok(validations) => TokenStream::from_iter(validations),
+        Err(rule_errors) => {
+            errors.extend(rule_errors);
+            quote!()
+        }
+    };
+
+    let field_validates = match collect_unnamed_fields_validators_list(fields) {
         Ok(field_validators) => TokenStream::from_iter(field_validators.iter().map(|validator| {
             if validator.is_empty() && rule_fields.contains(validator.ident()) {
                 validator.get_field_variable_token()
@@ -52,7 +60,8 @@ pub fn expand_unnamed_struct_derive(
                     let mut __rule_vec_errors = ::serde_valid::validation::VecErrors::new();
                     let mut __item_vec_errors_map = ::serde_valid::validation::ItemVecErrorsMap::new();
 
-                    #validates
+                    #field_validates
+                    #struct_validations
                     #rules
 
                     if __rule_vec_errors.is_empty() && __item_vec_errors_map.is_empty() {
@@ -105,7 +114,7 @@ fn collect_unnamed_field_validators(
         .iter()
         .filter_map(|attribute| {
             if attribute.path().is_ident("validate") {
-                match extract_meta_validator(&unnamed_field, attribute, &HashMap::new()) {
+                match extract_field_validator(&unnamed_field, attribute, &HashMap::new()) {
                     Ok(validator) => Some(validator),
                     Err(validator_errors) => {
                         errors.extend(validator_errors);

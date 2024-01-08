@@ -43,17 +43,17 @@ pub fn collect_rules_from_named_struct(
 }
 
 fn collect_rule(
-    metalist: &syn::MetaList,
+    meta_list: &syn::MetaList,
 ) -> Result<(HashSet<syn::Ident>, TokenStream), crate::Errors> {
     let mut errors = vec![];
 
-    let nested = metalist
+    let nested = meta_list
         .parse_args_with(CommaSeparatedNestedMetas::parse_terminated)
-        .map_err(|error| vec![crate::Error::rule_args_parse_error(metalist, &error)])?;
+        .map_err(|error| vec![crate::Error::rule_args_parse_error(meta_list, &error)])?;
 
     match nested.len() {
         0 => Err(vec![crate::Error::rule_allow_function_call_or_closure(
-            metalist,
+            meta_list,
         )])?,
         2.. => nested
             .iter()
@@ -83,14 +83,14 @@ fn collect_rule(
 }
 
 fn extract_rule_from_meta_list(
-    metalist: &syn::MetaList,
+    meta_list: &syn::MetaList,
 ) -> Result<(HashSet<syn::Ident>, TokenStream), crate::Errors> {
     let mut errors = vec![];
 
-    let rule_fn_name = &metalist.path;
-    let nested = metalist
+    let rule_fn_name = &meta_list.path;
+    let nested = meta_list
         .parse_args_with(crate::types::CommaSeparatedNestedMetas::parse_terminated)
-        .map_err(|error| vec![crate::Error::rule_args_parse_error(metalist, &error)])?;
+        .map_err(|error| vec![crate::Error::rule_args_parse_error(meta_list, &error)])?;
 
     if nested.is_empty() {
         errors.push(crate::Error::rule_need_arguments(rule_fn_name));

@@ -21,7 +21,9 @@ pub fn extract_generic_custom_validator(
         .map_err(|error| vec![crate::Error::custom_message_parse_error(path_ident, &error)])?;
 
     let custom_fn_name = match nested.len() {
-        0 => Err(vec![crate::Error::validate_custom_need_function(path)]),
+        0 => Err(vec![
+            crate::Error::validate_custom_need_function_or_closure(path),
+        ]),
         1 => extract_custom_fn_name(&nested[0]),
         _ => Err(nested
             .iter()
@@ -44,19 +46,10 @@ fn extract_custom_fn_name(
     nested_meta: &crate::types::NestedMeta,
 ) -> Result<TokenStream, crate::Errors> {
     match nested_meta {
-        crate::types::NestedMeta::Meta(meta) => match meta {
-            syn::Meta::List(list) => {
-                let fn_name = &list.path;
-                Ok(quote!(#fn_name))
-            }
-            syn::Meta::NameValue(name_value) => {
-                Err(vec![crate::Error::validate_custom_need_function(
-                    name_value,
-                )])
-            }
-            syn::Meta::Path(fn_name) => Ok(quote!(#fn_name)),
-        },
-        crate::types::NestedMeta::Lit(lit) => Err(vec![crate::Error::literal_not_support(lit)]),
+        crate::types::NestedMeta::Meta(syn::Meta::Path(fn_name)) => Ok(quote!(#fn_name)),
         crate::types::NestedMeta::Closure(closure) => Ok(quote!((#closure))),
+        _ => Err(vec![
+            crate::Error::validate_custom_need_function_or_closure(nested_meta),
+        ]),
     }
 }
