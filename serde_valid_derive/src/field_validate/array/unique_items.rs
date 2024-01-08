@@ -1,7 +1,7 @@
 use crate::{
+    field_validate::{common::CustomMessageToken, Validator},
     serde::rename::RenameMap,
     types::Field,
-    validate::{common::CustomMessageToken, Validator},
 };
 use proc_macro2::TokenStream;
 use quote::quote;

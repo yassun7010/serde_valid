@@ -1,8 +1,8 @@
+use crate::field_validate::array::extract_array_unique_items_validator;
+use crate::field_validate::common::{CustomMessageToken, MetaPathFieldValidation};
+use crate::field_validate::Validator;
 use crate::serde::rename::RenameMap;
 use crate::types::Field;
-use crate::validate::array::extract_array_unique_items_validator;
-use crate::validate::common::{CustomMessageToken, MetaPathFieldValidation};
-use crate::validate::Validator;
 
 pub fn extract_field_validator_from_nested_meta_path(
     field: &impl Field,

@@ -1,4 +1,4 @@
-use crate::validate::{
+use crate::field_validate::{
     MetaListFieldValidation, MetaListStructValidation, MetaNameValueCustomMessage,
     MetaNameValueFieldValidation, MetaNameValueStructValidation, MetaPathCustomMessage,
     MetaPathFieldValidation, MetaPathStructValidation,
@@ -7,7 +7,7 @@ use proc_macro2::TokenStream;
 use quote::{quote, ToTokens};
 use syn::spanned::Spanned;
 
-use crate::validate::MetaListCustomMessage;
+use crate::field_validate::MetaListCustomMessage;
 
 pub fn object_errors_tokens() -> TokenStream {
     quote!(::serde_valid::validation::Errors::Object(

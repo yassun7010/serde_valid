@@ -1,6 +1,6 @@
+use crate::field_validate::Validator;
 use crate::serde::rename::RenameMap;
 use crate::types::Field;
-use crate::validate::Validator;
 use quote::quote;
 
 pub fn extract_field_validator_from_meta_path(

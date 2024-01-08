@@ -4,9 +4,9 @@ mod nested_meta_list;
 mod nested_meta_name_value;
 mod nested_meta_path;
 
+use crate::field_validate::Validator;
 use crate::serde::rename::RenameMap;
 use crate::types::Field;
-use crate::validate::Validator;
 use meta_path::extract_field_validator_from_meta_path;
 
 use self::meta_list::extract_field_validator_from_meta_list;

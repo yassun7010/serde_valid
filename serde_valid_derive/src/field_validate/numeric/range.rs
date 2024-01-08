@@ -1,26 +1,26 @@
+use crate::field_validate::common::get_numeric;
+use crate::field_validate::{common::CustomMessageToken, Validator};
 use crate::serde::rename::RenameMap;
 use crate::types::Field;
-use crate::validate::common::get_numeric;
-use crate::validate::{common::CustomMessageToken, Validator};
 use proc_macro2::TokenStream;
 use quote::quote;
 
-/// Length validation.
+/// Range validation.
 ///
-/// See <https://json-schema.org/understanding-json-schema/reference/string.html#length>
-macro_rules! extract_string_length_validator{
+/// See <https://json-schema.org/understanding-json-schema/reference/numeric.html#range>
+macro_rules! extract_numeric_range_validator{
     ($ErrorType:ident) => {
         paste::paste! {
-            pub fn [<extract_string_ $ErrorType:snake _validator>](
+            pub fn [<extract_numeric_ $ErrorType:snake _validator>](
                 field: &impl Field,
                 validation_value: &syn::Lit,
                 custom_message: CustomMessageToken,
                 rename_map: &RenameMap,
             ) -> Result<Validator, crate::Errors> {
-                [<inner_extract_string_ $ErrorType:snake _validator>](field, validation_value, custom_message, rename_map)
+                [<inner_extract_numeric_ $ErrorType:snake _validator>](field, validation_value, custom_message, rename_map)
             }
 
-            fn [<inner_extract_string_ $ErrorType:snake _validator>](
+            fn [<inner_extract_numeric_ $ErrorType:snake _validator>](
                 field: &impl Field,
                 validation_value: &syn::Lit,
                 custom_message: CustomMessageToken,
@@ -52,5 +52,7 @@ macro_rules! extract_string_length_validator{
     }
 }
 
-extract_string_length_validator!(MaxLength);
-extract_string_length_validator!(MinLength);
+extract_numeric_range_validator!(Maximum);
+extract_numeric_range_validator!(Minimum);
+extract_numeric_range_validator!(ExclusiveMaximum);
+extract_numeric_range_validator!(ExclusiveMinimum);
