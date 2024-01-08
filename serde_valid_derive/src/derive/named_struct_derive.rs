@@ -1,8 +1,8 @@
 use crate::error::object_errors_tokens;
-use crate::rule::collect_rules_from_named_struct;
+use crate::rule::{collect_rules_from_named_struct, collect_struct_custom_from_named_struct};
 use crate::serde::rename::{collect_serde_rename_map, RenameMap};
 use crate::types::{Field, NamedField};
-use crate::validate::{extract_meta_validator, FieldValidators};
+use crate::validate::{extract_field_validator, FieldValidators};
 use proc_macro2::TokenStream;
 use quote::quote;
 use std::borrow::Cow;
@@ -26,8 +26,15 @@ pub fn expand_named_struct_derive(
             (HashSet::new(), quote!())
         }
     };
+    let struct_validations = match collect_struct_custom_from_named_struct(&input.attrs) {
+        Ok(validations) => TokenStream::from_iter(validations),
+        Err(rule_errors) => {
+            errors.extend(rule_errors);
+            quote!()
+        }
+    };
 
-    let validates = match collect_named_fields_validators_list(fields, &rename_map) {
+    let field_validates = match collect_named_fields_validators_list(fields, &rename_map) {
         Ok(field_validators) => TokenStream::from_iter(field_validators.iter().map(|validator| {
             if validator.is_empty() && rule_fields.contains(validator.ident()) {
                 validator.get_field_variable_token()
@@ -50,7 +57,8 @@ pub fn expand_named_struct_derive(
                     let mut __rule_vec_errors = ::serde_valid::validation::VecErrors::new();
                     let mut __property_vec_errors_map = ::serde_valid::validation::PropertyVecErrorsMap::new();
 
-                    #validates
+                    #field_validates
+                    #struct_validations
                     #rules
 
                     if __rule_vec_errors.is_empty() && __property_vec_errors_map.is_empty() {
@@ -105,7 +113,7 @@ fn collect_named_field_validators<'a>(
         .iter()
         .filter_map(|attribute| {
             if attribute.path().is_ident("validate") {
-                match extract_meta_validator(&named_field, attribute, rename_map) {
+                match extract_field_validator(&named_field, attribute, rename_map) {
                     Ok(validator) => Some(validator),
                     Err(validator_error) => {
                         errors.extend(validator_error);

@@ -1,13 +1,15 @@
-use super::nested_meta_list::extract_validator_from_nested_meta_list;
-use super::nested_meta_name_value::extract_validator_from_nested_meta_name_value;
-use super::nested_meta_path::extract_validator_from_nested_meta_path;
+use super::nested_meta_list::extract_field_validator_from_nested_meta_list;
+use super::nested_meta_name_value::extract_field_validator_from_nested_meta_name_value;
+use super::nested_meta_path::extract_field_validator_from_nested_meta_path;
 use crate::serde::rename::RenameMap;
 use crate::types::{Field, SingleIdentPath};
 use crate::validate::common::{extract_custom_message_tokens, CustomMessageToken};
-use crate::validate::{MetaListValidation, MetaNameValueValidation, MetaPathValidation, Validator};
+use crate::validate::{
+    MetaListFieldValidation, MetaNameValueFieldValidation, MetaPathFieldValidation, Validator,
+};
 use std::str::FromStr;
 
-pub fn extract_validator_from_meta_list(
+pub fn extract_field_validator_from_meta_list(
     field: &impl Field,
     attribute: &syn::Attribute,
     meta_list: &syn::MetaList,
@@ -23,7 +25,10 @@ pub fn extract_validator_from_meta_list(
         })?;
 
     let custom_message = match nested.len() {
-        0..=1 => CustomMessageToken::default(),
+        0 => Err(vec![crate::Error::field_validation_type_required(
+            attribute,
+        )])?,
+        1 => CustomMessageToken::default(),
         2 => match extract_custom_message_tokens(&nested[1]) {
             Ok(custom_message) => custom_message,
             Err(message_fn_errors) => {
@@ -39,89 +44,84 @@ pub fn extract_validator_from_meta_list(
         }
     };
 
-    if !nested.is_empty() {
-        let meta = &nested[0];
+    let meta = &nested[0];
 
-        let validation_path = match meta {
-            syn::Meta::Path(path) => path,
-            syn::Meta::List(list) => &list.path,
-            syn::Meta::NameValue(name_value) => &name_value.path,
-        };
+    let validation_path = match meta {
+        syn::Meta::Path(path) => path,
+        syn::Meta::List(list) => &list.path,
+        syn::Meta::NameValue(name_value) => &name_value.path,
+    };
 
-        let validation_name = SingleIdentPath::new(validation_path).ident().to_string();
+    let validation_name = SingleIdentPath::new(validation_path).ident().to_string();
 
-        let validator = match (
-            MetaPathValidation::from_str(&validation_name),
-            MetaListValidation::from_str(&validation_name),
-            MetaNameValueValidation::from_str(&validation_name),
-            meta,
-        ) {
-            (Ok(validation_type), _, _, syn::Meta::Path(validation)) => {
-                extract_validator_from_nested_meta_path(
-                    field,
-                    validation_type,
-                    validation,
-                    custom_message,
-                    rename_map,
-                )
-            }
+    let validator = match (
+        MetaPathFieldValidation::from_str(&validation_name),
+        MetaListFieldValidation::from_str(&validation_name),
+        MetaNameValueFieldValidation::from_str(&validation_name),
+        meta,
+    ) {
+        (Ok(validation_type), _, _, syn::Meta::Path(validation)) => {
+            extract_field_validator_from_nested_meta_path(
+                field,
+                validation_type,
+                validation,
+                custom_message,
+                rename_map,
+            )
+        }
 
-            (_, Ok(validation_type), _, syn::Meta::List(validation)) => {
-                extract_validator_from_nested_meta_list(
-                    field,
-                    validation_type,
-                    validation,
-                    custom_message,
-                    rename_map,
-                )
-            }
+        (_, Ok(validation_type), _, syn::Meta::List(validation)) => {
+            extract_field_validator_from_nested_meta_list(
+                field,
+                validation_type,
+                validation,
+                custom_message,
+                rename_map,
+            )
+        }
 
-            (_, _, Ok(validation_type), syn::Meta::NameValue(validation)) => {
-                extract_validator_from_nested_meta_name_value(
-                    field,
-                    validation_type,
-                    validation,
-                    custom_message,
-                    rename_map,
-                )
-            }
+        (_, _, Ok(validation_type), syn::Meta::NameValue(validation)) => {
+            extract_field_validator_from_nested_meta_name_value(
+                field,
+                validation_type,
+                validation,
+                custom_message,
+                rename_map,
+            )
+        }
 
-            (Ok(_), _, _, _) => Err(vec![crate::Error::meta_path_validation_need_value(
-                validation_path,
-                &validation_name,
-            )]),
+        (Ok(_), _, _, _) => Err(vec![crate::Error::meta_path_validation_need_value(
+            validation_path,
+            &validation_name,
+        )]),
 
-            (_, Ok(_), _, _) => Err(vec![crate::Error::meta_list_validation_need_value(
-                validation_path,
-                &validation_name,
-            )]),
+        (_, Ok(_), _, _) => Err(vec![crate::Error::meta_list_validation_need_value(
+            validation_path,
+            &validation_name,
+        )]),
 
-            (_, _, Ok(_), _) => Err(vec![crate::Error::meta_name_value_validation_need_value(
-                validation_path,
-                &validation_name,
-            )]),
+        (_, _, Ok(_), _) => Err(vec![crate::Error::meta_name_value_validation_need_value(
+            validation_path,
+            &validation_name,
+        )]),
 
-            _ => Err(vec![crate::Error::unknown_validation_type(
-                validation_path,
-                &validation_name,
-            )]),
-        };
+        _ => Err(vec![crate::Error::field_validation_type_unknown(
+            validation_path,
+            &validation_name,
+        )]),
+    };
 
-        match validator {
-            Ok(validator) => {
-                if errors.is_empty() {
-                    Ok(validator)
-                } else {
-                    Err(errors)
-                }
-            }
-            Err(validator_errors) => {
-                errors.extend(validator_errors);
+    match validator {
+        Ok(validator) => {
+            if errors.is_empty() {
+                Ok(validator)
+            } else {
                 Err(errors)
             }
         }
-    } else {
-        errors.push(crate::Error::validate_type_required_error(attribute));
-        Err(errors)
+        Err(validator_errors) => {
+            errors.extend(validator_errors);
+            Err(errors)
+        }
     }
 }

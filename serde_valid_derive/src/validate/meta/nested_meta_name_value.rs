@@ -3,7 +3,7 @@ use crate::types::Field;
 use crate::validate::array::{
     extract_array_max_items_validator, extract_array_min_items_validator,
 };
-use crate::validate::common::{get_lit, CustomMessageToken, MetaNameValueValidation};
+use crate::validate::common::{get_lit, CustomMessageToken, MetaNameValueFieldValidation};
 use crate::validate::numeric::{
     extract_numeric_exclusive_maximum_validator, extract_numeric_exclusive_minimum_validator,
     extract_numeric_maximum_validator, extract_numeric_minimum_validator,
@@ -18,9 +18,9 @@ use crate::validate::string::{
 };
 use crate::validate::Validator;
 
-pub fn extract_validator_from_nested_meta_name_value(
+pub fn extract_field_validator_from_nested_meta_name_value(
     field: &impl Field,
-    validation_type: MetaNameValueValidation,
+    validation_type: MetaNameValueFieldValidation,
     validation: &syn::MetaNameValue,
     custom_message: CustomMessageToken,
     rename_map: &RenameMap,
@@ -28,55 +28,59 @@ pub fn extract_validator_from_nested_meta_name_value(
     let validation_value = get_lit(&validation.value)?;
 
     match validation_type {
-        MetaNameValueValidation::Minimum => {
+        MetaNameValueFieldValidation::Minimum => {
             extract_numeric_minimum_validator(field, validation_value, custom_message, rename_map)
         }
-        MetaNameValueValidation::Maximum => {
+        MetaNameValueFieldValidation::Maximum => {
             extract_numeric_maximum_validator(field, validation_value, custom_message, rename_map)
         }
-        MetaNameValueValidation::ExclusiveMinimum => extract_numeric_exclusive_minimum_validator(
-            field,
-            validation_value,
-            custom_message,
-            rename_map,
-        ),
-        MetaNameValueValidation::ExclusiveMaximum => extract_numeric_exclusive_maximum_validator(
-            field,
-            validation_value,
-            custom_message,
-            rename_map,
-        ),
-        MetaNameValueValidation::MinLength => {
+        MetaNameValueFieldValidation::ExclusiveMinimum => {
+            extract_numeric_exclusive_minimum_validator(
+                field,
+                validation_value,
+                custom_message,
+                rename_map,
+            )
+        }
+        MetaNameValueFieldValidation::ExclusiveMaximum => {
+            extract_numeric_exclusive_maximum_validator(
+                field,
+                validation_value,
+                custom_message,
+                rename_map,
+            )
+        }
+        MetaNameValueFieldValidation::MinLength => {
             extract_string_min_length_validator(field, validation_value, custom_message, rename_map)
         }
-        MetaNameValueValidation::MaxLength => {
+        MetaNameValueFieldValidation::MaxLength => {
             extract_string_max_length_validator(field, validation_value, custom_message, rename_map)
         }
-        MetaNameValueValidation::MinItems => {
+        MetaNameValueFieldValidation::MinItems => {
             extract_array_min_items_validator(field, validation_value, custom_message, rename_map)
         }
-        MetaNameValueValidation::MaxItems => {
+        MetaNameValueFieldValidation::MaxItems => {
             extract_array_max_items_validator(field, validation_value, custom_message, rename_map)
         }
-        MetaNameValueValidation::MinProperties => extract_object_min_properties_validator(
+        MetaNameValueFieldValidation::MinProperties => extract_object_min_properties_validator(
             field,
             validation_value,
             custom_message,
             rename_map,
         ),
-        MetaNameValueValidation::MaxProperties => extract_object_max_properties_validator(
+        MetaNameValueFieldValidation::MaxProperties => extract_object_max_properties_validator(
             field,
             validation_value,
             custom_message,
             rename_map,
         ),
-        MetaNameValueValidation::MultipleOf => extract_numeric_multiple_of_validator(
+        MetaNameValueFieldValidation::MultipleOf => extract_numeric_multiple_of_validator(
             field,
             validation_value,
             custom_message,
             rename_map,
         ),
-        MetaNameValueValidation::Pattern => {
+        MetaNameValueFieldValidation::Pattern => {
             extract_string_pattern_validator(field, validation_value, custom_message, rename_map)
         }
     }

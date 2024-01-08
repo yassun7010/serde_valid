@@ -1,6 +1,7 @@
 use crate::validate::{
-    MetaListValidation, MetaNameValueCustomMessage, MetaNameValueValidation, MetaPathCustomMessage,
-    MetaPathValidation,
+    MetaListFieldValidation, MetaListStructValidation, MetaNameValueCustomMessage,
+    MetaNameValueFieldValidation, MetaNameValueStructValidation, MetaPathCustomMessage,
+    MetaPathFieldValidation, MetaPathStructValidation,
 };
 use proc_macro2::TokenStream;
 use quote::{quote, ToTokens};
@@ -140,7 +141,12 @@ pub fn new_type_errors_tokens() -> TokenStream {
     quote!(::serde_valid::validation::Errors::NewType(
         __rule_vec_errors
             .into_iter()
-            .chain(__item_vec_errors_map.remove(&0).unwrap().into_iter())
+            .chain(
+                __item_vec_errors_map
+                    .remove(&0)
+                    .unwrap_or(vec![])
+                    .into_iter()
+            )
             .collect()
     ))
 }
@@ -181,9 +187,9 @@ impl Error {
         Self::new(path.span(), "`rule` function needs arguments.")
     }
 
-    pub fn rule_args_parse_error(metalist: &syn::MetaList, error: &syn::Error) -> Self {
+    pub fn rule_args_parse_error(meta_list: &syn::MetaList, error: &syn::Error) -> Self {
         Self::new(
-            metalist.span(),
+            meta_list.span(),
             format!("#[rule(???)] parse error: {error}"),
         )
     }
@@ -222,10 +228,7 @@ impl Error {
     }
 
     pub fn validate_meta_name_value_not_support(name_value: &syn::MetaNameValue) -> Self {
-        Self::new(
-            name_value.span(),
-            "#[validate = ???] format does not support.",
-        )
+        Self::new(name_value.span(), "#[validate = ???] does not support.")
     }
 
     pub fn meta_path_validation_need_value(path: &syn::Path, validation_type: &str) -> Self {
@@ -286,10 +289,10 @@ impl Error {
         )
     }
 
-    pub fn validate_type_required_error(attribute: &syn::Attribute) -> Self {
-        let filterd_candidates: Vec<&str> = (MetaPathValidation::iter().map(|x| x.name()))
-            .chain(MetaNameValueValidation::iter().map(|x| x.name()))
-            .chain(MetaListValidation::iter().map(|x| x.name()))
+    pub fn field_validation_type_required(attribute: &syn::Attribute) -> Self {
+        let filterd_candidates: Vec<&str> = (MetaPathFieldValidation::iter().map(|x| x.name()))
+            .chain(MetaListFieldValidation::iter().map(|x| x.name()))
+            .chain(MetaNameValueFieldValidation::iter().map(|x| x.name()))
             .collect::<Vec<_>>();
 
         Self::new(
@@ -298,10 +301,37 @@ impl Error {
         )
     }
 
-    pub fn unknown_validation_type(path: &syn::Path, unknown: &str) -> Self {
-        let candidates = &(MetaPathValidation::iter().map(|x| x.name()))
-            .chain(MetaListValidation::iter().map(|x| x.name()))
-            .chain(MetaNameValueValidation::iter().map(|x| x.name()))
+    pub fn field_validation_type_unknown(path: &syn::Path, unknown: &str) -> Self {
+        let candidates = &(MetaPathFieldValidation::iter().map(|x| x.name()))
+            .chain(MetaListFieldValidation::iter().map(|x| x.name()))
+            .chain(MetaNameValueFieldValidation::iter().map(|x| x.name()))
+            .collect::<Vec<_>>();
+
+        let filterd_candidates =
+            did_you_mean(unknown, candidates).unwrap_or_else(|| candidates.to_vec());
+
+        Self::new(
+            path.span(),
+            format!("`{unknown}` is unknown validation type. Is it one of the following?\n{filterd_candidates:#?}"),
+        )
+    }
+
+    pub fn struct_validation_type_required(attribute: &syn::Attribute) -> Self {
+        let filterd_candidates: Vec<&str> = (MetaPathStructValidation::iter().map(|x| x.name()))
+            .chain(MetaListStructValidation::iter().map(|x| x.name()))
+            .chain(MetaNameValueStructValidation::iter().map(|x| x.name()))
+            .collect::<Vec<_>>();
+
+        Self::new(
+            attribute.meta.span(),
+            format!("#[validate(???)] needs validation type. Is it one of the following?\n{filterd_candidates:#?}"),
+        )
+    }
+
+    pub fn struct_validation_type_unknown(path: &syn::Path, unknown: &str) -> Self {
+        let candidates = &(MetaPathStructValidation::iter().map(|x| x.name()))
+            .chain(MetaListStructValidation::iter().map(|x| x.name()))
+            .chain(MetaNameValueStructValidation::iter().map(|x| x.name()))
             .collect::<Vec<_>>();
 
         let filterd_candidates =
@@ -328,9 +358,9 @@ impl Error {
         )
     }
 
-    pub fn validate_enumerate_parse_error(metalist: &syn::MetaList, error: &syn::Error) -> Self {
+    pub fn validate_enumerate_parse_error(meta_list: &syn::MetaList, error: &syn::Error) -> Self {
         Self::new(
-            metalist.span(),
+            meta_list.span(),
             format!("#[validate(enumerate(???))] parse error: {error}"),
         )
     }
@@ -339,14 +369,17 @@ impl Error {
         Self::new(path.span(), "#[validate(enumerate(???))] needs items.")
     }
 
-    pub fn validate_custom_need_function(span: impl Spanned) -> Self {
-        Self::new(span.span(), "#[validate(custom(???))] needs function.")
+    pub fn validate_custom_need_function_or_closure(span: impl Spanned) -> Self {
+        Self::new(
+            span.span(),
+            "#[validate(custom(???))] needs function or closure.",
+        )
     }
 
     pub fn validate_custom_tail_error(nested: &crate::types::NestedMeta) -> Self {
         Self::new(
             nested.span(),
-            "#[validate(custom(???)] supports only 1 item.",
+            "#[validate(custom(???))] supports only 1 item.",
         )
     }
 
@@ -424,10 +457,6 @@ impl Error {
 
     pub fn str_literal_only(lit: &syn::Lit) -> Self {
         Self::new(lit.span(), "Allow str literal only.")
-    }
-
-    pub fn literal_not_support(lit: &syn::Lit) -> Self {
-        Self::new(lit.span(), "Literal not support.")
     }
 
     pub fn closure_not_support(closure: &syn::ExprClosure) -> Self {
