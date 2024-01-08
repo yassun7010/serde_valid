@@ -198,7 +198,36 @@ let s = SampleStruct { val: 1 };
 assert!(s.validate().is_ok());
 ```
 
-## Rules
+## Multi Fields Validation
+### Custom Validation
+Now, you can use `#[validate(custom)]` for multi fields validation.
+
+```rust
+use serde_json::json;
+use serde_valid::Validate;
+
+fn sample_validation(val1: i32, val2: &str) -> Result<(), serde_valid::validation::Error> {
+    Ok(())
+}
+
+#[derive(Validate)]
+struct SampleStruct {
+    #[validate(custom(|s| sample_validation(s.val1, &s.val2)))]
+    val1: i32,
+    val2: String,
+}
+
+let s = SampleStruct {
+    val1: 1,
+    val2: "val2".to_owned(),
+};
+
+assert!(s.validate().is_ok());
+```
+
+### Rules
+
+**Warning**: this feature is deprecated. Please use `#[validate(custom)]` instead.
 
 If you want to check multi fields validation, can use `#[rule]`.
 
