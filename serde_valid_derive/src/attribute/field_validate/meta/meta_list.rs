@@ -18,7 +18,7 @@ pub fn extract_field_validator_from_meta_list(
             extract_generic_enumerate_validator(field, validation, custom_message, rename_map)
         }
         MetaListFieldValidation::Custom => {
-            extract_generic_custom_validator(field, validation, rename_map)
+            extract_generic_custom_validator(field, validation, custom_message, rename_map)
         }
     }
 }

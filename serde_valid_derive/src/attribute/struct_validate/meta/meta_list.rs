@@ -4,9 +4,11 @@ use crate::attribute::struct_validate::generic::extract_generic_struct_custom_va
 pub fn extract_struct_validator_from_meta_list(
     validation_type: MetaListStructValidation,
     validation: &syn::MetaList,
-    _custom_message: CustomMessageToken,
+    custom_message: CustomMessageToken,
 ) -> Result<Validator, crate::Errors> {
     match validation_type {
-        MetaListStructValidation::Custom => extract_generic_struct_custom_validator(validation),
+        MetaListStructValidation::Custom => {
+            extract_generic_struct_custom_validator(validation, custom_message)
+        }
     }
 }
