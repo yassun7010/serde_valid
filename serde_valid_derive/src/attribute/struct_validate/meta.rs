@@ -2,6 +2,7 @@ mod meta_list;
 mod meta_name_value;
 mod meta_path;
 
+use crate::attribute::field_validate::{extract_custom_message_tokens, CustomMessageToken};
 use crate::attribute::field_validate::{
     MetaListStructValidation, MetaNameValueStructValidation, MetaPathStructValidation, Validator,
 };
@@ -40,15 +41,23 @@ fn inner_extract_struct_validator(
             )]
         })?;
 
-    match nested.len() {
-        0 => Err(vec![crate::Error::struct_validation_type_required(
+    let custom_message = match nested.len() {
+        0 => Err(vec![crate::Error::field_validation_type_required(
             attribute,
         )])?,
-        1 => {}
+        1 => CustomMessageToken::default(),
+        2 => match extract_custom_message_tokens(&nested[1]) {
+            Ok(custom_message) => custom_message,
+            Err(message_fn_errors) => {
+                errors.extend(message_fn_errors);
+                CustomMessageToken::default()
+            }
+        },
         _ => {
             for meta in nested.iter().skip(2) {
                 errors.push(crate::Error::too_many_list_items(meta));
             }
+            CustomMessageToken::default()
         }
     };
 
@@ -67,15 +76,19 @@ fn inner_extract_struct_validator(
         meta,
     ) {
         (Ok(validation_type), _, _, syn::Meta::Path(validation)) => {
-            extract_struct_validator_from_meta_path(validation_type, validation)
+            extract_struct_validator_from_meta_path(validation_type, validation, custom_message)
         }
 
         (_, Ok(validation_type), _, syn::Meta::List(validation)) => {
-            extract_struct_validator_from_meta_list(validation_type, validation)
+            extract_struct_validator_from_meta_list(validation_type, validation, custom_message)
         }
 
         (_, _, Ok(validation_type), syn::Meta::NameValue(validation)) => {
-            extract_struct_validator_from_meta_name_value(validation_type, validation)
+            extract_struct_validator_from_meta_name_value(
+                validation_type,
+                validation,
+                custom_message,
+            )
         }
 
         (Ok(_), _, _, _) => Err(vec![crate::Error::meta_path_validation_need_value(
