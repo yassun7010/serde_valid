@@ -132,8 +132,11 @@ macro_rules! impl_composited_validation_1args {
                 &self,
                 $limit:ident: $limit_type:ty$(,)*
             ) -> Result<(), Composited<$Error:ty>>;
-        },
-        "safe_for_hashmap"
+        }
+
+        impl<K, V> $ValidateCompositedTrait2:ident for std::collections::HashMap<K, V>
+        where
+            V: $ValidateCompositedTrait3:ident;
     ) => {
         impl_composited_validation_1args!(
             pub trait $ValidateCompositedTrait {
@@ -144,9 +147,9 @@ macro_rules! impl_composited_validation_1args {
             }
         );
         paste::paste! {
-            impl<K, V> $ValidateCompositedTrait for std::collections::HashMap<K, V>
+            impl<K, V> $ValidateCompositedTrait2 for std::collections::HashMap<K, V>
             where
-                V: $ValidateCompositedTrait,
+                V: $ValidateCompositedTrait3,
             {
                 fn $validate_composited_method(
                     &self,
@@ -357,8 +360,11 @@ impl_composited_validation_1args!(
             &self,
             max_length: usize,
         ) -> Result<(), Composited<MaxLengthError>>;
-    },
-    "safe_for_hashmap"
+    }
+
+    impl<K, V> ValidateCompositedMaxLength for std::collections::HashMap<K, V>
+    where
+        V: ValidateCompositedMaxLength;
 );
 
 impl_composited_validation_1args!(
@@ -367,8 +373,11 @@ impl_composited_validation_1args!(
             &self,
             min_length: usize,
         ) -> Result<(), Composited<MinLengthError>>;
-    },
-    "safe_for_hashmap"
+    }
+
+    impl<K, V> ValidateCompositedMinLength for std::collections::HashMap<K, V>
+    where
+        V: ValidateCompositedMinLength;
 );
 
 impl_composited_validation_1args!(
@@ -377,8 +386,11 @@ impl_composited_validation_1args!(
             &self,
             pattern: &regex::Regex,
         ) -> Result<(), Composited<PatternError>>;
-    },
-    "safe_for_hashmap"
+    }
+
+    impl<K, V> ValidateCompositedPattern for std::collections::HashMap<K, V>
+    where
+        V: ValidateCompositedPattern;
 );
 
 // Object
