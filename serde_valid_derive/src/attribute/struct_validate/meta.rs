@@ -42,7 +42,7 @@ fn inner_extract_struct_validator(
         })?;
 
     let custom_message = match nested.len() {
-        0 => Err(vec![crate::Error::field_validation_type_required(
+        0 => Err(vec![crate::Error::struct_validation_type_required(
             attribute,
         )])?,
         1 => CustomMessageToken::default(),

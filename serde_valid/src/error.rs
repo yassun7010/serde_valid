@@ -62,12 +62,23 @@ macro_rules! struct_error_params {
             pub $limit: Vec<$type>,
         }
 
+        impl $Error {
+            pub fn new<T>($limit: &[T]) -> Self
+            where
+                T: Into<$type> + std::fmt::Debug + Clone,
+            {
+                Self {
+                    $limit: (*$limit).iter().map(|x| x.clone().into()).collect(),
+                }
+            }
+        }
+
         impl ToDefaultMessage for $Error {
             #[inline]
             fn to_default_message(&self) -> String {
                 format!(
                     $default_message,
-                    self.enumerate.iter().map(|v| format!("{}", v)).join(", ")
+                    self.$limit.iter().map(|v| format!("{}", v)).join(", ")
                 )
             }
         }
@@ -233,14 +244,3 @@ struct_error_params!(
         pub enumerate: Vec<Literal>,
     }
 );
-
-impl EnumerateError {
-    pub fn new<T>(enumerate: &[T]) -> Self
-    where
-        T: Into<Literal> + std::fmt::Debug + Clone,
-    {
-        Self {
-            enumerate: (*enumerate).iter().map(|x| x.clone().into()).collect(),
-        }
-    }
-}
