@@ -18,3 +18,16 @@ impl<E> CustomMessage<E> {
         crate::validation::Message::new(error, self.message_fn)
     }
 }
+
+impl<E> Default for CustomMessage<E>
+where
+    E: crate::validation::ToDefaultMessage,
+{
+    fn default() -> Self {
+        Self {
+            message_fn: crate::validation::ToDefaultMessage::to_default_message,
+            #[cfg(feature = "fluent")]
+            fluent_message: None,
+        }
+    }
+}

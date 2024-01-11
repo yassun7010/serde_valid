@@ -38,7 +38,7 @@ fn inner_extract_numeric_multiple_of_validator(
             #errors
                 .entry(#rename)
                 .or_default()
-                .push(__composited_error_params.into_error_by(#custom_message));
+                .push(__composited_error_params.into_error_by(#custom_message.unwrap_or_default()));
         }
     ))
 }
