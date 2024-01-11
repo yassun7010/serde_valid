@@ -1,6 +1,6 @@
 use fluent_0::{FluentArgs, FluentBundle, FluentResource};
 
-use crate::validation::{
+use crate::validation::error::{
     ArrayErrors, Errors, ItemErrorsMap, ObjectErrors, PropertyErrorsMap, VecErrors,
 };
 
@@ -126,7 +126,7 @@ fn localize(
 }
 
 fn localize_or_default<E>(
-    message: &crate::validation::Message<E>,
+    message: &crate::validation::error::Message<E>,
     bundle: &FluentBundle<FluentResource>,
 ) -> String {
     if let Some(value) = localize(message.fluent_message.as_ref(), bundle) {
@@ -138,7 +138,7 @@ fn localize_or_default<E>(
 
 #[cfg(test)]
 mod test {
-    use crate::{fluent::Message, validation::CustomMessage};
+    use crate::{fluent::Message, validation::error::Format};
 
     use super::*;
     use fluent_0::{FluentResource, FluentValue};
@@ -192,8 +192,8 @@ mod test {
         bundle.add_resource(res).unwrap();
 
         let error = crate::validation::Error::Maximum(
-            CustomMessage {
-                message_fn: crate::validation::DefaultFormat::default_format,
+            Format {
+                message_fn: crate::validation::error::DefaultFormat::default_format,
                 fluent_message: Some(Message {
                     id: "intro",
                     args: vec![("name", FluentValue::from("John"))],

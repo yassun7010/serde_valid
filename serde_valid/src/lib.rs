@@ -594,7 +594,7 @@ where
             Ok(())
         } else {
             Err(self::validation::Errors::Array(
-                validation::ArrayErrors::new(vec![], items),
+                validation::error::ArrayErrors::new(vec![], items),
             ))
         }
     }
@@ -617,7 +617,7 @@ where
             Ok(())
         } else {
             Err(self::validation::Errors::Array(
-                validation::ArrayErrors::new(vec![], items),
+                validation::error::ArrayErrors::new(vec![], items),
             ))
         }
     }
@@ -641,7 +641,7 @@ where
             Ok(())
         } else {
             Err(self::validation::Errors::Object(
-                validation::ObjectErrors::new(vec![], items),
+                validation::error::ObjectErrors::new(vec![], items),
             ))
         }
     }

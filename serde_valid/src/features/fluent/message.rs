@@ -1,6 +1,6 @@
 use fluent_0::FluentValue;
 
-use crate::validation::DefaultFormat;
+use crate::validation::error::DefaultFormat;
 
 #[derive(Debug, Clone)]
 pub struct Message {

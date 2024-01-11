@@ -41,7 +41,8 @@ fn inner_extract_string_pattern_validator(
             #field_ident,
             __pattern,
         ) {
-            use ::serde_valid::validation::{IntoError, DefaultFormat};
+            use ::serde_valid::validation::IntoError;
+            use ::serde_valid::validation::error::DefaultFormat;
 
             #errors
                 .entry(#rename)

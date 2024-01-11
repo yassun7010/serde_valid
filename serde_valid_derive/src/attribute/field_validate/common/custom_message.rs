@@ -33,7 +33,7 @@ impl CustomMessageToken {
     pub fn into_token(self) -> TokenStream {
         match self.message_fn {
             Some(message_fn) => quote!(
-                Some(::serde_valid::validation::CustomMessage{
+                Some(::serde_valid::validation::error::Format{
                     message_fn: #message_fn,
                 })
             ),
@@ -48,11 +48,11 @@ impl CustomMessageToken {
         }
 
         let message_fn = self.message_fn.unwrap_or(quote!(
-            ::serde_valid::validation::DefaultFormat::default_format
+            ::serde_valid::validation::error::DefaultFormat::default_format
         ));
 
         quote!(
-            Some(::serde_valid::validation::CustomMessage{
+            Some(::serde_valid::validation::error::Format{
                 message_fn: #message_fn,
                 fluent_message: None,
             })

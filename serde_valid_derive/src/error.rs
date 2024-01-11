@@ -55,7 +55,7 @@ pub fn object_errors_tokens() -> TokenStream {
                         (
                             field,
                             ::serde_valid::validation::Errors::Array(
-                                ::serde_valid::validation::ArrayErrors::new(
+                                ::serde_valid::validation::error::ArrayErrors::new(
                                     __field_errors,
                                     __array_errors.items,
                                 ),
@@ -75,7 +75,7 @@ pub fn object_errors_tokens() -> TokenStream {
 
 pub fn array_errors_tokens() -> TokenStream {
     quote!(::serde_valid::validation::Errors::Array(
-        ::serde_valid::validation::ArrayErrors::new(
+        ::serde_valid::validation::error::ArrayErrors::new(
             __rule_vec_errors,
             __item_vec_errors_map
                 .into_iter()
@@ -119,7 +119,7 @@ pub fn array_errors_tokens() -> TokenStream {
                         (
                             index,
                             ::serde_valid::validation::Errors::Array(
-                                ::serde_valid::validation::ArrayErrors::new(
+                                ::serde_valid::validation::error::ArrayErrors::new(
                                     __field_errors,
                                     __array_errors.items,
                                 ),

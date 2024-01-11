@@ -51,7 +51,8 @@ mod tests {
 
     use crate::{
         flatten::IntoFlat,
-        validation::{ArrayErrors, DefaultFormat, Error, Errors, Message},
+        validation::error::{ArrayErrors, DefaultFormat, Message},
+        validation::{Error, Errors},
         MinItemsError,
     };
 

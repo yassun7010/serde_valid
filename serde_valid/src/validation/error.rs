@@ -1,6 +1,4 @@
 mod array_erros;
-mod composited;
-mod custom_message;
 mod errors;
 mod format;
 mod into_error;
@@ -13,10 +11,8 @@ pub use crate::error::{
     MinimumError, MultipleOfError, PatternError, UniqueItemsError,
 };
 pub use array_erros::ArrayErrors;
-pub use composited::Composited;
-pub use custom_message::CustomMessage;
 pub use errors::Errors;
-pub use format::DefaultFormat;
+pub use format::{DefaultFormat, Format};
 use indexmap::IndexMap;
 pub use into_error::IntoError;
 pub use message::Message;

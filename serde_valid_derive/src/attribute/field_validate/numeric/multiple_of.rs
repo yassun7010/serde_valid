@@ -33,7 +33,8 @@ fn inner_extract_numeric_multiple_of_validator(
             #field_ident,
             #multiple_of,
         ) {
-            use ::serde_valid::validation::{IntoError, DefaultFormat};
+            use ::serde_valid::validation::IntoError;
+            use ::serde_valid::validation::error::DefaultFormat;
 
             #errors
                 .entry(#rename)

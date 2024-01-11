@@ -1,5 +1,6 @@
 mod array;
-mod error;
+mod composited;
+pub mod error;
 mod generic;
 mod numeric;
 mod object;
@@ -10,10 +11,12 @@ use crate::{
     MaxPropertiesError, MaximumError, MinLengthError, MinPropertiesError, MinimumError,
     MultipleOfError, PatternError,
 };
+pub use composited::Composited;
+
 pub use array::{ValidateMaxItems, ValidateMinItems, ValidateUniqueItems};
 pub use error::{
-    ArrayErrors, Composited, CustomMessage, DefaultFormat, Error, Errors, IntoError, ItemErrorsMap,
-    ItemVecErrorsMap, Message, ObjectErrors, PropertyErrorsMap, PropertyVecErrorsMap, VecErrors,
+    ArrayErrors, Error, Errors, IntoError, ItemErrorsMap, ItemVecErrorsMap, ObjectErrors,
+    PropertyErrorsMap, PropertyVecErrorsMap, VecErrors,
 };
 pub use generic::ValidateEnumerate;
 use indexmap::IndexMap;

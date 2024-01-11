@@ -1,7 +1,7 @@
 use itertools::Itertools;
 use serde_valid_literal::Literal;
 
-use crate::validation::DefaultFormat;
+use crate::validation::error::DefaultFormat;
 use crate::validation::Number;
 
 #[derive(Debug, thiserror::Error)]

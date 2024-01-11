@@ -1,5 +1,5 @@
-use super::into_error::IntoError;
-use super::{custom_message::CustomMessage, Error};
+use crate::validation::error::IntoError;
+
 use crate::error::{
     EnumerateError, ExclusiveMaximumError, ExclusiveMinimumError, MaxItemsError, MaxLengthError,
     MaxPropertiesError, MaximumError, MinItemsError, MinLengthError, MinPropertiesError,
@@ -32,13 +32,13 @@ macro_rules! impl_into_error {
     ($ErrorType:ident) => {
         paste::paste! {
             impl IntoError<[<$ErrorType Error>]> for Composited<[<$ErrorType Error>]> {
-                fn into_error_by(self, custom: CustomMessage<[<$ErrorType Error>]>) -> Error {
+                fn into_error_by(self, custom: crate::validation::error::Format<[<$ErrorType Error>]>) -> crate::validation::error::Error {
                     match self {
                         Composited::Single(single) => {
-                            Error::$ErrorType(custom.into_message(single))
+                            crate::validation::error::Error::$ErrorType(custom.into_message(single))
                         },
                         Composited::Array(array) =>{
-                            Error::Items(crate::validation::ArrayErrors::new(
+                            crate::validation::error::Error::Items(crate::validation::error::ArrayErrors::new(
                             Vec::with_capacity(0),
                             array
                                 .into_iter()

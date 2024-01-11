@@ -39,7 +39,8 @@ macro_rules! extract_numeric_range_validator{
                         #field_ident,
                         #[<$ErrorType:snake>],
                     ) {
-                        use ::serde_valid::validation::{IntoError, DefaultFormat};
+                        use ::serde_valid::validation::IntoError;
+                        use ::serde_valid::validation::error::DefaultFormat;
 
                         #errors
                             .entry(#rename)
