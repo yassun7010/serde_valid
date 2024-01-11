@@ -13,6 +13,9 @@ use indexmap::IndexMap;
 ///
 /// # Examples
 /// ```rust
+/// use serde_valid::Validate;
+///
+/// #[derive(Validate)]
 /// pub struct Data {
 ///     #[validate(minimum = 0)]
 ///     #[validate(maximum = 10)]
