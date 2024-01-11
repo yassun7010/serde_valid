@@ -540,7 +540,6 @@
 
 pub mod error;
 mod features;
-pub mod json;
 mod traits;
 pub mod validation;
 
@@ -562,10 +561,16 @@ pub use validation::{
 
 #[cfg(feature = "flatten")]
 pub use features::flatten;
+
 #[cfg(feature = "fluent")]
 pub use features::fluent;
+
+#[cfg(feature = "json")]
+pub use features::json;
+
 #[cfg(feature = "toml")]
 pub use features::toml;
+
 #[cfg(feature = "yaml")]
 pub use features::yaml;
 

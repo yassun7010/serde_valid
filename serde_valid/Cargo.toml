@@ -21,7 +21,7 @@ once_cell = "^1.7"
 paste = { workspace = true }
 regex = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
-serde_json = { workspace = true }
+serde_json = { workspace = true, optional = true }
 serde_toml = { package = "toml", version = "^0.8", optional = true }
 serde_valid_derive = { version = "0.16.3", path = "../serde_valid_derive" }
 serde_valid_literal = { version = "0.16.3", path = "../serde_valid_literal" }
@@ -33,7 +33,8 @@ unicode-segmentation = "^1.7"
 unic-langid = "0.9.1"
 
 [features]
-default = ["i128"]
+default = ["i128", "json"]
+json = ["serde_json"]
 toml = ["serde_toml"]
 yaml = ["serde_yaml"]
 i128 = ["num-traits/i128", "indexmap/std", "serde_valid_literal/i128"]
