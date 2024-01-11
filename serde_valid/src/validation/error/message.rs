@@ -1,23 +1,22 @@
+use super::{DefaultFormat, Format};
+
 #[derive(Clone)]
 pub struct Message<E> {
     error: E,
-    format_fn: for<'a> fn(&'a E) -> String,
-    #[cfg(feature = "fluent")]
-    pub fluent_message: Option<crate::fluent::Message>,
+    format: Format<E>,
 }
 
 impl<E> Message<E> {
-    pub fn new(error: E, format_fn: fn(&E) -> String) -> Self {
-        Self {
-            error,
-            format_fn,
-            #[cfg(feature = "fluent")]
-            fluent_message: None,
-        }
+    pub fn new(error: E, format: Format<E>) -> Self {
+        Self { error, format }
     }
 
-    pub fn error(&self) -> String {
-        (self.format_fn)(&self.error)
+    #[cfg(feature = "fluent")]
+    pub fn fluent_message(&self) -> Option<&crate::features::fluent::Message> {
+        match self.format {
+            Format::Fluent(ref message) => Some(message),
+            _ => None,
+        }
     }
 }
 
@@ -30,8 +29,17 @@ where
     }
 }
 
-impl<E> std::fmt::Display for Message<E> {
+impl<E> std::fmt::Display for Message<E>
+where
+    E: DefaultFormat,
+{
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", { self.format_fn }(&self.error))
+        match self.format {
+            Format::Default => write!(f, "{}", self.error.default_format()),
+            Format::Message(ref message) => write!(f, "{message}"),
+            Format::MessageFn(ref format_fn) => write!(f, "{}", { format_fn }(&self.error)),
+            #[cfg(feature = "fluent")]
+            Format::Fluent(_) => write!(f, "{}", self.error.default_format()),
+        }
     }
 }

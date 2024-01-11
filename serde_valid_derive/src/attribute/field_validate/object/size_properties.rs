@@ -1,5 +1,5 @@
-use crate::attribute::field_validate::common::get_numeric;
-use crate::attribute::field_validate::{common::CustomMessageToken, Validator};
+use crate::attribute::field_validate::common::{get_numeric, MessageFormat};
+use crate::attribute::field_validate::Validator;
 use crate::serde::rename::RenameMap;
 use crate::types::Field;
 use proc_macro2::TokenStream;
@@ -14,16 +14,16 @@ macro_rules! extract_object_size_validator {
             pub fn [<extract_object_ $ErrorType:snake _validator>](
                 field: &impl Field,
                 validation_value: &syn::Lit,
-                custom_message: CustomMessageToken,
+                message_format: MessageFormat,
                 rename_map: &RenameMap,
             ) -> Result<Validator, crate::Errors> {
-                [<inner_extract_object_ $ErrorType:snake _validator>](field, validation_value, custom_message, rename_map)
+                [<inner_extract_object_ $ErrorType:snake _validator>](field, validation_value, message_format, rename_map)
             }
 
             fn [<inner_extract_object_ $ErrorType:snake _validator>](
                 field: &impl Field,
                 validation_value: &syn::Lit,
-                custom_message: CustomMessageToken,
+                message_format: MessageFormat,
                 rename_map: &RenameMap,
             ) -> Result<TokenStream, crate::Errors> {
                 let field_name = field.name();
@@ -32,7 +32,6 @@ macro_rules! extract_object_size_validator {
                 let rename = rename_map.get(field_name).unwrap_or(&field_key);
                 let errors = field.errors_variable();
                 let [<$ErrorType:snake>] = get_numeric(validation_value)?;
-                let custom_message = custom_message.into_token();
 
                 Ok(quote!(
                     if let Err(__composited_error_params) = ::serde_valid::validation::[<ValidateComposited $ErrorType>]::[<validate_composited_ $ErrorType:snake>](
@@ -45,7 +44,7 @@ macro_rules! extract_object_size_validator {
                         #errors
                             .entry(#rename)
                             .or_default()
-                            .push(__composited_error_params.into_error_by(#custom_message.unwrap_or_default()));
+                            .push(__composited_error_params.into_error_by(#message_format));
                     }
                 ))
             }

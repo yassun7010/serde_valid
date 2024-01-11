@@ -1,4 +1,4 @@
-use crate::attribute::field_validate::common::CustomMessageToken;
+use crate::attribute::field_validate::common::MessageFormat;
 use crate::attribute::field_validate::Validator;
 use crate::serde::rename::RenameMap;
 use crate::types::Field;
@@ -9,16 +9,16 @@ type Lits<'a> = syn::punctuated::Punctuated<syn::Lit, syn::token::Comma>;
 pub fn extract_generic_enumerate_validator(
     field: &impl Field,
     item_list: &syn::MetaList,
-    custom_message: CustomMessageToken,
+    message_format: MessageFormat,
     rename_map: &RenameMap,
 ) -> Result<Validator, crate::Errors> {
-    inner_extract_generic_enumerate_validator(field, item_list, custom_message, rename_map)
+    inner_extract_generic_enumerate_validator(field, item_list, message_format, rename_map)
 }
 
 fn inner_extract_generic_enumerate_validator(
     field: &impl Field,
     item_list: &syn::MetaList,
-    custom_message: CustomMessageToken,
+    message_format: MessageFormat,
     rename_map: &RenameMap,
 ) -> Result<Validator, crate::Errors> {
     let field_name = field.name();
@@ -27,7 +27,6 @@ fn inner_extract_generic_enumerate_validator(
     let rename = rename_map.get(field_name).unwrap_or(&field_key);
     let errors = field.errors_variable();
     let enumerate = get_enumerate(item_list)?;
-    let custom_message = custom_message.into_token();
 
     Ok(quote!(
         if let Err(__composited_error_params) = ::serde_valid::validation::ValidateCompositedEnumerate::validate_composited_enumerate(
@@ -40,7 +39,7 @@ fn inner_extract_generic_enumerate_validator(
             #errors
                 .entry(#rename)
                 .or_default()
-                .push(__composited_error_params.into_error_by(#custom_message.unwrap_or_default()));
+                .push(__composited_error_params.into_error_by(#message_format));
         }
     ))
 }

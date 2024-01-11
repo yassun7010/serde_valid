@@ -112,7 +112,7 @@ where
     T: DefaultFormat,
 {
     fn into_flat_at(self, path: &JSONPointer) -> FlatErrors {
-        FlatErrors::new(vec![FlatError::new(path.to_owned(), self.error())])
+        FlatErrors::new(vec![FlatError::new(path.to_owned(), self.to_string())])
     }
 }
 
@@ -168,13 +168,13 @@ mod tests {
     fn array_errors_flatten() {
         let min_items = Message::new(
             MinItemsError { min_items: 1 },
-            MinItemsError::default_format,
+            crate::validation::error::Format::Default,
         );
         let maximum = Message::new(
             MaximumError {
                 maximum: Number::I32(1),
             },
-            MaximumError::default_format,
+            crate::validation::error::Format::Default,
         );
         assert_eq!(
             Errors::Array(ArrayErrors {
@@ -203,29 +203,29 @@ mod tests {
             FlatErrors::new(vec![
                 FlatError::new(
                     JSONPointer::default(),
-                    min_items.error().default_format(),
+                    min_items.to_string(),
                 ),
                 FlatError::new(
                     JSONPointer::from([PathChunk::from(0)].as_ref()),
-                    maximum.error().default_format(),
+                    maximum.to_string(),
                 ),
                 FlatError::new(
                     JSONPointer::from([PathChunk::from(0), PathChunk::from(2)].as_ref()),
-                    maximum.error().default_format(),
+                    maximum.to_string(),
                 ),
                 FlatError::new(
                     JSONPointer::from([PathChunk::from(3)].as_ref()),
-                    maximum.error().default_format(),
+                    maximum.to_string(),
                 ),
                 FlatError::new(
                     JSONPointer::from([PathChunk::from(5)].as_ref()),
-                    maximum.error().default_format(),
+                    maximum.to_string(),
                 ),
                 FlatError::new(
                     JSONPointer::from(
                         [PathChunk::from(5), PathChunk::from("name".to_owned())].as_ref()
                     ),
-                    maximum.error().default_format(),
+                    maximum.to_string(),
                 )
             ])
         );

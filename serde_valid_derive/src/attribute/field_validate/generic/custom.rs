@@ -1,4 +1,5 @@
-use crate::attribute::field_validate::{CustomMessageToken, Validator};
+use crate::attribute::field_validate::common::MessageFormat;
+use crate::attribute::field_validate::Validator;
 use crate::serde::rename::RenameMap;
 use crate::types::{CommaSeparatedNestedMetas, Field, SingleIdentPath};
 use proc_macro2::TokenStream;
@@ -7,7 +8,7 @@ use quote::quote;
 pub fn extract_generic_custom_validator(
     field: &impl Field,
     meta_list: &syn::MetaList,
-    _custom_message: CustomMessageToken,
+    _message_format: MessageFormat,
     rename_map: &RenameMap,
 ) -> Result<Validator, crate::Errors> {
     let path = &meta_list.path;

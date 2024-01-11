@@ -1,8 +1,8 @@
-mod custom_message;
 mod lit;
+mod message_format;
 
-pub use custom_message::{extract_custom_message_tokens, CustomMessageToken};
 pub use lit::{get_lit, get_numeric, get_str};
+pub use message_format::{default_message_format, extract_custom_message_format, MessageFormat};
 
 macro_rules! count {
     () => (0usize);

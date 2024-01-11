@@ -1,11 +1,11 @@
-use quote::quote;
-
-use crate::attribute::field_validate::{CustomMessageToken, Validator};
+use crate::attribute::field_validate::MessageFormat;
+use crate::attribute::field_validate::Validator;
 use crate::types::CommaSeparatedNestedMetas;
+use quote::quote;
 
 pub fn extract_generic_struct_custom_validator(
     meta_list: &syn::MetaList,
-    _custom_message: CustomMessageToken,
+    _message_format: MessageFormat,
 ) -> Result<Validator, crate::Errors> {
     let mut errors = vec![];
 

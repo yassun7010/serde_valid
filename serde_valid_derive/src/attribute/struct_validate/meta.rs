@@ -2,7 +2,7 @@ mod meta_list;
 mod meta_name_value;
 mod meta_path;
 
-use crate::attribute::field_validate::{extract_custom_message_tokens, CustomMessageToken};
+use crate::attribute::field_validate::{default_message_format, extract_custom_message_format};
 use crate::attribute::field_validate::{
     MetaListStructValidation, MetaNameValueStructValidation, MetaPathStructValidation, Validator,
 };
@@ -41,25 +41,26 @@ fn inner_extract_struct_validator(
             )]
         })?;
 
-    let custom_message = match nested.len() {
+    let message_format = match nested.len() {
         0 => Err(vec![crate::Error::struct_validation_type_required(
             attribute,
         )])?,
-        1 => CustomMessageToken::default(),
-        2 => match extract_custom_message_tokens(&nested[1]) {
-            Ok(custom_message) => custom_message,
+        1 => None,
+        2 => match extract_custom_message_format(&nested[1]) {
+            Ok(custom_message) => Some(custom_message),
             Err(message_fn_errors) => {
                 errors.extend(message_fn_errors);
-                CustomMessageToken::default()
+                None
             }
         },
         _ => {
             for meta in nested.iter().skip(2) {
                 errors.push(crate::Error::too_many_list_items(meta));
             }
-            CustomMessageToken::default()
+            None
         }
-    };
+    }
+    .unwrap_or_else(default_message_format);
 
     let meta = &nested[0];
     let validation_path = match meta {
@@ -76,18 +77,18 @@ fn inner_extract_struct_validator(
         meta,
     ) {
         (Ok(validation_type), _, _, syn::Meta::Path(validation)) => {
-            extract_struct_validator_from_meta_path(validation_type, validation, custom_message)
+            extract_struct_validator_from_meta_path(validation_type, validation, message_format)
         }
 
         (_, Ok(validation_type), _, syn::Meta::List(validation)) => {
-            extract_struct_validator_from_meta_list(validation_type, validation, custom_message)
+            extract_struct_validator_from_meta_list(validation_type, validation, message_format)
         }
 
         (_, _, Ok(validation_type), syn::Meta::NameValue(validation)) => {
             extract_struct_validator_from_meta_name_value(
                 validation_type,
                 validation,
-                custom_message,
+                message_format,
             )
         }
 
