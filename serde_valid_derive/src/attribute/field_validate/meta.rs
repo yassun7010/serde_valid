@@ -2,7 +2,9 @@ mod meta_list;
 mod meta_name_value;
 mod meta_path;
 
-use crate::attribute::common::message_format::{extract_custom_message_format, default_message_format};
+use crate::attribute::common::message_format::{
+    default_message_format, extract_custom_message_format,
+};
 use crate::attribute::{
     MetaListFieldValidation, MetaNameValueFieldValidation, MetaPathFieldValidation, Validator,
 };
