@@ -7,6 +7,18 @@ use crate::error::{
 };
 use indexmap::IndexMap;
 
+/// Composited use Vec or Map error.
+///
+/// Composited elevates field validation errors to per-element error in the array.
+///
+/// # Examples
+/// ```rust
+/// pub struct Data {
+///     #[validate(minimum = 0)]
+///     #[validate(maximum = 10)]
+///     pub val: Vec<i32>, // <-- Here
+/// }
+/// ```
 #[derive(Debug)]
 pub enum Composited<Error> {
     Single(Error),
