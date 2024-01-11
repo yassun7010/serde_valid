@@ -21,11 +21,11 @@ impl<E> CustomMessage<E> {
 
 impl<E> Default for CustomMessage<E>
 where
-    E: crate::validation::ToDefaultMessage,
+    E: crate::validation::DefaultFormat,
 {
     fn default() -> Self {
         Self {
-            message_fn: crate::validation::ToDefaultMessage::to_default_message,
+            message_fn: crate::validation::DefaultFormat::default_format,
             #[cfg(feature = "fluent")]
             fluent_message: None,
         }

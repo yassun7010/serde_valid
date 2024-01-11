@@ -2,10 +2,10 @@ mod array_erros;
 mod composited;
 mod custom_message;
 mod errors;
+mod format;
 mod into_error;
 mod message;
 mod object_errors;
-mod to_default_message;
 
 pub use crate::error::{
     EnumerateError, ExclusiveMaximumError, ExclusiveMinimumError, MaxItemsError, MaxLengthError,
@@ -16,11 +16,11 @@ pub use array_erros::ArrayErrors;
 pub use composited::Composited;
 pub use custom_message::CustomMessage;
 pub use errors::Errors;
+pub use format::DefaultFormat;
 use indexmap::IndexMap;
 pub use into_error::IntoError;
 pub use message::Message;
 pub use object_errors::ObjectErrors;
-pub use to_default_message::ToDefaultMessage;
 
 #[derive(Debug, Clone, serde::Serialize, thiserror::Error)]
 #[serde(untagged)]

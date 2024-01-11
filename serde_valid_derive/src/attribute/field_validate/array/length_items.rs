@@ -33,14 +33,14 @@ macro_rules! extract_array_length_validator{
                 let [<$ErrorType:snake>] = get_numeric(validation_value)?;
                 let errors = field.errors_variable();
                 let message_fn = custom_message
-                    .message_fn.unwrap_or(quote!(::serde_valid::[<$ErrorType Error>]::to_default_message));
+                    .message_fn.unwrap_or(quote!(::serde_valid::[<$ErrorType Error>]::default_format));
 
                 Ok(quote!(
                     if let Err(error_params) = ::serde_valid::[<Validate $ErrorType>]::[<validate_ $ErrorType:snake>](
                         #field_ident,
                         #[<$ErrorType:snake>],
                     ) {
-                        use ::serde_valid::validation::ToDefaultMessage;
+                        use ::serde_valid::validation::DefaultFormat;
 
                         #errors
                             .entry(#rename)

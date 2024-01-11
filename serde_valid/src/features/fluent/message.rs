@@ -1,6 +1,6 @@
 use fluent_0::FluentValue;
 
-use crate::validation::ToDefaultMessage;
+use crate::validation::DefaultFormat;
 
 #[derive(Debug, Clone)]
 pub struct Message {
@@ -14,9 +14,9 @@ impl std::fmt::Display for Message {
     }
 }
 
-impl ToDefaultMessage for Message {
+impl DefaultFormat for Message {
     #[inline]
-    fn to_default_message(&self) -> String {
+    fn default_format(&self) -> String {
         self.id.to_string()
     }
 }

@@ -193,7 +193,7 @@ mod test {
 
         let error = crate::validation::Error::Maximum(
             CustomMessage {
-                message_fn: crate::validation::ToDefaultMessage::to_default_message,
+                message_fn: crate::validation::DefaultFormat::default_format,
                 fluent_message: Some(Message {
                     id: "intro",
                     args: vec![("name", FluentValue::from("John"))],

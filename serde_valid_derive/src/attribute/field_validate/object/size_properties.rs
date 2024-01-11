@@ -39,7 +39,7 @@ macro_rules! extract_object_size_validator {
                         #field_ident,
                         #[<$ErrorType:snake>]
                     ) {
-                        use ::serde_valid::validation::{IntoError, ToDefaultMessage};
+                        use ::serde_valid::validation::{IntoError, DefaultFormat};
 
                         #errors
                             .entry(#rename)

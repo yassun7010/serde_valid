@@ -48,7 +48,7 @@ impl CustomMessageToken {
         }
 
         let message_fn = self.message_fn.unwrap_or(quote!(
-            ::serde_valid::validation::ToDefaultMessage::to_default_message
+            ::serde_valid::validation::DefaultFormat::default_format
         ));
 
         quote!(

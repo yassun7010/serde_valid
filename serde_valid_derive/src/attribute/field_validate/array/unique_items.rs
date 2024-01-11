@@ -24,13 +24,13 @@ fn inner_extract_array_unique_items_validator(
     let errors = field.errors_variable();
     let message_fn = custom_message
         .message_fn
-        .unwrap_or(quote!(::serde_valid::UniqueItemsError::to_default_message));
+        .unwrap_or(quote!(::serde_valid::UniqueItemsError::default_format));
 
     quote!(
         if let Err(error_params) = ::serde_valid::ValidateUniqueItems::validate_unique_items(
             #field_ident
         ) {
-            use ::serde_valid::validation::ToDefaultMessage;
+            use ::serde_valid::validation::DefaultFormat;
 
             #errors
                 .entry(#rename)
