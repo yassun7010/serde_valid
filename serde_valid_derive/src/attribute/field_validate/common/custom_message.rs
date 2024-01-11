@@ -29,6 +29,19 @@ impl CustomMessageToken {
         }
     }
 
+    #[cfg(not(feature = "fluent"))]
+    pub fn into_token(self) -> TokenStream {
+        match self.message_fn {
+            Some(message_fn) => quote!(
+                Some(::serde_valid::validation::CustomMessage{
+                    message_fn: #message_fn,
+                })
+            ),
+            None => quote!(None),
+        }
+    }
+
+    #[cfg(feature = "fluent")]
     pub fn into_token(self) -> TokenStream {
         if self.message_fn.is_none() && self.fluent_message.is_none() {
             return quote!(None);
@@ -38,15 +51,10 @@ impl CustomMessageToken {
             ::serde_valid::validation::ToDefaultMessage::to_default_message
         ));
 
-        #[cfg(feature = "fluent")]
-        let fluent_message = quote!(fluent_message: None,);
-        #[cfg(not(feature = "fluent"))]
-        let fluent_message = quote!();
-
         quote!(
             Some(::serde_valid::validation::CustomMessage{
                 message_fn: #message_fn,
-                #fluent_message
+                fluent_message: None,
             })
         )
     }
