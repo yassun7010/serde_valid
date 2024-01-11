@@ -1,5 +1,6 @@
-#[derive(Clone)]
+#[derive(Debug, Clone, Default)]
 pub enum Format<E> {
+    #[default]
     Default,
     Message(String),
     MessageFn(fn(&E) -> String),
