@@ -1,5 +1,6 @@
-use crate::attribute::field_validate::common::get_numeric;
-use crate::attribute::field_validate::{common::MessageFormat, Validator};
+use crate::attribute::common::lit::get_numeric;
+use crate::attribute::common::message_format::MessageFormat;
+use crate::attribute::Validator;
 use crate::serde::rename::RenameMap;
 use crate::types::Field;
 use proc_macro2::TokenStream;

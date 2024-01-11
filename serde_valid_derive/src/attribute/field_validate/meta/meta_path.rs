@@ -1,6 +1,6 @@
+use crate::attribute::common::message_format::MessageFormat;
 use crate::attribute::field_validate::array::extract_array_unique_items_validator;
-use crate::attribute::field_validate::common::{MessageFormat, MetaPathFieldValidation};
-use crate::attribute::field_validate::Validator;
+use crate::attribute::{MetaPathFieldValidation, Validator};
 use crate::serde::rename::RenameMap;
 use crate::types::Field;
 

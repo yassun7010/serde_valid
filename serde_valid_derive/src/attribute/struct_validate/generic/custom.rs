@@ -1,5 +1,5 @@
-use crate::attribute::field_validate::MessageFormat;
-use crate::attribute::field_validate::Validator;
+use crate::attribute::common::message_format::MessageFormat;
+use crate::attribute::Validator;
 use crate::types::CommaSeparatedNestedMetas;
 use quote::quote;
 

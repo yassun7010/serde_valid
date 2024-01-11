@@ -1,10 +1,10 @@
+use crate::attribute::{MetaListCustomMessage, MetaNameValueCustomMessage, MetaPathCustomMessage};
 use crate::types::{CommaSeparatedNestedMetas, NestedMeta, SingleIdentPath};
 use proc_macro2::TokenStream;
 use quote::quote;
 use std::str::FromStr;
 
-use super::{get_str, MetaListCustomMessage, MetaNameValueCustomMessage, MetaPathCustomMessage};
-
+use super::lit::get_str;
 pub type MessageFormat = TokenStream;
 
 pub fn default_message_format() -> MessageFormat {

@@ -1,13 +1,11 @@
-use crate::attribute::field_validate::{
-    MetaListFieldValidation, MetaListStructValidation, MetaNameValueCustomMessage,
-    MetaNameValueFieldValidation, MetaNameValueStructValidation, MetaPathCustomMessage,
-    MetaPathFieldValidation, MetaPathStructValidation,
+use crate::attribute::{
+    MetaListCustomMessage, MetaListFieldValidation, MetaListStructValidation,
+    MetaNameValueCustomMessage, MetaNameValueFieldValidation, MetaNameValueStructValidation,
+    MetaPathCustomMessage, MetaPathFieldValidation, MetaPathStructValidation,
 };
 use proc_macro2::TokenStream;
 use quote::{quote, ToTokens};
 use syn::spanned::Spanned;
-
-use crate::attribute::field_validate::MetaListCustomMessage;
 
 pub fn object_errors_tokens() -> TokenStream {
     quote!(::serde_valid::validation::Errors::Object(

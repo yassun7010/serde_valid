@@ -1,8 +1,9 @@
-use crate::attribute::field_validate::common::{MessageFormat, MetaListFieldValidation};
+use crate::attribute::common::message_format::MessageFormat;
 use crate::attribute::field_validate::generic::{
     extract_generic_custom_validator, extract_generic_enumerate_validator,
 };
-use crate::attribute::field_validate::Validator;
+use crate::attribute::MetaListFieldValidation;
+use crate::attribute::Validator;
 use crate::serde::rename::RenameMap;
 use crate::types::Field;
 

@@ -2,11 +2,14 @@ mod meta_list;
 mod meta_name_value;
 mod meta_path;
 
-use crate::attribute::field_validate::{default_message_format, extract_custom_message_format};
-use crate::attribute::field_validate::{
-    MetaListStructValidation, MetaNameValueStructValidation, MetaPathStructValidation, Validator,
+use crate::{
+    attribute::{
+        common::message_format::{default_message_format, extract_custom_message_format},
+        MetaListStructValidation, MetaNameValueStructValidation, MetaPathStructValidation,
+        Validator,
+    },
+    types::SingleIdentPath,
 };
-use crate::types::SingleIdentPath;
 use quote::quote;
 use std::str::FromStr;
 

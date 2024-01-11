@@ -2,8 +2,8 @@ mod meta_list;
 mod meta_name_value;
 mod meta_path;
 
-use crate::attribute::field_validate::common::extract_custom_message_format;
-use crate::attribute::field_validate::{
+use crate::attribute::common::message_format::{extract_custom_message_format, default_message_format};
+use crate::attribute::{
     MetaListFieldValidation, MetaNameValueFieldValidation, MetaPathFieldValidation, Validator,
 };
 use crate::serde::rename::RenameMap;
@@ -14,7 +14,6 @@ use meta_name_value::extract_field_validator_from_meta_name_value;
 use meta_path::extract_field_validator_from_meta_path;
 use std::str::FromStr;
 
-use super::common::default_message_format;
 use super::generic::extract_generic_validate_validator;
 
 pub fn extract_field_validator(

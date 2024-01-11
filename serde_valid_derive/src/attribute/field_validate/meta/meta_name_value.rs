@@ -1,8 +1,7 @@
+use crate::attribute::common::lit::get_lit;
+use crate::attribute::common::message_format::MessageFormat;
 use crate::attribute::field_validate::array::{
     extract_array_max_items_validator, extract_array_min_items_validator,
-};
-use crate::attribute::field_validate::common::{
-    get_lit, MessageFormat, MetaNameValueFieldValidation,
 };
 use crate::attribute::field_validate::numeric::{
     extract_numeric_exclusive_maximum_validator, extract_numeric_exclusive_minimum_validator,
@@ -16,7 +15,7 @@ use crate::attribute::field_validate::string::{
     extract_string_max_length_validator, extract_string_min_length_validator,
     extract_string_pattern_validator,
 };
-use crate::attribute::field_validate::Validator;
+use crate::attribute::{MetaNameValueFieldValidation, Validator};
 use crate::serde::rename::RenameMap;
 use crate::types::Field;
 
