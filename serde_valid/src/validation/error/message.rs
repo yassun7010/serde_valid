@@ -1,6 +1,6 @@
 use super::{DefaultFormat, Format};
 
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct Message<E> {
     error: E,
     format: Format<E>,
@@ -17,15 +17,6 @@ impl<E> Message<E> {
             Format::Fluent(ref message) => Some(message),
             _ => None,
         }
-    }
-}
-
-impl<E> std::fmt::Debug for Message<E>
-where
-    E: std::fmt::Debug,
-{
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "Message {{ error: {:?} }}", &self.error)
     }
 }
 

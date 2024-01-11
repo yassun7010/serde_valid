@@ -9,10 +9,7 @@ pub enum Format<E> {
 }
 
 impl<E> Format<E> {
-    pub fn into_message(self, error: E) -> crate::validation::error::Message<E>
-    where
-        E: DefaultFormat,
-    {
+    pub fn into_message(self, error: E) -> crate::validation::error::Message<E> {
         crate::validation::error::Message::new(error, self)
     }
 }

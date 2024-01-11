@@ -1,7 +1,5 @@
 use fluent_0::FluentValue;
 
-use crate::validation::error::DefaultFormat;
-
 #[derive(Debug, Clone)]
 pub struct Message {
     pub id: &'static str,
@@ -11,12 +9,5 @@ pub struct Message {
 impl std::fmt::Display for Message {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         self.id.fmt(f)
-    }
-}
-
-impl DefaultFormat for Message {
-    #[inline]
-    fn default_format(&self) -> String {
-        self.id.to_string()
     }
 }

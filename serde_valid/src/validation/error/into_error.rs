@@ -1,9 +1,4 @@
-use crate::validation::error::DefaultFormat;
-
-pub trait IntoError<E>: Sized
-where
-    E: DefaultFormat,
-{
+pub trait IntoError<E>: Sized {
     fn into_error(self) -> crate::validation::Error {
         self.into_error_by(crate::validation::error::Format::Default)
     }
