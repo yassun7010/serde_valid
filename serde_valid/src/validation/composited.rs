@@ -32,10 +32,10 @@ macro_rules! impl_into_error {
     ($ErrorType:ident) => {
         paste::paste! {
             impl IntoError<[<$ErrorType Error>]> for Composited<[<$ErrorType Error>]> {
-                fn into_error_by(self, custom: crate::validation::error::Format<[<$ErrorType Error>]>) -> crate::validation::error::Error {
+                fn into_error_by(self, format: crate::validation::error::Format<[<$ErrorType Error>]>) -> crate::validation::error::Error {
                     match self {
                         Composited::Single(single) => {
-                            crate::validation::error::Error::$ErrorType(custom.into_message(single))
+                            crate::validation::error::Error::$ErrorType(format.into_message(single))
                         },
                         Composited::Array(array) =>{
                             crate::validation::error::Error::Items(crate::validation::error::ArrayErrors::new(
@@ -43,7 +43,7 @@ macro_rules! impl_into_error {
                             array
                                 .into_iter()
                                 .map(|(index, params)| {
-                                    (index, crate::validation::Errors::NewType(vec![params.into_error_by(custom.clone())]))
+                                    (index, crate::validation::Errors::NewType(vec![params.into_error_by(format.clone())]))
                                 })
                                 .collect::<IndexMap<_, _>>(),
                         ))},
