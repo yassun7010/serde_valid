@@ -50,7 +50,16 @@ fn inner_extract_struct_validator(
         )])?,
         1 => None,
         2 => match extract_custom_message_format(&nested[1]) {
-            Ok(custom_message) => Some(custom_message),
+            Ok(custom_message) => {
+                if nested[0].path().is_ident("custom") {
+                    errors.push(crate::Error::validate_custom_not_support_custom_message(
+                        &nested[1],
+                    ));
+                    None
+                } else {
+                    Some(custom_message)
+                }
+            }
             Err(message_fn_errors) => {
                 errors.extend(message_fn_errors);
                 None

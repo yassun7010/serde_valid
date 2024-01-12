@@ -471,6 +471,13 @@ impl Error {
     pub fn to_compile_error(&self) -> TokenStream {
         self.0.to_compile_error()
     }
+
+    pub fn validate_custom_not_support_custom_message(meta: &syn::Meta) -> Self {
+        Self::new(
+            meta.span(),
+            "#[validate(custon(...), ???)] does not support custom error message.",
+        )
+    }
 }
 
 fn did_you_mean<'a, T, I>(unknown: &'a str, candidates: I) -> Option<Vec<&'a str>>
