@@ -121,26 +121,68 @@ fn get_fluent_message(
     path: &syn::Path,
     fn_define: &CommaSeparatedNestedMetas,
 ) -> Result<MessageFormat, crate::Errors> {
+    use quote::ToTokens;
+
+    use crate::types::CommaSeparatedTokenStreams;
+
     match fn_define.len() {
         0 => Err(vec![crate::Error::fluent_need_item(message_type, path)]),
-        1 => match &fn_define[0] {
-            NestedMeta::Lit(syn::Lit::Str(id)) => Ok(quote!(
+        1 => {
+            let id = get_fluent_id(&fn_define[0])
+                .ok_or_else(|| vec![crate::Error::fluent_allow_key(message_type, &fn_define[0])])?;
+
+            Ok(quote!(
                 ::serde_valid::validation::error::Format::Fluent(
                     ::serde_valid::fluent::Message{
-                    id: #id,
-                    args: vec![]
-                }
+                        id: #id,
+                        args: vec![]
+                    }
                 )
-            )),
-            _ => Err(vec![crate::Error::fluent_allow_key(
-                message_type,
-                &fn_define[0],
-            )]),
-        },
-        _ => Err(fn_define
-            .iter()
-            .skip(1)
-            .map(|args| crate::Error::fluent_allow_args(message_type, args))
-            .collect()),
+            ))
+        }
+        _ => {
+            let mut errors = vec![];
+            let id = get_fluent_id(&fn_define[0])
+                .ok_or_else(|| vec![crate::Error::fluent_allow_key(message_type, &fn_define[0])])?;
+
+            let args = fn_define
+                .iter()
+                .skip(1)
+                .filter_map(|arg| {
+                    if let NestedMeta::Meta(syn::Meta::NameValue(name_value)) = arg {
+                        let name = &name_value.path.to_token_stream().to_string();
+                        if let syn::Expr::Lit(lit) = &name_value.value {
+                            return Some(
+                                quote!((#name, ::serde_valid::fluent::FluentValue::from(#lit))),
+                            );
+                        } else {
+                            errors.push(crate::Error::fluent_allow_args(message_type, arg));
+                        }
+                    } else {
+                        errors.push(crate::Error::fluent_allow_args(message_type, arg));
+                    }
+                    None
+                })
+                .collect::<CommaSeparatedTokenStreams>();
+            if errors.is_empty() {
+                Ok(quote!(
+                    ::serde_valid::validation::error::Format::Fluent(
+                        ::serde_valid::fluent::Message{
+                            id: #id,
+                            args: vec![#args]
+                        }
+                    )
+                ))
+            } else {
+                Err(errors)
+            }
+        }
+    }
+}
+
+fn get_fluent_id(nested_meta: &NestedMeta) -> Option<&syn::LitStr> {
+    match nested_meta {
+        NestedMeta::Lit(syn::Lit::Str(id)) => Some(id),
+        _ => None,
     }
 }
