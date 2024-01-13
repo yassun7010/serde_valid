@@ -115,11 +115,10 @@ macro_rules! struct_error_params {
     (
         #[derive(Debug, Clone)]
         #[default_format=$default_format:literal]
-        pub struct $Error:ident {
-        }
+        pub struct $Error:ident;
     ) => {
         #[derive(Debug, Clone)]
-        pub struct $Error {}
+        pub struct $Error;
 
         impl DefaultFormat for $Error {
             #[inline]
@@ -216,7 +215,7 @@ struct_error_params!(
 struct_error_params!(
     #[derive(Debug, Clone)]
     #[default_format = "The items must be unique."]
-    pub struct UniqueItemsError {}
+    pub struct UniqueItemsError;
 );
 
 // Object

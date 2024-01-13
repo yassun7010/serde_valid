@@ -701,3 +701,8 @@ pub mod helpers {
         f(data)
     }
 }
+
+#[cfg(test)]
+pub mod tests {
+    pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
+}

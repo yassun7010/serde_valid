@@ -20,17 +20,26 @@ impl<E> Message<E> {
     }
 }
 
+impl<E> DefaultFormat for Message<E>
+where
+    E: DefaultFormat,
+{
+    fn default_format(&self) -> String {
+        match &self.format {
+            Format::Default => self.error.default_format(),
+            Format::Message(ref message) => message.to_string(),
+            Format::MessageFn(ref format_fn) => format_fn(&self.error),
+            #[cfg(feature = "fluent")]
+            Format::Fluent(message) => format!("{message}"),
+        }
+    }
+}
+
 impl<E> std::fmt::Display for Message<E>
 where
     E: DefaultFormat,
 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self.format {
-            Format::Default => write!(f, "{}", self.error.default_format()),
-            Format::Message(ref message) => write!(f, "{message}"),
-            Format::MessageFn(ref format_fn) => write!(f, "{}", { format_fn }(&self.error)),
-            #[cfg(feature = "fluent")]
-            Format::Fluent(_) => write!(f, "{}", self.error.default_format()),
-        }
+        write!(f, "{}", self.default_format())
     }
 }
