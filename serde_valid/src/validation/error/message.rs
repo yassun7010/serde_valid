@@ -1,4 +1,4 @@
-use super::{DefaultFormat, Format};
+use super::{Format, FormatDefault};
 
 #[derive(Debug, Clone)]
 pub struct Message<E> {
@@ -20,13 +20,13 @@ impl<E> Message<E> {
     }
 }
 
-impl<E> DefaultFormat for Message<E>
+impl<E> FormatDefault for Message<E>
 where
-    E: DefaultFormat,
+    E: FormatDefault,
 {
-    fn default_format(&self) -> String {
+    fn format_default(&self) -> String {
         match &self.format {
-            Format::Default => self.error.default_format(),
+            Format::Default => self.error.format_default(),
             Format::Message(ref message) => message.to_string(),
             Format::MessageFn(ref format_fn) => format_fn(&self.error),
             #[cfg(feature = "fluent")]
@@ -37,9 +37,9 @@ where
 
 impl<E> std::fmt::Display for Message<E>
 where
-    E: DefaultFormat,
+    E: FormatDefault,
 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.default_format())
+        write!(f, "{}", self.format_default())
     }
 }

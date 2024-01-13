@@ -12,7 +12,7 @@ pub use crate::error::{
 };
 pub use array_erros::ArrayErrors;
 pub use errors::Errors;
-pub use format::{DefaultFormat, Format};
+pub use format::{Format, FormatDefault};
 use indexmap::IndexMap;
 pub use into_error::IntoError;
 pub use message::Message;

@@ -39,7 +39,7 @@ macro_rules! extract_array_length_validator{
                         #field_ident,
                         #[<$ErrorType:snake>],
                     ) {
-                        use ::serde_valid::validation::error::DefaultFormat;
+                        use ::serde_valid::validation::error::FormatDefault;
 
                         #errors
                             .entry(#rename)

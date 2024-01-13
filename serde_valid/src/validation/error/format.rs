@@ -14,6 +14,6 @@ impl<E> Format<E> {
     }
 }
 
-pub trait DefaultFormat {
-    fn default_format(&self) -> String;
+pub trait FormatDefault {
+    fn format_default(&self) -> String;
 }

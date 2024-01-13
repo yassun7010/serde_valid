@@ -40,7 +40,7 @@ macro_rules! extract_numeric_range_validator{
                         #[<$ErrorType:snake>],
                     ) {
                         use ::serde_valid::validation::IntoError;
-                        use ::serde_valid::validation::error::DefaultFormat;
+                        use ::serde_valid::validation::error::FormatDefault;
 
                         #errors
                             .entry(#rename)

@@ -1,7 +1,7 @@
 use fluent_0::{FluentBundle, FluentResource};
 
 use crate::validation::error::{
-    ArrayErrors, DefaultFormat, Errors, ItemErrorsMap, ObjectErrors, PropertyErrorsMap, VecErrors,
+    ArrayErrors, Errors, FormatDefault, ItemErrorsMap, ObjectErrors, PropertyErrorsMap, VecErrors,
 };
 
 use super::{LocalizedError, TryLocalize};
@@ -105,13 +105,13 @@ impl Localize for crate::validation::Error {
 
 impl<E> Localize for crate::validation::error::Message<E>
 where
-    E: DefaultFormat,
+    E: FormatDefault,
 {
     type Target = LocalizedError;
 
     fn localize(&self, bundle: &FluentBundle<FluentResource>) -> Self::Target {
         self.try_localize(bundle)
-            .unwrap_or_else(|_| LocalizedError::String(self.default_format()))
+            .unwrap_or_else(|_| LocalizedError::String(self.format_default()))
     }
 }
 

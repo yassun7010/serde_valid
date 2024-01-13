@@ -1,7 +1,7 @@
 use jsonschema::paths::{JSONPointer, PathChunk};
 
 use crate::validation::error::{
-    ArrayErrors, DefaultFormat, ItemErrorsMap, Message, ObjectErrors, PropertyErrorsMap,
+    ArrayErrors, FormatDefault, ItemErrorsMap, Message, ObjectErrors, PropertyErrorsMap,
 };
 
 use super::{FlatError, FlatErrors};
@@ -109,7 +109,7 @@ where
 
 impl<T> IntoFlat for Message<T>
 where
-    T: DefaultFormat,
+    T: FormatDefault,
 {
     fn into_flat_at(self, path: &JSONPointer) -> FlatErrors {
         FlatErrors::new(vec![FlatError::new(path.to_owned(), self.to_string())])

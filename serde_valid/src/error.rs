@@ -1,7 +1,7 @@
 use itertools::Itertools;
 use serde_valid_literal::Literal;
 
-use crate::validation::error::DefaultFormat;
+use crate::validation::error::FormatDefault;
 use crate::validation::Number;
 
 #[derive(Debug, thiserror::Error)]
@@ -73,9 +73,9 @@ macro_rules! struct_error_params {
             }
         }
 
-        impl DefaultFormat for $Error {
+        impl FormatDefault for $Error {
             #[inline]
-            fn default_format(&self) -> String {
+            fn format_default(&self) -> String {
                 format!(
                     $default_message,
                     self.$limit.iter().map(|v| format!("{}", v)).join(", ")
@@ -104,9 +104,9 @@ macro_rules! struct_error_params {
             }
         }
 
-        impl DefaultFormat for $Error {
+        impl FormatDefault for $Error {
             #[inline]
-            fn default_format(&self) -> String {
+            fn format_default(&self) -> String {
                 format!($default_message, self.$limit)
             }
         }
@@ -120,9 +120,9 @@ macro_rules! struct_error_params {
         #[derive(Debug, Clone)]
         pub struct $Error;
 
-        impl DefaultFormat for $Error {
+        impl FormatDefault for $Error {
             #[inline]
-            fn default_format(&self) -> String {
+            fn format_default(&self) -> String {
                 format!($default_message)
             }
         }
