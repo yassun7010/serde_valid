@@ -30,7 +30,8 @@ thiserror = "^1.0"
 unicode-segmentation = "^1.7"
 
 [dev-dependencies]
-unic-langid = "0.9.1"
+intl-memoizer = "0.5"
+unic-langid = "0.9"
 
 [features]
 default = ["i128", "json"]
