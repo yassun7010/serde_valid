@@ -203,29 +203,29 @@ mod tests {
             FlatErrors::new(vec![
                 FlatError::new(
                     JSONPointer::default(),
-                    min_items.to_string(),
+                    min_items.format_default(),
                 ),
                 FlatError::new(
                     JSONPointer::from([PathChunk::from(0)].as_ref()),
-                    maximum.to_string(),
+                    maximum.format_default(),
                 ),
                 FlatError::new(
                     JSONPointer::from([PathChunk::from(0), PathChunk::from(2)].as_ref()),
-                    maximum.to_string(),
+                    maximum.format_default(),
                 ),
                 FlatError::new(
                     JSONPointer::from([PathChunk::from(3)].as_ref()),
-                    maximum.to_string(),
+                    maximum.format_default(),
                 ),
                 FlatError::new(
                     JSONPointer::from([PathChunk::from(5)].as_ref()),
-                    maximum.to_string(),
+                    maximum.format_default(),
                 ),
                 FlatError::new(
                     JSONPointer::from(
                         [PathChunk::from(5), PathChunk::from("name".to_owned())].as_ref()
                     ),
-                    maximum.to_string(),
+                    maximum.format_default(),
                 )
             ])
         );
