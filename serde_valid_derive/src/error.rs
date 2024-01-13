@@ -162,14 +162,14 @@ impl Error {
         Error::new(span, message)
     }
 
-    pub fn unit_struct_not_support(input: &syn::DeriveInput) -> Self {
+    pub fn unit_struct_not_supported(input: &syn::DeriveInput) -> Self {
         Self::new(
             input.span(),
             "#[derive(Validate)] does not support Unit Struct.",
         )
     }
 
-    pub fn union_not_support(input: &syn::DeriveInput) -> Self {
+    pub fn union_not_supported(input: &syn::DeriveInput) -> Self {
         Self::new(input.span(), "#[derive(Validate)] does not support Union.")
     }
 
@@ -225,8 +225,8 @@ impl Error {
         )
     }
 
-    pub fn validate_meta_name_value_not_support(name_value: &syn::MetaNameValue) -> Self {
-        Self::new(name_value.span(), "#[validate = ???] does not support.")
+    pub fn validate_meta_name_value_not_supported(name_value: &syn::MetaNameValue) -> Self {
+        Self::new(name_value.span(), "#[validate = ???] not supported.")
     }
 
     pub fn meta_path_validation_need_value(path: &syn::Path, validation_type: &str) -> Self {
@@ -457,10 +457,10 @@ impl Error {
         Self::new(lit.span(), "Allow str literal only.")
     }
 
-    pub fn closure_not_support(closure: &syn::ExprClosure) -> Self {
+    pub fn closure_not_supported(closure: &syn::ExprClosure) -> Self {
         Self::new(
             closure.or1_token.span(),
-            format!("Closure not support. {}", closure.to_token_stream()),
+            format!("Closure not supported. {}", closure.to_token_stream()),
         )
     }
 
@@ -472,7 +472,7 @@ impl Error {
         self.0.to_compile_error()
     }
 
-    pub fn validate_custom_not_support_custom_message(meta: &syn::Meta) -> Self {
+    pub fn validate_custom_does_not_support_custom_message(meta: &syn::Meta) -> Self {
         Self::new(
             meta.span(),
             "#[validate(custon(...), ???)] does not support custom error message.",

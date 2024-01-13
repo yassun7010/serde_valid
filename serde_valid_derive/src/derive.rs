@@ -12,11 +12,11 @@ pub fn expand_derive(input: &syn::DeriveInput) -> Result<TokenStream, crate::Err
         syn::Data::Struct(syn::DataStruct { ref fields, .. }) => match fields {
             syn::Fields::Named(fields) => expand_named_struct_derive(input, fields),
             syn::Fields::Unnamed(fields) => expand_unnamed_struct_derive(input, fields),
-            syn::Fields::Unit => Err(vec![crate::Error::unit_struct_not_support(input)]),
+            syn::Fields::Unit => Err(vec![crate::Error::unit_struct_not_supported(input)]),
         },
         syn::Data::Enum(syn::DataEnum { variants, .. }) => {
             expand_enum_validate_derive(input, variants)
         }
-        syn::Data::Union(_) => Err(vec![crate::Error::union_not_support(input)]),
+        syn::Data::Union(_) => Err(vec![crate::Error::union_not_supported(input)]),
     }
 }

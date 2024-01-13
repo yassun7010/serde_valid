@@ -27,7 +27,7 @@ pub fn extract_field_validator(
         syn::Meta::List(list) => inner_extract_field_validator(field, attribute, list, rename_map),
         syn::Meta::Path(_) => extract_generic_validate_validator(field, rename_map),
         syn::Meta::NameValue(name_value) => {
-            Err(vec![crate::Error::validate_meta_name_value_not_support(
+            Err(vec![crate::Error::validate_meta_name_value_not_supported(
                 name_value,
             )])
         }
@@ -57,9 +57,9 @@ fn inner_extract_field_validator(
         2 => match extract_custom_message_format(&nested[1]) {
             Ok(custom_message) => {
                 if nested[0].path().is_ident("custom") {
-                    errors.push(crate::Error::validate_custom_not_support_custom_message(
-                        &nested[1],
-                    ));
+                    errors.push(
+                        crate::Error::validate_custom_does_not_support_custom_message(&nested[1]),
+                    );
                     None
                 } else {
                     Some(custom_message)
