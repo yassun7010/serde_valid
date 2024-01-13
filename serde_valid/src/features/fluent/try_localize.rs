@@ -1,4 +1,4 @@
-use fluent_0::{FluentArgs, FluentBundle, FluentError, FluentResource};
+use fluent_0::{bundle::FluentBundle, FluentArgs, FluentError, FluentResource};
 
 use crate::validation::error::{
     ArrayErrors, Errors, FormatDefault, ItemErrorsMap, ObjectErrors, PropertyErrorsMap, VecErrors,
@@ -9,19 +9,24 @@ use super::LocalizedError;
 pub trait TryLocalize {
     type Target;
 
-    fn try_localize(
+    fn try_localize<M>(
         &self,
-        bundle: &FluentBundle<FluentResource>,
-    ) -> Result<Self::Target, Vec<FluentError>>;
+        bundle: &FluentBundle<FluentResource, M>,
+    ) -> Result<Self::Target, Vec<FluentError>>
+    where
+        M: fluent_0::memoizer::MemoizerKind;
 }
 
 impl TryLocalize for Errors<crate::validation::Error> {
     type Target = Errors<LocalizedError>;
 
-    fn try_localize(
+    fn try_localize<M>(
         &self,
-        bundle: &FluentBundle<FluentResource>,
-    ) -> Result<Self::Target, Vec<FluentError>> {
+        bundle: &FluentBundle<FluentResource, M>,
+    ) -> Result<Self::Target, Vec<FluentError>>
+    where
+        M: fluent_0::memoizer::MemoizerKind,
+    {
         match self {
             Errors::Array(array) => Ok(Errors::Array(array.try_localize(bundle)?)),
             Errors::Object(object) => Ok(Errors::Object(object.try_localize(bundle)?)),
@@ -33,10 +38,13 @@ impl TryLocalize for Errors<crate::validation::Error> {
 impl TryLocalize for ArrayErrors<crate::validation::Error> {
     type Target = ArrayErrors<LocalizedError>;
 
-    fn try_localize(
+    fn try_localize<M>(
         &self,
-        bundle: &FluentBundle<FluentResource>,
-    ) -> Result<Self::Target, Vec<FluentError>> {
+        bundle: &FluentBundle<FluentResource, M>,
+    ) -> Result<Self::Target, Vec<FluentError>>
+    where
+        M: fluent_0::memoizer::MemoizerKind,
+    {
         match (
             self.errors.try_localize(bundle),
             self.items.try_localize(bundle),
@@ -52,10 +60,13 @@ impl TryLocalize for ArrayErrors<crate::validation::Error> {
 impl TryLocalize for ObjectErrors<crate::validation::Error> {
     type Target = ObjectErrors<LocalizedError>;
 
-    fn try_localize(
+    fn try_localize<M>(
         &self,
-        bundle: &FluentBundle<FluentResource>,
-    ) -> Result<Self::Target, Vec<FluentError>> {
+        bundle: &FluentBundle<FluentResource, M>,
+    ) -> Result<Self::Target, Vec<FluentError>>
+    where
+        M: fluent_0::memoizer::MemoizerKind,
+    {
         match (
             self.errors.try_localize(bundle),
             self.properties.try_localize(bundle),
@@ -71,10 +82,13 @@ impl TryLocalize for ObjectErrors<crate::validation::Error> {
 impl TryLocalize for VecErrors<crate::validation::Error> {
     type Target = VecErrors<LocalizedError>;
 
-    fn try_localize(
+    fn try_localize<M>(
         &self,
-        bundle: &FluentBundle<FluentResource>,
-    ) -> Result<Self::Target, Vec<FluentError>> {
+        bundle: &FluentBundle<FluentResource, M>,
+    ) -> Result<Self::Target, Vec<FluentError>>
+    where
+        M: fluent_0::memoizer::MemoizerKind,
+    {
         self.iter()
             .map(|error| error.try_localize(bundle))
             .collect()
@@ -84,10 +98,13 @@ impl TryLocalize for VecErrors<crate::validation::Error> {
 impl TryLocalize for ItemErrorsMap<crate::validation::Error> {
     type Target = ItemErrorsMap<LocalizedError>;
 
-    fn try_localize(
+    fn try_localize<M>(
         &self,
-        bundle: &FluentBundle<FluentResource>,
-    ) -> Result<Self::Target, Vec<FluentError>> {
+        bundle: &FluentBundle<FluentResource, M>,
+    ) -> Result<Self::Target, Vec<FluentError>>
+    where
+        M: fluent_0::memoizer::MemoizerKind,
+    {
         let mut errors = vec![];
         let target = self
             .iter()
@@ -113,10 +130,13 @@ impl TryLocalize for ItemErrorsMap<crate::validation::Error> {
 impl TryLocalize for PropertyErrorsMap<crate::validation::Error> {
     type Target = PropertyErrorsMap<LocalizedError>;
 
-    fn try_localize(
+    fn try_localize<M>(
         &self,
-        bundle: &FluentBundle<FluentResource>,
-    ) -> Result<Self::Target, Vec<FluentError>> {
+        bundle: &FluentBundle<FluentResource, M>,
+    ) -> Result<Self::Target, Vec<FluentError>>
+    where
+        M: fluent_0::memoizer::MemoizerKind,
+    {
         let mut errors = vec![];
         let target = self
             .iter()
@@ -142,10 +162,13 @@ impl TryLocalize for PropertyErrorsMap<crate::validation::Error> {
 impl TryLocalize for crate::validation::Error {
     type Target = LocalizedError;
 
-    fn try_localize(
+    fn try_localize<M>(
         &self,
-        bundle: &FluentBundle<FluentResource>,
-    ) -> Result<Self::Target, Vec<FluentError>> {
+        bundle: &FluentBundle<FluentResource, M>,
+    ) -> Result<Self::Target, Vec<FluentError>>
+    where
+        M: fluent_0::memoizer::MemoizerKind,
+    {
         match self {
             Self::Minimum(message) => message.try_localize(bundle),
             Self::Maximum(message) => message.try_localize(bundle),
@@ -179,10 +202,13 @@ where
 {
     type Target = LocalizedError;
 
-    fn try_localize(
+    fn try_localize<M>(
         &self,
-        bundle: &FluentBundle<FluentResource>,
-    ) -> Result<Self::Target, Vec<FluentError>> {
+        bundle: &FluentBundle<FluentResource, M>,
+    ) -> Result<Self::Target, Vec<FluentError>>
+    where
+        M: fluent_0::memoizer::MemoizerKind,
+    {
         if let Some(message) = self.fluent_message() {
             if let Some(localized) = message.try_localize(bundle)? {
                 return Ok(localized);
@@ -195,10 +221,13 @@ where
 impl TryLocalize for crate::features::fluent::Message {
     type Target = Option<LocalizedError>;
 
-    fn try_localize(
+    fn try_localize<M>(
         &self,
-        bundle: &FluentBundle<FluentResource>,
-    ) -> Result<Self::Target, Vec<FluentError>> {
+        bundle: &FluentBundle<FluentResource, M>,
+    ) -> Result<Self::Target, Vec<FluentError>>
+    where
+        M: fluent_0::memoizer::MemoizerKind,
+    {
         if let Some(msg) = bundle.get_message(self.id) {
             if let Some(pattern) = msg.value() {
                 let mut errors = vec![];

@@ -1,4 +1,4 @@
-use fluent_0::{FluentBundle, FluentResource};
+use fluent_0::{bundle::FluentBundle, FluentResource};
 
 use crate::validation::error::{
     ArrayErrors, Errors, FormatDefault, ItemErrorsMap, ObjectErrors, PropertyErrorsMap, VecErrors,
@@ -9,13 +9,18 @@ use super::{LocalizedError, TryLocalize};
 pub trait Localize {
     type Target;
 
-    fn localize(&self, bundle: &FluentBundle<FluentResource>) -> Self::Target;
+    fn localize<M>(&self, bundle: &FluentBundle<FluentResource, M>) -> Self::Target
+    where
+        M: fluent_0::memoizer::MemoizerKind;
 }
 
 impl Localize for Errors<crate::validation::Error> {
     type Target = Errors<LocalizedError>;
 
-    fn localize(&self, bundle: &FluentBundle<FluentResource>) -> Self::Target {
+    fn localize<M>(&self, bundle: &FluentBundle<FluentResource, M>) -> Self::Target
+    where
+        M: fluent_0::memoizer::MemoizerKind,
+    {
         match self {
             Errors::Array(array) => Errors::Array(array.localize(bundle)),
             Errors::Object(object) => Errors::Object(object.localize(bundle)),
@@ -27,7 +32,10 @@ impl Localize for Errors<crate::validation::Error> {
 impl Localize for ArrayErrors<crate::validation::Error> {
     type Target = ArrayErrors<LocalizedError>;
 
-    fn localize(&self, bundle: &FluentBundle<FluentResource>) -> Self::Target {
+    fn localize<M>(&self, bundle: &FluentBundle<FluentResource, M>) -> Self::Target
+    where
+        M: fluent_0::memoizer::MemoizerKind,
+    {
         ArrayErrors {
             errors: self.errors.localize(bundle),
             items: self.items.localize(bundle),
@@ -38,7 +46,10 @@ impl Localize for ArrayErrors<crate::validation::Error> {
 impl Localize for ObjectErrors<crate::validation::Error> {
     type Target = ObjectErrors<LocalizedError>;
 
-    fn localize(&self, bundle: &FluentBundle<FluentResource>) -> Self::Target {
+    fn localize<M>(&self, bundle: &FluentBundle<FluentResource, M>) -> Self::Target
+    where
+        M: fluent_0::memoizer::MemoizerKind,
+    {
         ObjectErrors {
             errors: self.errors.localize(bundle),
             properties: self.properties.localize(bundle),
@@ -49,7 +60,10 @@ impl Localize for ObjectErrors<crate::validation::Error> {
 impl Localize for VecErrors<crate::validation::Error> {
     type Target = VecErrors<LocalizedError>;
 
-    fn localize(&self, bundle: &FluentBundle<FluentResource>) -> Self::Target {
+    fn localize<M>(&self, bundle: &FluentBundle<FluentResource, M>) -> Self::Target
+    where
+        M: fluent_0::memoizer::MemoizerKind,
+    {
         self.iter().map(|error| error.localize(bundle)).collect()
     }
 }
@@ -57,7 +71,10 @@ impl Localize for VecErrors<crate::validation::Error> {
 impl Localize for ItemErrorsMap<crate::validation::Error> {
     type Target = ItemErrorsMap<LocalizedError>;
 
-    fn localize(&self, bundle: &FluentBundle<FluentResource>) -> Self::Target {
+    fn localize<M>(&self, bundle: &FluentBundle<FluentResource, M>) -> Self::Target
+    where
+        M: fluent_0::memoizer::MemoizerKind,
+    {
         self.iter()
             .map(|(index, error)| (*index, error.localize(bundle)))
             .collect()
@@ -67,7 +84,10 @@ impl Localize for ItemErrorsMap<crate::validation::Error> {
 impl Localize for PropertyErrorsMap<crate::validation::Error> {
     type Target = PropertyErrorsMap<LocalizedError>;
 
-    fn localize(&self, bundle: &FluentBundle<FluentResource>) -> Self::Target {
+    fn localize<M>(&self, bundle: &FluentBundle<FluentResource, M>) -> Self::Target
+    where
+        M: fluent_0::memoizer::MemoizerKind,
+    {
         self.iter()
             .map(|(property, error)| (property.to_string(), error.localize(bundle)))
             .collect()
@@ -77,7 +97,10 @@ impl Localize for PropertyErrorsMap<crate::validation::Error> {
 impl Localize for crate::validation::Error {
     type Target = LocalizedError;
 
-    fn localize(&self, bundle: &FluentBundle<FluentResource>) -> Self::Target {
+    fn localize<M>(&self, bundle: &FluentBundle<FluentResource, M>) -> Self::Target
+    where
+        M: fluent_0::memoizer::MemoizerKind,
+    {
         match self {
             Self::Minimum(message) => message.localize(bundle),
             Self::Maximum(message) => message.localize(bundle),
@@ -109,7 +132,10 @@ where
 {
     type Target = LocalizedError;
 
-    fn localize(&self, bundle: &FluentBundle<FluentResource>) -> Self::Target {
+    fn localize<M>(&self, bundle: &FluentBundle<FluentResource, M>) -> Self::Target
+    where
+        M: fluent_0::memoizer::MemoizerKind,
+    {
         self.try_localize(bundle)
             .unwrap_or_else(|_| LocalizedError::String(self.format_default()))
     }
@@ -118,7 +144,10 @@ where
 impl Localize for crate::features::fluent::Message {
     type Target = Option<LocalizedError>;
 
-    fn localize(&self, bundle: &FluentBundle<FluentResource>) -> Self::Target {
+    fn localize<M>(&self, bundle: &FluentBundle<FluentResource, M>) -> Self::Target
+    where
+        M: fluent_0::memoizer::MemoizerKind,
+    {
         self.try_localize(bundle)
             .unwrap_or_else(|e: Vec<fluent_0::FluentError>| {
                 Some(LocalizedError::String(format!("FluentErrors: {:?}", e)))
@@ -135,22 +164,28 @@ mod test {
     use serde_json::json;
     use unic_langid::LanguageIdentifier;
 
-    #[test]
-    fn localize_without_args() -> crate::tests::Result<()> {
-        let ftl_string = "hello-world = Hello, world!".to_string();
+    fn get_bundle() -> FluentBundle<FluentResource, intl_memoizer::IntlLangMemoizer> {
+        let ftl_string = ["hello-world = Hello, world!", "intro = Welcome, { $name }."]
+            .join("\n")
+            .to_string();
         let res = FluentResource::try_new(ftl_string).expect("Failed to parse an FTL string.");
 
         let langid_en: LanguageIdentifier = "en-US".parse().expect("Parsing failed");
         let mut bundle = FluentBundle::new(vec![langid_en]);
         bundle.add_resource(res).unwrap();
 
+        bundle
+    }
+
+    #[test]
+    fn localize_without_args() -> crate::tests::Result<()> {
         let error = crate::validation::Error::Fluent(Message {
             id: "hello-world",
             args: vec![],
         });
 
         assert_eq!(
-            serde_json::to_value(error.localize(&bundle))?,
+            serde_json::to_value(error.localize(&get_bundle()))?,
             json!("Hello, world!")
         );
 
