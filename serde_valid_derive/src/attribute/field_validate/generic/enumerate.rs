@@ -63,7 +63,7 @@ fn get_enumerate(meta_list: &syn::MetaList) -> Result<Lits, crate::Errors> {
             crate::types::NestedMeta::Lit(lit) => enumerate.push(lit.clone()),
             crate::types::NestedMeta::Meta(meta) => errors.push(crate::Error::literal_only(meta)),
             crate::types::NestedMeta::Closure(closure) => {
-                errors.push(crate::Error::closure_not_support(closure))
+                errors.push(crate::Error::closure_not_supported(closure))
             }
         }
     }
