@@ -150,18 +150,13 @@ fn get_fluent_message(
                 .skip(1)
                 .filter_map(|arg| {
                     if let NestedMeta::Meta(syn::Meta::NameValue(name_value)) = arg {
-                        let name = &name_value.path.to_token_stream().to_string();
-                        if let syn::Expr::Lit(lit) = &name_value.value {
-                            return Some(
-                                quote!((#name, ::serde_valid::fluent::FluentValue::from(#lit))),
-                            );
-                        } else {
-                            errors.push(crate::Error::fluent_allow_args(message_type, arg));
-                        }
+                        let key = &name_value.path.to_token_stream().to_string();
+                        let value = &name_value.value;
+                        Some(quote!((#key, ::serde_valid::fluent::FluentValue::from(#value))))
                     } else {
                         errors.push(crate::Error::fluent_allow_args(message_type, arg));
+                        None
                     }
-                    None
                 })
                 .collect::<CommaSeparatedTokenStreams>();
             if errors.is_empty() {
@@ -180,6 +175,7 @@ fn get_fluent_message(
     }
 }
 
+#[cfg(feature = "fluent")]
 fn get_fluent_id(nested_meta: &NestedMeta) -> Option<&syn::LitStr> {
     match nested_meta {
         NestedMeta::Lit(syn::Lit::Str(id)) => Some(id),
