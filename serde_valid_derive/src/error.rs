@@ -1,13 +1,11 @@
-use crate::attribute::field_validate::{
-    MetaListFieldValidation, MetaListStructValidation, MetaNameValueCustomMessage,
-    MetaNameValueFieldValidation, MetaNameValueStructValidation, MetaPathCustomMessage,
-    MetaPathFieldValidation, MetaPathStructValidation,
+use crate::attribute::{
+    MetaListCustomMessage, MetaListFieldValidation, MetaListStructValidation,
+    MetaNameValueCustomMessage, MetaNameValueFieldValidation, MetaNameValueStructValidation,
+    MetaPathCustomMessage, MetaPathFieldValidation, MetaPathStructValidation,
 };
 use proc_macro2::TokenStream;
 use quote::{quote, ToTokens};
 use syn::spanned::Spanned;
-
-use crate::attribute::field_validate::MetaListCustomMessage;
 
 pub fn object_errors_tokens() -> TokenStream {
     quote!(::serde_valid::validation::Errors::Object(
@@ -55,7 +53,7 @@ pub fn object_errors_tokens() -> TokenStream {
                         (
                             field,
                             ::serde_valid::validation::Errors::Array(
-                                ::serde_valid::validation::ArrayErrors::new(
+                                ::serde_valid::validation::error::ArrayErrors::new(
                                     __field_errors,
                                     __array_errors.items,
                                 ),
@@ -75,7 +73,7 @@ pub fn object_errors_tokens() -> TokenStream {
 
 pub fn array_errors_tokens() -> TokenStream {
     quote!(::serde_valid::validation::Errors::Array(
-        ::serde_valid::validation::ArrayErrors::new(
+        ::serde_valid::validation::error::ArrayErrors::new(
             __rule_vec_errors,
             __item_vec_errors_map
                 .into_iter()
@@ -119,7 +117,7 @@ pub fn array_errors_tokens() -> TokenStream {
                         (
                             index,
                             ::serde_valid::validation::Errors::Array(
-                                ::serde_valid::validation::ArrayErrors::new(
+                                ::serde_valid::validation::error::ArrayErrors::new(
                                     __field_errors,
                                     __array_errors.items,
                                 ),
@@ -472,6 +470,13 @@ impl Error {
 
     pub fn to_compile_error(&self) -> TokenStream {
         self.0.to_compile_error()
+    }
+
+    pub fn validate_custom_not_support_custom_message(meta: &syn::Meta) -> Self {
+        Self::new(
+            meta.span(),
+            "#[validate(custon(...), ???)] does not support custom error message.",
+        )
     }
 }
 

@@ -1,4 +1,4 @@
-use crate::attribute::field_validate::Validator;
+use crate::attribute::Validator;
 use crate::serde::rename::RenameMap;
 use crate::types::Field;
 use quote::quote;

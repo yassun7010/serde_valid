@@ -1,10 +1,8 @@
+use crate::attribute::Validator;
 use crate::types::Field;
-use proc_macro2::TokenStream;
 use quote::quote;
 use std::borrow::Cow;
 use std::iter::FromIterator;
-
-pub type Validator = TokenStream;
 
 pub struct FieldValidators<'a, F: Field + Clone + 'a> {
     field: Cow<'a, F>,
@@ -24,16 +22,16 @@ impl<'a, F: Field + Clone> FieldValidators<'a, F> {
         self.validators.is_empty()
     }
 
-    pub fn get_tokens(&self) -> Option<TokenStream> {
+    pub fn get_tokens(&self) -> Option<Validator> {
         if !self.validators.is_empty() {
-            let validators = TokenStream::from_iter(self.validators.clone());
+            let validators = Validator::from_iter(self.validators.clone());
             Some(quote! (#validators))
         } else {
             None
         }
     }
 
-    pub fn get_field_variable_token(&self) -> TokenStream {
+    pub fn get_field_variable_token(&self) -> Validator {
         let field_ident = self.field.ident();
         let field_getter = self.field.getter_token();
         quote!(
@@ -41,7 +39,7 @@ impl<'a, F: Field + Clone> FieldValidators<'a, F> {
         )
     }
 
-    pub fn generate_tokens(&self) -> TokenStream {
+    pub fn generate_tokens(&self) -> Validator {
         let normal_tokens = self.get_tokens();
 
         if normal_tokens.is_some() {

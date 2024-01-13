@@ -1,18 +1,8 @@
-use crate::validation::ToDefaultMessage;
-
-use super::CustomMessage;
-
-pub trait IntoError<E>: Sized
-where
-    E: ToDefaultMessage,
-{
+pub trait IntoError<E>: Sized {
     fn into_error(self) -> crate::validation::Error {
-        self.into_error_by(CustomMessage {
-            message_fn: E::to_default_message,
-            #[cfg(feature = "fluent")]
-            fluent_message: None,
-        })
+        self.into_error_by(crate::validation::error::Format::Default)
     }
 
-    fn into_error_by(self, custom: CustomMessage<E>) -> crate::validation::Error;
+    fn into_error_by(self, format: crate::validation::error::Format<E>)
+        -> crate::validation::Error;
 }

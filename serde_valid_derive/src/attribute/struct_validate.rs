@@ -1,7 +1,7 @@
 mod generic;
 mod meta;
 
-use crate::attribute::field_validate::Validator;
+use crate::attribute::Validator;
 
 use self::meta::extract_struct_validator;
 

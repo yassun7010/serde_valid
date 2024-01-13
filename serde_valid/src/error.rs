@@ -1,8 +1,8 @@
 use itertools::Itertools;
 use serde_valid_literal::Literal;
 
+use crate::validation::error::FormatDefault;
 use crate::validation::Number;
-use crate::validation::ToDefaultMessage;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error<E>
@@ -62,12 +62,23 @@ macro_rules! struct_error_params {
             pub $limit: Vec<$type>,
         }
 
-        impl ToDefaultMessage for $Error {
+        impl $Error {
+            pub fn new<T>($limit: &[T]) -> Self
+            where
+                T: Into<$type> + std::fmt::Debug + Clone,
+            {
+                Self {
+                    $limit: (*$limit).iter().map(|x| x.clone().into()).collect(),
+                }
+            }
+        }
+
+        impl FormatDefault for $Error {
             #[inline]
-            fn to_default_message(&self) -> String {
+            fn format_default(&self) -> String {
                 format!(
                     $default_message,
-                    self.enumerate.iter().map(|v| format!("{}", v)).join(", ")
+                    self.$limit.iter().map(|v| format!("{}", v)).join(", ")
                 )
             }
         }
@@ -93,9 +104,9 @@ macro_rules! struct_error_params {
             }
         }
 
-        impl ToDefaultMessage for $Error {
+        impl FormatDefault for $Error {
             #[inline]
-            fn to_default_message(&self) -> String {
+            fn format_default(&self) -> String {
                 format!($default_message, self.$limit)
             }
         }
@@ -104,15 +115,14 @@ macro_rules! struct_error_params {
     (
         #[derive(Debug, Clone)]
         #[default_message=$default_message:literal]
-        pub struct $Error:ident {
-        }
+        pub struct $Error:ident;
     ) => {
         #[derive(Debug, Clone)]
-        pub struct $Error {}
+        pub struct $Error;
 
-        impl ToDefaultMessage for $Error {
+        impl FormatDefault for $Error {
             #[inline]
-            fn to_default_message(&self) -> String {
+            fn format_default(&self) -> String {
                 format!($default_message)
             }
         }
@@ -205,7 +215,7 @@ struct_error_params!(
 struct_error_params!(
     #[derive(Debug, Clone)]
     #[default_message = "The items must be unique."]
-    pub struct UniqueItemsError {}
+    pub struct UniqueItemsError;
 );
 
 // Object
@@ -233,14 +243,3 @@ struct_error_params!(
         pub enumerate: Vec<Literal>,
     }
 );
-
-impl EnumerateError {
-    pub fn new<T>(enumerate: &[T]) -> Self
-    where
-        T: Into<Literal> + std::fmt::Debug + Clone,
-    {
-        Self {
-            enumerate: (*enumerate).iter().map(|x| x.clone().into()).collect(),
-        }
-    }
-}

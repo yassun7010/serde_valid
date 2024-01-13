@@ -51,7 +51,8 @@ mod tests {
 
     use crate::{
         flatten::IntoFlat,
-        validation::{ArrayErrors, Error, Errors, Message, ToDefaultMessage},
+        validation::error::{ArrayErrors, Message},
+        validation::{Error, Errors},
         MinItemsError,
     };
 
@@ -62,7 +63,7 @@ mod tests {
                 Errors::Array(ArrayErrors {
                     errors: vec![Error::MinItems(Message::new(
                         MinItemsError { min_items: 1 },
-                        MinItemsError::to_default_message
+                        crate::validation::error::Format::Default
                     ))],
                     items: indexmap! {},
                 })

@@ -540,7 +540,6 @@
 
 pub mod error;
 mod features;
-pub mod json;
 mod traits;
 pub mod validation;
 
@@ -562,10 +561,16 @@ pub use validation::{
 
 #[cfg(feature = "flatten")]
 pub use features::flatten;
+
 #[cfg(feature = "fluent")]
 pub use features::fluent;
+
+#[cfg(feature = "json")]
+pub use features::json;
+
 #[cfg(feature = "toml")]
 pub use features::toml;
+
 #[cfg(feature = "yaml")]
 pub use features::yaml;
 
@@ -594,7 +599,7 @@ where
             Ok(())
         } else {
             Err(self::validation::Errors::Array(
-                validation::ArrayErrors::new(vec![], items),
+                validation::error::ArrayErrors::new(vec![], items),
             ))
         }
     }
@@ -617,7 +622,7 @@ where
             Ok(())
         } else {
             Err(self::validation::Errors::Array(
-                validation::ArrayErrors::new(vec![], items),
+                validation::error::ArrayErrors::new(vec![], items),
             ))
         }
     }
@@ -641,7 +646,7 @@ where
             Ok(())
         } else {
             Err(self::validation::Errors::Object(
-                validation::ObjectErrors::new(vec![], items),
+                validation::error::ObjectErrors::new(vec![], items),
             ))
         }
     }
@@ -695,4 +700,9 @@ pub mod helpers {
     ) -> Result<(), crate::validation::Error> {
         f(data)
     }
+}
+
+#[cfg(test)]
+pub mod tests {
+    pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 }

@@ -1,20 +1,21 @@
+use crate::attribute::common::message_format::MessageFormat;
+use crate::attribute::Validator;
+use crate::types::CommaSeparatedNestedMetas;
 use quote::quote;
 
-use crate::attribute::field_validate::Validator;
-use crate::types::CommaSeparatedNestedMetas;
-
 pub fn extract_generic_struct_custom_validator(
-    meta_path: &syn::MetaList,
+    meta_list: &syn::MetaList,
+    _message_format: MessageFormat,
 ) -> Result<Validator, crate::Errors> {
     let mut errors = vec![];
 
-    let nested = meta_path
+    let nested = meta_list
         .parse_args_with(CommaSeparatedNestedMetas::parse_terminated)
-        .map_err(|error| vec![crate::Error::rule_args_parse_error(meta_path, &error)])?;
+        .map_err(|error| vec![crate::Error::rule_args_parse_error(meta_list, &error)])?;
 
     match nested.len() {
         0 => Err(vec![
-            crate::Error::validate_custom_need_function_or_closure(meta_path),
+            crate::Error::validate_custom_need_function_or_closure(meta_list),
         ])?,
         2.. => nested
             .iter()
