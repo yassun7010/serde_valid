@@ -13,22 +13,22 @@
 //! use serde_valid::Validate;
 //!
 //! #[derive(Validate)]
-//! struct SampleStruct {
+//! struct Data {
 //!     #[validate(minimum = 0)]
 //!     #[validate(maximum = 10)]
 //!     val: i32,
 //! }
 //!
 //! #[derive(Validate)]
-//! enum SampleEnum {
+//! enum DataEnum {
 //!     Named {
 //!         #[validate]
-//!         a: SampleStruct,
+//!         a: Data,
 //!     },
 //! }
 //!
-//! let s = SampleEnum::Named {
-//!     a: SampleStruct { val: 5 },
+//! let s = DataEnum::Named {
+//!     a: Data { val: 5 },
 //! };
 //!
 //! assert!(s.validate().is_ok());
@@ -73,13 +73,13 @@
 //! use serde_valid::json::{json, FromJsonValue};
 //!
 //! #[derive(Debug, Deserialize, Validate)]
-//! struct SampleStruct {
+//! struct Data {
 //!     #[validate(maximum = 100)]
 //!     val: i32,
 //! }
 //!
 //! // Deserialization and Validation!! 🚀
-//! let err = SampleStruct::from_json_value(json!({ "val": 123 })).unwrap_err();
+//! let err = Data::from_json_value(json!({ "val": 123 })).unwrap_err();
 //!
 //! assert_eq!(
 //!     err.as_validation_errors().unwrap().to_string(),
@@ -108,13 +108,13 @@
 //! use serde_valid::json::{json, ToJsonString};
 //!
 //! #[derive(Debug, Serialize, Validate)]
-//! struct SampleStruct {
+//! struct Data {
 //!     #[validate(maximum = 100)]
 //!     val: i32,
 //! }
 //!
 //! assert_eq!(
-//!     SampleStruct{ val: 12i32 }.to_json_string().unwrap(),
+//!     Data{ val: 12i32 }.to_json_string().unwrap(),
 //!     json!({ "val": 12i32 }).to_json_string().unwrap()
 //! );
 //! ```
@@ -133,13 +133,13 @@
 //! }
 //!
 //! #[derive(Validate)]
-//! struct SampleStruct {
+//! struct Data {
 //!     #[validate(min_items = 4, message_fn(min_error_message))]
 //!     #[validate(max_items = 2, message = "this is max custom message.")]
 //!     val: Vec<i32>,
 //! }
 //!
-//! let s = SampleStruct { val: vec![1, 2, 3] };
+//! let s = Data { val: vec![1, 2, 3] };
 //!
 //! assert_eq!(
 //!     s.validate().unwrap_err().to_string(),
@@ -170,12 +170,12 @@
 //! }
 //!
 //! #[derive(Validate)]
-//! struct SampleStruct {
+//! struct Data {
 //!     #[validate(custom(user_validation))]
 //!     val: i32,
 //! }
 //!
-//! let s = SampleStruct { val: 1 };
+//! let s = Data { val: 1 };
 //!
 //! assert!(s.validate().is_ok());
 //! ```
@@ -190,12 +190,12 @@
 //! }
 //!
 //! #[derive(Validate)]
-//! struct SampleStruct {
+//! struct Data {
 //!     #[validate(custom(|v| user_validation(v, true)))]
 //!     val: i32,
 //! }
 //!
-//! let s = SampleStruct { val: 1 };
+//! let s = Data { val: 1 };
 //!
 //! assert!(s.validate().is_ok());
 //! ```
@@ -214,12 +214,12 @@
 //!
 //! #[derive(Validate)]
 //! #[validate(custom(|s| sample_validation(s.val1, &s.val2)))]
-//! struct SampleStruct {
+//! struct Data {
 //!     val1: i32,
 //!     val2: String,
 //! }
 //!
-//! let s = SampleStruct {
+//! let s = Data {
 //!     val1: 1,
 //!     val2: "val2".to_owned(),
 //! };
@@ -245,12 +245,12 @@
 //!
 //! #[derive(Validate)]
 //! #[rule(sample_rule(val2, val1))]
-//! struct SampleStruct {
+//! struct Data {
 //!     val1: String,
 //!     val2: i32,
 //! }
 //!
-//! let s = SampleStruct {
+//! let s = Data {
 //!     val1: "val1".to_owned(),
 //!     val2: 1,
 //! };
@@ -279,9 +279,9 @@
 //!
 //! #[derive(Validate)]
 //! #[rule(sample_rule(0, 1))]
-//! struct SampleStruct(i32, String);
+//! struct Data(i32, String);
 //!
-//! let s = SampleStruct(0, "1".to_owned());
+//! let s = Data(0, "1".to_owned());
 //!
 //! assert!(s.validate().is_ok());
 //! ```
@@ -298,12 +298,12 @@
 //!
 //! #[derive(Validate)]
 //! #[rule(|val1, val2| sample_rule(val2, val1))]
-//! struct SampleStruct {
+//! struct Data {
 //!     val1: String,
 //!     val2: i32,
 //! }
 //!
-//! let s = SampleStruct {
+//! let s = Data {
 //!     val1: "val1".to_owned(),
 //!     val2: 1,
 //! };
@@ -321,9 +321,9 @@
 //!
 //! #[derive(Validate)]
 //! #[rule(|_0, _1| sample_rule(_0, _1))]
-//! struct SampleStruct(i32, String);
+//! struct Data(i32, String);
 //!
-//! let s = SampleStruct(0, "1".to_owned());
+//! let s = Data(0, "1".to_owned());
 //!
 //! assert!(s.validate().is_ok());
 //! ```
@@ -344,12 +344,12 @@
 //! }
 //!
 //! #[derive(Validate)]
-//! struct SampleStruct {
+//! struct Data {
 //!     #[validate(max_length = 5)]
 //!     val: MyType,
 //! }
 //!
-//! let s = SampleStruct {
+//! let s = Data {
 //!     val: MyType(String::from("😍👺🙋🏽👨‍🎤👨‍👩‍👧‍👦")),
 //! };
 //!
@@ -365,12 +365,12 @@
 //! use serde_valid::Validate;
 //!
 //! #[derive(Validate)]
-//! struct SampleStruct {
+//! struct Data {
 //!     #[validate(maximum = 4)]
 //!     val: u32,
 //! }
 //!
-//! let s = SampleStruct { val: 5 };
+//! let s = Data { val: 5 };
 //!
 //! assert_eq!(
 //!     s.validate().unwrap_err().to_string(),
@@ -395,12 +395,12 @@
 //! use serde_valid::Validate;
 //!
 //! #[derive(Validate)]
-//! struct SampleStruct (
+//! struct Data (
 //!     #[validate(maximum = 4)] u32,
 //!     #[validate(maximum = 3)] u32,
 //! );
 //!
-//! let s = SampleStruct ( 5, 4 );
+//! let s = Data ( 5, 4 );
 //!
 //! assert_eq!(
 //!     s.validate().unwrap_err().to_string(),
@@ -427,11 +427,11 @@
 //! use serde_valid::Validate;
 //!
 //! #[derive(Validate)]
-//! struct SampleStruct (
+//! struct Data (
 //!     #[validate(maximum = 4)] u32
 //! );
 //!
-//! let s = SampleStruct (5);
+//! let s = Data (5);
 //!
 //! assert_eq!(
 //!     s.validate().unwrap_err().to_string(),
@@ -450,7 +450,7 @@
 //! use serde_valid::Validate;
 //!
 //! #[derive(Validate)]
-//! enum SampleEnum {
+//! enum Data {
 //!     Named {
 //!         #[validate(maximum = 5)]
 //!         a: i32,
@@ -459,7 +459,7 @@
 //!     },
 //! }
 //!
-//! let s = SampleEnum::Named { a: 6, b: 6 };
+//! let s = Data::Named { a: 6, b: 6 };
 //!
 //! assert_eq!(
 //!     s.validate().unwrap_err().to_string(),
@@ -487,14 +487,14 @@
 //! use serde_valid::Validate;
 //!
 //! #[derive(Validate)]
-//! enum SampleEnum {
+//! enum Data {
 //!     Unnamed (
 //!         #[validate(maximum = 5)] i32,
 //!         #[validate(maximum = 5)] i32,
 //!     ),
 //! }
 //!
-//! let s = SampleEnum::Unnamed ( 6, 6 );
+//! let s = Data::Unnamed ( 6, 6 );
 //!
 //! assert_eq!(
 //!     s.validate().unwrap_err().to_string(),
@@ -521,13 +521,13 @@
 //! use serde_valid::Validate;
 //!
 //! #[derive(Validate)]
-//! enum SampleEnum {
+//! enum Data {
 //!     NewType (
 //!         #[validate(maximum = 5)] i32,
 //!     ),
 //! }
 //!
-//! let s = SampleEnum::NewType ( 6 );
+//! let s = Data::NewType ( 6 );
 //!
 //! assert_eq!(
 //!     s.validate().unwrap_err().to_string(),
