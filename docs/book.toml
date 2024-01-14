@@ -7,6 +7,3 @@ title = "serde_valid"
 
 [output.html]
 no-section-label = true
-
-[output.html.fold]
-enable = true
