@@ -559,23 +559,12 @@ pub use validation::{
     ValidateUniqueItems,
 };
 
-#[cfg(feature = "flatten")]
-pub use features::flatten;
-
-#[cfg(feature = "fluent")]
-pub use features::fluent;
-
-#[cfg(feature = "json")]
-pub use features::json;
-
-#[cfg(feature = "toml")]
-pub use features::toml;
-
-#[cfg(feature = "yaml")]
-pub use features::yaml;
+#[allow(unused_imports)]
+pub use features::*;
 
 pub mod export {
-    pub use once_cell::sync::OnceCell;
+    pub use fluent;
+    pub use once_cell;
 }
 
 pub trait Validate {

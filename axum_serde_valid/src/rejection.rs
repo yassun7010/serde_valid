@@ -72,25 +72,25 @@ impl From<Rejection> for JsonErrorResponse {
             Rejection::Json(error) => Self::FormatError(error.to_string()),
             Rejection::SerdeJson(error) => Self::FormatError(error.to_string()),
             Rejection::SerdeUrlEncoded(error) => Self::FormatError(error.to_string()),
-            Rejection::SerdeValid(errors) => Self::ValidationError(JsonSchemaErrorResponse {
-                errors: errors
-                    .into_flat()
-                    .into_iter()
-                    .map(|error| Error {
-                        error: error.error,
-                        instance_location: JsonPointer(error.instance_location.to_string()),
-                        keyword_location: None,
-                    })
-                    .collect::<Vec<_>>(),
-            }),
+            Rejection::SerdeValid(errors) => {
+                let iter = errors.into_flat().into_iter().map(|err| Error {
+                    error: err.error,
+                    instance_location: JsonPointer(err.instance_location.to_string()),
+                    keyword_location: None,
+                });
+
+                Self::ValidationError(JsonSchemaErrorResponse {
+                    errors: iter.collect::<Vec<_>>(),
+                })
+            }
             #[cfg(feature = "jsonschema")]
             Rejection::Jsonschema(errors) => Self::ValidationError(JsonSchemaErrorResponse {
                 errors: errors
                     .into_iter()
-                    .map(|error| Error {
-                        error: error.error_description().to_string(),
-                        instance_location: JsonPointer(error.instance_location().to_string()),
-                        keyword_location: Some(JsonPointer(error.keyword_location().to_string())),
+                    .map(|err| Error {
+                        error: err.error_description().to_string(),
+                        instance_location: JsonPointer(err.instance_location().to_string()),
+                        keyword_location: Some(JsonPointer(err.keyword_location().to_string())),
                     })
                     .collect::<Vec<_>>(),
             }),

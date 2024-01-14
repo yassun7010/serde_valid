@@ -18,7 +18,7 @@ where
 
     #[cfg(feature = "jsonschema")]
     {
-        crate::jsonschema::context::SchemaContext::validate::<T>(&value)
+        crate::jsonschema::SchemaContext::validate::<T>(&value)
             .map_err(crate::rejection::Rejection::Jsonschema)?;
     }
 
