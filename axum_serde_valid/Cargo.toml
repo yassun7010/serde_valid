@@ -19,7 +19,9 @@ jsonschema = { version = "^0.17", optional = true }
 schemars = { version = "^0.8", optional = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
-serde_valid = { path = "../serde_valid", features = ["flatten"] }
+serde_valid = { version = "0.18.0", path = "../serde_valid", features = [
+    "flatten",
+] }
 tracing = "^0.1"
 serde_urlencoded = "0.7.1"
 unic-langid-impl = { version = "0.9", optional = true }
