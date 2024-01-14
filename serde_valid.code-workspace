@@ -27,7 +27,7 @@
     ],
     "settings": {
         "rust-analyzer.cargo.features": "all",
-        "rust-analyzer.checkOnSave.command": "clippy"
+        "rust-analyzer.checkOnSave.command": "clippy",
     },
     "extensions": {
         "recommendations": [

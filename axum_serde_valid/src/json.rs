@@ -42,7 +42,7 @@ impl<T> From<T> for Json<T> {
 impl<T, S> FromRequest<S> for Json<T>
 where
     T: crate::validated::Deserialize + 'static,
-    S: Send + Sync,
+    S: crate::state::State,
 {
     type Rejection = crate::rejection::Rejection;
 

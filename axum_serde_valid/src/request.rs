@@ -8,7 +8,7 @@ pub async fn from_request<S, T>(
     state: &S,
 ) -> Result<T, crate::rejection::Rejection>
 where
-    S: Send + Sync,
+    S: crate::state::State,
     T: crate::validated::Deserialize + 'static,
 {
     let value: Value = match axum::Json::from_request(req, state).await {

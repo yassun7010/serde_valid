@@ -24,6 +24,7 @@ serde_valid = { version = "0.17.0", path = "../serde_valid", features = [
 ] }
 tracing = "^0.1"
 serde_urlencoded = "0.7.1"
+unic-langid-impl = { version = "0.9", optional = true }
 
 [dev-dependencies]
 hyper = "^1.0"
@@ -35,3 +36,4 @@ tower = { version = "0.4", features = ["util"] }
 default = []
 jsonschema = ["dep:jsonschema", "dep:schemars"]
 aide = ["dep:aide", "dep:jsonschema", "dep:schemars"]
+fluent = ["serde_valid/fluent", "unic-langid-impl"]
