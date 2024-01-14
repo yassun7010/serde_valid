@@ -1,5 +1,7 @@
 # #[validate(maximum)]
 
+The `#[validate(maximum = ???)]` attribute is used to ensure that a value is less than or equal to a given value.
+
 ```rust
 # extern crate serde_valid;
 use serde_valid::Validate;

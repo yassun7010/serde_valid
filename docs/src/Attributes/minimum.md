@@ -1,5 +1,7 @@
 # #[validate(minimum)]
 
+The `#[validate(minimum = ???)]` attribute is used to validate that a field is greater than or equal to a given value.
+
 ```rust
 # extern crate serde_valid;
 use serde_valid::Validate;
