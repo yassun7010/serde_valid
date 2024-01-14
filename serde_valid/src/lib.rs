@@ -158,6 +158,45 @@
 //! );
 //! ```
 //!
+//! ### Fluent localization
+//!
+//! You can also use [fluent](https://projectfluent.org/) localization by using `fluent` feature.
+//!
+//! ```rust
+//! # #[cfg(feature = "fluent")] {
+//! # use fluent::{FluentBundle, FluentResource};
+//! use unic_langid::LanguageIdentifier;
+//! use serde_json::json;
+//! use serde_valid::{fluent::Localize, Validate};
+//!
+//! # fn get_bundle(source: impl Into<String>) -> FluentBundle<FluentResource> {
+//! #     let res = FluentResource::try_new(source.into()).expect("Failed to parse an FTL string.");
+//! #     let langid_en: LanguageIdentifier = "ja_JP".parse().expect("Parsing failed");
+//! #     let mut bundle = FluentBundle::new(vec![langid_en]);
+//! #     bundle.add_resource(res).unwrap();
+//! #     bundle
+//! # }
+//! #
+//!
+//! #[derive(Validate)]
+//! struct Data (
+//!     #[validate(min_length = 3, fluent("name-min-length", min_length = 3))]
+//!     String,
+//! );
+//!
+//! assert_eq!(
+//!     Data("田中".to_string()).validate()
+//!         .unwrap_err()
+//!         .localize(&get_bundle("name-min-length = 名前の長さは { $min_length } 文字以上でないといけません。"))
+//!         .to_string(),
+//!     json!({
+//!         "errors": ["名前の長さは \u{2068}3\u{2069} 文字以上でないといけません。"]
+//!     })
+//!     .to_string()
+//! );
+//! # }
+//! ```
+//!
 //! ## Custom method
 //!
 //! You can use your custom validation using by `#[validate(custom)]`.
