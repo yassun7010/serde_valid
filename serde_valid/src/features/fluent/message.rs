@@ -1,9 +1,7 @@
-use fluent_0::FluentValue;
-
 #[derive(Debug, Clone)]
 pub struct Message {
     pub id: &'static str,
-    pub args: Vec<(&'static str, FluentValue<'static>)>,
+    pub args: Vec<(&'static str, fluent::FluentValue<'static>)>,
 }
 
 impl std::fmt::Display for Message {

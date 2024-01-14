@@ -1,4 +1,4 @@
-use fluent_0::{bundle::FluentBundle, FluentArgs, FluentError, FluentResource};
+use fluent::{bundle::FluentBundle, FluentArgs, FluentError, FluentResource};
 
 use crate::validation::error::{
     ArrayErrors, Errors, FormatDefault, ItemErrorsMap, ObjectErrors, PropertyErrorsMap, VecErrors,
@@ -14,7 +14,7 @@ pub trait TryLocalize {
         bundle: &FluentBundle<FluentResource, M>,
     ) -> Result<Self::Target, Vec<FluentError>>
     where
-        M: fluent_0::memoizer::MemoizerKind;
+        M: fluent::memoizer::MemoizerKind;
 }
 
 impl TryLocalize for Errors<crate::validation::Error> {
@@ -25,7 +25,7 @@ impl TryLocalize for Errors<crate::validation::Error> {
         bundle: &FluentBundle<FluentResource, M>,
     ) -> Result<Self::Target, Vec<FluentError>>
     where
-        M: fluent_0::memoizer::MemoizerKind,
+        M: fluent::memoizer::MemoizerKind,
     {
         match self {
             Errors::Array(array) => Ok(Errors::Array(array.try_localize(bundle)?)),
@@ -43,7 +43,7 @@ impl TryLocalize for ArrayErrors<crate::validation::Error> {
         bundle: &FluentBundle<FluentResource, M>,
     ) -> Result<Self::Target, Vec<FluentError>>
     where
-        M: fluent_0::memoizer::MemoizerKind,
+        M: fluent::memoizer::MemoizerKind,
     {
         match (
             self.errors.try_localize(bundle),
@@ -65,7 +65,7 @@ impl TryLocalize for ObjectErrors<crate::validation::Error> {
         bundle: &FluentBundle<FluentResource, M>,
     ) -> Result<Self::Target, Vec<FluentError>>
     where
-        M: fluent_0::memoizer::MemoizerKind,
+        M: fluent::memoizer::MemoizerKind,
     {
         match (
             self.errors.try_localize(bundle),
@@ -87,7 +87,7 @@ impl TryLocalize for VecErrors<crate::validation::Error> {
         bundle: &FluentBundle<FluentResource, M>,
     ) -> Result<Self::Target, Vec<FluentError>>
     where
-        M: fluent_0::memoizer::MemoizerKind,
+        M: fluent::memoizer::MemoizerKind,
     {
         self.iter()
             .map(|error| error.try_localize(bundle))
@@ -103,7 +103,7 @@ impl TryLocalize for ItemErrorsMap<crate::validation::Error> {
         bundle: &FluentBundle<FluentResource, M>,
     ) -> Result<Self::Target, Vec<FluentError>>
     where
-        M: fluent_0::memoizer::MemoizerKind,
+        M: fluent::memoizer::MemoizerKind,
     {
         let mut errors = vec![];
         let target = self
@@ -135,7 +135,7 @@ impl TryLocalize for PropertyErrorsMap<crate::validation::Error> {
         bundle: &FluentBundle<FluentResource, M>,
     ) -> Result<Self::Target, Vec<FluentError>>
     where
-        M: fluent_0::memoizer::MemoizerKind,
+        M: fluent::memoizer::MemoizerKind,
     {
         let mut errors = vec![];
         let target = self
@@ -167,7 +167,7 @@ impl TryLocalize for crate::validation::Error {
         bundle: &FluentBundle<FluentResource, M>,
     ) -> Result<Self::Target, Vec<FluentError>>
     where
-        M: fluent_0::memoizer::MemoizerKind,
+        M: fluent::memoizer::MemoizerKind,
     {
         match self {
             Self::Minimum(message) => message.try_localize(bundle),
@@ -207,7 +207,7 @@ where
         bundle: &FluentBundle<FluentResource, M>,
     ) -> Result<Self::Target, Vec<FluentError>>
     where
-        M: fluent_0::memoizer::MemoizerKind,
+        M: fluent::memoizer::MemoizerKind,
     {
         if let Some(message) = self.fluent_message() {
             if let Some(localized) = message.try_localize(bundle)? {
@@ -226,7 +226,7 @@ impl TryLocalize for crate::features::fluent::Message {
         bundle: &FluentBundle<FluentResource, M>,
     ) -> Result<Self::Target, Vec<FluentError>>
     where
-        M: fluent_0::memoizer::MemoizerKind,
+        M: fluent::memoizer::MemoizerKind,
     {
         if let Some(msg) = bundle.get_message(self.id) {
             if let Some(pattern) = msg.value() {
@@ -251,7 +251,7 @@ mod test {
     use crate::fluent::Message;
 
     use super::*;
-    use fluent_0::{bundle::FluentBundle, FluentResource, FluentValue};
+    use fluent::{bundle::FluentBundle, FluentResource, FluentValue};
     use serde_json::json;
     use unic_langid::LanguageIdentifier;
 

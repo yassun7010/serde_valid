@@ -1,6 +1,6 @@
 #[cfg(feature = "fluent")]
 mod tests {
-    use fluent_0::{FluentBundle, FluentResource};
+    use fluent::{FluentBundle, FluentResource};
     use serde::Deserialize;
     use serde_json::json;
     use serde_valid::{fluent::Localize, Validate};
