@@ -41,8 +41,8 @@ impl<T> From<T> for Json<T> {
 #[async_trait]
 impl<T, S> FromRequest<S> for Json<T>
 where
-    T: crate::validated::Deserialize + 'static,
-    S: crate::state::State,
+    T: crate::traits::validated::Deserialize + 'static,
+    S: crate::traits::state::State,
 {
     type Rejection = crate::rejection::Rejection;
 

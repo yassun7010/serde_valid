@@ -8,8 +8,8 @@ pub async fn from_request<S, T>(
     state: &S,
 ) -> Result<T, crate::rejection::Rejection>
 where
-    S: crate::state::State,
-    T: crate::validated::Deserialize + 'static,
+    S: crate::traits::state::State,
+    T: crate::traits::validated::Deserialize + 'static,
 {
     let value: Value = match axum::Json::from_request(req, state).await {
         Ok(j) => j.0,

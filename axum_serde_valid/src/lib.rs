@@ -4,8 +4,7 @@ pub mod json_pointer;
 mod query;
 pub mod rejection;
 mod request;
-pub mod state;
-mod validated;
+pub mod traits;
 
 #[allow(unused_imports)]
 pub use features::*;

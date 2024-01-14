@@ -32,7 +32,7 @@ impl SchemaContext {
 
     pub fn validate<T>(value: &Value) -> Result<(), VecDeque<OutputUnit<ErrorDescription>>>
     where
-        T: crate::validated::Deserialize + schemars::JsonSchema + 'static,
+        T: crate::traits::validated::Deserialize + schemars::JsonSchema + 'static,
     {
         CONTEXT.with(|ctx| {
             let ctx = &mut *ctx.borrow_mut();
