@@ -176,7 +176,6 @@
 //! #     bundle.add_resource(res).unwrap();
 //! #     bundle
 //! # }
-//! #
 //!
 //! #[derive(Validate)]
 //! struct Data (
