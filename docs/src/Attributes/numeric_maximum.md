@@ -1,4 +1,4 @@
-# #[validate(maximum = ???)]
+# "maximum" validation
 
 The `#[validate(maximum = ???)]` attribute is used to ensure that a value is less than or equal to a given value.
 

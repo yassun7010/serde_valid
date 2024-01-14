@@ -1,4 +1,4 @@
-# #[validate(multiple_of = ???)]
+# "multiple_of" validation
 
 The `#[validate(multiple_of = ???)]` attribute is used to validate that a number is a multiple of given number.
 

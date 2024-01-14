@@ -1,4 +1,4 @@
-# #[validate(minimum = ???)]
+# "minimum" validation
 
 The `#[validate(minimum = ???)]` attribute is used to validate that a field is greater than or equal to a given value.
 
