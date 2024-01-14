@@ -20,14 +20,14 @@
 //! }
 //!
 //! #[derive(Validate)]
-//! enum SampleEnum {
+//! enum DataEnum {
 //!     Named {
 //!         #[validate]
 //!         a: Data,
 //!     },
 //! }
 //!
-//! let s = SampleEnum::Named {
+//! let s = DataEnum::Named {
 //!     a: Data { val: 5 },
 //! };
 //!
@@ -450,7 +450,7 @@
 //! use serde_valid::Validate;
 //!
 //! #[derive(Validate)]
-//! enum SampleEnum {
+//! enum Data {
 //!     Named {
 //!         #[validate(maximum = 5)]
 //!         a: i32,
@@ -459,7 +459,7 @@
 //!     },
 //! }
 //!
-//! let s = SampleEnum::Named { a: 6, b: 6 };
+//! let s = Data::Named { a: 6, b: 6 };
 //!
 //! assert_eq!(
 //!     s.validate().unwrap_err().to_string(),
@@ -487,14 +487,14 @@
 //! use serde_valid::Validate;
 //!
 //! #[derive(Validate)]
-//! enum SampleEnum {
+//! enum Data {
 //!     Unnamed (
 //!         #[validate(maximum = 5)] i32,
 //!         #[validate(maximum = 5)] i32,
 //!     ),
 //! }
 //!
-//! let s = SampleEnum::Unnamed ( 6, 6 );
+//! let s = Data::Unnamed ( 6, 6 );
 //!
 //! assert_eq!(
 //!     s.validate().unwrap_err().to_string(),
@@ -521,13 +521,13 @@
 //! use serde_valid::Validate;
 //!
 //! #[derive(Validate)]
-//! enum SampleEnum {
+//! enum Data {
 //!     NewType (
 //!         #[validate(maximum = 5)] i32,
 //!     ),
 //! }
 //!
-//! let s = SampleEnum::NewType ( 6 );
+//! let s = Data::NewType ( 6 );
 //!
 //! assert_eq!(
 //!     s.validate().unwrap_err().to_string(),
