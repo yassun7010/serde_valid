@@ -1,4 +1,4 @@
-# Number: "exclusive_maximum" validation
+# #[validate(exclusive_maximum = ???)]
 
 The `#[validate(exclusive_maximum = ???)]` attribute is used to validate that a number is greater than a given value.
 
