@@ -7,11 +7,11 @@ The `#[validate(min_length = ???)]` attribute is used to validate that a `String
 use serde_valid::Validate;
 
 #[derive(Validate)]
-struct TestStruct {
+struct Data (
     #[validate(min_length = 4)]
-    val: String,
-}
+    String,
+);
 
-assert!(TestStruct { val: "tes".to_owned() }.validate().is_err());
-assert!(TestStruct { val: "test".to_owned() }.validate().is_ok());
+assert!(Data("tes".to_owned()).validate().is_err());
+assert!(Data("test".to_owned()).validate().is_ok());
 ```

@@ -4,6 +4,7 @@
 - [Attributes](./Attributes/index.md)
     - [String: "max_length" validation](./Attributes/string_max_length.md)
     - [String: "min_length" validation](./Attributes/string_min_length.md)
+    - [String: "pattern" validation](./Attributes/string_pattern.md)
     - [Numeric: "maximum" validation](./Attributes/numeric_maximum.md)
     - [Numeric: "minimum" validation](./Attributes/numeric_minimum.md)
     - [Numeric: "exclusive_maximum" validation](./Attributes/numeric_exclusive_maximum.md)

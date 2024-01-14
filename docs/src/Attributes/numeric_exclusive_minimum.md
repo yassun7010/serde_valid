@@ -1,4 +1,4 @@
-# "exclusive_minimum" validation
+# Numeric: "exclusive_minimum" validation
 
 The `#[validate(exclusive_minimum = ???)]` attribute is used to validate that a number is greater than a given value.
 
@@ -7,12 +7,12 @@ The `#[validate(exclusive_minimum = ???)]` attribute is used to validate that a 
 use serde_valid::Validate;
 
 #[derive(Validate)]
-struct SampleStruct {
+struct Data (
     #[validate(exclusive_minimum = 2)]
-    val: i32,
-}
+    i32
+);
 
-assert!(SampleStruct { val: 1 }.validate().is_err());
-assert!(SampleStruct { val: 2 }.validate().is_err());
-assert!(SampleStruct { val: 3 }.validate().is_ok());
+assert!(Data(1).validate().is_err());
+assert!(Data(2).validate().is_err());
+assert!(Data(3).validate().is_ok());
 ```

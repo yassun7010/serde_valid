@@ -7,11 +7,11 @@ The `#[validate(max_length = ???)]` attribute is used to validate that a `String
 use serde_valid::Validate;
 
 #[derive(Validate)]
-struct TestStruct {
+struct Data (
     #[validate(max_length = 4)]
-    val: String,
-}
+    String,
+);
 
-assert!(TestStruct { val: "test".to_owned() }.validate().is_ok());
-assert!(TestStruct { val: "test1".to_owned() }.validate().is_err());
+assert!(Data("test".to_owned()).validate().is_ok());
+assert!(Data("test1".to_owned()).validate().is_err());
 ```

@@ -1,4 +1,4 @@
-# "multiple_of" validation
+# Numeric: "multiple_of" validation
 
 The `#[validate(multiple_of = ???)]` attribute is used to validate that a number is a multiple of given number.
 
@@ -7,11 +7,11 @@ The `#[validate(multiple_of = ???)]` attribute is used to validate that a number
 use serde_valid::Validate;
 
 #[derive(Validate)]
-struct TestStruct {
+struct Data (
     #[validate(multiple_of = 5)]
-    val: i32,
-}
+    i32,
+);
 
-assert!(TestStruct { val: 15 }.validate().is_ok());
-assert!(TestStruct { val: 14 }.validate().is_err());
+assert!(Data(15).validate().is_ok());
+assert!(Data(14).validate().is_err());
 ```

@@ -1,4 +1,4 @@
-# "minimum" validation
+# Numeric: "minimum" validation
 
 The `#[validate(minimum = ???)]` attribute is used to validate that a field is greater than or equal to a given value.
 
@@ -7,11 +7,11 @@ The `#[validate(minimum = ???)]` attribute is used to validate that a field is g
 use serde_valid::Validate;
 
 #[derive(Validate)]
-struct SampleStruct {
+struct Data (
     #[validate(minimum = 2)]
-    val: i32,
-}
+    i32,
+);
 
-assert!(SampleStruct { val: 1 }.validate().is_err());
-assert!(SampleStruct { val: 2 }.validate().is_ok());
+assert!(Data(1).validate().is_err());
+assert!(Data(2).validate().is_ok());
 ```

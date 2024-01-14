@@ -1,4 +1,4 @@
-# "exclusive_maximum" validation
+# Numeric: "exclusive_maximum" validation
 
 The `#[validate(exclusive_maximum = ???)]` attribute is used to validate that a number is greater than a given value.
 
@@ -7,12 +7,12 @@ The `#[validate(exclusive_maximum = ???)]` attribute is used to validate that a 
 use serde_valid::Validate;
 
 #[derive(Validate)]
-struct SampleStruct {
+struct Data (
     #[validate(exclusive_maximum = 6)]
-    val: i32,
-}
+    i32
+);
 
-assert!(SampleStruct { val: 5 }.validate().is_ok());
-assert!(SampleStruct { val: 6 }.validate().is_err());
-assert!(SampleStruct { val: 7 }.validate().is_err());
+assert!(Data(5).validate().is_ok());
+assert!(Data(6).validate().is_err());
+assert!(Data(7).validate().is_err());
 ```

@@ -1,4 +1,4 @@
-# "maximum" validation
+# Numeric: "maximum" validation
 
 The `#[validate(maximum = ???)]` attribute is used to ensure that a value is less than or equal to a given value.
 
@@ -7,12 +7,12 @@ The `#[validate(maximum = ???)]` attribute is used to ensure that a value is les
 use serde_valid::Validate;
 
 #[derive(Validate)]
-struct SampleStruct {
+struct Data (
     #[validate(maximum = 6)]
-    val: i32,
-}
+    i32
+);
 
-assert!(SampleStruct { val: 5 }.validate().is_ok());
-assert!(SampleStruct { val: 6 }.validate().is_ok());
-assert!(SampleStruct { val: 7 }.validate().is_err());
+assert!(Data(5).validate().is_ok());
+assert!(Data(6).validate().is_ok());
+assert!(Data(7).validate().is_err());
 ```
