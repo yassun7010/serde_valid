@@ -1,6 +1,6 @@
 # Nested validation
 
-To validate nested structures, add the #[validate] attribute to the target field.
+To validate nested structures, add the `#[validate]` attribute to the target field.
 
 ```rust
 # extern crate serde_valid;

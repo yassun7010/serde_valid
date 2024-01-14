@@ -15,6 +15,7 @@
     - [Array: "max_items"](./Attributes/array_max_items.md)
     - [Array: "min_items"](./Attributes/array_min_items.md)
     - [Nested validation](./Attributes/nested.md)
+    - [Custom validation](./Attributes/custom_validation.md)
     - [Custom Message](./Attributes/custom_message.md)
 - [Trailt](./trait.md)
 - [Features](./Features/index.md)
