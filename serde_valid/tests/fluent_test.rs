@@ -6,11 +6,8 @@ mod tests {
     use serde_valid::{fluent::Localize, Validate};
     use unic_langid::LanguageIdentifier;
 
-    fn get_bundle() -> FluentBundle<FluentResource> {
-        let ftl_string = ["hello-world = Hello, world!", "intro = Welcome, { $name }."]
-            .join("\n")
-            .to_string();
-        let res = FluentResource::try_new(ftl_string).expect("Failed to parse an FTL string.");
+    fn get_bundle(source: impl Into<String>) -> FluentBundle<FluentResource> {
+        let res = FluentResource::try_new(source.into()).expect("Failed to parse an FTL string.");
 
         let langid_en: LanguageIdentifier = "en-US".parse().expect("Parsing failed");
         let mut bundle = FluentBundle::new(vec![langid_en]);
@@ -30,7 +27,10 @@ mod tests {
         }
 
         let test = Test { a: 1, b: 11 };
-        let a = test.validate().unwrap_err().localize(&get_bundle());
+        let a = test.validate().unwrap_err().localize(&get_bundle(
+            ["hello-world = Hello, world!", "intro = Welcome, { $name }."].join("\n"),
+        ));
+
         assert_eq!(
             a.to_string(),
             json!({
