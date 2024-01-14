@@ -152,7 +152,7 @@ fn get_fluent_message(
                     if let NestedMeta::Meta(syn::Meta::NameValue(name_value)) = arg {
                         let key = &name_value.path.to_token_stream().to_string();
                         let value = &name_value.value;
-                        Some(quote!((#key, ::serde_valid::fluent::FluentValue::from(#value))))
+                        Some(quote!((#key, ::serde_valid::export::fluent::FluentValue::from(#value))))
                     } else {
                         errors.push(crate::Error::fluent_allow_args(message_type, arg));
                         None

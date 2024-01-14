@@ -160,11 +160,11 @@ mod test {
     use crate::fluent::Message;
 
     use super::*;
-    use fluent::{bundle::FluentBundle, FluentResource, FluentValue};
+    use fluent::{FluentBundle, FluentResource, FluentValue};
     use serde_json::json;
     use unic_langid::LanguageIdentifier;
 
-    fn get_bundle() -> FluentBundle<FluentResource, intl_memoizer::IntlLangMemoizer> {
+    fn get_bundle() -> FluentBundle<FluentResource> {
         let ftl_string = ["hello-world = Hello, world!", "intro = Welcome, { $name }."]
             .join("\n")
             .to_string();
