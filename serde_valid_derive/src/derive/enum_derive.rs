@@ -21,33 +21,27 @@ pub fn expand_enum_validate_derive(
     let mut errors = vec![];
 
     let validations_and_rules =
-        TokenStream::from_iter(variants.iter().enumerate().map(|(index, variant)| {
-            match &variant.fields {
-                syn::Fields::Named(named_fields) => {
-                    match expand_enum_variant_named_fields(index, ident, variant, named_fields) {
-                        Ok(variant_varidates_and_rules) => variant_varidates_and_rules,
-                        Err(variant_errors) => {
-                            errors.extend(variant_errors);
-                            quote!()
-                        }
+        TokenStream::from_iter(variants.iter().map(|variant| match &variant.fields {
+            syn::Fields::Named(named_fields) => {
+                match expand_enum_variant_named_fields(ident, variant, named_fields) {
+                    Ok(variant_varidates_and_rules) => variant_varidates_and_rules,
+                    Err(variant_errors) => {
+                        errors.extend(variant_errors);
+                        quote!()
                     }
                 }
-                syn::Fields::Unnamed(unnamed_fields) => {
-                    match expand_enum_variant_unnamed_fields_varidation(
-                        index,
-                        ident,
-                        variant,
-                        unnamed_fields,
-                    ) {
-                        Ok(variant_varidates_and_rules) => variant_varidates_and_rules,
-                        Err(variant_errors) => {
-                            errors.extend(variant_errors);
-                            quote!()
-                        }
-                    }
-                }
-                syn::Fields::Unit => quote!(),
             }
+            syn::Fields::Unnamed(unnamed_fields) => {
+                match expand_enum_variant_unnamed_fields_varidation(ident, variant, unnamed_fields)
+                {
+                    Ok(variant_varidates_and_rules) => variant_varidates_and_rules,
+                    Err(variant_errors) => {
+                        errors.extend(variant_errors);
+                        quote!()
+                    }
+                }
+            }
+            syn::Fields::Unit => quote!(),
         }));
 
     if errors.is_empty() {
@@ -66,7 +60,6 @@ pub fn expand_enum_validate_derive(
 }
 
 fn expand_enum_variant_named_fields(
-    index: usize,
     ident: &syn::Ident,
     variant: &syn::Variant,
     named_fields: &syn::FieldsNamed,
@@ -75,7 +68,6 @@ fn expand_enum_variant_named_fields(
 
     let variant_ident = &variant.ident;
     let mut fields_idents = CommaSeparatedTokenStreams::new();
-    let else_token = make_else_token(index);
     let rename_map = collect_serde_rename_map(named_fields);
 
     let (rule_fields, rules) = match collect_rules_from_named_struct(&variant.attrs) {
@@ -114,7 +106,7 @@ fn expand_enum_variant_named_fields(
 
     if errors.is_empty() {
         Ok(quote!(
-            #else_token if let #ident::#variant_ident{#fields_idents} = &self {
+            if let #ident::#variant_ident{#fields_idents} = &self {
                 let mut __rule_vec_errors = ::serde_valid::validation::VecErrors::new();
                 let mut __property_vec_errors_map = ::serde_valid::validation::PropertyVecErrorsMap::new();
 
@@ -132,7 +124,6 @@ fn expand_enum_variant_named_fields(
 }
 
 fn expand_enum_variant_unnamed_fields_varidation(
-    index: usize,
     ident: &syn::Ident,
     variant: &syn::Variant,
     unnamed_fields: &syn::FieldsUnnamed,
@@ -141,7 +132,6 @@ fn expand_enum_variant_unnamed_fields_varidation(
 
     let variant_ident = &variant.ident;
     let mut fields_idents = CommaSeparatedTokenStreams::new();
-    let else_token = make_else_token(index);
 
     let (rule_fields, rules) = match collect_rules_from_unnamed_struct(&variant.attrs) {
         Ok(field_rules) => field_rules,
@@ -183,7 +173,7 @@ fn expand_enum_variant_unnamed_fields_varidation(
 
     if errors.is_empty() {
         Ok(quote!(
-            #else_token if let #ident::#variant_ident(#fields_idents) = &self {
+            if let #ident::#variant_ident(#fields_idents) = &self {
                 let mut __rule_vec_errors = ::serde_valid::validation::VecErrors::new();
                 let mut __item_vec_errors_map = ::serde_valid::validation::ItemVecErrorsMap::new();
 
@@ -197,13 +187,5 @@ fn expand_enum_variant_unnamed_fields_varidation(
         ))
     } else {
         Err(errors)
-    }
-}
-
-fn make_else_token(index: usize) -> TokenStream {
-    if index == 0 {
-        quote!()
-    } else {
-        quote!(else)
     }
 }
