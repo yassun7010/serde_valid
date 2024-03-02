@@ -4,9 +4,6 @@ pub mod flatten;
 #[cfg(feature = "fluent")]
 pub mod fluent;
 
-#[cfg(feature = "json")]
-pub mod json;
-
 #[cfg(feature = "toml")]
 pub mod toml;
 

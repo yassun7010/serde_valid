@@ -34,8 +34,7 @@ intl-memoizer = "0.5"
 unic-langid = "0.9"
 
 [features]
-default = ["i128", "json"]
-json = ["serde_json"]
+default = ["i128"]
 toml = ["serde_toml"]
 yaml = ["serde_yaml"]
 i128 = ["num-traits/i128", "indexmap/std", "serde_valid_literal/i128"]
