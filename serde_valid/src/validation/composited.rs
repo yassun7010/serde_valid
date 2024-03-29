@@ -6,6 +6,7 @@ use crate::error::{
     MinimumError, MultipleOfError, PatternError, UniqueItemsError,
 };
 use indexmap::IndexMap;
+use crate::validation::MinimumDurationError;
 
 /// Composited use Vec or Map error.
 ///
@@ -63,6 +64,7 @@ impl_into_error!(Minimum);
 impl_into_error!(ExclusiveMaximum);
 impl_into_error!(ExclusiveMinimum);
 impl_into_error!(MultipleOf);
+impl_into_error!(MinimumDuration);
 
 // String
 impl_into_error!(MaxLength);

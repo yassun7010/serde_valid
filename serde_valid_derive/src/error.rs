@@ -457,6 +457,15 @@ impl Error {
         Self::new(lit.span(), "Allow str literal only.")
     }
 
+    pub fn duration_str_no_suffix(lit: &syn::Lit) -> Self{
+        Self::new(lit.span(), "No suffix found.")
+    }
+
+    pub fn duration_str_wrong_suffix(lit: &syn::Lit, suffix_allowed: &[&str]) -> Self{
+        Self::new(lit.span(), format!("Wrong suffix found (allowed: {})",
+                                      suffix_allowed.iter().fold(String::new(), |acc, &arg| acc + "," + arg)))
+    }
+
     pub fn closure_not_supported(closure: &syn::ExprClosure) -> Self {
         Self::new(
             closure.or1_token.span(),

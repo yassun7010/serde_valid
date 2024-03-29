@@ -1,3 +1,4 @@
+use std::time::Duration;
 use serde_valid::Validate;
 
 fn sample_rule(_val: &i32) -> Result<(), serde_valid::validation::Error> {
@@ -132,6 +133,9 @@ struct TestInnerStruct<'a> {
     #[validate(minimum = 5)]
     #[validate(maximum = 15)]
     inner_vec_value: Vec<i32>,
+
+    #[validate(minimum_duration = "15ms")]
+    inner_duration: Duration
 }
 
 #[test]
@@ -150,6 +154,7 @@ fn complex_validation() {
             inner_str_value: "12345",
             inner_optional_value: Some(5),
             inner_vec_value: vec![5, 10, 15],
+            inner_duration: Duration::from_millis(16)
         },
         nested_vec_struct: vec![TestInnerStruct {
             inner_int_value: 5,
@@ -158,6 +163,7 @@ fn complex_validation() {
             inner_str_value: "12345",
             inner_optional_value: Some(5),
             inner_vec_value: vec![5, 10, 15],
+            inner_duration:Duration::from_millis(56)
         }],
     };
     assert!(s.validate().is_ok());

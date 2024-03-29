@@ -5,6 +5,7 @@ mod generic;
 mod numeric;
 mod object;
 mod string;
+mod duration;
 
 use crate::{
     EnumerateError, ExclusiveMaximumError, ExclusiveMinimumError, MaxLengthError,
@@ -314,6 +315,7 @@ macro_rules! impl_generic_composited_validation_1args {
 }
 
 pub(crate) use impl_generic_composited_validation_1args;
+use crate::error::MinimumDurationError;
 
 // Number
 impl_composited_validation_1args!(
@@ -325,6 +327,12 @@ impl_composited_validation_1args!(
 impl_composited_validation_1args!(
     pub trait ValidateCompositedMinimum<T> {
         fn validate_composited_minimum(&self, minimum: T) -> Result<(), Composited<MinimumError>>;
+    }
+);
+
+impl_composited_validation_1args!(
+    pub trait ValidateCompositedMinimumDuration<T> {
+        fn validate_composited_duration(&self, minimum: T) -> Result<(), Composited<MinimumDurationError>>;
     }
 );
 

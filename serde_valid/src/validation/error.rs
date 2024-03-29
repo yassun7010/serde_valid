@@ -17,6 +17,7 @@ use indexmap::IndexMap;
 pub use into_error::IntoError;
 pub use message::Message;
 pub use object_errors::ObjectErrors;
+use crate::error::MinimumDurationError;
 
 #[derive(Debug, Clone, serde::Serialize, thiserror::Error)]
 #[serde(untagged)]
@@ -91,6 +92,10 @@ pub enum Error {
     #[error("{0}")]
     #[serde(serialize_with = "serialize_error_message")]
     Fluent(crate::fluent::Message),
+
+    #[error("{0}")]
+    #[serde(serialize_with = "serialize_error_message")]
+    MinimumDuration(Message<MinimumDurationError>),
 }
 
 fn serialize_error_message<T, S>(message: &T, serializer: S) -> Result<S::Ok, S::Error>

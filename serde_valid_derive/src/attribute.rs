@@ -117,6 +117,7 @@ enum_str! {
         MaxProperties = "max_properties",
         MultipleOf = "multiple_of",
         Pattern = "pattern",
+        MinimumDuration = "minimum_duration",
     }
 }
 

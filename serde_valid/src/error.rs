@@ -1,3 +1,4 @@
+use std::time::Duration;
 use itertools::Itertools;
 use serde_valid_literal::Literal;
 
@@ -129,6 +130,25 @@ macro_rules! struct_error_params {
     };
 }
 
+#[derive(Debug, Clone)]
+pub struct MinimumDurationError {
+    pub minimum: Duration,
+}
+
+impl MinimumDurationError {
+    pub fn new<N: Into<Duration>>(limit: N) -> Self {
+        Self {
+            minimum: limit.into(),
+        }
+    }
+}
+
+impl FormatDefault for MinimumDurationError {
+    #[inline]
+    fn format_default(&self) -> String {
+        format!("Duration must be >= {:9}s", self.minimum.as_secs_f64())
+    }
+}
 // Number
 struct_error_params!(
     #[derive(Debug, Clone)]
