@@ -118,6 +118,7 @@ enum_str! {
         MultipleOf = "multiple_of",
         Pattern = "pattern",
         MinimumDuration = "minimum_duration",
+        MaximumDuration = "maximum_duration",
     }
 }
 

@@ -3,7 +3,7 @@ use crate::validation::error::IntoError;
 use crate::error::{
     EnumerateError, ExclusiveMaximumError, ExclusiveMinimumError, MaxItemsError, MaxLengthError,
     MaxPropertiesError, MaximumError, MinItemsError, MinLengthError, MinPropertiesError,
-    MinimumError, MultipleOfError, PatternError, UniqueItemsError,
+    MinimumError, MultipleOfError, PatternError, UniqueItemsError, MaximumDurationError
 };
 use indexmap::IndexMap;
 use crate::validation::MinimumDurationError;
@@ -65,6 +65,7 @@ impl_into_error!(ExclusiveMaximum);
 impl_into_error!(ExclusiveMinimum);
 impl_into_error!(MultipleOf);
 impl_into_error!(MinimumDuration);
+impl_into_error!(MaximumDuration);
 
 // String
 impl_into_error!(MaxLength);

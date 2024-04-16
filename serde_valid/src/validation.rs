@@ -315,7 +315,7 @@ macro_rules! impl_generic_composited_validation_1args {
 }
 
 pub(crate) use impl_generic_composited_validation_1args;
-use crate::error::MinimumDurationError;
+use crate::error::{MaximumDurationError, MinimumDurationError};
 
 // Number
 impl_composited_validation_1args!(
@@ -333,6 +333,12 @@ impl_composited_validation_1args!(
 impl_composited_validation_1args!(
     pub trait ValidateCompositedMinimumDuration<T> {
         fn validate_composited_duration(&self, minimum: T) -> Result<(), Composited<MinimumDurationError>>;
+    }
+);
+
+impl_composited_validation_1args!(
+    pub trait ValidateCompositedMaximumDuration<T> {
+        fn validate_composited_maximum_duration(&self, minimum: T) -> Result<(), Composited<MaximumDurationError>>;
     }
 );
 

@@ -61,6 +61,12 @@
 //! | Array   | `#[validate(min_items = 5)]`         | [`ValidateMinItems`]         | [minItems](https://json-schema.org/understanding-json-schema/reference/array#length)          |
 //! | Array   | `#[validate(unique_items)]`          | [`ValidateUniqueItems`]      | [uniqueItems](https://json-schema.org/understanding-json-schema/reference/array#uniqueItems)  |
 //! | Generic | `#[validate(enumerate(5, 10, 15))]`  | [`ValidateEnumerate`]        | [enum](https://json-schema.org/understanding-json-schema/reference/enum)                      |
+//! Serde Valid support for Rust type not in JSON Schema
+//! The crate [serde_with](https://docs.rs/serde_with/latest/serde_with/) will help you to use serde with some type like Duration
+//! | Type    | Serde Valid(validate derive)         | Serde Valid(validate trait)  | Rust types                                                                                   |
+//! | :-----: | :----------------------------------- | :--------------------------- | :-------------------------------------------------------------------------------------------- |
+//! | Duration| `#[validate(minimum_duration = "30ms")]`  | [`ValidateMinimumDuration`]  | [duration](https://doc.rust-lang.org/std/time/struct.Duration.html)          |
+//! | Duration| `#[validate(maximum_duration = "30ms")]`  | [`ValidateMaximumDuration`]  | [duration](https://doc.rust-lang.org/std/time/struct.Duration.html)           |
 //!
 //! ## Complete Constructor (Deserialization)
 //!

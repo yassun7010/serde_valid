@@ -135,6 +135,7 @@ struct TestInnerStruct<'a> {
     inner_vec_value: Vec<i32>,
 
     #[validate(minimum_duration = "15ms")]
+    #[validate(maximum_duration = "60ms")]
     inner_duration: Duration
 }
 

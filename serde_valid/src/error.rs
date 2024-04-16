@@ -149,6 +149,27 @@ impl FormatDefault for MinimumDurationError {
         format!("Duration must be >= {:9}s", self.minimum.as_secs_f64())
     }
 }
+
+
+#[derive(Debug, Clone)]
+pub struct MaximumDurationError {
+    pub maximum: Duration,
+}
+
+impl MaximumDurationError {
+    pub fn new<N: Into<Duration>>(limit: N) -> Self {
+        Self {
+            maximum: limit.into(),
+        }
+    }
+}
+
+impl FormatDefault for MaximumDurationError {
+    #[inline]
+    fn format_default(&self) -> String {
+        format!("Duration must be <= {:9}s", self.maximum.as_secs_f64())
+    }
+}
 // Number
 struct_error_params!(
     #[derive(Debug, Clone)]

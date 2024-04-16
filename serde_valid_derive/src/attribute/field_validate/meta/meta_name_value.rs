@@ -14,6 +14,7 @@ use crate::attribute::field_validate::object::{
 use crate::attribute::field_validate::string::{extract_string_max_length_validator, extract_string_min_length_validator, extract_string_pattern_validator};
 use crate::attribute::{MetaNameValueFieldValidation, Validator};
 use crate::attribute::field_validate::duration::extract_string_minimum_duration_validator;
+use crate::attribute::field_validate::duration::maximum_duration::extract_string_maximum_duration_validator;
 use crate::serde::rename::RenameMap;
 use crate::types::Field;
 
@@ -84,6 +85,9 @@ pub fn extract_field_validator_from_meta_name_value(
         },
         MetaNameValueFieldValidation::MinimumDuration =>{
             extract_string_minimum_duration_validator(field, validation_value, message_format, rename_map)
+        },
+        MetaNameValueFieldValidation::MaximumDuration =>{
+            extract_string_maximum_duration_validator(field, validation_value, message_format, rename_map)
         }
     }
 }

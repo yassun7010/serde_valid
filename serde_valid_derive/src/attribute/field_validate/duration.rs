@@ -1,4 +1,5 @@
 pub mod minimum_duration;
+pub mod maximum_duration;
 
 use std::str::FromStr;
 use proc_macro2::TokenStream;

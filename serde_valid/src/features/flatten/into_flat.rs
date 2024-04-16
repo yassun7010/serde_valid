@@ -57,7 +57,8 @@ impl IntoFlat for crate::validation::Error {
             crate::validation::Error::Fluent(inner) => {
                 FlatErrors::new(vec![FlatError::new(path.to_owned(), inner.id.to_string())])
             }
-            Error::MinimumDuration(inner) => inner.into_flat_at(path)
+            Error::MinimumDuration(inner) => inner.into_flat_at(path),
+            Error::MaximumDuration(inner) => inner.into_flat_at(path)
         }
     }
 }
