@@ -82,7 +82,7 @@ struct Data {
 let err = Data::from_json_value(json!({ "val": 123 })).unwrap_err();
 
 assert_eq!(
-    err.as_validation_errors().unwrap().to_string(),
+    err.to_string(),
     json!({
         "errors": [],
         "properties": {
