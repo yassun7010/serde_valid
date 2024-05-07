@@ -17,7 +17,9 @@ pub trait Field {
 
     fn attrs(&self) -> &Vec<syn::Attribute>;
 
+    #[allow(dead_code)]
     fn vis(&self) -> &syn::Visibility;
 
+    #[allow(dead_code)]
     fn ty(&self) -> &syn::Type;
 }
