@@ -211,6 +211,35 @@ fn length_option_type_is_ok() {
 }
 
 #[test]
+fn length_option_type_is_err() {
+    #[derive(Validate)]
+    struct TestStruct {
+        #[validate(min_length = 0)]
+        #[validate(max_length = 5)]
+        val: Option<String>,
+    }
+
+    let s = TestStruct {
+        val: Some(String::from("abcdefg")),
+    };
+
+    assert_eq!(
+        s.validate().unwrap_err().to_string(),
+        json!(
+            {
+                "errors":[],
+                "properties":{
+                    "val":{
+                        "errors": ["The length of the value must be `<= 5`."]
+                    }
+                }
+            }
+        )
+        .to_string()
+    );
+}
+
+#[test]
 fn length_nested_option_type_is_ok() {
     #[derive(Validate)]
     struct TestStruct {
