@@ -591,6 +591,7 @@ pub use error::{
     MaxLengthError, MaxPropertiesError, MaximumError, MinItemsError, MinLengthError,
     MinPropertiesError, MinimumError, MultipleOfError, PatternError, UniqueItemsError,
 };
+pub mod utils;
 pub use validation::{
     ValidateEnumerate, ValidateExclusiveMaximum, ValidateExclusiveMinimum, ValidateMaxItems,
     ValidateMaxLength, ValidateMaxProperties, ValidateMaximum, ValidateMinItems, ValidateMinLength,

@@ -28,6 +28,9 @@ pub fn extract_generic_struct_custom_validator(
         crate::types::NestedMeta::Meta(syn::Meta::Path(path)) => {
             extract_struct_custom_from_meta_path(path)
         }
+        crate::types::NestedMeta::Meta(syn::Meta::List(list)) => {
+            extract_struct_custom_from_meta_list(list)
+        }
         crate::types::NestedMeta::Closure(closure) => extract_struct_custom_from_closure(closure),
         _ => Err(vec![
             crate::Error::validate_custom_need_function_or_closure(&nested[0]),
@@ -51,6 +54,16 @@ fn extract_struct_custom_from_meta_path(meta_path: &syn::Path) -> Result<Validat
 
     Ok(quote!(
         if let Err(__error) = #rule_fn_name(self) {
+            __rule_vec_errors.push(__error);
+        };
+    ))
+}
+
+fn extract_struct_custom_from_meta_list(
+    meta_list: &syn::MetaList,
+) -> Result<Validator, crate::Errors> {
+    Ok(quote!(
+        if let Err(__error) = serde_valid::helpers::wrap_closure_validation(self, #meta_list) {
             __rule_vec_errors.push(__error);
         };
     ))
