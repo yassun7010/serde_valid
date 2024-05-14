@@ -9,8 +9,7 @@ pub fn duration_maximum(
             Ok(())
         } else {
             Err(crate::validation::Error::Custom(format!(
-                "Duration {:?} is greater than maximum {:?}.",
-                val, maximum
+                "Duration {val:?} is greater than maximum {maximum:?}.",
             )))
         }
     }
@@ -25,8 +24,7 @@ pub fn duration_minimum(
             Ok(())
         } else {
             Err(crate::validation::Error::Custom(format!(
-                "Duration {:?} is less than minimum {:?}.",
-                val, minimum
+                "Duration {val:?} is less than minimum {minimum:?}.",
             )))
         }
     }
@@ -41,8 +39,7 @@ pub fn duration_exclusive_maximum(
             Ok(())
         } else {
             Err(crate::validation::Error::Custom(format!(
-                "Duration {:?} is greater than or equal to exclusive maximum {:?}.",
-                val, maximum
+                "Duration {val:?} is greater than or equal to exclusive maximum {maximum:?}.",
             )))
         }
     }
@@ -57,8 +54,7 @@ pub fn duration_exclusive_minimum(
             Ok(())
         } else {
             Err(crate::validation::Error::Custom(format!(
-                "Duration {:?} is less than or equal to exclusive minimum {:?}.",
-                val, minimum
+                "Duration {val:?} is less than or equal to exclusive minimum {minimum:?}.",
             )))
         }
     }
