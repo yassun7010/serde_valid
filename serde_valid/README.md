@@ -45,7 +45,7 @@ assert!(s.validate().is_ok());
 
 Serde Valid support standard validation based JSON Schema.
 
-| Type    | Serde Valid(validate derive)         | Serde Valid(validate trait)  | Json Schema                                                                                   |
+| Type    | Serde Valid(validate derive)         | Serde Valid(validate trait)  | JSON Schema                                                                                   |
 | :-----: | :----------------------------------- | :--------------------------- | :-------------------------------------------------------------------------------------------- |
 | String  | `#[validate(max_length = 5)]`        | [`ValidateMaxLength`]        | [maxLength](https://json-schema.org/understanding-json-schema/reference/string#length)        |
 | String  | `#[validate(min_length = 5)]`        | [`ValidateMinLength`]        | [minLength](https://json-schema.org/understanding-json-schema/reference/string#length)        |
@@ -228,7 +228,7 @@ let s = Data { val: 1 };
 assert!(s.validate().is_ok());
 ```
 
-Custom validation is suitable for handling convenience validations not defined in JsonSchema.
+Custom validation is suitable for handling convenience validations not defined in JSON Schema.
 `serde_valid::utils::*` provides convenience functions for specific types.
 
 ```rust
