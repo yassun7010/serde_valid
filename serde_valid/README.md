@@ -129,13 +129,13 @@ use serde_valid::Validate;
 
 #[inline]
 fn min_error_message(_params: &serde_valid::MinItemsError) -> String {
-    "this is min custom message_fn.".to_string()
+    "this is custom message_fn.".to_string()
 }
 
 #[derive(Validate)]
 struct Data {
     #[validate(min_items = 4, message_fn(min_error_message))]
-    #[validate(max_items = 2, message = "this is max custom message.")]
+    #[validate(max_items = 2, message = "this is custom message.")]
     val: Vec<i32>,
 }
 
@@ -148,8 +148,8 @@ assert_eq!(
         "properties": {
             "val": {
                 "errors": [
-                    "this is min custom message_fn.",
-                    "this is max custom message."
+                    "this is custom message_fn.",
+                    "this is custom message."
                 ]
             }
         }
