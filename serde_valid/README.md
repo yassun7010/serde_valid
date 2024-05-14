@@ -62,7 +62,7 @@ Serde Valid support standard validation based JSON Schema.
 | Array   | `#[validate(unique_items)]`          | [`ValidateUniqueItems`]      | [uniqueItems](https://json-schema.org/understanding-json-schema/reference/array#uniqueItems)  |
 | Generic | `#[validate(enumerate(5, 10, 15))]`  | [`ValidateEnumerate`]        | [enum](https://json-schema.org/understanding-json-schema/reference/enum)                      |
 
-In addition, validation that is not provided in the JSON Schema specification using custom is provided in [serde_valid::utils][module@crate::utils].
+In addition, [serde_valid::utils][module@crate::utils] provides a type of validation not described in the JSON schema specification.
 
 | Type                              | Serde Valid(validate derive)                              | Serde Valid(validate trait)                                              |
 | :-------------------------------: | :-------------------------------------------------------- | :----------------------------------------------------------------------- |
