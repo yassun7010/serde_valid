@@ -62,6 +62,15 @@
 //! | Array   | `#[validate(unique_items)]`          | [`ValidateUniqueItems`]      | [uniqueItems](https://json-schema.org/understanding-json-schema/reference/array#uniqueItems)  |
 //! | Generic | `#[validate(enumerate(5, 10, 15))]`  | [`ValidateEnumerate`]        | [enum](https://json-schema.org/understanding-json-schema/reference/enum)                      |
 //!
+//! In addition, validation that is not provided in the JSON Schema specification using custom is provided in [serde_valid::utils][module@crate::utils].
+//!
+//! | Type                              | Serde Valid(validate derive)                              | Serde Valid(validate trait)                                              |
+//! | :-------------------------------: | :-------------------------------------------------------- | :----------------------------------------------------------------------- |
+//! | [Duration][`std::time::Duration`] | `#[validate(custom(duration_maximum(SECOND)))]`           | [duration_maximum][`crate::utils::duration_maximum`]                     |
+//! | [Duration][`std::time::Duration`] | `#[validate(custom(duration_minimum(ZERO)))]`             | [duration_minimum][`crate::utils::duration_minimum`]                     |
+//! | [Duration][`std::time::Duration`] | `#[validate(custom(duration_exclusive_maximum(SECOND)))]` | [duration_exclusive_maximum][`crate::utils::duration_exclusive_maximum`] |
+//! | [Duration][`std::time::Duration`] | `#[validate(custom(duration_exclusive_minimum(ZERO)))]`   | [duration_exclusive_minimum][`crate::utils::duration_exclusive_minimum`] |
+//!
 //! ## Complete Constructor (Deserialization)
 //!
 //! Serde Valid support complete constructor method using by
