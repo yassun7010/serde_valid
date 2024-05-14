@@ -45,7 +45,7 @@ assert!(s.validate().is_ok());
 
 Serde Valid support standard validation based JSON Schema.
 
-| Type    | Serde Valid(validate derive)         | Serde Valid(validate trait)  | Json Schema                                                                                   |
+| Type    | Serde Valid (validate derive)        | Serde Valid (validate trait) | JSON Schema                                                                                   |
 | :-----: | :----------------------------------- | :--------------------------- | :-------------------------------------------------------------------------------------------- |
 | String  | `#[validate(max_length = 5)]`        | [`ValidateMaxLength`]        | [maxLength](https://json-schema.org/understanding-json-schema/reference/string#length)        |
 | String  | `#[validate(min_length = 5)]`        | [`ValidateMinLength`]        | [minLength](https://json-schema.org/understanding-json-schema/reference/string#length)        |
@@ -61,6 +61,15 @@ Serde Valid support standard validation based JSON Schema.
 | Array   | `#[validate(min_items = 5)]`         | [`ValidateMinItems`]         | [minItems](https://json-schema.org/understanding-json-schema/reference/array#length)          |
 | Array   | `#[validate(unique_items)]`          | [`ValidateUniqueItems`]      | [uniqueItems](https://json-schema.org/understanding-json-schema/reference/array#uniqueItems)  |
 | Generic | `#[validate(enumerate(5, 10, 15))]`  | [`ValidateEnumerate`]        | [enum](https://json-schema.org/understanding-json-schema/reference/enum)                      |
+
+In addition, [serde_valid::utils][module@crate::utils] provides a type of validation not described in the JSON schema specification.
+
+| Type                              | Serde Valid (validate derive)                             | Serde Valid (validation function)                                        |
+| :-------------------------------: | :-------------------------------------------------------- | :----------------------------------------------------------------------- |
+| [Duration][`std::time::Duration`] | `#[validate(custom(duration_maximum(SECOND)))]`           | [duration_maximum][`crate::utils::duration_maximum`]                     |
+| [Duration][`std::time::Duration`] | `#[validate(custom(duration_minimum(ZERO)))]`             | [duration_minimum][`crate::utils::duration_minimum`]                     |
+| [Duration][`std::time::Duration`] | `#[validate(custom(duration_exclusive_maximum(SECOND)))]` | [duration_exclusive_maximum][`crate::utils::duration_exclusive_maximum`] |
+| [Duration][`std::time::Duration`] | `#[validate(custom(duration_exclusive_minimum(ZERO)))]`   | [duration_exclusive_minimum][`crate::utils::duration_exclusive_minimum`] |
 
 ## Complete Constructor (Deserialization)
 
@@ -129,13 +138,13 @@ use serde_valid::Validate;
 
 #[inline]
 fn min_error_message(_params: &serde_valid::MinItemsError) -> String {
-    "this is min custom message_fn.".to_string()
+    "this is custom message_fn.".to_string()
 }
 
 #[derive(Validate)]
 struct Data {
     #[validate(min_items = 4, message_fn(min_error_message))]
-    #[validate(max_items = 2, message = "this is max custom message.")]
+    #[validate(max_items = 2, message = "this is custom message.")]
     val: Vec<i32>,
 }
 
@@ -148,8 +157,8 @@ assert_eq!(
         "properties": {
             "val": {
                 "errors": [
-                    "this is min custom message_fn.",
-                    "this is max custom message."
+                    "this is custom message_fn.",
+                    "this is custom message."
                 ]
             }
         }
@@ -224,6 +233,29 @@ struct Data {
 }
 
 let s = Data { val: 1 };
+
+assert!(s.validate().is_ok());
+```
+
+Custom validation is suitable for handling convenience validations not defined in JSON Schema.
+`serde_valid::utils::*` provides convenience functions for specific types.
+
+```rust
+use serde_json::json;
+use serde_valid::Validate;
+use serde_valid::utils::{duration_maximum, duration_minimum};
+
+
+#[derive(Validate)]
+struct Data {
+    #[validate(custom(duration_maximum(std::time::Duration::from_micros(5))))]
+    #[validate(custom(duration_minimum(std::time::Duration::from_micros(0))))]
+    val1: std::time::Duration,
+}
+
+let s = Data {
+    val1: std::time::Duration::from_micros(1),
+};
 
 assert!(s.validate().is_ok());
 ```

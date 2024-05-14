@@ -49,6 +49,7 @@ fn extract_custom_fn_name(
 ) -> Result<TokenStream, crate::Errors> {
     match nested_meta {
         crate::types::NestedMeta::Meta(syn::Meta::Path(fn_name)) => Ok(quote!(#fn_name)),
+        crate::types::NestedMeta::Meta(syn::Meta::List(closure)) => Ok(quote!(#closure)),
         crate::types::NestedMeta::Closure(closure) => Ok(quote!((#closure))),
         _ => Err(vec![
             crate::Error::validate_custom_need_function_or_closure(nested_meta),
