@@ -228,6 +228,29 @@ let s = Data { val: 1 };
 assert!(s.validate().is_ok());
 ```
 
+custom is ideal for handling convenience validations not defined in JsonSchema.
+`serde_valid::utils::*`` provides convenience functions for specific types.
+
+```rust
+use serde_json::json;
+use serde_valid::Validate;
+use serde_valid::utils::{duration_maximum, duration_minimum};
+
+
+#[derive(Validate)]
+struct Data {
+    #[validate(custom(duration_maximum(std::time::Duration::from_micros(5))))]
+    #[validate(custom(duration_minimum(std::time::Duration::from_micros(0))))]
+    val1: std::time::Duration,
+}
+
+let s = Data {
+    val1: std::time::Duration::from_micros(1),
+};
+
+assert!(s.validate().is_ok());
+```
+
 ## Multi Fields Validation
 ### Custom Validation
 Now, you can use `#[validate(custom)]` for multi fields validation.
