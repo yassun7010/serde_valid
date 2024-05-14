@@ -228,8 +228,8 @@ let s = Data { val: 1 };
 assert!(s.validate().is_ok());
 ```
 
-custom validation is suitable for handling convenience validations not defined in JsonSchema.
-`serde_valid::utils::*`` provides convenience functions for specific types.
+Custom validation is suitable for handling convenience validations not defined in JsonSchema.
+`serde_valid::utils::*` provides convenience functions for specific types.
 
 ```rust
 use serde_json::json;
