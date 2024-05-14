@@ -5,7 +5,7 @@
 [![GitHub license](https://badgen.net/github/license/Naereen/Strapdown.js?style=flat-square)](https://github.com/Naereen/StrapDown.js/blob/master/LICENSE)
 
 This crate is a Rust library for providing validation mechanism
-to [axum](https://github.com/tokio-rs/axum) with [serde_valid](https://github.com/yassun4dev/serde_valid) crate.
+to [axum](https://github.com/tokio-rs/axum) with [serde_valid](https://github.com/yassun7010/serde_valid) crate.
 
 More information about this crate can be found in the [crate documentation](https://docs.rs/axum_serde_valid).
 
