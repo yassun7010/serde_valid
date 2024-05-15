@@ -1,7 +1,7 @@
 use fluent::{bundle::FluentBundle, FluentResource};
 
 use crate::validation::error::{
-    ArrayErrors, Errors, FormatDefault, ItemErrorsMap, ObjectErrors, PropertyErrorsMap, VecErrors,
+    ArrayErrors, FormatDefault, ItemErrorsMap, ObjectErrors, PropertyErrorsMap, VecErrors,
 };
 
 use super::{LocalizedError, TryLocalize};
@@ -14,17 +14,23 @@ pub trait Localize {
         M: fluent::memoizer::MemoizerKind;
 }
 
-impl Localize for Errors<crate::validation::Error> {
-    type Target = Errors<LocalizedError>;
+impl Localize for crate::validation::Errors<crate::validation::Error> {
+    type Target = crate::validation::Errors<LocalizedError>;
 
     fn localize<M>(&self, bundle: &FluentBundle<FluentResource, M>) -> Self::Target
     where
         M: fluent::memoizer::MemoizerKind,
     {
         match self {
-            Errors::Array(array) => Errors::Array(array.localize(bundle)),
-            Errors::Object(object) => Errors::Object(object.localize(bundle)),
-            Errors::NewType(newtype) => Errors::NewType(newtype.localize(bundle)),
+            crate::validation::Errors::Array(array) => {
+                crate::validation::Errors::Array(array.localize(bundle))
+            }
+            crate::validation::Errors::Object(object) => {
+                crate::validation::Errors::Object(object.localize(bundle))
+            }
+            crate::validation::Errors::NewType(newtype) => {
+                crate::validation::Errors::NewType(newtype.localize(bundle))
+            }
         }
     }
 }
