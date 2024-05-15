@@ -196,7 +196,7 @@ assert_eq!(
 );
 ```
 
-## Custom method
+## Custom Method
 
 You can use your custom validation using by `#[validate(custom)]`.
 
@@ -287,110 +287,6 @@ let s = Data {
 
 assert!(s.validate().is_ok());
 ```
-
-<!--
-<details>
-<summary><h3><s>Rules</s></h3> (Deprecated)</summary>
-
-🚸 **Warning** 🚸 : this feature is deprecated. Please use `#[validate(custom)]` instead.
-
-If you want to check multi fields validation, can use `#[rule]`.
-
-```rust
-use serde_json::json;
-use serde_valid::Validate;
-
-fn sample_rule(_val1: &i32, _val2: &str) -> Result<(), serde_valid::validation::Error> {
-    Err(serde_valid::validation::Error::Custom(
-        "Rule error.".to_owned(),
-    ))
-}
-
-#[derive(Validate)]
-#[rule(sample_rule(val2, val1))]
-struct Data {
-    val1: String,
-    val2: i32,
-}
-
-let s = Data {
-    val1: "val1".to_owned(),
-    val2: 1,
-};
-
-let errors = s.validate().unwrap_err();
-
-assert_eq!(
-    errors.to_string(),
-    json!({
-        "errors": ["Rule error."],
-        "properties": {}
-    })
-    .to_string()
-);
-```
-
-If you want to use rule to unnamed fields struct, just like this,
-
-```rust
-use serde_json::json;
-use serde_valid::Validate;
-
-fn sample_rule(_val1: &i32, _val2: &str) -> Result<(), serde_valid::validation::Error> {
-    Ok(())
-}
-
-#[derive(Validate)]
-#[rule(sample_rule(0, 1))]
-struct Data(i32, String);
-
-let s = Data(0, "1".to_owned());
-
-assert!(s.validate().is_ok());
-```
-
-And you can also use closure.
-
-```rust
-use serde_json::json;
-use serde_valid::Validate;
-
-fn sample_rule(_val1: &i32, _val2: &str) -> Result<(), serde_valid::validation::Error> {
-    Ok(())
-}
-
-#[derive(Validate)]
-#[rule(|val1, val2| sample_rule(val2, val1))]
-struct Data {
-    val1: String,
-    val2: i32,
-}
-
-let s = Data {
-    val1: "val1".to_owned(),
-    val2: 1,
-};
-
-assert!(s.validate().is_ok());
-```
-
-```rust
-use serde_json::json;
-use serde_valid::Validate;
-
-fn sample_rule(_val1: &i32, _val2: &str) -> Result<(), serde_valid::validation::Error> {
-    Ok(())
-}
-
-#[derive(Validate)]
-#[rule(|_0, _1| sample_rule(_0, _1))]
-struct Data(i32, String);
-
-let s = Data(0, "1".to_owned());
-
-assert!(s.validate().is_ok());
-```
-</details> -->
 
 ## Validate Traits
 

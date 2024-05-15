@@ -206,7 +206,7 @@
 //! # }
 //! ```
 //!
-//! ## Custom method
+//! ## Custom Method
 //!
 //! You can use your custom validation using by `#[validate(custom)]`.
 //!
