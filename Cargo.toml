@@ -1,12 +1,7 @@
 [workspace]
 resolver = "2"
 
-members = [
-    "axum_serde_valid",
-    "serde_valid",
-    "serde_valid_derive",
-    "serde_valid_literal",
-]
+members = ["serde_valid", "serde_valid_derive", "serde_valid_literal"]
 
 [workspace.package]
 edition = "2021"
