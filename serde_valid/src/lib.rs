@@ -65,12 +65,12 @@
 //!
 //! In addition, [serde_valid::utils][module@crate::utils] provides a type of validation not described in the JSON schema specification.
 //!
-//! | Type                              | Serde Valid (validate derive)                             | Serde Valid (validation function)                                        |
-//! | :-------------------------------: | :-------------------------------------------------------- | :----------------------------------------------------------------------- |
-//! | [Duration][`std::time::Duration`] | `#[validate(custom(duration_maximum(SECOND)))]`           | [duration_maximum][`crate::utils::duration_maximum`]                     |
-//! | [Duration][`std::time::Duration`] | `#[validate(custom(duration_minimum(ZERO)))]`             | [duration_minimum][`crate::utils::duration_minimum`]                     |
-//! | [Duration][`std::time::Duration`] | `#[validate(custom(duration_exclusive_maximum(SECOND)))]` | [duration_exclusive_maximum][`crate::utils::duration_exclusive_maximum`] |
-//! | [Duration][`std::time::Duration`] | `#[validate(custom(duration_exclusive_minimum(ZERO)))]`   | [duration_exclusive_minimum][`crate::utils::duration_exclusive_minimum`] |
+//! | Type                                                                 | Serde Valid (validate derive)                             | Serde Valid (validation function)                                        |
+//! | :------------------------------------------------------------------: | :-------------------------------------------------------- | :----------------------------------------------------------------------- |
+//! | [Duration](https://doc.rust-lang.org/core/time/struct.Duration.html) | `#[validate(custom(duration_maximum(SECOND)))]`           | [duration_maximum][`crate::utils::duration_maximum`]                     |
+//! | [Duration](https://doc.rust-lang.org/core/time/struct.Duration.html) | `#[validate(custom(duration_minimum(ZERO)))]`             | [duration_minimum][`crate::utils::duration_minimum`]                     |
+//! | [Duration](https://doc.rust-lang.org/core/time/struct.Duration.html) | `#[validate(custom(duration_exclusive_maximum(SECOND)))]` | [duration_exclusive_maximum][`crate::utils::duration_exclusive_maximum`] |
+//! | [Duration](https://doc.rust-lang.org/core/time/struct.Duration.html) | `#[validate(custom(duration_exclusive_minimum(ZERO)))]`   | [duration_exclusive_minimum][`crate::utils::duration_exclusive_minimum`] |
 //!
 //! ## Complete Constructor (Deserialization)
 //!
