@@ -288,7 +288,8 @@ let s = Data {
 assert!(s.validate().is_ok());
 ```
 
-### Rules
+<details>
+<summary><h3><s>Rules</s></h3> (Deprecated)</summary>
 
 🚸 **Warning** 🚸 : this feature is deprecated. Please use `#[validate(custom)]` instead.
 
@@ -388,6 +389,7 @@ let s = Data(0, "1".to_owned());
 
 assert!(s.validate().is_ok());
 ```
+</details>
 
 ## Validate Traits
 
