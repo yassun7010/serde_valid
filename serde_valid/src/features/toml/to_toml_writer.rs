@@ -55,7 +55,7 @@ where
         W: std::io::Write,
     {
         let mut writer = writer;
-        match writer.write(&self.to_toml_string()?.into_bytes()) {
+        match writer.write_all(&self.to_toml_string()?.into_bytes()) {
             Ok(_) => Ok(()),
             Err(err) => Err(serde_toml::ser::Error::custom(err.to_string())),
         }
@@ -66,7 +66,7 @@ where
         W: std::io::Write,
     {
         let mut writer = writer;
-        match writer.write(&self.to_toml_string_pretty()?.into_bytes()) {
+        match writer.write_all(&self.to_toml_string_pretty()?.into_bytes()) {
             Ok(_) => Ok(()),
             Err(err) => Err(serde_toml::ser::Error::custom(err.to_string())),
         }
@@ -79,7 +79,7 @@ impl ToTomlWriter for serde_toml::Value {
         W: std::io::Write,
     {
         let mut writer = writer;
-        match writer.write(&self.to_toml_string()?.into_bytes()) {
+        match writer.write_all(&self.to_toml_string()?.into_bytes()) {
             Ok(_) => Ok(()),
             Err(err) => Err(serde_toml::ser::Error::custom(err.to_string())),
         }
@@ -90,7 +90,7 @@ impl ToTomlWriter for serde_toml::Value {
         W: std::io::Write,
     {
         let mut writer = writer;
-        match writer.write(&self.to_toml_string_pretty()?.into_bytes()) {
+        match writer.write_all(&self.to_toml_string_pretty()?.into_bytes()) {
             Ok(_) => Ok(()),
             Err(err) => Err(serde_toml::ser::Error::custom(err.to_string())),
         }
