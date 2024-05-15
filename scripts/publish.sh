@@ -15,9 +15,3 @@ sleep 20
 
 cd ../serde_valid
 cargo publish
-
-# wait tarball package publishment
-sleep 20
-
-cd ../axum_serde_valid
-cargo publish
