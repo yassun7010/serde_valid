@@ -483,7 +483,7 @@
 //! );
 //! ```
 //!
-//! ### Newtype Enum
+//! ### New Type Enum
 //! Variant errors are output to `errors`.
 //!
 //! ```rust
