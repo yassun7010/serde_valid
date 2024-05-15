@@ -298,6 +298,7 @@
 //! assert!(s.validate().is_ok());
 //! ```
 //!
+//! <!--
 //! <details>
 //! <summary><h3><s>Rules</s></h3> (Deprecated)</summary>
 //!
@@ -399,7 +400,7 @@
 //!
 //! assert!(s.validate().is_ok());
 //! ```
-//! </details>
+//! </details> -->
 //!
 //! ## Validate Traits
 //!

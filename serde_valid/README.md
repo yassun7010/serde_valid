@@ -288,6 +288,7 @@ let s = Data {
 assert!(s.validate().is_ok());
 ```
 
+<!--
 <details>
 <summary><h3><s>Rules</s></h3> (Deprecated)</summary>
 
@@ -389,7 +390,7 @@ let s = Data(0, "1".to_owned());
 
 assert!(s.validate().is_ok());
 ```
-</details>
+</details> -->
 
 ## Validate Traits
 
