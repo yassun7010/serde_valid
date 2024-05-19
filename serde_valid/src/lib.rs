@@ -170,6 +170,10 @@
 //!
 //! ### Fluent localization
 //!
+//! <section class="warning">
+//! <code>fluent</code> feature is required.
+//! </section>
+//!
 //! You can also use [fluent](https://projectfluent.org/) localization by using `fluent` feature.
 //!
 //! ```rust
