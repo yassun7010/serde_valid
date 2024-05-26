@@ -4,7 +4,7 @@
 //! [![crate docs](https://docs.rs/serde_valid/badge.svg)](https://docs.rs/serde_valid/latest/serde_valid/)
 //! [![GitHub license](https://badgen.net/github/license/Naereen/Strapdown.js?style=flat-square)](https://github.com/Naereen/StrapDown.js/blob/master/LICENSE)
 //!
-//! This is [JSON Schema](https://json-schema.org/) based validation tool using with [serde](https://github.com/serde-rs/serde).
+//! This is [JSON Schema](https://json-schema.org/) based validation tool using [serde](https://github.com/serde-rs/serde).
 //!
 //! ## Usage
 //!

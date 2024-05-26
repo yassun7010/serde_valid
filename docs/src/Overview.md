@@ -3,7 +3,7 @@
 [![Documentation](/img/rustdoc.svg)](https://docs.rs/serde_valid)
 [![Latest Version](https://img.shields.io/crates/v/serde_valid.svg?style=social)](https://crates.io/crates/serde_valid)
 
-This is [JSON Schema](https://json-schema.org/) based validation tool using with [serde](https://github.com/serde-rs/serde).
+This is [JSON Schema](https://json-schema.org/) based validation tool using [serde](https://github.com/serde-rs/serde).
 
 ## Usage
 

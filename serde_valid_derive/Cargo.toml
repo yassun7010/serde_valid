@@ -1,6 +1,6 @@
 [package]
 name = "serde_valid_derive"
-description = "JSON Schema based validation tool using with serde."
+description = "JSON Schema based validation tool using serde."
 categories = ["encoding"]
 authors.workspace = true
 repository.workspace = true
