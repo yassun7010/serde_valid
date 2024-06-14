@@ -4,10 +4,11 @@ mod unnamed_struct_derive;
 
 use enum_derive::expand_enum_validate_derive;
 use named_struct_derive::expand_named_struct_derive;
-use proc_macro2::TokenStream;
 use unnamed_struct_derive::expand_unnamed_struct_derive;
 
-pub fn expand_derive(input: &syn::DeriveInput) -> Result<TokenStream, crate::Errors> {
+use crate::output_stream::OutputStream;
+
+pub fn expand_derive(input: &syn::DeriveInput) -> Result<OutputStream, crate::Errors> {
     match &input.data {
         syn::Data::Struct(syn::DataStruct { ref fields, .. }) => match fields {
             syn::Fields::Named(fields) => expand_named_struct_derive(input, fields),
