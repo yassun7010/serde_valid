@@ -1,16 +1,17 @@
 use std::collections::HashSet;
 
 use proc_macro2::TokenStream;
-use proc_macro_warning::FormattedWarning;
 use quote::{quote, ToTokens};
 use syn::spanned::Spanned;
 
 use crate::{
     output_stream::OutputStream,
     types::{CommaSeparatedNestedMetas, CommaSeparatedTokenStreams},
+    warning::Warning,
 };
 
 pub fn collect_rules_from_named_struct(
+    ident: &syn::Ident,
     attributes: &[syn::Attribute],
 ) -> Result<(HashSet<syn::Ident>, OutputStream), crate::Errors> {
     let mut errors = vec![];
@@ -21,9 +22,8 @@ pub fn collect_rules_from_named_struct(
         .iter()
         .filter(|attribute| attribute.path().is_ident("rule"))
         .inspect(|attribute| {
-            warnings.push(FormattedWarning::new_deprecated(
-                "rule",
-                "#[rule(...)] is deprecated, use #[validate(custom(...)))] instead",
+            warnings.push(Warning::new_rule_deprecated(
+                ident,
                 attribute.bracket_token.span.span(),
             ));
         })

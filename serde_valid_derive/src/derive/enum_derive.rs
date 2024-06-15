@@ -10,13 +10,12 @@ use proc_macro2::TokenStream;
 use quote::quote;
 use std::collections::HashSet;
 use std::iter::FromIterator;
-
 pub type Variants = syn::punctuated::Punctuated<syn::Variant, syn::token::Comma>;
 
 pub fn expand_enum_validate_derive(
     input: &syn::DeriveInput,
     variants: &Variants,
-) -> Result<OutputStream, crate::Errors> {
+) -> Result<TokenStream, crate::Errors> {
     let ident = &input.ident;
     let (impl_generics, type_generics, where_clause) = input.generics.split_for_impl();
 
@@ -62,22 +61,21 @@ pub fn expand_enum_validate_derive(
     let warnings = validations
         .into_iter()
         .flat_map(|variant| variant.warnings)
+        .enumerate()
+        .map(|(index, warning)| warning.add_index(index))
         .collect::<Vec<_>>();
 
     if errors.is_empty() {
-        Ok(OutputStream {
-            output: quote!(
-                impl #impl_generics ::serde_valid::Validate for #ident #type_generics #where_clause {
-                    fn validate(&self) -> std::result::Result<(), ::serde_valid::validation::Errors> {
-                        #validations_and_rules
+        Ok(quote!(
+            impl #impl_generics ::serde_valid::Validate for #ident #type_generics #where_clause {
+                fn validate(&self) -> std::result::Result<(), ::serde_valid::validation::Errors> {
+                    #( #warnings )*
+                    #validations_and_rules
 
-
-                        Ok(())
-                    }
+                    Ok(())
                 }
-            ),
-            warnings,
-        })
+            }
+        ))
     } else {
         Err(errors)
     }
@@ -101,7 +99,7 @@ fn expand_enum_variant_named_fields_validation(
             output: rules,
             warnings,
         },
-    ) = match collect_rules_from_named_struct(&variant.attrs) {
+    ) = match collect_rules_from_named_struct(&variant.ident, &variant.attrs) {
         Ok(field_rules) => field_rules,
         Err(variant_errors) => {
             errors.extend(variant_errors);
@@ -176,11 +174,17 @@ fn expand_enum_variant_unnamed_fields_varidation(
     let variant_ident = &variant.ident;
     let mut fields_idents = CommaSeparatedTokenStreams::new();
 
-    let (rule_fields, rules) = match collect_rules_from_unnamed_struct(&variant.attrs) {
+    let (
+        rule_fields,
+        OutputStream {
+            output: rules,
+            warnings,
+        },
+    ) = match collect_rules_from_unnamed_struct(&variant.ident, &variant.attrs) {
         Ok(field_rules) => field_rules,
         Err(variant_errors) => {
             errors.extend(variant_errors);
-            (HashSet::new(), quote!())
+            (HashSet::new(), OutputStream::new())
         }
     };
 
@@ -229,7 +233,7 @@ fn expand_enum_variant_unnamed_fields_varidation(
                     }
                 }
             ),
-            warnings: vec![],
+            warnings,
         })
     } else {
         Err(errors)

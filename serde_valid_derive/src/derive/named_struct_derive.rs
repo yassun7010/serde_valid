@@ -14,7 +14,7 @@ use std::iter::FromIterator;
 pub fn expand_named_struct_derive(
     input: &syn::DeriveInput,
     fields: &syn::FieldsNamed,
-) -> Result<OutputStream, crate::Errors> {
+) -> Result<TokenStream, crate::Errors> {
     let ident = &input.ident;
     let (impl_generics, type_generics, where_clause) = input.generics.split_for_impl();
     let rename_map = collect_serde_rename_map(fields);
@@ -27,7 +27,7 @@ pub fn expand_named_struct_derive(
             output: rules,
             warnings,
         },
-    ) = match collect_rules_from_named_struct(&input.attrs) {
+    ) = match collect_rules_from_named_struct(&input.ident, &input.attrs) {
         Ok((rule_fields, rules)) => (rule_fields, rules),
         Err(rule_errors) => {
             errors.extend(rule_errors);
@@ -58,28 +58,32 @@ pub fn expand_named_struct_derive(
 
     let fields_errors = object_errors_tokens();
 
+    let warnings = warnings
+        .into_iter()
+        .enumerate()
+        .map(|(index, warning)| warning.add_index(index))
+        .collect::<Vec<_>>();
+
     if errors.is_empty() {
-        Ok(OutputStream {
-            output: quote!(
-                impl #impl_generics ::serde_valid::Validate for #ident #type_generics #where_clause {
-                    fn validate(&self) -> std::result::Result<(), ::serde_valid::validation::Errors> {
-                        let mut __rule_vec_errors = ::serde_valid::validation::VecErrors::new();
-                        let mut __property_vec_errors_map = ::serde_valid::validation::PropertyVecErrorsMap::new();
+        Ok(quote!(
+            impl #impl_generics ::serde_valid::Validate for #ident #type_generics #where_clause {
+                fn validate(&self) -> std::result::Result<(), ::serde_valid::validation::Errors> {
+                    #(#warnings)*
+                    let mut __rule_vec_errors = ::serde_valid::validation::VecErrors::new();
+                    let mut __property_vec_errors_map = ::serde_valid::validation::PropertyVecErrorsMap::new();
 
-                        #field_validates
-                        #struct_validations
-                        #rules
+                    #field_validates
+                    #struct_validations
+                    #rules
 
-                        if __rule_vec_errors.is_empty() && __property_vec_errors_map.is_empty() {
-                            Ok(())
-                        } else {
-                            Err(#fields_errors)
-                        }
+                    if __rule_vec_errors.is_empty() && __property_vec_errors_map.is_empty() {
+                        Ok(())
+                    } else {
+                        Err(#fields_errors)
                     }
                 }
-            ),
-            warnings,
-        })
+            }
+        ))
     } else {
         Err(errors)
     }

@@ -1,6 +1,5 @@
-use proc_macro2::TokenStream;
-
 use crate::warning::Warning;
+use proc_macro2::TokenStream;
 
 #[derive(Debug, Clone)]
 pub struct OutputStream {
