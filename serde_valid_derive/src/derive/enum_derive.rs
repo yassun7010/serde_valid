@@ -1,7 +1,7 @@
 use super::named_struct_derive::collect_named_fields_validators_list;
 use super::unnamed_struct_derive::collect_unnamed_fields_validators_list;
 use crate::attribute::rule::{collect_rules_from_named_struct, collect_rules_from_unnamed_struct};
-use crate::attribute::variant_validate::collect_variant_custom_from_named_variant;
+use crate::attribute::variant_validate::collect_variant_custom_from_variant;
 use crate::error::{array_errors_tokens, new_type_errors_tokens, object_errors_tokens};
 use crate::output_stream::OutputStream;
 use crate::serde::rename::collect_serde_rename_map;
@@ -39,8 +39,12 @@ pub fn expand_enum_validate_derive(
                 }
             }
             syn::Fields::Unnamed(unnamed_fields) => {
-                match expand_enum_variant_unnamed_fields_varidation(ident, variant, unnamed_fields)
-                {
+                match expand_enum_variant_unnamed_fields_varidation(
+                    ident,
+                    input,
+                    variant,
+                    unnamed_fields,
+                ) {
                     Ok(variant_varidates_and_rules) => variant_varidates_and_rules,
                     Err(variant_errors) => {
                         errors.extend(variant_errors);
@@ -107,7 +111,7 @@ fn expand_enum_variant_named_fields_validation(
         }
     };
 
-    let enum_validates = match collect_variant_custom_from_named_variant(&input.attrs) {
+    let enum_validates = match collect_variant_custom_from_variant(&input.attrs) {
         Ok(validations) => TokenStream::from_iter(validations),
         Err(rule_errors) => {
             errors.extend(rule_errors);
@@ -166,6 +170,7 @@ fn expand_enum_variant_named_fields_validation(
 
 fn expand_enum_variant_unnamed_fields_varidation(
     ident: &syn::Ident,
+    input: &syn::DeriveInput,
     variant: &syn::Variant,
     unnamed_fields: &syn::FieldsUnnamed,
 ) -> Result<OutputStream, crate::Errors> {
@@ -185,6 +190,14 @@ fn expand_enum_variant_unnamed_fields_varidation(
         Err(variant_errors) => {
             errors.extend(variant_errors);
             (HashSet::new(), OutputStream::new())
+        }
+    };
+
+    let enum_validates = match collect_variant_custom_from_variant(&input.attrs) {
+        Ok(validations) => TokenStream::from_iter(validations),
+        Err(rule_errors) => {
+            errors.extend(rule_errors);
+            quote!()
         }
     };
 
@@ -225,6 +238,7 @@ fn expand_enum_variant_unnamed_fields_varidation(
                     let mut __rule_vec_errors = ::serde_valid::validation::VecErrors::new();
                     let mut __item_vec_errors_map = ::serde_valid::validation::ItemVecErrorsMap::new();
 
+                    #enum_validates
                     #validates
                     #rules
 
