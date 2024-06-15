@@ -16,7 +16,8 @@ version.workspace = true
 proc-macro = true
 
 [dependencies]
-paste = { workspace = true }
+itertools.workspace = true
+paste.workspace = true
 proc-macro-error = "^1.0"
 proc-macro2 = "^1.0"
 quote = "^1.0"

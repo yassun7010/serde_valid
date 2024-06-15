@@ -4,17 +4,29 @@ use proc_macro2::TokenStream;
 use quote::{quote, ToTokens};
 use syn::spanned::Spanned;
 
-use crate::types::{CommaSeparatedNestedMetas, CommaSeparatedTokenStreams};
+use crate::{
+    output_stream::OutputStream,
+    types::{CommaSeparatedNestedMetas, CommaSeparatedTokenStreams},
+    warning::Warning,
+};
 
 pub fn collect_rules_from_named_struct(
+    ident: &syn::Ident,
     attributes: &[syn::Attribute],
-) -> Result<(HashSet<syn::Ident>, TokenStream), crate::Errors> {
+) -> Result<(HashSet<syn::Ident>, OutputStream), crate::Errors> {
     let mut errors = vec![];
 
     let mut rule_fields = HashSet::new();
+    let mut warnings = vec![];
     let rules = attributes
         .iter()
         .filter(|attribute| attribute.path().is_ident("rule"))
+        .inspect(|attribute| {
+            warnings.push(Warning::new_rule_deprecated(
+                ident,
+                attribute.bracket_token.span.span(),
+            ));
+        })
         .filter_map(|attribute| match &attribute.meta {
             syn::Meta::List(list) => match collect_rule(list) {
                 Ok((field_ident, stream)) => {
@@ -36,7 +48,13 @@ pub fn collect_rules_from_named_struct(
         .collect::<Vec<_>>();
 
     if errors.is_empty() {
-        Ok((rule_fields, TokenStream::from_iter(rules)))
+        Ok((
+            rule_fields,
+            OutputStream {
+                output: TokenStream::from_iter(rules),
+                warnings,
+            },
+        ))
     } else {
         Err(errors)
     }

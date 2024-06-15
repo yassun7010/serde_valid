@@ -2,13 +2,13 @@ use serde_json::json;
 use serde_valid::Validate;
 
 #[test]
-fn enum_named_variant_validation_is_ok() {
-    fn ok_rule(_a: &TestStruct, _b: &TestStruct) -> Result<(), serde_valid::validation::Error> {
+fn enum_named_enum_validation_is_ok() {
+    fn ok_enum(_value: &TestEnum) -> Result<(), serde_valid::validation::Error> {
         Ok(())
     }
     #[derive(Validate)]
+    #[validate(custom(ok_enum))]
     enum TestEnum {
-        #[rule(ok_rule(a, b))]
         Named {
             #[validate]
             a: TestStruct,
@@ -70,16 +70,16 @@ fn enum_newtype_variant_validation_is_ok() {
 }
 
 #[test]
-fn enum_named_variant_validation_is_err() {
-    fn err_rule(_a: &TestStruct, _b: &TestStruct) -> Result<(), serde_valid::validation::Error> {
+fn enum_named_enum_validation_is_err() {
+    fn err_rule(_data: &TestEnum) -> Result<(), serde_valid::validation::Error> {
         Err(serde_valid::validation::Error::Custom(
             "Rule error.".to_owned(),
         ))
     }
 
     #[derive(Validate)]
+    #[validate(custom(err_rule))]
     enum TestEnum {
-        #[rule(err_rule(a, b))]
         Named {
             #[validate]
             a: TestStruct,

@@ -2,8 +2,10 @@
 mod attribute;
 mod derive;
 mod error;
+mod output_stream;
 mod serde;
 mod types;
+mod warning;
 
 use derive::expand_derive;
 use error::to_compile_errors;

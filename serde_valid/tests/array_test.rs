@@ -3,7 +3,7 @@ use serde_valid::Validate;
 
 #[test]
 fn items_err_message() {
-    fn rule_sample(_a: &i32) -> Result<(), serde_valid::validation::Error> {
+    fn rule_sample(_a: i32) -> Result<(), serde_valid::validation::Error> {
         Err(serde_valid::validation::Error::Custom(
             "Rule error.".to_owned(),
         ))
@@ -18,7 +18,7 @@ fn items_err_message() {
     }
 
     #[derive(Validate)]
-    #[rule(rule_sample(val))]
+    #[validate(custom(|s| rule_sample(s.val)))]
     struct TestChildStruct {
         #[validate(minimum = 1)]
         #[validate(maximum = 10)]

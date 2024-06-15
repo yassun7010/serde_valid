@@ -2,6 +2,7 @@ use crate::attribute::field_validate::{extract_field_validator, FieldValidators}
 use crate::attribute::rule::collect_rules_from_unnamed_struct;
 use crate::attribute::struct_validate::collect_struct_custom_from_named_struct;
 use crate::error::{array_errors_tokens, new_type_errors_tokens};
+use crate::output_stream::OutputStream;
 use crate::types::{Field, UnnamedField};
 use proc_macro2::TokenStream;
 use quote::quote;
@@ -18,11 +19,17 @@ pub fn expand_unnamed_struct_derive(
 
     let mut errors = vec![];
 
-    let (rule_fields, rules) = match collect_rules_from_unnamed_struct(&input.attrs) {
-        Ok((rule_fields, rules)) => (rule_fields, TokenStream::from_iter(rules)),
+    let (
+        rule_fields,
+        OutputStream {
+            output: rules,
+            warnings,
+        },
+    ) = match collect_rules_from_unnamed_struct(&input.ident, &input.attrs) {
+        Ok((rule_fields, rules)) => (rule_fields, rules),
         Err(rule_errors) => {
             errors.extend(rule_errors);
-            (HashSet::new(), quote!())
+            (HashSet::new(), OutputStream::new())
         }
     };
 
@@ -54,8 +61,15 @@ pub fn expand_unnamed_struct_derive(
         new_type_errors_tokens()
     };
 
+    let warnings = warnings
+        .into_iter()
+        .enumerate()
+        .map(|(index, warning)| warning.add_index(index))
+        .collect::<Vec<_>>();
+
     if errors.is_empty() {
         Ok(quote!(
+            #(#warnings)*
             impl #impl_generics ::serde_valid::Validate for #ident #type_generics #where_clause {
                 fn validate(&self) -> std::result::Result<(), ::serde_valid::validation::Errors> {
                     let mut __rule_vec_errors = ::serde_valid::validation::VecErrors::new();
