@@ -1,11 +1,11 @@
 use serde_valid::Validate;
 
-fn sample_rule(_val: &i32) -> Result<(), serde_valid::validation::Error> {
+fn sample_rule(_val: i32) -> Result<(), serde_valid::validation::Error> {
     Ok(())
 }
 
 #[derive(Debug, Validate)]
-#[rule(sample_rule(int_value))]
+#[validate(custom(|s| sample_rule(s.int_value)))]
 struct TestStruct<'a> {
     // Generic validator
     #[validate(enumerate(5, 10, 15))]
