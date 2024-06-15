@@ -26,7 +26,12 @@ pub fn expand_enum_validate_derive(
         .into_iter()
         .map(|variant| match &variant.fields {
             syn::Fields::Named(named_fields) => {
-                match expand_enum_variant_named_fields_validation(ident, variant, named_fields) {
+                match expand_enum_variant_named_fields_validation(
+                    ident,
+                    input,
+                    variant,
+                    named_fields,
+                ) {
                     Ok(variant_varidates_and_rules) => variant_varidates_and_rules,
                     Err(variant_errors) => {
                         errors.extend(variant_errors);
@@ -66,6 +71,7 @@ pub fn expand_enum_validate_derive(
                     fn validate(&self) -> std::result::Result<(), ::serde_valid::validation::Errors> {
                         #validations_and_rules
 
+
                         Ok(())
                     }
                 }
@@ -79,6 +85,7 @@ pub fn expand_enum_validate_derive(
 
 fn expand_enum_variant_named_fields_validation(
     ident: &syn::Ident,
+    input: &syn::DeriveInput,
     variant: &syn::Variant,
     named_fields: &syn::FieldsNamed,
 ) -> Result<OutputStream, crate::Errors> {
@@ -102,7 +109,7 @@ fn expand_enum_variant_named_fields_validation(
         }
     };
 
-    let enum_validations = match collect_variant_custom_from_named_variant(&variant.attrs) {
+    let enum_validates = match collect_variant_custom_from_named_variant(&input.attrs) {
         Ok(validations) => TokenStream::from_iter(validations),
         Err(rule_errors) => {
             errors.extend(rule_errors);
@@ -143,8 +150,8 @@ fn expand_enum_variant_named_fields_validation(
                     let mut __rule_vec_errors = ::serde_valid::validation::VecErrors::new();
                     let mut __property_vec_errors_map = ::serde_valid::validation::PropertyVecErrorsMap::new();
 
+                    #enum_validates
                     #validates
-                    #enum_validations
                     #rules
 
                     if !(__rule_vec_errors.is_empty() && __property_vec_errors_map.is_empty()) {
