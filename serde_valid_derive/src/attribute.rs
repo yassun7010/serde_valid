@@ -4,6 +4,7 @@ pub mod common;
 pub mod field_validate;
 pub mod rule;
 pub mod struct_validate;
+pub mod variant_validate;
 
 pub type Validator = TokenStream;
 

@@ -1,6 +1,7 @@
 use super::named_struct_derive::collect_named_fields_validators_list;
 use super::unnamed_struct_derive::collect_unnamed_fields_validators_list;
 use crate::attribute::rule::{collect_rules_from_named_struct, collect_rules_from_unnamed_struct};
+use crate::attribute::variant_validate::collect_variant_custom_from_named_variant;
 use crate::error::{array_errors_tokens, new_type_errors_tokens, object_errors_tokens};
 use crate::output_stream::OutputStream;
 use crate::serde::rename::collect_serde_rename_map;
@@ -101,6 +102,14 @@ fn expand_enum_variant_named_fields_validation(
         }
     };
 
+    let enum_validations = match collect_variant_custom_from_named_variant(&variant.attrs) {
+        Ok(validations) => TokenStream::from_iter(validations),
+        Err(rule_errors) => {
+            errors.extend(rule_errors);
+            quote!()
+        }
+    };
+
     let validates = match collect_named_fields_validators_list(named_fields, &rename_map) {
         Ok(field_validators_list) => {
             TokenStream::from_iter(field_validators_list.iter().map(|validators| {
@@ -135,6 +144,7 @@ fn expand_enum_variant_named_fields_validation(
                     let mut __property_vec_errors_map = ::serde_valid::validation::PropertyVecErrorsMap::new();
 
                     #validates
+                    #enum_validations
                     #rules
 
                     if !(__rule_vec_errors.is_empty() && __property_vec_errors_map.is_empty()) {
