@@ -5,7 +5,7 @@ use crate::attribute::Validator;
 
 use self::meta::extract_variant_validator;
 
-pub fn collect_variant_custom_from_named_variant(
+pub fn collect_variant_custom_from_variant(
     attributes: &[syn::Attribute],
 ) -> Result<Validator, crate::Errors> {
     let mut errors = vec![];

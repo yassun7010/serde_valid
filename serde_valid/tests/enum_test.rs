@@ -127,16 +127,16 @@ fn enum_named_enum_validation_is_err() {
 }
 
 #[test]
-fn enum_unnamed_variant_validation_is_err() {
-    fn err_rule(_a: &TestStruct, _b: &TestStruct) -> Result<(), serde_valid::validation::Error> {
+fn enum_unnamed_enum_validation_is_err() {
+    fn err_rule(_: &TestEnum) -> Result<(), serde_valid::validation::Error> {
         Err(serde_valid::validation::Error::Custom(
             "Rule error.".to_owned(),
         ))
     }
 
     #[derive(Validate)]
+    #[validate(custom(err_rule))]
     enum TestEnum {
-        #[rule(err_rule(0, 1))]
         Named(#[validate] TestStruct, #[validate] TestStruct),
     }
 
@@ -178,15 +178,15 @@ fn enum_unnamed_variant_validation_is_err() {
 
 #[test]
 fn enum_newtype_variant_validation_is_err() {
-    fn err_rule(_a: &u32) -> Result<(), serde_valid::validation::Error> {
+    fn err_rule(_: &TestEnum) -> Result<(), serde_valid::validation::Error> {
         Err(serde_valid::validation::Error::Custom(
             "Rule error.".to_owned(),
         ))
     }
 
     #[derive(Validate)]
+    #[validate(custom(err_rule))]
     enum TestEnum {
-        #[rule(err_rule(0))]
         NewType(#[validate(minimum = 5)] u32),
     }
 
