@@ -23,15 +23,11 @@ pub fn derive_validate(tokens: TokenStream) -> TokenStream {
 
     expand_derive(&input)
         .map_or_else(to_compile_errors, |OutputStream { output, warnings }| {
-            let warnings =
-                proc_macro2::TokenStream::from_iter(warnings.into_iter().map(|warning| {
-                    quote!(
-                        #warning
-                    )
-                }));
             quote!(
                 #output
-                #warnings
+                #(
+                    #warnings
+                )*
             )
         })
         .into()
