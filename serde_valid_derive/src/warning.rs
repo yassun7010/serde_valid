@@ -49,8 +49,7 @@ impl Warning {
     pub fn new_rule_deprecated(ident: &syn::Ident, span: Span) -> Self {
         Self::Deprecated {
             ident: ident.clone(),
-            note: ident.to_string()
-                + ": #[rule(...)] is deprecated, use #[validate(custom(...)))] instead",
+            note: "#[rule(...)] is deprecated, use #[validate(custom(...)))] instead".to_string(),
             span,
         }
     }
