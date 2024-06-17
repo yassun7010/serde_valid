@@ -81,6 +81,9 @@ pub enum Error {
     #[serde(serialize_with = "serialize_error_message")]
     Custom(String),
 
+    #[error("{0}")]
+    CustomJson(serde_json::Value),
+
     #[error(transparent)]
     Items(ArrayErrors),
 

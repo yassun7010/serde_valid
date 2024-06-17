@@ -117,6 +117,7 @@ impl Localize for crate::validation::Error {
             Self::MaxProperties(message) => message.localize(bundle),
             Self::Enumerate(message) => message.localize(bundle),
             Self::Custom(message) => LocalizedError::String(message.to_string()),
+            Self::CustomJson(message) => LocalizedError::String(message.to_string()),
             Self::Items(message) => LocalizedError::Items(message.localize(bundle)),
             Self::Properties(message) => LocalizedError::Properties(message.localize(bundle)),
             Self::Fluent(message) => message.localize(bundle).unwrap_or_else(|| {

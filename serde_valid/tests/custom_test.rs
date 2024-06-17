@@ -113,6 +113,43 @@ fn custom_validation_error() {
 }
 
 #[test]
+fn custom_json_validation_error() {
+    fn user_validation(_val: &[i32]) -> Result<(), serde_valid::validation::Error> {
+        Err(serde_valid::validation::Error::CustomJson(json!({
+            "code": 12,
+            "message": "this is custom json message.",
+        })))
+    }
+
+    #[derive(Validate)]
+    struct TestStruct {
+        #[validate(custom(user_validation))]
+        val: Vec<i32>,
+    }
+
+    let s = TestStruct {
+        val: vec![1, 2, 3, 4],
+    };
+    assert_eq!(
+        s.validate().unwrap_err().to_string(),
+        json!({
+            "errors": [],
+            "properties": {
+                "val": {
+                    "errors": [
+                        {
+                            "code": 12,
+                            "message": "this is custom json message."
+                        }
+                    ]
+                }
+            }
+        })
+        .to_string()
+    );
+}
+
+#[test]
 fn named_struct_custom_is_ok() {
     fn sample_struct_validation(_val: &TestStruct) -> Result<(), serde_valid::validation::Error> {
         Ok(())

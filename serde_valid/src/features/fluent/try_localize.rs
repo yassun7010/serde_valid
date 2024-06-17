@@ -185,6 +185,7 @@ impl TryLocalize for crate::validation::Error {
             Self::MaxProperties(message) => message.try_localize(bundle),
             Self::Enumerate(message) => message.try_localize(bundle),
             Self::Custom(message) => Ok(LocalizedError::String(message.to_string())),
+            Self::CustomJson(message) => Ok(LocalizedError::String(message.to_string())),
             Self::Items(message) => Ok(LocalizedError::Items(message.try_localize(bundle)?)),
             Self::Properties(message) => {
                 Ok(LocalizedError::Properties(message.try_localize(bundle)?))
