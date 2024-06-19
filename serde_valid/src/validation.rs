@@ -1,5 +1,6 @@
 mod array;
 mod composited;
+pub mod custom;
 pub mod error;
 mod generic;
 mod numeric;
