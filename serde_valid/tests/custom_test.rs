@@ -232,6 +232,7 @@ fn named_struct_custom_vec_errors_is_err() {
         s.validate().unwrap_err().to_string(),
         json!({
             "errors": ["Error 1", "Error 2"],
+            "properties": {}
         })
         .to_string()
     );
@@ -275,6 +276,7 @@ fn named_struct_custom_closure_vec_errors_is_err() {
         s.validate().unwrap_err().to_string(),
         json!({
             "errors": ["Error 1", "Error 2"],
+            "properties": {}
         })
         .to_string()
     );
