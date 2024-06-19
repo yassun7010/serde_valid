@@ -1,24 +1,24 @@
 /// This function is used to avoid [rustc(E0282)](https://doc.rust-lang.org/error_codes/E0282.html) error in `#[validate(custom)]` validator on the struct.
 #[inline]
-pub fn wrap_closure_validation<T, M: ToMultiple>(
+pub fn wrap_closure_validation<T, M: IntoVecErrors>(
     data: T,
     f: impl FnOnce(T) -> Result<(), M>,
 ) -> Result<(), Vec<crate::validation::Error>> {
-    f(data).map_err(|e| e.to_multiple())
+    f(data).map_err(|e| e.into_vec_errors())
 }
 
-pub trait ToMultiple {
-    fn to_multiple(self) -> Vec<crate::validation::Error>;
+pub trait IntoVecErrors {
+    fn into_vec_errors(self) -> Vec<crate::validation::Error>;
 }
 
-impl ToMultiple for Vec<crate::validation::Error> {
-    fn to_multiple(self) -> Vec<crate::validation::Error> {
+impl IntoVecErrors for Vec<crate::validation::Error> {
+    fn into_vec_errors(self) -> Vec<crate::validation::Error> {
         self
     }
 }
 
-impl ToMultiple for crate::validation::Error {
-    fn to_multiple(self) -> Vec<crate::validation::Error> {
+impl IntoVecErrors for crate::validation::Error {
+    fn into_vec_errors(self) -> Vec<crate::validation::Error> {
         vec![self]
     }
 }
