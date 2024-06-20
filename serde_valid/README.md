@@ -287,26 +287,6 @@ let s = Data { val: 1 };
 assert!(s.validate().is_ok());
 ```
 
-And you can also use closure.
-
-```rust
-use serde_valid::Validate;
-
-fn user_validation(_val: &i32, param1: bool) -> Result<(), serde_valid::validation::Error> {
-    Ok(())
-}
-
-#[derive(Validate)]
-struct Data {
-    #[validate(custom(|v| user_validation(v, true)))]
-    val: i32,
-}
-
-let s = Data { val: 1 };
-
-assert!(s.validate().is_ok());
-```
-
 ### Multi Fields Validation
 Now, you can use `#[validate(custom)]` for multi fields validation.
 
