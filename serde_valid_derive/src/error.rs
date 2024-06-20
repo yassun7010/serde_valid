@@ -3,6 +3,7 @@ use crate::attribute::{
     MetaNameValueCustomMessage, MetaNameValueFieldValidation, MetaNameValueStructValidation,
     MetaPathCustomMessage, MetaPathFieldValidation, MetaPathStructValidation,
 };
+use itertools::Itertools;
 use proc_macro2::TokenStream;
 use quote::{quote, ToTokens};
 use syn::spanned::Spanned;
@@ -303,6 +304,7 @@ impl Error {
         let candidates = &(MetaPathFieldValidation::iter().map(|x| x.name()))
             .chain(MetaListFieldValidation::iter().map(|x| x.name()))
             .chain(MetaNameValueFieldValidation::iter().map(|x| x.name()))
+            .unique()
             .collect::<Vec<_>>();
 
         let filterd_candidates =
@@ -370,7 +372,7 @@ impl Error {
     pub fn validate_enumerate_need_array(path: impl Spanned) -> Self {
         Self::new(
             path.span(),
-            "#[validate(enumerate = ???)] needs array literals.",
+            "#[validate(enumerate = ???)] needs literal array only.",
         )
     }
 
