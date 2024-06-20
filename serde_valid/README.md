@@ -200,8 +200,8 @@ assert_eq!(
 );
 ```
 
-## Custom Method
-
+## Custom Validation
+### Single Error Validation
 You can use your custom validation using by `#[validate(custom)]`.
 
 ```rust
@@ -265,7 +265,7 @@ let s = Data {
 assert!(s.validate().is_ok());
 ```
 
-## Multi Errors Validation
+### Multi Errors Validation
 If you want to return multiple errors in the use custom validation method, you can use `#[validate(custom)]` same as single error.
 
 ```rust
@@ -306,8 +306,7 @@ let s = Data { val: 1 };
 assert!(s.validate().is_ok());
 ```
 
-## Multi Fields Validation
-### Custom Validation
+### Multi Fields Validation
 Now, you can use `#[validate(custom)]` for multi fields validation.
 
 ```rust
