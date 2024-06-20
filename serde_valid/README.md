@@ -200,8 +200,8 @@ assert_eq!(
 );
 ```
 
-## Custom Method
-
+## Custom Validation
+### Single Error Validation
 You can use your custom validation using by `#[validate(custom)]`.
 
 ```rust
@@ -265,8 +265,29 @@ let s = Data {
 assert!(s.validate().is_ok());
 ```
 
-## Multi Fields Validation
-### Custom Validation
+### Multi Errors Validation
+If you want to return multiple errors in the use custom validation method, you can use `#[validate(custom)]` same as single error.
+
+```rust
+use serde_valid::Validate;
+
+// 🚀 Just change the return type from `Result<(), Error>` to `Result<(), Vec<Error>>` !!
+fn user_validation(_val: &i32) -> Result<(), Vec<serde_valid::validation::Error>> {
+    Ok(())
+}
+
+#[derive(Validate)]
+struct Data {
+    #[validate(custom(user_validation))]
+    val: i32,
+}
+
+let s = Data { val: 1 };
+
+assert!(s.validate().is_ok());
+```
+
+### Multi Fields Validation
 Now, you can use `#[validate(custom)]` for multi fields validation.
 
 ```rust

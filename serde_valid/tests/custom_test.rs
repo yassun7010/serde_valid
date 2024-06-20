@@ -192,3 +192,92 @@ fn unnamed_struct_custom_closure_is_err() {
     assert_eq!(s.0, 5);
     assert!(s.validate().is_err());
 }
+
+#[test]
+fn named_struct_custom_vec_errors_is_ok() {
+    fn validation(_val: &TestStruct) -> Result<(), Vec<serde_valid::validation::Error>> {
+        Ok(())
+    }
+
+    #[derive(Validate)]
+    #[validate(custom(validation))]
+    struct TestStruct {
+        val: i32,
+    }
+
+    let s = TestStruct { val: 5 };
+    assert_eq!(s.val, 5);
+    assert!(s.validate().is_ok());
+}
+
+#[test]
+fn named_struct_custom_vec_errors_is_err() {
+    fn validation(_val: &TestStruct) -> Result<(), Vec<serde_valid::validation::Error>> {
+        Err(vec![
+            serde_valid::validation::Error::Custom("Error 1".to_owned()),
+            serde_valid::validation::Error::Custom("Error 2".to_owned()),
+        ])
+    }
+
+    #[derive(Validate)]
+    #[validate(custom(validation))]
+    struct TestStruct {
+        val: i32,
+    }
+
+    let s = TestStruct { val: 5 };
+
+    assert_eq!(s.val, 5);
+    assert_eq!(
+        s.validate().unwrap_err().to_string(),
+        json!({
+            "errors": ["Error 1", "Error 2"],
+            "properties": {}
+        })
+        .to_string()
+    );
+}
+
+#[test]
+fn named_struct_custom_closure_vec_errors_is_ok() {
+    fn sample_struct_validation(_val: i32) -> Result<(), Vec<serde_valid::validation::Error>> {
+        Ok(())
+    }
+
+    #[derive(Validate)]
+    #[validate(custom(|s| sample_struct_validation(s.val)))]
+    struct TestStruct {
+        val: i32,
+    }
+
+    let s = TestStruct { val: 5 };
+    assert_eq!(s.val, 5);
+    assert!(s.validate().is_ok());
+}
+
+#[test]
+fn named_struct_custom_closure_vec_errors_is_err() {
+    fn sample_struct_validation(_val: i32) -> Result<(), Vec<serde_valid::validation::Error>> {
+        Err(vec![
+            serde_valid::validation::Error::Custom("Error 1".to_owned()),
+            serde_valid::validation::Error::Custom("Error 2".to_owned()),
+        ])
+    }
+
+    #[derive(Validate)]
+    #[validate(custom(|s| sample_struct_validation(s.val)))]
+    struct TestStruct {
+        val: i32,
+    }
+
+    let s = TestStruct { val: 5 };
+    assert_eq!(s.val, 5);
+    assert_eq!(
+        s.validate().unwrap_err().to_string(),
+        json!({
+            "errors": ["Error 1", "Error 2"],
+            "properties": {}
+        })
+        .to_string()
+    );
+}
