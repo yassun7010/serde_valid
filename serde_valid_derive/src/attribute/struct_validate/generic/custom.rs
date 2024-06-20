@@ -53,7 +53,7 @@ fn extract_struct_custom_from_meta_path(meta_path: &syn::Path) -> Result<Validat
     let rule_fn_name = &meta_path;
 
     Ok(quote!(
-        if let Err(__errors) = serde_valid::validation::custom::wrap_closure_validation(self, #rule_fn_name) {
+        if let Err(__errors) = serde_valid::validation::custom::wrap_into_vec_errors(#rule_fn_name(self)) {
             __rule_vec_errors.extend(__errors);
         };
     ))
