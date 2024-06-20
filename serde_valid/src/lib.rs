@@ -281,7 +281,8 @@
 //! ```rust
 //! use serde_valid::Validate;
 //!
-//! fn user_validation(_val: &i32) -> Result<(), Vec<serde_valid::validation::Error>> { // <-- Just change the return type from `Result<(), Error>` to `Result<(), Vec<Error>>` !!
+//! // Just change the return type from `Result<(), Error>` to `Result<(), Vec<Error>>` !! 🚀
+//! fn user_validation(_val: &i32) -> Result<(), Vec<serde_valid::validation::Error>> {
 //!     Ok(())
 //! }
 //!
