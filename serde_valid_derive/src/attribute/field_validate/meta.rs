@@ -11,6 +11,7 @@ use crate::attribute::{
 use crate::serde::rename::RenameMap;
 use crate::types::Field;
 use crate::types::SingleIdentPath;
+use crate::warning::WithWarnings;
 use meta_list::extract_field_validator_from_meta_list;
 use meta_name_value::extract_field_validator_from_meta_name_value;
 use meta_path::extract_field_validator_from_meta_path;
@@ -22,7 +23,7 @@ pub fn extract_field_validator(
     field: &impl Field,
     attribute: &syn::Attribute,
     rename_map: &RenameMap,
-) -> Result<Validator, crate::Errors> {
+) -> Result<WithWarnings<Validator>, crate::Errors> {
     match &attribute.meta {
         syn::Meta::List(list) => inner_extract_field_validator(field, attribute, list, rename_map),
         syn::Meta::Path(_) => extract_generic_validate_validator(field, rename_map),
@@ -39,7 +40,7 @@ fn inner_extract_field_validator(
     attribute: &syn::Attribute,
     meta_list: &syn::MetaList,
     rename_map: &RenameMap,
-) -> Result<Validator, crate::Errors> {
+) -> Result<WithWarnings<Validator>, crate::Errors> {
     let mut errors = vec![];
     let nested = meta_list
         .parse_args_with(crate::types::CommaSeparatedMetas::parse_terminated)
@@ -123,6 +124,7 @@ fn inner_extract_field_validator(
                 message_format,
                 rename_map,
             )
+            .map(WithWarnings::new)
         }
 
         (Ok(_), _, _, _) => Err(vec![crate::Error::meta_path_validation_need_value(

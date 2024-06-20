@@ -2,7 +2,6 @@
 mod attribute;
 mod derive;
 mod error;
-mod output_stream;
 mod serde;
 mod types;
 mod warning;

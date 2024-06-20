@@ -5,15 +5,15 @@ use quote::{quote, ToTokens};
 use syn::spanned::Spanned;
 
 use crate::{
-    output_stream::OutputStream,
     types::{CommaSeparatedNestedMetas, CommaSeparatedTokenStreams},
     warning::Warning,
+    warning::WithWarnings,
 };
 
 pub fn collect_rules_from_named_struct(
     ident: &syn::Ident,
     attributes: &[syn::Attribute],
-) -> Result<(HashSet<syn::Ident>, OutputStream), crate::Errors> {
+) -> Result<(HashSet<syn::Ident>, WithWarnings<TokenStream>), crate::Errors> {
     let mut errors = vec![];
 
     let mut rule_fields = HashSet::new();
@@ -50,8 +50,8 @@ pub fn collect_rules_from_named_struct(
     if errors.is_empty() {
         Ok((
             rule_fields,
-            OutputStream {
-                output: TokenStream::from_iter(rules),
+            WithWarnings {
+                data: TokenStream::from_iter(rules),
                 warnings,
             },
         ))

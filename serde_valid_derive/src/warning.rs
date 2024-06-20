@@ -5,6 +5,54 @@ use proc_macro2::TokenStream;
 use quote::{quote_spanned, ToTokens};
 
 #[derive(Debug, Clone)]
+pub struct WithWarnings<T> {
+    pub data: T,
+    pub warnings: Vec<Warning>,
+}
+
+impl<T> WithWarnings<T> {
+    pub fn new(data: T) -> Self {
+        Self {
+            data,
+            warnings: vec![],
+        }
+    }
+
+    pub fn from_iter(data: impl IntoIterator<Item = WithWarnings<T>>) -> WithWarnings<Vec<T>> {
+        let mut warnings = vec![];
+        let data = data
+            .into_iter()
+            .map(|WithWarnings { data, warnings: w }| {
+                warnings.extend(w);
+                data
+            })
+            .collect::<Vec<_>>();
+        WithWarnings { data, warnings }
+    }
+
+    #[allow(unused)]
+    pub fn extend_warnings(&mut self, warnings: Vec<Warning>) -> &mut Self {
+        self.warnings.extend(warnings);
+        self
+    }
+}
+
+impl<T> From<WithWarnings<T>> for WithWarnings<Vec<T>> {
+    fn from(with_warnings: WithWarnings<T>) -> Self {
+        WithWarnings {
+            data: vec![with_warnings.data],
+            warnings: with_warnings.warnings,
+        }
+    }
+}
+
+impl<T> From<T> for WithWarnings<T> {
+    fn from(data: T) -> Self {
+        Self::new(data)
+    }
+}
+
+#[derive(Debug, Clone)]
 pub enum Warning {
     Deprecated {
         ident: syn::Ident,
@@ -49,7 +97,17 @@ impl Warning {
     pub fn new_rule_deprecated(ident: &syn::Ident, span: Span) -> Self {
         Self::Deprecated {
             ident: ident.clone(),
-            note: "#[rule(...)] is deprecated, use #[validate(custom(...)))] instead".to_string(),
+            note: "#[rule(...)] is deprecated, please use #[validate(custom(...)))] instead."
+                .to_string(),
+            span,
+        }
+    }
+
+    pub fn new_enumerate_path_deprecated(ident: &syn::Ident, span: Span) -> Self {
+        Self::Deprecated {
+            ident: ident.clone(),
+            note: "#[validate(enumerate(...))] is deprecated, please use #[validate(enumerate = [...])] instead."
+                .to_string(),
             span,
         }
     }

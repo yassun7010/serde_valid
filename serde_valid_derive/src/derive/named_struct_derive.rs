@@ -1,10 +1,11 @@
 use crate::attribute::field_validate::{extract_field_validator, FieldValidators};
 use crate::attribute::rule::collect_rules_from_named_struct;
 use crate::attribute::struct_validate::collect_struct_custom_from_named_struct;
+use crate::attribute::Validator;
 use crate::error::object_errors_tokens;
-use crate::output_stream::OutputStream;
 use crate::serde::rename::{collect_serde_rename_map, RenameMap};
 use crate::types::{Field, NamedField};
+use crate::warning::WithWarnings;
 use proc_macro2::TokenStream;
 use quote::quote;
 use std::borrow::Cow;
@@ -23,19 +24,23 @@ pub fn expand_named_struct_derive(
 
     let (
         rule_fields,
-        OutputStream {
-            output: rules,
-            warnings,
+        WithWarnings {
+            data: rules,
+            mut warnings,
         },
     ) = match collect_rules_from_named_struct(&input.ident, &input.attrs) {
         Ok((rule_fields, rules)) => (rule_fields, rules),
         Err(rule_errors) => {
             errors.extend(rule_errors);
-            (HashSet::new(), OutputStream::new())
+            (HashSet::new(), WithWarnings::new(Validator::new()))
         }
     };
+
     let struct_validations = match collect_struct_custom_from_named_struct(&input.attrs) {
-        Ok(validations) => TokenStream::from_iter(validations),
+        Ok(validations) => {
+            warnings.extend(validations.warnings);
+            TokenStream::from_iter(validations.data)
+        }
         Err(rule_errors) => {
             errors.extend(rule_errors);
             quote!()
@@ -44,6 +49,7 @@ pub fn expand_named_struct_derive(
 
     let field_validates = match collect_named_fields_validators_list(fields, &rename_map) {
         Ok(field_validators) => TokenStream::from_iter(field_validators.iter().map(|validator| {
+            warnings.extend(validator.warnings.clone());
             if validator.is_empty() && rule_fields.contains(validator.ident()) {
                 validator.get_field_variable_token()
             } else {
