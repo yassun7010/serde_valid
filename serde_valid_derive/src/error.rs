@@ -367,6 +367,13 @@ impl Error {
         Self::new(path.span(), "#[validate(enumerate(???))] needs items.")
     }
 
+    pub fn validate_enumerate_need_array(path: impl Spanned) -> Self {
+        Self::new(
+            path.span(),
+            "#[validate(enumerate = ???)] needs array literals.",
+        )
+    }
+
     pub fn validate_custom_need_function_or_closure(span: impl Spanned) -> Self {
         Self::new(
             span.span(),

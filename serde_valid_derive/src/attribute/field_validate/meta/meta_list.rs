@@ -1,6 +1,6 @@
 use crate::attribute::common::message_format::MessageFormat;
 use crate::attribute::field_validate::generic::{
-    extract_generic_custom_validator, extract_generic_enumerate_validator,
+    extract_generic_custom_validator, extract_generic_enumerate_validator_from_list,
 };
 use crate::attribute::MetaListFieldValidation;
 use crate::attribute::Validator;
@@ -15,9 +15,12 @@ pub fn extract_field_validator_from_meta_list(
     rename_map: &RenameMap,
 ) -> Result<Validator, crate::Errors> {
     match validation_type {
-        MetaListFieldValidation::Enumerate => {
-            extract_generic_enumerate_validator(field, validation, message_format, rename_map)
-        }
+        MetaListFieldValidation::Enumerate => extract_generic_enumerate_validator_from_list(
+            field,
+            validation,
+            message_format,
+            rename_map,
+        ),
         MetaListFieldValidation::Custom => {
             extract_generic_custom_validator(field, validation, message_format, rename_map)
         }
