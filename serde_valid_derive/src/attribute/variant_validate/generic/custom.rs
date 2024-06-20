@@ -75,8 +75,8 @@ fn extract_variant_custom_from_closure(
     closure: &syn::ExprClosure,
 ) -> Result<Validator, crate::Errors> {
     Ok(quote!(
-        if let Err(__error) = serde_valid::helpers::wrap_closure_validation(self, #closure) {
-            __rule_vec_errors.push(__error);
+        if let Err(__errors) = serde_valid::validation::custom::wrap_closure_validation(self, #closure) {
+            __rule_vec_errors.extend(__errors);
         };
     ))
 }

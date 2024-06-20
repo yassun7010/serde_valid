@@ -275,6 +275,47 @@
 //! assert!(s.validate().is_ok());
 //! ```
 //!
+//! ## Multi Errors Validation
+//! If you want to return multiple errors in the use custom validation method, you can use `#[validate(custom)]` same as single error.
+//!
+//! ```rust
+//! use serde_valid::Validate;
+//!
+//! fn user_validation(_val: &i32) -> Result<(), Vec<serde_valid::validation::Error>> { // <-- Just change the return type from `Result<(), Error>` to `Result<(), Vec<Error>>` !!
+//!     Ok(())
+//! }
+//!
+//! #[derive(Validate)]
+//! struct Data {
+//!     #[validate(custom(user_validation))]
+//!     val: i32,
+//! }
+//!
+//! let s = Data { val: 1 };
+//!
+//! assert!(s.validate().is_ok());
+//! ```
+//!
+//! And you can also use closure.
+//!
+//! ```rust
+//! use serde_valid::Validate;
+//!
+//! fn user_validation(_val: &i32, param1: bool) -> Result<(), serde_valid::validation::Error> {
+//!     Ok(())
+//! }
+//!
+//! #[derive(Validate)]
+//! struct Data {
+//!     #[validate(custom(|v| user_validation(v, true)))]
+//!     val: i32,
+//! }
+//!
+//! let s = Data { val: 1 };
+//!
+//! assert!(s.validate().is_ok());
+//! ```
+//!
 //! ## Multi Fields Validation
 //! ### Custom Validation
 //! Now, you can use `#[validate(custom)]` for multi fields validation.

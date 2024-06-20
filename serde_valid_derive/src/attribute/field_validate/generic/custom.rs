@@ -35,11 +35,11 @@ pub fn extract_generic_custom_validator(
     }?;
 
     Ok(quote!(
-        if let Err(__error) = #custom_fn_name(#field_ident) {
+        if let Err(__errors) = serde_valid::validation::custom::wrap_into_vec_errors(#custom_fn_name(#field_ident)) {
             #errors
                 .entry(#rename)
                 .or_default()
-                .push(__error);
+                .extend(__errors);
         };
     ))
 }

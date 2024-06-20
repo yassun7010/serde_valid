@@ -1,10 +1,17 @@
 /// This function is used to avoid [rustc(E0282)](https://doc.rust-lang.org/error_codes/E0282.html) error in `#[validate(custom)]` validator on the struct.
 #[inline]
-pub fn wrap_closure_validation<T, M: IntoVecErrors>(
-    data: T,
-    f: impl FnOnce(T) -> Result<(), M>,
+pub fn wrap_closure_validation<T: ?Sized, M: IntoVecErrors>(
+    data: &T,
+    f: impl FnOnce(&T) -> Result<(), M>,
 ) -> Result<(), Vec<crate::validation::Error>> {
     f(data).map_err(|e| e.into_vec_errors())
+}
+
+#[inline]
+pub fn wrap_into_vec_errors<M: IntoVecErrors>(
+    result: Result<(), M>,
+) -> Result<(), Vec<crate::validation::Error>> {
+    result.map_err(|e| e.into_vec_errors())
 }
 
 pub trait IntoVecErrors {
