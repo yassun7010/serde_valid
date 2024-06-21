@@ -102,7 +102,7 @@ fn expand_enum_variant_named_fields_validation(
         rule_fields,
         WithWarnings {
             data: rules,
-            warnings,
+            mut warnings,
         },
     ) = match collect_rules_from_named_struct(&variant.ident, &variant.attrs) {
         Ok(field_rules) => field_rules,
@@ -113,7 +113,10 @@ fn expand_enum_variant_named_fields_validation(
     };
 
     let enum_validates = match collect_variant_custom_from_variant(&input.attrs) {
-        Ok(validations) => TokenStream::from_iter(validations),
+        Ok(validations) => {
+            warnings.extend(validations.warnings);
+            TokenStream::from_iter(validations.data)
+        }
         Err(rule_errors) => {
             errors.extend(rule_errors);
             quote!()
@@ -184,7 +187,7 @@ fn expand_enum_variant_unnamed_fields_varidation(
         rule_fields,
         WithWarnings {
             data: rules,
-            warnings,
+            mut warnings,
         },
     ) = match collect_rules_from_unnamed_struct(&variant.ident, &variant.attrs) {
         Ok(field_rules) => field_rules,
@@ -195,7 +198,10 @@ fn expand_enum_variant_unnamed_fields_varidation(
     };
 
     let enum_validates = match collect_variant_custom_from_variant(&input.attrs) {
-        Ok(validations) => TokenStream::from_iter(validations),
+        Ok(validations) => {
+            warnings.extend(validations.warnings);
+            TokenStream::from_iter(validations.data)
+        }
         Err(rule_errors) => {
             errors.extend(rule_errors);
             quote!()

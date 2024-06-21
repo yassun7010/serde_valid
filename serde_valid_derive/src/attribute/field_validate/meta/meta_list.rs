@@ -26,7 +26,7 @@ pub fn extract_field_validator_from_meta_list(
         )
         .map(|data| WithWarnings {
             data,
-            warnings: vec![Warning::new_enumerate_path_deprecated(
+            warnings: vec![Warning::new_enumerate_meta_list_deprecated(
                 field.ident(),
                 validation.span(),
             )],
