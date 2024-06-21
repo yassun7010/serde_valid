@@ -46,22 +46,22 @@ assert!(s.validate().is_ok());
 
 Serde Valid support standard validation based JSON Schema.
 
-| Type    | Serde Valid (validate derive)        | Serde Valid (validate trait) | JSON Schema                                                                                   |
-| :-----: | :----------------------------------- | :--------------------------- | :-------------------------------------------------------------------------------------------- |
-| String  | `#[validate(max_length = 5)]`        | [`ValidateMaxLength`]        | [maxLength](https://json-schema.org/understanding-json-schema/reference/string#length)        |
-| String  | `#[validate(min_length = 5)]`        | [`ValidateMinLength`]        | [minLength](https://json-schema.org/understanding-json-schema/reference/string#length)        |
-| String  | `#[validate(pattern = r"^\d{5}$")]`  | [`ValidatePattern`]          | [pattern](https://json-schema.org/understanding-json-schema/reference/string#regexp)          |
-| Numeric | `#[validate(maximum = 5)]`           | [`ValidateMaximum`]          | [maximum](https://json-schema.org/understanding-json-schema/reference/numeric#range)          |
-| Numeric | `#[validate(minimum = 5)]`           | [`ValidateMinimum`]          | [minimum](https://json-schema.org/understanding-json-schema/reference/numeric#range)          |
-| Numeric | `#[validate(exclusive_maximum = 5)]` | [`ValidateExclusiveMaximum`] | [exclusiveMaximum](https://json-schema.org/understanding-json-schema/reference/numeric#range) |
-| Numeric | `#[validate(exclusive_minimum = 5)]` | [`ValidateExclusiveMinimum`] | [exclusiveMinimum](https://json-schema.org/understanding-json-schema/reference/numeric#range) |
-| Numeric | `#[validate(multiple_of = 5)]`       | [`ValidateMultipleOf`]       | [multipleOf](https://json-schema.org/understanding-json-schema/reference/numeric#multiples)   |
-| Object  | `#[validate(max_properties = 5)]`    | [`ValidateMaxProperties`]    | [maxProperties](https://json-schema.org/understanding-json-schema/reference/object#size)      |
-| Object  | `#[validate(min_properties = 5)]`    | [`ValidateMinProperties`]    | [minProperties](https://json-schema.org/understanding-json-schema/reference/object#size)      |
-| Array   | `#[validate(max_items = 5)]`         | [`ValidateMaxItems`]         | [maxItems](https://json-schema.org/understanding-json-schema/reference/array#length)          |
-| Array   | `#[validate(min_items = 5)]`         | [`ValidateMinItems`]         | [minItems](https://json-schema.org/understanding-json-schema/reference/array#length)          |
-| Array   | `#[validate(unique_items)]`          | [`ValidateUniqueItems`]      | [uniqueItems](https://json-schema.org/understanding-json-schema/reference/array#uniqueItems)  |
-| Generic | `#[validate(enumerate(5, 10, 15))]`  | [`ValidateEnumerate`]        | [enum](https://json-schema.org/understanding-json-schema/reference/enum)                      |
+| Type    | Serde Valid (validate derive)          | Serde Valid (validate trait) | JSON Schema                                                                                   |
+| :-----: | :------------------------------------- | :--------------------------- | :-------------------------------------------------------------------------------------------- |
+| String  | `#[validate(max_length = 5)]`          | [`ValidateMaxLength`]        | [maxLength](https://json-schema.org/understanding-json-schema/reference/string#length)        |
+| String  | `#[validate(min_length = 5)]`          | [`ValidateMinLength`]        | [minLength](https://json-schema.org/understanding-json-schema/reference/string#length)        |
+| String  | `#[validate(pattern = r"^\d{5}$")]`    | [`ValidatePattern`]          | [pattern](https://json-schema.org/understanding-json-schema/reference/string#regexp)          |
+| Numeric | `#[validate(maximum = 5)]`             | [`ValidateMaximum`]          | [maximum](https://json-schema.org/understanding-json-schema/reference/numeric#range)          |
+| Numeric | `#[validate(minimum = 5)]`             | [`ValidateMinimum`]          | [minimum](https://json-schema.org/understanding-json-schema/reference/numeric#range)          |
+| Numeric | `#[validate(exclusive_maximum = 5)]`   | [`ValidateExclusiveMaximum`] | [exclusiveMaximum](https://json-schema.org/understanding-json-schema/reference/numeric#range) |
+| Numeric | `#[validate(exclusive_minimum = 5)]`   | [`ValidateExclusiveMinimum`] | [exclusiveMinimum](https://json-schema.org/understanding-json-schema/reference/numeric#range) |
+| Numeric | `#[validate(multiple_of = 5)]`         | [`ValidateMultipleOf`]       | [multipleOf](https://json-schema.org/understanding-json-schema/reference/numeric#multiples)   |
+| Object  | `#[validate(max_properties = 5)]`      | [`ValidateMaxProperties`]    | [maxProperties](https://json-schema.org/understanding-json-schema/reference/object#size)      |
+| Object  | `#[validate(min_properties = 5)]`      | [`ValidateMinProperties`]    | [minProperties](https://json-schema.org/understanding-json-schema/reference/object#size)      |
+| Array   | `#[validate(max_items = 5)]`           | [`ValidateMaxItems`]         | [maxItems](https://json-schema.org/understanding-json-schema/reference/array#length)          |
+| Array   | `#[validate(min_items = 5)]`           | [`ValidateMinItems`]         | [minItems](https://json-schema.org/understanding-json-schema/reference/array#length)          |
+| Array   | `#[validate(unique_items)]`            | [`ValidateUniqueItems`]      | [uniqueItems](https://json-schema.org/understanding-json-schema/reference/array#uniqueItems)  |
+| Generic | `#[validate(enumerate = [5, 10, 15])]` | [`ValidateEnumerate`]        | [enum](https://json-schema.org/understanding-json-schema/reference/enum)                      |
 
 In addition, [serde_valid::utils][module@crate::utils] provides a type of validation not described in the JSON schema specification.
 

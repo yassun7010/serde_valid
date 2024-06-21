@@ -22,7 +22,7 @@ use crate::EnumerateError;
 ///
 /// #[derive(Validate)]
 /// struct TestStruct {
-///     #[validate(enumerate("1", "2", "3"))]
+///     #[validate(enumerate = ["1", "2", "3"])]
 ///     val: MyType,
 /// }
 ///
