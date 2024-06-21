@@ -7,7 +7,7 @@ fn enum_named_enum_validation_is_ok() {
         Ok(())
     }
     #[derive(Validate)]
-    #[validate(custom(ok_enum))]
+    #[validate(custom = ok_enum)]
     enum TestEnum {
         Named {
             #[validate]
@@ -78,7 +78,7 @@ fn enum_named_enum_validation_is_err() {
     }
 
     #[derive(Validate)]
-    #[validate(custom(err_rule))]
+    #[validate(custom = err_rule)]
     enum TestEnum {
         Named {
             #[validate]
@@ -135,7 +135,7 @@ fn enum_unnamed_enum_validation_is_err() {
     }
 
     #[derive(Validate)]
-    #[validate(custom(err_rule))]
+    #[validate(custom = err_rule)]
     enum TestEnum {
         Named(#[validate] TestStruct, #[validate] TestStruct),
     }
@@ -185,7 +185,7 @@ fn enum_newtype_variant_validation_is_err() {
     }
 
     #[derive(Validate)]
-    #[validate(custom(err_rule))]
+    #[validate(custom = err_rule)]
     enum TestEnum {
         NewType(#[validate(minimum = 5)] u32),
     }
