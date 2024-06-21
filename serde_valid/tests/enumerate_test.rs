@@ -5,7 +5,7 @@ use serde_valid::{Validate, ValidateEnumerate};
 fn enumerate_integer_type() {
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(enumerate(1, 2, 3))]
+        #[validate(enumerate = [1, 2, 3])]
         val: i32,
     }
 
@@ -17,7 +17,7 @@ fn enumerate_integer_type() {
 fn enumerate_float_type() {
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(enumerate(0.3, 1.2, 1.5))]
+        #[validate(enumerate = [0.3, 1.2, 1.5])]
         val: f32,
     }
 
@@ -29,7 +29,7 @@ fn enumerate_float_type() {
 fn enumerate_str_type() {
     #[derive(Validate)]
     struct TestStruct<'a> {
-        #[validate(enumerate("a", "b"))]
+        #[validate(enumerate = ["a", "b"])]
         val: &'a str,
     }
 
@@ -41,7 +41,7 @@ fn enumerate_str_type() {
 fn enumerate_string_type() {
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(enumerate("a", "b"))]
+        #[validate(enumerate = ["a", "b"])]
         val: String,
     }
 
@@ -55,7 +55,7 @@ fn enumerate_string_type() {
 fn enumerate_vec_type() {
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(enumerate(1, 2, 3, 4, 5))]
+        #[validate(enumerate = [1, 2, 3, 4, 5])]
         val: Vec<i32>,
     }
 
@@ -67,7 +67,7 @@ fn enumerate_vec_type() {
 fn enumerate_vec_str_type() {
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(enumerate("1", "2", "3", "4", "5"))]
+        #[validate(enumerate = ["1", "2", "3", "4", "5"])]
         val: Vec<&'static str>,
     }
 
@@ -81,7 +81,7 @@ fn enumerate_vec_str_type() {
 fn enumerate_vec_string_type() {
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(enumerate("1", "2", "3", "4", "5"))]
+        #[validate(enumerate = ["1", "2", "3", "4", "5"])]
         val: Vec<String>,
     }
 
@@ -95,7 +95,7 @@ fn enumerate_vec_string_type() {
 fn enumerate_option_type() {
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(enumerate(1, 2, 3))]
+        #[validate(enumerate = [1, 2, 3])]
         val: Option<i32>,
     }
 
@@ -107,7 +107,7 @@ fn enumerate_option_type() {
 fn enumerate_vec_option_type() {
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(enumerate(3))]
+        #[validate(enumerate = [3])]
         val: Vec<Option<i32>>,
     }
 
@@ -119,7 +119,7 @@ fn enumerate_vec_option_type() {
 fn enumerate_is_err() {
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(enumerate(0.3, 1.2, 1.5))]
+        #[validate(enumerate = [0.3, 1.2, 1.5])]
         val: f32,
     }
 
@@ -131,7 +131,7 @@ fn enumerate_is_err() {
 fn enumerate_err_message() {
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(enumerate(1, 2, 3))]
+        #[validate(enumerate = [1, 2, 3])]
         val: i32,
     }
 
@@ -161,7 +161,7 @@ fn enumerate_custom_err_message_fn() {
 
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(enumerate(1, 2, 3), message_fn(error_message))]
+        #[validate(enumerate = [1, 2, 3], message_fn(error_message))]
         val: i32,
     }
 
@@ -187,7 +187,7 @@ fn enumerate_custom_err_message_fn() {
 fn enumerate_custom_err_message() {
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(enumerate(1, 2, 3), message = "this is custom message.")]
+        #[validate(enumerate = [1, 2, 3], message = "this is custom message.")]
         val: i32,
     }
 
@@ -227,7 +227,7 @@ fn enumerate_numeric_trait() {
 
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(enumerate(1, 2, 3), message = "this is custom message.")]
+        #[validate(enumerate = [1, 2, 3], message = "this is custom message.")]
         val: MyType,
     }
 

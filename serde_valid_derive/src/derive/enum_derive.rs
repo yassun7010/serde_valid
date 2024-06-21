@@ -2,10 +2,11 @@ use super::named_struct_derive::collect_named_fields_validators_list;
 use super::unnamed_struct_derive::collect_unnamed_fields_validators_list;
 use crate::attribute::rule::{collect_rules_from_named_struct, collect_rules_from_unnamed_struct};
 use crate::attribute::variant_validate::collect_variant_custom_from_variant;
+use crate::attribute::Validator;
 use crate::error::{array_errors_tokens, new_type_errors_tokens, object_errors_tokens};
-use crate::output_stream::OutputStream;
 use crate::serde::rename::collect_serde_rename_map;
 use crate::types::CommaSeparatedTokenStreams;
+use crate::warning::WithWarnings;
 use proc_macro2::TokenStream;
 use quote::quote;
 use std::collections::HashSet;
@@ -34,7 +35,7 @@ pub fn expand_enum_validate_derive(
                     Ok(variant_varidates_and_rules) => variant_varidates_and_rules,
                     Err(variant_errors) => {
                         errors.extend(variant_errors);
-                        OutputStream::new()
+                        WithWarnings::new(Validator::new())
                     }
                 }
             }
@@ -48,18 +49,18 @@ pub fn expand_enum_validate_derive(
                     Ok(variant_varidates_and_rules) => variant_varidates_and_rules,
                     Err(variant_errors) => {
                         errors.extend(variant_errors);
-                        OutputStream::new()
+                        WithWarnings::new(Validator::new())
                     }
                 }
             }
-            syn::Fields::Unit => OutputStream::new(),
+            syn::Fields::Unit => WithWarnings::new(Validator::new()),
         })
         .collect::<Vec<_>>();
 
     let validations_and_rules = TokenStream::from_iter(
         validations
             .iter()
-            .map(|variant| variant.output.clone())
+            .map(|variant| variant.data.clone())
             .collect::<Vec<_>>(),
     );
     let warnings = validations
@@ -90,7 +91,7 @@ fn expand_enum_variant_named_fields_validation(
     input: &syn::DeriveInput,
     variant: &syn::Variant,
     named_fields: &syn::FieldsNamed,
-) -> Result<OutputStream, crate::Errors> {
+) -> Result<WithWarnings<Validator>, crate::Errors> {
     let mut errors = vec![];
 
     let variant_ident = &variant.ident;
@@ -99,15 +100,15 @@ fn expand_enum_variant_named_fields_validation(
 
     let (
         rule_fields,
-        OutputStream {
-            output: rules,
+        WithWarnings {
+            data: rules,
             warnings,
         },
     ) = match collect_rules_from_named_struct(&variant.ident, &variant.attrs) {
         Ok(field_rules) => field_rules,
         Err(variant_errors) => {
             errors.extend(variant_errors);
-            (HashSet::new(), OutputStream::new())
+            (HashSet::new(), WithWarnings::new(Validator::new()))
         }
     };
 
@@ -146,8 +147,8 @@ fn expand_enum_variant_named_fields_validation(
     let variant_errors = object_errors_tokens();
 
     if errors.is_empty() {
-        Ok(OutputStream {
-            output: quote!(
+        Ok(WithWarnings {
+            data: quote!(
                 if let #ident::#variant_ident{#fields_idents} = &self {
                     let mut __rule_vec_errors = ::serde_valid::validation::VecErrors::new();
                     let mut __property_vec_errors_map = ::serde_valid::validation::PropertyVecErrorsMap::new();
@@ -173,7 +174,7 @@ fn expand_enum_variant_unnamed_fields_varidation(
     input: &syn::DeriveInput,
     variant: &syn::Variant,
     unnamed_fields: &syn::FieldsUnnamed,
-) -> Result<OutputStream, crate::Errors> {
+) -> Result<WithWarnings<Validator>, crate::Errors> {
     let mut errors = vec![];
 
     let variant_ident = &variant.ident;
@@ -181,15 +182,15 @@ fn expand_enum_variant_unnamed_fields_varidation(
 
     let (
         rule_fields,
-        OutputStream {
-            output: rules,
+        WithWarnings {
+            data: rules,
             warnings,
         },
     ) = match collect_rules_from_unnamed_struct(&variant.ident, &variant.attrs) {
         Ok(field_rules) => field_rules,
         Err(variant_errors) => {
             errors.extend(variant_errors);
-            (HashSet::new(), OutputStream::new())
+            (HashSet::new(), WithWarnings::new(Validator::new()))
         }
     };
 
@@ -232,8 +233,8 @@ fn expand_enum_variant_unnamed_fields_varidation(
     };
 
     if errors.is_empty() {
-        Ok(OutputStream {
-            output: quote!(
+        Ok(WithWarnings {
+            data: quote!(
                 if let #ident::#variant_ident(#fields_idents) = &self {
                     let mut __rule_vec_errors = ::serde_valid::validation::VecErrors::new();
                     let mut __item_vec_errors_map = ::serde_valid::validation::ItemVecErrorsMap::new();

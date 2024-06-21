@@ -3,6 +3,7 @@ use crate::attribute::common::message_format::MessageFormat;
 use crate::attribute::field_validate::array::{
     extract_array_max_items_validator, extract_array_min_items_validator,
 };
+use crate::attribute::field_validate::generic::extract_generic_enumerate_validator_from_name_value;
 use crate::attribute::field_validate::numeric::{
     extract_numeric_exclusive_maximum_validator, extract_numeric_exclusive_minimum_validator,
     extract_numeric_maximum_validator, extract_numeric_minimum_validator,
@@ -26,16 +27,18 @@ pub fn extract_field_validator_from_meta_name_value(
     message_format: MessageFormat,
     rename_map: &RenameMap,
 ) -> Result<Validator, crate::Errors> {
-    let validation_value = get_lit(&validation.value)?;
-
     match validation_type {
         MetaNameValueFieldValidation::Minimum => {
+            let validation_value = get_lit(&validation.value)?;
+
             extract_numeric_minimum_validator(field, validation_value, message_format, rename_map)
         }
         MetaNameValueFieldValidation::Maximum => {
+            let validation_value = get_lit(&validation.value)?;
             extract_numeric_maximum_validator(field, validation_value, message_format, rename_map)
         }
         MetaNameValueFieldValidation::ExclusiveMinimum => {
+            let validation_value = get_lit(&validation.value)?;
             extract_numeric_exclusive_minimum_validator(
                 field,
                 validation_value,
@@ -44,6 +47,7 @@ pub fn extract_field_validator_from_meta_name_value(
             )
         }
         MetaNameValueFieldValidation::ExclusiveMaximum => {
+            let validation_value = get_lit(&validation.value)?;
             extract_numeric_exclusive_maximum_validator(
                 field,
                 validation_value,
@@ -52,37 +56,59 @@ pub fn extract_field_validator_from_meta_name_value(
             )
         }
         MetaNameValueFieldValidation::MinLength => {
+            let validation_value = get_lit(&validation.value)?;
             extract_string_min_length_validator(field, validation_value, message_format, rename_map)
         }
         MetaNameValueFieldValidation::MaxLength => {
+            let validation_value = get_lit(&validation.value)?;
             extract_string_max_length_validator(field, validation_value, message_format, rename_map)
         }
         MetaNameValueFieldValidation::MinItems => {
+            let validation_value = get_lit(&validation.value)?;
             extract_array_min_items_validator(field, validation_value, message_format, rename_map)
         }
         MetaNameValueFieldValidation::MaxItems => {
+            let validation_value = get_lit(&validation.value)?;
             extract_array_max_items_validator(field, validation_value, message_format, rename_map)
         }
-        MetaNameValueFieldValidation::MinProperties => extract_object_min_properties_validator(
-            field,
-            validation_value,
-            message_format,
-            rename_map,
-        ),
-        MetaNameValueFieldValidation::MaxProperties => extract_object_max_properties_validator(
-            field,
-            validation_value,
-            message_format,
-            rename_map,
-        ),
-        MetaNameValueFieldValidation::MultipleOf => extract_numeric_multiple_of_validator(
-            field,
-            validation_value,
-            message_format,
-            rename_map,
-        ),
+        MetaNameValueFieldValidation::MinProperties => {
+            let validation_value = get_lit(&validation.value)?;
+            extract_object_min_properties_validator(
+                field,
+                validation_value,
+                message_format,
+                rename_map,
+            )
+        }
+        MetaNameValueFieldValidation::MaxProperties => {
+            let validation_value = get_lit(&validation.value)?;
+            extract_object_max_properties_validator(
+                field,
+                validation_value,
+                message_format,
+                rename_map,
+            )
+        }
+        MetaNameValueFieldValidation::MultipleOf => {
+            let validation_value = get_lit(&validation.value)?;
+            extract_numeric_multiple_of_validator(
+                field,
+                validation_value,
+                message_format,
+                rename_map,
+            )
+        }
         MetaNameValueFieldValidation::Pattern => {
+            let validation_value = get_lit(&validation.value)?;
             extract_string_pattern_validator(field, validation_value, message_format, rename_map)
+        }
+        MetaNameValueFieldValidation::Enumerate => {
+            extract_generic_enumerate_validator_from_name_value(
+                field,
+                validation,
+                message_format,
+                rename_map,
+            )
         }
     }
 }
