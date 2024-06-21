@@ -15,7 +15,7 @@ pub fn extract_generic_variant_custom_validator(
 
     match nested.len() {
         0 => Err(vec![
-            crate::Error::validate_custom_need_function_or_closure(meta_list),
+            crate::Error::validate_custom_meta_list_need_function_or_closure(meta_list),
         ])?,
         2.. => nested
             .iter()
@@ -33,7 +33,7 @@ pub fn extract_generic_variant_custom_validator(
         }
         crate::types::NestedMeta::Closure(closure) => extract_variant_custom_from_closure(closure),
         _ => Err(vec![
-            crate::Error::validate_custom_need_function_or_closure(&nested[0]),
+            crate::Error::validate_custom_meta_list_need_function_or_closure(&nested[0]),
         ]),
     };
 

@@ -15,7 +15,7 @@ fn custom_validation_is_ok() {
 
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(custom = user_validation)]
+        #[validate(custom(user_validation))]
         val: i32,
     }
 
@@ -27,7 +27,7 @@ fn custom_validation_is_ok() {
 fn custom_parenthesized_path_validation_is_ok() {
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(custom = parenthesized::meta_path_validation)]
+        #[validate(custom(parenthesized::meta_path_validation))]
         val: Vec<i32>,
     }
 
@@ -45,7 +45,7 @@ fn custom_clouser_validation_is_ok() {
 
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(custom = |x| user_validation(x, 10))]
+        #[validate(custom(|x| user_validation(x, 10)))]
         val: Vec<i32>,
     }
 
@@ -69,7 +69,7 @@ fn custom_clouser_validation_is_err() {
 
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(custom = |x| user_validation(x, 10))]
+        #[validate(custom(|x| user_validation(x, 10)))]
         val: Vec<i32>,
     }
 
@@ -89,13 +89,14 @@ fn custom_validation_error() {
 
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(custom = user_validation)]
+        #[validate(custom(user_validation))]
         val: Vec<i32>,
     }
 
     let s = TestStruct {
         val: vec![1, 2, 3, 4],
     };
+
     assert_eq!(
         s.validate().unwrap_err().to_string(),
         json!({
