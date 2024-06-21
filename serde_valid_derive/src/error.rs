@@ -305,6 +305,7 @@ impl Error {
             .chain(MetaListFieldValidation::iter().map(|x| x.name()))
             .chain(MetaNameValueFieldValidation::iter().map(|x| x.name()))
             .unique()
+            .sorted()
             .collect::<Vec<_>>();
 
         let filterd_candidates =
