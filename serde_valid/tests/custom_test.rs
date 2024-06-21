@@ -15,7 +15,7 @@ fn custom_validation_is_ok() {
 
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(custom(user_validation))]
+        #[validate(custom = user_validation)]
         val: i32,
     }
 
@@ -27,7 +27,7 @@ fn custom_validation_is_ok() {
 fn custom_parenthesized_path_validation_is_ok() {
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(custom(parenthesized::meta_path_validation))]
+        #[validate(custom = parenthesized::meta_path_validation)]
         val: Vec<i32>,
     }
 
@@ -45,7 +45,7 @@ fn custom_clouser_validation_is_ok() {
 
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(custom(|x| user_validation(x, 10)))]
+        #[validate(custom = |x| user_validation(x, 10))]
         val: Vec<i32>,
     }
 
@@ -69,7 +69,7 @@ fn custom_clouser_validation_is_err() {
 
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(custom(|x| user_validation(x, 10)))]
+        #[validate(custom = |x| user_validation(x, 10))]
         val: Vec<i32>,
     }
 
@@ -89,7 +89,7 @@ fn custom_validation_error() {
 
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(custom(user_validation))]
+        #[validate(custom = user_validation)]
         val: Vec<i32>,
     }
 
@@ -119,7 +119,7 @@ fn named_struct_custom_is_ok() {
     }
 
     #[derive(Validate)]
-    #[validate(custom(sample_struct_validation))]
+    #[validate(custom = sample_struct_validation)]
     struct TestStruct {
         val: i32,
     }
@@ -136,7 +136,7 @@ fn named_struct_custom_closure_is_ok() {
     }
 
     #[derive(Validate)]
-    #[validate(custom(|s| sample_struct_validation(s.val)))]
+    #[validate(custom = |s| sample_struct_validation(s.val))]
     struct TestStruct {
         val: i32,
     }
@@ -153,7 +153,7 @@ fn unnamed_struct_custom_is_ok() {
     }
 
     #[derive(Validate)]
-    #[validate(custom(sample_struct_validation))]
+    #[validate(custom = sample_struct_validation)]
     struct TestStruct(i32);
 
     let s = TestStruct(5);
@@ -168,7 +168,7 @@ fn unnamed_struct_custom_closure_is_ok() {
     }
 
     #[derive(Validate)]
-    #[validate(custom(|s| sample_struct_validation(s.0)))]
+    #[validate(custom = |s| sample_struct_validation(s.0))]
     struct TestStruct(i32);
 
     let s = TestStruct(5);
@@ -185,7 +185,7 @@ fn unnamed_struct_custom_closure_is_err() {
     }
 
     #[derive(Validate)]
-    #[validate(custom(|s| sample_struct_validation(s.0)))]
+    #[validate(custom = |s| sample_struct_validation(s.0))]
     struct TestStruct(i32);
 
     let s = TestStruct(5);
@@ -200,7 +200,7 @@ fn named_struct_custom_vec_errors_is_ok() {
     }
 
     #[derive(Validate)]
-    #[validate(custom(validation))]
+    #[validate(custom = validation)]
     struct TestStruct {
         val: i32,
     }
@@ -220,7 +220,7 @@ fn named_struct_custom_vec_errors_is_err() {
     }
 
     #[derive(Validate)]
-    #[validate(custom(validation))]
+    #[validate(custom = validation)]
     struct TestStruct {
         val: i32,
     }
@@ -245,7 +245,7 @@ fn named_struct_custom_closure_vec_errors_is_ok() {
     }
 
     #[derive(Validate)]
-    #[validate(custom(|s| sample_struct_validation(s.val)))]
+    #[validate(custom = |s| sample_struct_validation(s.val))]
     struct TestStruct {
         val: i32,
     }
@@ -265,7 +265,7 @@ fn named_struct_custom_closure_vec_errors_is_err() {
     }
 
     #[derive(Validate)]
-    #[validate(custom(|s| sample_struct_validation(s.val)))]
+    #[validate(custom = |s| sample_struct_validation(s.val))]
     struct TestStruct {
         val: i32,
     }

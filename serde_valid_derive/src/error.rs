@@ -377,7 +377,7 @@ impl Error {
         )
     }
 
-    pub fn validate_custom_need_function_or_closure(span: impl Spanned) -> Self {
+    pub fn validate_custom_meta_list_need_function_or_closure(span: impl Spanned) -> Self {
         Self::new(
             span.span(),
             "#[validate(custom(???))] needs function or closure.",
@@ -388,6 +388,13 @@ impl Error {
         Self::new(
             nested.span(),
             "#[validate(custom(???))] supports only 1 item.",
+        )
+    }
+
+    pub fn validate_custom_meta_name_value_need_function_or_closure(span: impl Spanned) -> Self {
+        Self::new(
+            span.span(),
+            "#[validate(custom = ???)] needs function or closure.",
         )
     }
 

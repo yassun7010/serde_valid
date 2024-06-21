@@ -12,7 +12,7 @@ use std::time::Duration;
 ///
 /// #[derive(Validate)]
 /// struct TestStruct {
-///     #[validate(custom(duration_maximum(Duration::from_micros(5))))]
+///     #[validate(custom = duration_maximum(Duration::from_micros(5)))]
 ///     val: Duration,
 /// }
 ///
@@ -49,7 +49,7 @@ pub fn duration_maximum(
 ///
 /// #[derive(Validate)]
 /// struct TestStruct {
-///     #[validate(custom(duration_minimum(Duration::from_micros(5))))]
+///     #[validate(custom = duration_minimum(Duration::from_micros(5)))]
 ///     val: Duration,
 /// }
 ///
@@ -86,7 +86,7 @@ pub fn duration_minimum(
 ///
 /// #[derive(Validate)]
 /// struct TestStruct {
-///     #[validate(custom(duration_exclusive_maximum(Duration::from_micros(5))))]
+///     #[validate(custom = duration_exclusive_maximum(Duration::from_micros(5)))]
 ///     val: Duration,
 /// }
 ///
@@ -123,7 +123,7 @@ pub fn duration_exclusive_maximum(
 ///  
 /// #[derive(Validate)]
 /// struct TestStruct {
-///      #[validate(custom(duration_exclusive_minimum(Duration::from_micros(5))))]
+///      #[validate(custom = duration_exclusive_minimum(Duration::from_micros(5)))]
 ///      val: Duration,
 /// }
 ///

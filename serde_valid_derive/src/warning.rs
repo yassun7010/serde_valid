@@ -18,6 +18,10 @@ impl<T> WithWarnings<T> {
         }
     }
 
+    pub fn new_with_warnings(data: T, warnings: Vec<Warning>) -> Self {
+        Self { data, warnings }
+    }
+
     pub fn from_iter(data: impl IntoIterator<Item = WithWarnings<T>>) -> WithWarnings<Vec<T>> {
         let mut warnings = vec![];
         let data = data
@@ -103,10 +107,19 @@ impl Warning {
         }
     }
 
-    pub fn new_enumerate_path_deprecated(ident: &syn::Ident, span: Span) -> Self {
+    pub fn new_enumerate_meta_list_deprecated(ident: &syn::Ident, span: Span) -> Self {
         Self::Deprecated {
             ident: ident.clone(),
             note: "#[validate(enumerate(...))] is deprecated, please use #[validate(enumerate = [...])] instead."
+                .to_string(),
+            span,
+        }
+    }
+
+    pub fn new_custom_meta_list_deprecated(ident: &syn::Ident, span: Span) -> Self {
+        Self::Deprecated {
+            ident: ident.clone(),
+            note: "#[validate(custom(...))] is deprecated, please use #[validate(custom = ...)] instead."
                 .to_string(),
             span,
         }

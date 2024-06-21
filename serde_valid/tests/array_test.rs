@@ -18,7 +18,7 @@ fn items_err_message() {
     }
 
     #[derive(Validate)]
-    #[validate(custom(|s| rule_sample(s.val)))]
+    #[validate(custom = |s| rule_sample(s.val))]
     struct TestChildStruct {
         #[validate(minimum = 1)]
         #[validate(maximum = 10)]

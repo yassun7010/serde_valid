@@ -65,12 +65,12 @@
 //!
 //! In addition, [serde_valid::utils][module@crate::utils] provides a type of validation not described in the JSON schema specification.
 //!
-//! | Type                                                                 | Serde Valid (validate derive)                             | Serde Valid (validation function)                                        |
-//! | :------------------------------------------------------------------: | :-------------------------------------------------------- | :----------------------------------------------------------------------- |
-//! | [Duration](https://doc.rust-lang.org/core/time/struct.Duration.html) | `#[validate(custom(duration_maximum(SECOND)))]`           | [duration_maximum][`crate::utils::duration_maximum`]                     |
-//! | [Duration](https://doc.rust-lang.org/core/time/struct.Duration.html) | `#[validate(custom(duration_minimum(ZERO)))]`             | [duration_minimum][`crate::utils::duration_minimum`]                     |
-//! | [Duration](https://doc.rust-lang.org/core/time/struct.Duration.html) | `#[validate(custom(duration_exclusive_maximum(SECOND)))]` | [duration_exclusive_maximum][`crate::utils::duration_exclusive_maximum`] |
-//! | [Duration](https://doc.rust-lang.org/core/time/struct.Duration.html) | `#[validate(custom(duration_exclusive_minimum(ZERO)))]`   | [duration_exclusive_minimum][`crate::utils::duration_exclusive_minimum`] |
+//! | Type                                                                 | Serde Valid (validate derive)                              | Serde Valid (validation function)                                        |
+//! | :------------------------------------------------------------------: | :--------------------------------------------------------- | :----------------------------------------------------------------------- |
+//! | [Duration](https://doc.rust-lang.org/core/time/struct.Duration.html) | `#[validate(custom = duration_maximum(SECOND))]`           | [duration_maximum][`crate::utils::duration_maximum`]                     |
+//! | [Duration](https://doc.rust-lang.org/core/time/struct.Duration.html) | `#[validate(custom = duration_minimum(ZERO))]`             | [duration_minimum][`crate::utils::duration_minimum`]                     |
+//! | [Duration](https://doc.rust-lang.org/core/time/struct.Duration.html) | `#[validate(custom = duration_exclusive_maximum(SECOND))]` | [duration_exclusive_maximum][`crate::utils::duration_exclusive_maximum`] |
+//! | [Duration](https://doc.rust-lang.org/core/time/struct.Duration.html) | `#[validate(custom = duration_exclusive_minimum(ZERO))]`   | [duration_exclusive_minimum][`crate::utils::duration_exclusive_minimum`] |
 //!
 //! ## Complete Constructor (Deserialization)
 //!
@@ -212,7 +212,7 @@
 //!
 //! ## Custom Validation
 //! ### Single Error Validation
-//! You can use your custom validation using by `#[validate(custom)]`.
+//! You can use your custom validation using by `#[validate(custom = ...)]`.
 //!
 //! ```rust
 //! use serde_valid::Validate;
@@ -223,7 +223,7 @@
 //!
 //! #[derive(Validate)]
 //! struct Data {
-//!     #[validate(custom(user_validation))]
+//!     #[validate(custom = user_validation)]
 //!     val: i32,
 //! }
 //!
@@ -243,7 +243,7 @@
 //!
 //! #[derive(Validate)]
 //! struct Data {
-//!     #[validate(custom(|v| user_validation(v, true)))]
+//!     #[validate(custom = |v| user_validation(v, true))]
 //!     val: i32,
 //! }
 //!
@@ -263,8 +263,8 @@
 //!
 //! #[derive(Validate)]
 //! struct Data {
-//!     #[validate(custom(duration_maximum(std::time::Duration::from_micros(5))))]
-//!     #[validate(custom(duration_minimum(std::time::Duration::from_micros(0))))]
+//!     #[validate(custom = duration_maximum(std::time::Duration::from_micros(5)))]
+//!     #[validate(custom = duration_minimum(std::time::Duration::from_micros(0)))]
 //!     val1: std::time::Duration,
 //! }
 //!
@@ -276,7 +276,7 @@
 //! ```
 //!
 //! ### Multi Errors Validation
-//! If you want to return multiple errors in the use custom validation method, you can use `#[validate(custom)]` same as single error.
+//! If you want to return multiple errors in the use custom validation method, you can use `#[validate(custom = ...)]` same as single error.
 //!
 //! ```rust
 //! use serde_valid::Validate;
@@ -288,7 +288,7 @@
 //!
 //! #[derive(Validate)]
 //! struct Data {
-//!     #[validate(custom(user_validation))]
+//!     #[validate(custom = user_validation)]
 //!     val: i32,
 //! }
 //!
@@ -298,7 +298,7 @@
 //! ```
 //!
 //! ### Multi Fields Validation
-//! Now, you can use `#[validate(custom)]` for multi fields validation.
+//! Now, you can use `#[validate(custom = ...)]` for multi fields validation.
 //!
 //! ```rust
 //! use serde_json::json;
@@ -309,7 +309,7 @@
 //! }
 //!
 //! #[derive(Validate)]
-//! #[validate(custom(|s| sample_validation(s.val1, &s.val2)))]
+//! #[validate(custom = |s| sample_validation(s.val1, &s.val2))]
 //! struct Data {
 //!     val1: i32,
 //!     val2: String,

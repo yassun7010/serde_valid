@@ -2,7 +2,7 @@ use syn::spanned::Spanned;
 
 use crate::attribute::common::message_format::MessageFormat;
 use crate::attribute::field_validate::generic::{
-    extract_generic_custom_validator, extract_generic_enumerate_validator_from_list,
+    extract_generic_custom_validator_from_meta_list, extract_generic_enumerate_validator_from_list,
 };
 use crate::attribute::{MetaListFieldValidation, Validator};
 use crate::serde::rename::RenameMap;
@@ -26,14 +26,17 @@ pub fn extract_field_validator_from_meta_list(
         )
         .map(|data| WithWarnings {
             data,
-            warnings: vec![Warning::new_enumerate_path_deprecated(
+            warnings: vec![Warning::new_enumerate_meta_list_deprecated(
                 field.ident(),
                 validation.span(),
             )],
         }),
-        MetaListFieldValidation::Custom => {
-            extract_generic_custom_validator(field, validation, message_format, rename_map)
-                .map(WithWarnings::new)
-        }
+        MetaListFieldValidation::Custom => extract_generic_custom_validator_from_meta_list(
+            field,
+            validation,
+            message_format,
+            rename_map,
+        )
+        .map(WithWarnings::new),
     }
 }

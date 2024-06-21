@@ -8,7 +8,7 @@ use serde_valid::Validate;
 fn duration_maximum_is_ok() {
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(custom(duration_maximum(Duration::from_micros(5))))]
+        #[validate(custom = duration_maximum(Duration::from_micros(5)))]
         val: Duration,
     }
 
@@ -23,7 +23,7 @@ fn duration_maximum_is_ok() {
 fn duration_minimum_is_ok() {
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(custom(duration_minimum(Duration::from_micros(5))))]
+        #[validate(custom = duration_minimum(Duration::from_micros(5)))]
         val: Duration,
     }
 
@@ -38,7 +38,7 @@ fn duration_minimum_is_ok() {
 fn duration_maximum_is_err() {
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(custom(duration_maximum(Duration::from_micros(5))))]
+        #[validate(custom = duration_maximum(Duration::from_micros(5)))]
         val: Duration,
     }
 
@@ -66,7 +66,7 @@ fn duration_maximum_is_err() {
 fn duration_minimum_is_err() {
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(custom(duration_minimum(Duration::from_micros(5))))]
+        #[validate(custom = duration_minimum(Duration::from_micros(5)))]
         val: Duration,
     }
 

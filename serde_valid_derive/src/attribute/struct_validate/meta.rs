@@ -25,9 +25,7 @@ pub fn extract_struct_validator(
 ) -> Result<WithWarnings<Validator>, crate::Errors> {
     match &attribute.meta {
         syn::Meta::Path(_) => Ok(WithWarnings::new(quote!())),
-        syn::Meta::List(list) => {
-            inner_extract_struct_validator(attribute, list).map(WithWarnings::new)
-        }
+        syn::Meta::List(list) => inner_extract_struct_validator(attribute, list),
         syn::Meta::NameValue(name_value) => {
             Err(vec![crate::Error::validate_meta_name_value_not_supported(
                 name_value,
@@ -39,7 +37,7 @@ pub fn extract_struct_validator(
 fn inner_extract_struct_validator(
     attribute: &syn::Attribute,
     meta_list: &syn::MetaList,
-) -> Result<Validator, crate::Errors> {
+) -> Result<WithWarnings<Validator>, crate::Errors> {
     let mut errors = vec![];
     let nested = meta_list
         .parse_args_with(crate::types::CommaSeparatedMetas::parse_terminated)

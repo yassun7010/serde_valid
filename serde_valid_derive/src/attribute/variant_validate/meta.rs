@@ -9,6 +9,7 @@ use crate::{
         Validator,
     },
     types::SingleIdentPath,
+    warning::WithWarnings,
 };
 use quote::quote;
 use std::str::FromStr;
@@ -19,9 +20,11 @@ use self::{
     meta_path::extract_variant_validator_from_meta_path,
 };
 
-pub fn extract_variant_validator(attribute: &syn::Attribute) -> Result<Validator, crate::Errors> {
+pub fn extract_variant_validator(
+    attribute: &syn::Attribute,
+) -> Result<WithWarnings<Validator>, crate::Errors> {
     match &attribute.meta {
-        syn::Meta::Path(_) => Ok(quote!()),
+        syn::Meta::Path(_) => Ok(WithWarnings::new(quote!())),
         syn::Meta::List(list) => inner_extract_variant_validator(attribute, list),
         syn::Meta::NameValue(name_value) => {
             Err(vec![crate::Error::validate_meta_name_value_not_supported(
@@ -34,7 +37,7 @@ pub fn extract_variant_validator(attribute: &syn::Attribute) -> Result<Validator
 fn inner_extract_variant_validator(
     attribute: &syn::Attribute,
     meta_list: &syn::MetaList,
-) -> Result<Validator, crate::Errors> {
+) -> Result<WithWarnings<Validator>, crate::Errors> {
     let mut errors = vec![];
     let nested = meta_list
         .parse_args_with(crate::types::CommaSeparatedMetas::parse_terminated)

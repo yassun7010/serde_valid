@@ -88,6 +88,7 @@ enum_str! {
 
 enum_str! {
     pub enum MetaNameValueStructValidation {
+        Custom = "custom",
     }
 }
 
@@ -119,6 +120,7 @@ enum_str! {
         MultipleOf = "multiple_of",
         Pattern = "pattern",
         Enumerate = "enumerate",
+        Custom = "custom",
     }
 }
 

@@ -3,7 +3,7 @@ use serde_valid::Validate;
 #[test]
 fn test_raw_type_field() {
     #[derive(Validate)]
-    #[validate(custom(|s| sample_rule(s.r#type)))]
+    #[validate(custom = |s| sample_rule(s.r#type))]
     struct MyStruct {
         #[validate(maximum = 10)]
         pub r#type: i32,
