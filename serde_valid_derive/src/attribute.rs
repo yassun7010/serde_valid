@@ -88,6 +88,7 @@ enum_str! {
 
 enum_str! {
     pub enum MetaNameValueStructValidation {
+        Custom = "custom",
     }
 }
 

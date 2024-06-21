@@ -1,4 +1,4 @@
-mod generic;
+pub mod generic;
 mod meta;
 
 use crate::{attribute::Validator, warning::WithWarnings};

@@ -1,4 +1,3 @@
-mod generic;
 mod meta;
 
 use crate::attribute::Validator;
