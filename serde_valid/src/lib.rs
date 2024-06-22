@@ -176,6 +176,10 @@
 //!
 //! You can also use [fluent](https://projectfluent.org/) localization by using `fluent` feature.
 //!
+//! Allow the following attributes:
+//! - `#[validate(..., message_l10n = fluent("message-id", key1 = value1, ...))]`
+//! - `#[validate(...,                fluent("message-id", key1 = value1, ...))]`
+//!
 //! ```rust
 //! # #[cfg(feature = "fluent")] {
 //! # use fluent::{FluentBundle, FluentResource};
@@ -194,7 +198,6 @@
 //! #[derive(Validate)]
 //! struct Data (
 //!     #[validate(min_length = 3, message_l10n = fluent("name-min-length", min_length = 3))]
-//!     // Or Just `#[validate(min_length = 3, fluent("name-min-length", min_length = 3))]`.
 //!     String,
 //! );
 //!
