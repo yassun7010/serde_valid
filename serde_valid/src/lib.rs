@@ -193,7 +193,8 @@
 //!
 //! #[derive(Validate)]
 //! struct Data (
-//!     #[validate(min_length = 3, fluent("name-min-length", min_length = 3))]
+//!     #[validate(min_length = 3, message_l10n = fluent("name-min-length", min_length = 3))]
+//!     // Or Just `#[validate(min_length = 3, fluent("name-min-length", min_length = 3))]`.
 //!     String,
 //! );
 //!

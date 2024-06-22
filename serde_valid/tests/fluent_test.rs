@@ -20,9 +20,9 @@ mod tests {
     fn fluent_error() {
         #[derive(Debug, Deserialize, Validate)]
         struct Test {
-            #[validate(minimum = 5, message_l10n = fluent("hello-world"))]
+            #[validate(minimum = 5, fluent("hello-world"))]
             a: u32,
-            #[validate(maximum = 10, message_l10n = fluent("intro", name = "taro"))]
+            #[validate(maximum = 10, fluent("intro", name = "taro"))]
             b: u32,
         }
 
