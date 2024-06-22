@@ -33,12 +33,6 @@ impl<T> WithWarnings<T> {
             .collect::<Vec<_>>();
         WithWarnings { data, warnings }
     }
-
-    #[allow(unused)]
-    pub fn extend_warnings(&mut self, warnings: Vec<Warning>) -> &mut Self {
-        self.warnings.extend(warnings);
-        self
-    }
 }
 
 impl<T> From<WithWarnings<T>> for WithWarnings<Vec<T>> {
@@ -120,6 +114,15 @@ impl Warning {
         Self::Deprecated {
             ident: ident.clone(),
             note: "#[validate(custom(...))] is deprecated, please use #[validate(custom = ...)] instead."
+                .to_string(),
+            span,
+        }
+    }
+
+    pub fn new_message_fn_list_deprecated(ident: &syn::Ident, span: Span) -> Self {
+        Self::Deprecated {
+            ident: ident.clone(),
+            note: "#[validate(message_fn(...))] is deprecated, please use #[validate(message_fn = ...)] instead."
                 .to_string(),
             span,
         }
