@@ -84,7 +84,7 @@ fn extract_custom_message_format_from_meta_list(
             }),
         #[cfg(feature = "fluent")]
         message_type @ (MetaListCustomMessage::I18n | MetaListCustomMessage::Fluent) => {
-            get_fluent_message(message_type, path, &message_fn_define)
+            get_fluent_message_from_meta(message_type, path, &message_fn_define)
         }
     }
 }
@@ -96,6 +96,11 @@ fn extract_custom_message_format_from_name_value(
     match custom_message_type {
         MetaNameValueCustomMessage::Message => get_message(&name_value.value),
         MetaNameValueCustomMessage::MessageFn => get_message_fn_from_meta_name_value(name_value),
+        #[cfg(feature = "fluent")]
+        MetaNameValueCustomMessage::MessageL10n => match &name_value.value {
+            syn::Expr::Call(call) => get_fluent_message_from_call_expr(call),
+            _ => Err(vec![crate::Error::l10n_need_fn_call(&name_value.value)]),
+        },
     }
 }
 
@@ -151,7 +156,7 @@ fn get_message(expr: &syn::Expr) -> Result<WithWarnings<MessageFormat>, crate::E
 }
 
 #[cfg(feature = "fluent")]
-fn get_fluent_message(
+fn get_fluent_message_from_meta(
     message_type: &MetaListCustomMessage,
     path: &syn::Path,
     fn_define: &CommaSeparatedNestedMetas,
@@ -207,6 +212,54 @@ fn get_fluent_message(
                 Err(errors)
             }
         }
+    }
+}
+
+#[cfg(feature = "fluent")]
+fn get_fluent_message_from_call_expr(
+    fn_define: &syn::ExprCall,
+) -> Result<WithWarnings<MessageFormat>, crate::Errors> {
+    use quote::ToTokens;
+
+    if fn_define.func.to_token_stream().to_string() != "fluent" {
+        Err(vec![crate::Error::l10n_fn_name_not_allow(&fn_define.func)])?
+    };
+
+    let mut fn_args = fn_define.args.iter();
+    let fluent_id = match fn_args.next() {
+        Some(syn::Expr::Lit(syn::ExprLit {
+            lit: syn::Lit::Str(fluent_id),
+            ..
+        })) => fluent_id,
+        Some(expr) => Err(vec![crate::Error::fluent_id_must_be_str_lit(expr)])?,
+        None => Err(vec![crate::Error::fluent_id_not_found(
+            &fn_define.paren_token,
+        )])?,
+    };
+
+    let mut errors = vec![];
+    let fluent_args = TokenStream::from_iter(fn_args.filter_map(|arg| {
+        if let syn::Expr::Assign(assign) = arg {
+            let key = &assign.left.to_token_stream().to_string();
+            let value = &assign.right;
+            Some(quote!((#key, ::serde_valid::export::fluent::FluentValue::from(#value))))
+        } else {
+            errors.push(crate::Error::fluent_allow_arg(arg));
+            None
+        }
+    }));
+
+    if errors.is_empty() {
+        Ok(WithWarnings::new(quote!(
+            ::serde_valid::validation::error::Format::Fluent(
+                ::serde_valid::fluent::Message{
+                    id: #fluent_id,
+                    args: vec![#fluent_args]
+                }
+            )
+        )))
+    } else {
+        Err(errors)
     }
 }
 

@@ -145,9 +145,19 @@ enum_str! {
     }
 }
 
+#[cfg(not(feature = "fluent"))]
 enum_str! {
     pub enum MetaNameValueCustomMessage {
         Message = "message",
         MessageFn = "message_fn",
+    }
+}
+
+#[cfg(feature = "fluent")]
+enum_str! {
+    pub enum MetaNameValueCustomMessage {
+        Message = "message",
+        MessageFn = "message_fn",
+        MessageL10n = "message_l10n",
     }
 }

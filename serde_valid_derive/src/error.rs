@@ -348,6 +348,8 @@ impl Error {
         let candidates = &(MetaPathCustomMessage::iter().map(|x| x.name()))
             .chain(MetaListCustomMessage::iter().map(|x| x.name()))
             .chain(MetaNameValueCustomMessage::iter().map(|x| x.name()))
+            .unique()
+            .sorted()
             .collect::<Vec<_>>();
 
         let filterd_candidates =
@@ -468,6 +470,47 @@ impl Error {
                 "#[validate(..., {}(..., ???))] allows only fluent args key value.",
                 message_type.name()
             ),
+        )
+    }
+
+    #[cfg(feature = "fluent")]
+    pub fn l10n_need_fn_call(expr: &syn::Expr) -> Self {
+        Self::new(
+            expr.span(),
+            "#[validate(..., message_l10n = ???)] needs fn calling.".to_string(),
+        )
+    }
+
+    #[cfg(feature = "fluent")]
+    pub fn l10n_fn_name_not_allow(fn_name: &syn::Expr) -> Self {
+        Self::new(
+            fn_name.span(),
+            "#[validate(..., message_l10n = ???(...))] allows only \"fluent\".".to_string(),
+        )
+    }
+
+    #[cfg(feature = "fluent")]
+    pub fn fluent_id_must_be_str_lit(expr: &syn::Expr) -> Self {
+        Self::new(
+            expr.span(),
+            "#[validate(..., message_l10n = fluent(???, ...))] allow only string literal of the fluent id.",
+        )
+    }
+
+    #[cfg(feature = "fluent")]
+    pub fn fluent_id_not_found(paren: &syn::token::Paren) -> Self {
+        Self::new(
+            paren.span.span(),
+            "#[validate(..., message_l10n = fluent(???))] need the fluent id.",
+        )
+    }
+
+    #[cfg(feature = "fluent")]
+    pub fn fluent_allow_arg(expr: &syn::Expr) -> Self {
+        Self::new(
+            expr.span(),
+            "#[validate(..., message_l10n = fluent(..., ???))] allows only \"key=value\" of the fluent arg."
+                .to_string(),
         )
     }
 
