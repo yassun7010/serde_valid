@@ -176,6 +176,10 @@ assert_eq!(
 
 You can also use [fluent](https://projectfluent.org/) localization by using `fluent` feature.
 
+Allow the following attributes:
+- `#[validate(..., fluent("message-id", key1 = value1, ...))]`
+- `#[validate(..., message_l10n = fluent("message-id", key1 = value1, ...))]`
+
 ```rust
 use unic_langid::LanguageIdentifier;
 use serde_json::json;
