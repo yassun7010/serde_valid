@@ -226,7 +226,7 @@ fn pattern_custom_err_message_fn() {
 
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(pattern = r"^\d{4}-\d{2}-\d{2}$", message_fn(error_message))]
+        #[validate(pattern = r"^\d{4}-\d{2}-\d{2}$", message_fn = error_message)]
         val: String,
     }
 

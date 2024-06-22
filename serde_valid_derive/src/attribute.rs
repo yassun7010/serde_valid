@@ -148,5 +148,6 @@ enum_str! {
 enum_str! {
     pub enum MetaNameValueCustomMessage {
         Message = "message",
+        MessageFn = "message_fn",
     }
 }

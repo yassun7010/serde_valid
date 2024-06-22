@@ -163,7 +163,7 @@ mod test {
 
         #[derive(Validate)]
         struct TestStruct {
-            #[validate(enumerate(1, 2, 3), message_fn(error_message))]
+            #[validate(enumerate(1, 2, 3), message_fn = error_message)]
             val: i32,
         }
 

@@ -50,7 +50,10 @@ fn inner_extract_field_validator(
             )]
         })?;
 
-    let message_format = match nested.len() {
+    let WithWarnings {
+        data: message_format,
+        mut warnings,
+    } = match nested.len() {
         0 => Err(vec![crate::Error::field_validation_type_required(
             attribute,
         )])?,
@@ -78,7 +81,7 @@ fn inner_extract_field_validator(
             None
         }
     }
-    .unwrap_or_else(default_message_format);
+    .unwrap_or_else(|| WithWarnings::new(default_message_format()));
 
     let meta = &nested[0];
 
@@ -146,12 +149,19 @@ fn inner_extract_field_validator(
             validation_path,
             &validation_name,
         )]),
-    };
+    }
+    .map(|validator| {
+        warnings.extend(validator.warnings);
+        validator.data
+    });
 
     match validator {
         Ok(validator) => {
             if errors.is_empty() {
-                Ok(validator)
+                Ok(WithWarnings {
+                    data: validator,
+                    warnings,
+                })
             } else {
                 Err(errors)
             }

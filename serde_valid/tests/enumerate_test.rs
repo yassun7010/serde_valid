@@ -161,7 +161,7 @@ fn enumerate_custom_err_message_fn() {
 
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(enumerate = [1, 2, 3], message_fn(error_message))]
+        #[validate(enumerate = [1, 2, 3], message_fn = error_message)]
         val: i32,
     }
 
