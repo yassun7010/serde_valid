@@ -310,8 +310,8 @@ fn length_custom_err_message_fn() {
 
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(min_length = 5, message_fn(custom_min_error_message))]
-        #[validate(max_length = 3, message_fn(custom_max_error_message))]
+        #[validate(min_length = 5, message_fn = custom_min_error_message)]
+        #[validate(max_length = 3, message_fn = custom_max_error_message)]
         val: String,
     }
 

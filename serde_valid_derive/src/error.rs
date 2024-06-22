@@ -405,24 +405,33 @@ impl Error {
         )
     }
 
-    pub fn message_fn_need_item(path: &syn::Path) -> Self {
+    pub fn message_fn_meta_list_need_item(path: &syn::Path) -> Self {
         Self::new(
             path.span(),
             "#[validate(..., message_fn(???))] needs function.",
         )
     }
 
-    pub fn message_fn_allow_name_path(nested_meta: &crate::types::NestedMeta) -> Self {
+    pub fn message_fn_meta_list_allow_name_path(nested_meta: &crate::types::NestedMeta) -> Self {
         Self::new(
             nested_meta.span(),
             "#[validate(..., message_fn(???))] allows only function name path.",
         )
     }
 
-    pub fn message_fn_tail_error(nested_meta: &crate::types::NestedMeta) -> Self {
+    pub fn message_fn_meta_list_tail_error(nested_meta: &crate::types::NestedMeta) -> Self {
         Self::new(
             nested_meta.span(),
             "#[validate(..., message_fn(???))] allows only 1 item.",
+        )
+    }
+
+    pub fn message_fn_meta_name_value_needs_function_or_closure(
+        meta_name_value: &syn::MetaNameValue,
+    ) -> Self {
+        Self::new(
+            meta_name_value.span(),
+            "#[validate(..., message_fn = ???)] needs function or closure.",
         )
     }
 

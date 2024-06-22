@@ -75,7 +75,7 @@ fn unique_items_custom_err_message_fn() {
 
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(unique_items, message_fn(error_message))]
+        #[validate(unique_items, message_fn = error_message)]
         val: Vec<i32>,
     }
 

@@ -144,7 +144,7 @@ fn min_error_message(_params: &serde_valid::MinItemsError) -> String {
 
 #[derive(Validate)]
 struct Data {
-    #[validate(min_items = 4, message_fn(min_error_message))]
+    #[validate(min_items = 4, message_fn = min_error_message)]
     #[validate(max_items = 2, message = "this is custom message.")]
     val: Vec<i32>,
 }

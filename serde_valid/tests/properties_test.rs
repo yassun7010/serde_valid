@@ -182,8 +182,8 @@ fn properties_custom_err_message_fn() {
 
     #[derive(Deserialize, Validate)]
     struct TestStruct {
-        #[validate(min_properties = 3, message_fn(min_custom_error_message))]
-        #[validate(max_properties = 1, message_fn(max_custom_error_message))]
+        #[validate(min_properties = 3, message_fn = min_custom_error_message)]
+        #[validate(max_properties = 1, message_fn = max_custom_error_message)]
         val: serde_json::Map<String, serde_json::Value>,
     }
 

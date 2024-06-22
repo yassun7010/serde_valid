@@ -179,8 +179,8 @@ fn items_custom_err_message_fn() {
 
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(min_items = 4, message_fn(min_error_message))]
-        #[validate(max_items = 2, message_fn(max_error_message))]
+        #[validate(min_items = 4, message_fn = min_error_message)]
+        #[validate(max_items = 2, message_fn = max_error_message)]
         val: Vec<i32>,
     }
 

@@ -149,7 +149,7 @@ fn multiple_of_custom_err_message_fn() {
 
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(multiple_of = 5, message_fn(error_message))]
+        #[validate(multiple_of = 5, message_fn = error_message)]
         val: i32,
     }
 

@@ -68,7 +68,7 @@ fn extract_custom_message_format_from_meta_list(
         .map_err(|error| vec![crate::Error::custom_message_parse_error(path_ident, &error)])?;
 
     match custom_message_type {
-        MetaListCustomMessage::MessageFn => get_message_fn(path, &message_fn_define),
+        MetaListCustomMessage::MessageFn => get_message_fn_from_meta_list(path, &message_fn_define),
         #[cfg(feature = "fluent")]
         message_type @ (MetaListCustomMessage::I18n | MetaListCustomMessage::Fluent) => {
             get_fluent_message(message_type, path, &message_fn_define)
@@ -82,28 +82,48 @@ fn extract_custom_message_format_from_name_value(
 ) -> Result<MessageFormat, crate::Errors> {
     match custom_message_type {
         MetaNameValueCustomMessage::Message => get_message(&name_value.value),
+        MetaNameValueCustomMessage::MessageFn => get_message_fn_from_meta_name_value(name_value),
     }
 }
 
-fn get_message_fn(
+fn get_message_fn_from_meta_list(
     path: &syn::Path,
     fn_define: &CommaSeparatedNestedMetas,
 ) -> Result<TokenStream, crate::Errors> {
     let fn_name = match fn_define.len() {
-        0 => Err(vec![crate::Error::message_fn_need_item(path)]),
+        0 => Err(vec![crate::Error::message_fn_meta_list_need_item(path)]),
         1 => match &fn_define[0] {
             NestedMeta::Meta(syn::Meta::Path(fn_name)) => Some(quote!(#fn_name)),
             _ => None,
         }
-        .ok_or_else(|| vec![crate::Error::message_fn_allow_name_path(&fn_define[0])]),
+        .ok_or_else(|| {
+            vec![crate::Error::message_fn_meta_list_allow_name_path(
+                &fn_define[0],
+            )]
+        }),
         _ => Err(fn_define
             .iter()
             .skip(1)
-            .map(crate::Error::message_fn_tail_error)
+            .map(crate::Error::message_fn_meta_list_tail_error)
             .collect()),
     }?;
 
     Ok(quote!(::serde_valid::validation::error::Format::MessageFn(#fn_name)))
+}
+
+fn get_message_fn_from_meta_name_value(
+    meta_name_value: &syn::MetaNameValue,
+) -> Result<TokenStream, crate::Errors> {
+    let fn_define = match &meta_name_value.value {
+        syn::Expr::Path(syn::ExprPath { path, .. }) => quote!(#path),
+        syn::Expr::Call(call) => quote!(#call),
+        syn::Expr::Closure(closure) => quote!(#closure),
+        _ => Err(vec![
+            crate::Error::message_fn_meta_name_value_needs_function_or_closure(meta_name_value),
+        ])?,
+    };
+
+    Ok(quote!(::serde_valid::validation::error::Format::MessageFn(#fn_define)))
 }
 
 fn get_message(expr: &syn::Expr) -> Result<TokenStream, crate::Errors> {

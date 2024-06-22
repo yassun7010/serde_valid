@@ -294,8 +294,8 @@ fn range_custom_err_message_fn() {
 
     #[derive(Validate)]
     struct TestStruct {
-        #[validate(minimum = 5, message_fn(custom_min_error_message))]
-        #[validate(maximum = 3, message_fn(custom_max_error_message))]
+        #[validate(minimum = 5, message_fn = custom_min_error_message)]
+        #[validate(maximum = 3, message_fn = custom_max_error_message)]
         val: i32,
     }
 
