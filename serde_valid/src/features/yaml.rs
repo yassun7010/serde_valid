@@ -6,7 +6,7 @@ mod to_yaml_string;
 mod to_yaml_value;
 mod to_yaml_writer;
 
-pub use serde_yaml::{Error, Index, Location, Mapping, Number, Sequence, Value};
+pub use serde_yml::{Error, Index, Location, Mapping, Number, Sequence, Value};
 
 pub use from_yaml_reader::FromYamlReader;
 pub use from_yaml_slice::FromYamlSlice;

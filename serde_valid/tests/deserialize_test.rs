@@ -64,7 +64,7 @@ fn yaml_error_as_validation_errors() {
         val: i32,
     }
 
-    let err = TestStruct::from_yaml_value(serde_yaml::from_str("val: 15").unwrap()).unwrap_err();
+    let err = TestStruct::from_yaml_value(serde_yml::from_str("val: 15").unwrap()).unwrap_err();
 
     assert_eq!(
         serde_json::to_value(err.as_validation_errors().unwrap()).unwrap(),

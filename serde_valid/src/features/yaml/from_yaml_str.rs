@@ -19,15 +19,15 @@ where
     ///
     /// assert!(s.is_ok())
     /// ```
-    fn from_yaml_str(str: &'de str) -> Result<Self, crate::Error<serde_yaml::Error>>;
+    fn from_yaml_str(str: &'de str) -> Result<Self, crate::Error<serde_yml::Error>>;
 }
 
 impl<'de, T> FromYamlStr<'de> for T
 where
     T: serde::de::Deserialize<'de> + crate::Validate,
 {
-    fn from_yaml_str(str: &'de str) -> Result<Self, crate::Error<serde_yaml::Error>> {
-        let model: T = serde_yaml::from_str(str)?;
+    fn from_yaml_str(str: &'de str) -> Result<Self, crate::Error<serde_yml::Error>> {
+        let model: T = serde_yml::from_str(str)?;
         model.validate().map_err(crate::Error::ValidationError)?;
         Ok(model)
     }

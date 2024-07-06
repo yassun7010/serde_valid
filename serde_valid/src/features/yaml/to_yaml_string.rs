@@ -15,20 +15,20 @@ pub trait ToYamlString {
     ///
     /// assert!(s.to_yaml_string().is_ok());
     /// ```
-    fn to_yaml_string(&self) -> Result<String, serde_yaml::Error>;
+    fn to_yaml_string(&self) -> Result<String, serde_yml::Error>;
 }
 
 impl<T> ToYamlString for T
 where
     T: serde::Serialize + crate::Validate,
 {
-    fn to_yaml_string(&self) -> Result<String, serde_yaml::Error> {
-        serde_yaml::to_string(self)
+    fn to_yaml_string(&self) -> Result<String, serde_yml::Error> {
+        serde_yml::to_string(self)
     }
 }
 
-impl ToYamlString for serde_yaml::Value {
-    fn to_yaml_string(&self) -> Result<String, serde_yaml::Error> {
-        serde_yaml::to_string(self)
+impl ToYamlString for serde_yml::Value {
+    fn to_yaml_string(&self) -> Result<String, serde_yml::Error> {
+        serde_yml::to_string(self)
     }
 }
