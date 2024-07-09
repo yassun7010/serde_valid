@@ -55,17 +55,13 @@ mod test {
     fn test_custom_fn_multiple_errors() {
         fn multiple_errors(data: &i32) -> Result<(), Vec<crate::validation::Error>> {
             let mut errors = Vec::new();
-            if *data > 0 {
-                return Ok(());
-            } else {
+            if *data < 1 {
                 errors.push(crate::validation::Error::Custom(
                     "Value must be greater than 0".to_string(),
                 ));
             }
 
-            if *data < 10 {
-                return Ok(());
-            } else {
+            if *data >= 10 {
                 errors.push(crate::validation::Error::Custom(
                     "Value must be less than 10".to_string(),
                 ));
