@@ -47,6 +47,8 @@ mod test {
         }
 
         assert!(wrap_closure_validation(&1i32, single_error).is_ok());
+        assert!(wrap_closure_validation(&0i32, single_error).is_err());
+        assert!(wrap_closure_validation(&-1i32, single_error).is_err());
     }
 
     #[test]
@@ -77,5 +79,9 @@ mod test {
         }
 
         assert!(wrap_closure_validation(&1i32, multiple_errors).is_ok());
+        assert!(wrap_closure_validation(&10i32, multiple_errors).is_err());
+        assert!(wrap_closure_validation(&11i32, multiple_errors).is_err());
+        assert!(wrap_closure_validation(&0i32, multiple_errors).is_err());
+        assert!(wrap_closure_validation(&-1i32, multiple_errors).is_err());
     }
 }
