@@ -15,14 +15,14 @@ pub trait ToYamlValue {
     ///
     /// assert!(s.to_yaml_value().is_ok());
     /// ```
-    fn to_yaml_value(&self) -> Result<serde_yaml::Value, serde_yaml::Error>;
+    fn to_yaml_value(&self) -> Result<serde_yml::Value, serde_yml::Error>;
 }
 
 impl<T> ToYamlValue for T
 where
     T: serde::Serialize + crate::Validate,
 {
-    fn to_yaml_value(&self) -> Result<serde_yaml::Value, serde_yaml::Error> {
-        serde_yaml::to_value(self)
+    fn to_yaml_value(&self) -> Result<serde_yml::Value, serde_yml::Error> {
+        serde_yml::to_value(self)
     }
 }

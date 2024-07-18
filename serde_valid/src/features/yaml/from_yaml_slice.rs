@@ -19,15 +19,15 @@ where
     ///
     /// assert!(s.is_ok())
     /// ```
-    fn from_yaml_slice(slice: &'de [u8]) -> Result<Self, crate::Error<serde_yaml::Error>>;
+    fn from_yaml_slice(slice: &'de [u8]) -> Result<Self, crate::Error<serde_yml::Error>>;
 }
 
 impl<'de, T> FromYamlSlice<'de> for T
 where
     T: serde::de::Deserialize<'de> + crate::Validate,
 {
-    fn from_yaml_slice(slice: &'de [u8]) -> Result<Self, crate::Error<serde_yaml::Error>> {
-        let model: T = serde_yaml::from_slice(slice)?;
+    fn from_yaml_slice(slice: &'de [u8]) -> Result<Self, crate::Error<serde_yml::Error>> {
+        let model: T = serde_yml::from_slice(slice)?;
         model.validate().map_err(crate::Error::ValidationError)?;
         Ok(model)
     }

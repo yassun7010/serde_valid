@@ -24,7 +24,7 @@ serde_json.workspace = true
 serde_toml = { package = "toml", version = "^0.8", optional = true }
 serde_valid_derive = { version = "0.24.0", path = "../serde_valid_derive" }
 serde_valid_literal = { version = "0.24.0", path = "../serde_valid_literal" }
-serde_yaml = { version = "^0.9", optional = true }
+serde_yml = { version = "^0.0", optional = true }
 thiserror = "^1.0"
 unicode-segmentation = "^1.7"
 
@@ -35,6 +35,6 @@ unic-langid = "0.9"
 [features]
 default = ["i128"]
 toml = ["serde_toml"]
-yaml = ["serde_yaml"]
+yaml = ["serde_yml"]
 i128 = ["num-traits/i128", "indexmap/std", "serde_valid_literal/i128"]
 fluent = ["dep:fluent", "serde_valid_derive/fluent"]
