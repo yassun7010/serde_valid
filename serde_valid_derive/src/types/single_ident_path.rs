@@ -1,4 +1,4 @@
-use proc_macro_error::abort;
+use proc_macro_error2::abort;
 use syn::spanned::Spanned;
 
 pub struct SingleIdentPath<'a>(&'a syn::Path);

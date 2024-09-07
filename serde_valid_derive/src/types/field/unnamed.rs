@@ -1,5 +1,5 @@
 use super::Field;
-use proc_macro_error::abort;
+use proc_macro_error2::abort;
 use quote::quote;
 use std::borrow::Cow;
 use std::convert::AsRef;
