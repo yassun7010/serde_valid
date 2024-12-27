@@ -4,7 +4,7 @@ set -e
 
 cd "$(dirname "$0")"/../
 
-cargo xtask upgate-tags
+cargo xtask update-tags
 
 cd "$(dirname "$0")"/../crates/serde_valid_derive
 cargo publish
