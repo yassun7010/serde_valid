@@ -27,7 +27,7 @@ impl<'a> UnnamedField<'a> {
     }
 }
 
-impl<'a> Field for UnnamedField<'a> {
+impl Field for UnnamedField<'_> {
     fn name(&self) -> &String {
         &self.name
     }

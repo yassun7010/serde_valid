@@ -22,7 +22,7 @@ impl<'a> NamedField<'a> {
     }
 }
 
-impl<'a> Field for NamedField<'a> {
+impl Field for NamedField<'_> {
     fn name(&self) -> &String {
         &self.name
     }

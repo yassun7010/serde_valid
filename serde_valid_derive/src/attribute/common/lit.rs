@@ -6,7 +6,7 @@ pub enum LitNumeric<'a> {
     Float(&'a syn::LitFloat),
 }
 
-impl<'a> ToTokens for LitNumeric<'a> {
+impl ToTokens for LitNumeric<'_> {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         match self {
             LitNumeric::Int(lin) => lin.to_tokens(tokens),
