@@ -135,7 +135,7 @@ fn nested_validate_err_message() {
     };
 
     assert_eq!(
-        serde_json::to_value(&s.validate().unwrap_err()).unwrap(),
+        serde_json::to_value(s.validate().unwrap_err()).unwrap(),
         json!({
             "errors": [],
             "properties": {
