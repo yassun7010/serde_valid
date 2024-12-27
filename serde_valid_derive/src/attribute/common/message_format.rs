@@ -1,10 +1,11 @@
 use crate::attribute::{MetaListCustomMessage, MetaNameValueCustomMessage, MetaPathCustomMessage};
-use crate::types::{CommaSeparatedNestedMetas, NestedMeta, SingleIdentPath};
-use crate::warning::{Warning, WithWarnings};
+use crate::types::SingleIdentPath;
+#[cfg(feature = "fluent")]
+use crate::types::{CommaSeparatedNestedMetas, NestedMeta};
+use crate::warning::WithWarnings;
 use proc_macro2::TokenStream;
 use quote::quote;
 use std::str::FromStr;
-use syn::spanned::Spanned;
 
 use super::lit::get_str;
 pub type MessageFormat = TokenStream;
@@ -61,31 +62,25 @@ pub fn extract_custom_message_format(
     }
 }
 
+#[allow(unused_variables)]
 fn extract_custom_message_format_from_meta_list(
     custom_message_type: &MetaListCustomMessage,
     meta_list: &syn::MetaList,
 ) -> Result<WithWarnings<MessageFormat>, crate::Errors> {
-    let path = &meta_list.path;
-    let path_ident = SingleIdentPath::new(path).ident();
-    let message_fn_define = meta_list
-        .parse_args_with(CommaSeparatedNestedMetas::parse_terminated)
-        .map_err(|error| vec![crate::Error::custom_message_parse_error(path_ident, &error)])?;
-
     match custom_message_type {
-        MetaListCustomMessage::MessageFn => get_message_fn_from_meta_list(path, &message_fn_define)
-            .map(|message_fn| {
-                WithWarnings::new_with_warnings(
-                    message_fn,
-                    vec![Warning::new_message_fn_list_deprecated(
-                        path_ident,
-                        path.span(),
-                    )],
-                )
-            }),
         #[cfg(feature = "fluent")]
         message_type @ (MetaListCustomMessage::I18n | MetaListCustomMessage::Fluent) => {
+            let path = &meta_list.path;
+            let path_ident = SingleIdentPath::new(path).ident();
+            let message_fn_define = meta_list
+                .parse_args_with(CommaSeparatedNestedMetas::parse_terminated)
+                .map_err(|error| {
+                    vec![crate::Error::custom_message_parse_error(path_ident, &error)]
+                })?;
             get_fluent_message_from_meta(message_type, path, &message_fn_define)
         }
+        #[allow(unreachable_patterns)]
+        _ => unreachable!("This should not be called"),
     }
 }
 
@@ -102,31 +97,6 @@ fn extract_custom_message_format_from_name_value(
             _ => Err(vec![crate::Error::l10n_need_fn_call(&name_value.value)]),
         },
     }
-}
-
-fn get_message_fn_from_meta_list(
-    path: &syn::Path,
-    fn_define: &CommaSeparatedNestedMetas,
-) -> Result<TokenStream, crate::Errors> {
-    let fn_name = match fn_define.len() {
-        0 => Err(vec![crate::Error::message_fn_meta_list_need_item(path)]),
-        1 => match &fn_define[0] {
-            NestedMeta::Meta(syn::Meta::Path(fn_name)) => Some(quote!(#fn_name)),
-            _ => None,
-        }
-        .ok_or_else(|| {
-            vec![crate::Error::message_fn_meta_list_allow_name_path(
-                &fn_define[0],
-            )]
-        }),
-        _ => Err(fn_define
-            .iter()
-            .skip(1)
-            .map(crate::Error::message_fn_meta_list_tail_error)
-            .collect()),
-    }?;
-
-    Ok(quote!(::serde_valid::validation::error::Format::MessageFn(#fn_name)))
 }
 
 fn get_message_fn_from_meta_name_value(

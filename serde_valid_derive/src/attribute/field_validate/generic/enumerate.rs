@@ -6,16 +6,6 @@ use quote::quote;
 
 type Lits<'a> = syn::punctuated::Punctuated<syn::Lit, syn::token::Comma>;
 
-pub fn extract_generic_enumerate_validator_from_list(
-    field: &impl Field,
-    item_list: &syn::MetaList,
-    message_format: MessageFormat,
-    rename_map: &RenameMap,
-) -> Result<Validator, crate::Errors> {
-    let lits = get_enumerate_from_list(item_list)?;
-    inner_extract_generic_enumerate_validator(field, &lits, message_format, rename_map)
-}
-
 pub fn extract_generic_enumerate_validator_from_name_value(
     field: &impl Field,
     name_value: &syn::MetaNameValue,
@@ -52,37 +42,6 @@ fn inner_extract_generic_enumerate_validator(
                 .push(__composited_error_params.into_error_by(#message_format));
         }
     ))
-}
-
-fn get_enumerate_from_list(meta_list: &syn::MetaList) -> Result<Lits, crate::Errors> {
-    let mut errors = vec![];
-    let mut enumerate = Lits::new();
-    let nested = meta_list
-        .parse_args_with(crate::types::CommaSeparatedNestedMetas::parse_terminated)
-        .map_err(|error| {
-            vec![crate::Error::validate_enumerate_parse_error(
-                meta_list, &error,
-            )]
-        })?;
-
-    if nested.is_empty() {
-        errors.push(crate::Error::validate_enumerate_need_item(&meta_list.path));
-    }
-    for item in nested {
-        match &item {
-            crate::types::NestedMeta::Lit(lit) => enumerate.push(lit.clone()),
-            crate::types::NestedMeta::Meta(meta) => errors.push(crate::Error::literal_only(meta)),
-            crate::types::NestedMeta::Closure(closure) => {
-                errors.push(crate::Error::closure_not_supported(closure))
-            }
-        }
-    }
-
-    if errors.is_empty() {
-        Ok(enumerate)
-    } else {
-        Err(errors)
-    }
 }
 
 fn get_enumerate_from_name_value(name_value: &syn::MetaNameValue) -> Result<Lits, crate::Errors> {

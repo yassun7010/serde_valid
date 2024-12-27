@@ -5,7 +5,7 @@ use crate::attribute::{
 };
 use itertools::Itertools;
 use proc_macro2::TokenStream;
-use quote::{quote, ToTokens};
+use quote::quote;
 use syn::spanned::Spanned;
 
 pub fn object_errors_tokens() -> TokenStream {
@@ -361,17 +361,6 @@ impl Error {
         )
     }
 
-    pub fn validate_enumerate_parse_error(meta_list: &syn::MetaList, error: &syn::Error) -> Self {
-        Self::new(
-            meta_list.span(),
-            format!("#[validate(enumerate(???))] parse error: {error}"),
-        )
-    }
-
-    pub fn validate_enumerate_need_item(path: &syn::Path) -> Self {
-        Self::new(path.span(), "#[validate(enumerate(???))] needs items.")
-    }
-
     pub fn validate_enumerate_need_array(path: impl Spanned) -> Self {
         Self::new(
             path.span(),
@@ -404,27 +393,6 @@ impl Error {
         Self::new(
             ident.span(),
             format!("#[validate(..., {ident})] parse error: {error}"),
-        )
-    }
-
-    pub fn message_fn_meta_list_need_item(path: &syn::Path) -> Self {
-        Self::new(
-            path.span(),
-            "#[validate(..., message_fn(???))] needs function.",
-        )
-    }
-
-    pub fn message_fn_meta_list_allow_name_path(nested_meta: &crate::types::NestedMeta) -> Self {
-        Self::new(
-            nested_meta.span(),
-            "#[validate(..., message_fn(???))] allows only function name path.",
-        )
-    }
-
-    pub fn message_fn_meta_list_tail_error(nested_meta: &crate::types::NestedMeta) -> Self {
-        Self::new(
-            nested_meta.span(),
-            "#[validate(..., message_fn(???))] allows only 1 item.",
         )
     }
 
@@ -524,13 +492,6 @@ impl Error {
 
     pub fn str_literal_only(lit: &syn::Lit) -> Self {
         Self::new(lit.span(), "Allow str literal only.")
-    }
-
-    pub fn closure_not_supported(closure: &syn::ExprClosure) -> Self {
-        Self::new(
-            closure.or1_token.span(),
-            format!("Closure not supported. {}", closure.to_token_stream()),
-        )
     }
 
     pub fn too_many_list_items(nested_meta: &syn::Meta) -> Self {

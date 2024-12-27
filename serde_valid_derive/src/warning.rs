@@ -101,28 +101,10 @@ impl Warning {
         }
     }
 
-    pub fn new_enumerate_meta_list_deprecated(ident: &syn::Ident, span: Span) -> Self {
-        Self::Deprecated {
-            ident: ident.clone(),
-            note: "#[validate(enumerate(...))] is deprecated, please use #[validate(enumerate = [...])] instead."
-                .to_string(),
-            span,
-        }
-    }
-
     pub fn new_custom_meta_list_deprecated(ident: &syn::Ident, span: Span) -> Self {
         Self::Deprecated {
             ident: ident.clone(),
             note: "#[validate(custom(...))] is deprecated, please use #[validate(custom = ...)] instead."
-                .to_string(),
-            span,
-        }
-    }
-
-    pub fn new_message_fn_list_deprecated(ident: &syn::Ident, span: Span) -> Self {
-        Self::Deprecated {
-            ident: ident.clone(),
-            note: "#[validate(message_fn(...))] is deprecated, please use #[validate(message_fn = ...)] instead."
                 .to_string(),
             span,
         }
