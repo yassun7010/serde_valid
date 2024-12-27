@@ -11,8 +11,10 @@ authors = ["yassun7010 <yassun7010@outlook.com>"]
 keywords = ["validation", "serde", "json_schema"]
 
 [workspace.dependencies]
-regex = "^1.6"
-paste = "^1.0"
-serde_json = "^1.0"
-serde = "^1.0"
 itertools = "0.13.0"
+paste = "^1.0"
+regex = "^1.6"
+serde = "^1.0"
+serde_json = "^1.0"
+serde_valid_derive = { path = "serde_valid_derive" }
+serde_valid_literal = { path = "serde_valid_literal" }
