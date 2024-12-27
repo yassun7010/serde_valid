@@ -6,7 +6,7 @@ cd "$(dirname "$0")"/..
 
 cargo xtask update-tags
 
-cd crates
+cd crates/serde_valid
 
 cd ../serde_valid_derive
 cargo publish
