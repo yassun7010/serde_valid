@@ -567,6 +567,7 @@ pub mod export {
     #[cfg(feature = "fluent")]
     pub use fluent;
     pub use once_cell;
+    pub use regex;
 }
 
 pub trait Validate {
