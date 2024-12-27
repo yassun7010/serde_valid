@@ -33,8 +33,8 @@ fn inner_extract_string_pattern_validator(
     );
 
     Ok(quote!(
-        static #pattern_ident : ::serde_valid::export::once_cell::sync::OnceCell<::regex::Regex> = ::serde_valid::export::once_cell::sync::OnceCell::new();
-        let __pattern = #pattern_ident.get_or_init(|| ::regex::Regex::new(#pattern).unwrap());
+        static #pattern_ident : ::serde_valid::export::once_cell::sync::OnceCell<::serde_valid::export::regex::Regex> = ::serde_valid::export::once_cell::sync::OnceCell::new();
+        let __pattern = #pattern_ident.get_or_init(|| ::serde_valid::export::regex::Regex::new(#pattern).unwrap());
         if let Err(__composited_error_params) = ::serde_valid::validation::ValidateCompositedPattern::validate_composited_pattern(
             #field_ident,
             __pattern,
