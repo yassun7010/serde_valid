@@ -2,16 +2,18 @@
 
 set -e
 
-cd "$(dirname "$0")"
+cd "$(dirname "$0")"/../
 
-cd ../crates/serde_valid_derive
+cargo xtask upgate-tags
+
+cd "$(dirname "$0")"/../crates/serde_valid_derive
 cargo publish
 
-cd ../crates/serde_valid_literal
+cd "$(dirname "$0")"/../crates/serde_valid_literal
 cargo publish
 
 # wait tarball package publishment
 sleep 20
 
-cd ../crates/serde_valid
+cd "$(dirname "$0")"/../crates/serde_valid
 cargo publish

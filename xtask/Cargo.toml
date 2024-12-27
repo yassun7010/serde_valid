@@ -1,0 +1,12 @@
+[package]
+name = "xtask"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+keywords.workspace = true
+
+[dependencies]
+clap = { version = "4.5.23", features = ["derive"] }
+toml_edit = "0.22.22"

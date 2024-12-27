@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["crates/*"]
+members = ["crates/*", "xtask"]
 
 [workspace.package]
 edition = "2021"
@@ -16,5 +16,5 @@ paste = "^1.0"
 regex = "^1.6"
 serde = "^1.0"
 serde_json = "^1.0"
-serde_valid_derive = { version = "1.0.1", path = "crates/serde_valid_derive" }
-serde_valid_literal = { version = "1.0.1", path = "crates/serde_valid_literal" }
+serde_valid_derive = { path = "crates/serde_valid_derive" }
+serde_valid_literal = { path = "crates/serde_valid_literal" }
