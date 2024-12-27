@@ -1,34 +1,31 @@
 {
-    "folders": [
+	"folders": [
+		{
+			"name": "root",
+			"path": "."
+		},
+		{
+			"path": "docs"
+		},
         {
-            "name": "root",
-            "path": "."
-        },
-        {
-            "name": "docs",
-            "path": "docs",
-        },
-        {
-            "name": "serde_valid_derive",
-            "path": "serde_valid_derive"
-        },
-        {
-            "name": "serde_valid_literal",
-            "path": "serde_valid_literal"
-        },
-        {
-            "name": "serde_valid",
-            "path": "serde_valid"
-        },
-    ],
-    "settings": {
-        "rust-analyzer.cargo.features": "all",
-        "rust-analyzer.checkOnSave": true,
-        "rust-analyzer.check.command": "clippy",
-    },
-    "extensions": {
-        "recommendations": [
-            "tamasfe.even-better-toml"
-        ]
-    }
+            "path": "xtask",
+        }
+		{
+			"path": "crates/serde_valid_derive"
+		},
+		{
+			"path": "crates/serde_valid_literal"
+		},
+		{
+			"path": "crates/serde_valid"
+		}
+	],
+	"settings": {
+		"rust-analyzer.cargo.features": "all",
+		"rust-analyzer.checkOnSave": true,
+		"rust-analyzer.check.command": "clippy"
+	},
+	"extensions": {
+		"recommendations": ["tamasfe.even-better-toml"]
+	}
 }
