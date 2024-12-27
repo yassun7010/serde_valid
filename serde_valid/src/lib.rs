@@ -541,27 +541,24 @@ pub mod error;
 mod features;
 pub mod json;
 mod traits;
+pub mod utils;
 pub mod validation;
-
-use std::collections::HashMap;
-
-use indexmap::IndexMap;
 
 pub use error::{
     EnumerateError, Error, ExclusiveMaximumError, ExclusiveMinimumError, MaxItemsError,
     MaxLengthError, MaxPropertiesError, MaximumError, MinItemsError, MinLengthError,
     MinPropertiesError, MinimumError, MultipleOfError, PatternError, UniqueItemsError,
 };
-pub mod utils;
+#[allow(unused_imports)]
+pub use features::*;
+use indexmap::IndexMap;
+use std::collections::HashMap;
 pub use validation::{
     ValidateEnumerate, ValidateExclusiveMaximum, ValidateExclusiveMinimum, ValidateMaxItems,
     ValidateMaxLength, ValidateMaxProperties, ValidateMaximum, ValidateMinItems, ValidateMinLength,
     ValidateMinProperties, ValidateMinimum, ValidateMultipleOf, ValidatePattern,
     ValidateUniqueItems,
 };
-
-#[allow(unused_imports)]
-pub use features::*;
 
 pub mod export {
     #[cfg(feature = "fluent")]

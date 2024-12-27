@@ -100,7 +100,6 @@ enum_str! {
 
 enum_str! {
     pub enum MetaListFieldValidation {
-        Enumerate = "enumerate",
         Custom = "custom",
     }
 }
@@ -132,14 +131,12 @@ enum_str! {
 #[cfg(not(feature = "fluent"))]
 enum_str! {
     pub enum MetaListCustomMessage {
-        MessageFn = "message_fn",
     }
 }
 
 #[cfg(feature = "fluent")]
 enum_str! {
     pub enum MetaListCustomMessage {
-        MessageFn = "message_fn",
         I18n = "i18n",
         Fluent = "fluent",
     }
