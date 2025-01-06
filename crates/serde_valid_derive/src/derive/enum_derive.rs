@@ -156,8 +156,8 @@ fn expand_enum_variant_named_fields_validation(
                     let mut __rule_vec_errors = ::serde_valid::validation::VecErrors::new();
                     let mut __property_vec_errors_map = ::serde_valid::validation::PropertyVecErrorsMap::new();
 
-                    #enum_validates
                     #validates
+                    #enum_validates
                     #rules
 
                     if !(__rule_vec_errors.is_empty() && __property_vec_errors_map.is_empty()) {
