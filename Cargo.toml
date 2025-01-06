@@ -4,7 +4,7 @@ members = ["crates/*", "xtask"]
 
 [workspace.package]
 edition = "2021"
-version = "1.0.4"
+version = "1.0.5"
 license = "MIT"
 repository = "https://github.com/yassun7010/serde_valid.git"
 authors = ["yassun7010 <yassun7010@outlook.com>"]
