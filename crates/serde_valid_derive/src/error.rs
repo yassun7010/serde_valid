@@ -174,58 +174,6 @@ impl Error {
         Self::new(input.span(), "#[derive(Validate)] does not support Union.")
     }
 
-    pub fn rule_allow_function_call_or_closure(span: impl Spanned) -> Self {
-        Self::new(span.span(), "#[rule(???)] allows function call or closure.")
-    }
-
-    pub fn rule_allow_single_function(meta: &crate::types::NestedMeta) -> Self {
-        Self::new(meta.span(), "#[rule(???)] allows single function.")
-    }
-
-    pub fn rule_need_arguments(path: &syn::Path) -> Self {
-        Self::new(path.span(), "`rule` function needs arguments.")
-    }
-
-    pub fn rule_args_parse_error(meta_list: &syn::MetaList, error: &syn::Error) -> Self {
-        Self::new(
-            meta_list.span(),
-            format!("#[rule(???)] parse error: {error}"),
-        )
-    }
-
-    pub fn rule_args_allow_field_name(
-        rule_fn_name_path: &syn::Path,
-        meta: &crate::types::NestedMeta,
-    ) -> Self {
-        let rule_fn_name = quote!(#rule_fn_name_path).to_string();
-        Self::new(
-            meta.span(),
-            format!("#[rule({rule_fn_name}(???, ...))] allows field name only."),
-        )
-    }
-
-    pub fn rule_args_allow_field_index(
-        rule_fn_name_path: &syn::Path,
-        meta: &crate::types::NestedMeta,
-    ) -> Self {
-        let rule_fn_name = quote!(#rule_fn_name_path).to_string();
-        Self::new(
-            meta.span(),
-            format!("#[rule({rule_fn_name}(???, ...))] allows field index only."),
-        )
-    }
-
-    pub fn rule_named_clousure_input(meta: &syn::Pat) -> Self {
-        Self::new(meta.span(), "Inputs of closure allows filed name only.")
-    }
-
-    pub fn rule_unnamed_clousure_input(meta: &syn::Pat) -> Self {
-        Self::new(
-            meta.span(),
-            "Inputs of closure allows field index (like _0, _1, etc...) only.",
-        )
-    }
-
     pub fn validate_meta_name_value_not_supported(name_value: &syn::MetaNameValue) -> Self {
         Self::new(name_value.span(), "#[validate = ???] not supported.")
     }
