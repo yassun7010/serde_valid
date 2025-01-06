@@ -92,24 +92,6 @@ impl std::cmp::PartialEq for Warning {
 impl std::cmp::Eq for Warning {}
 
 impl Warning {
-    pub fn new_rule_deprecated(ident: &syn::Ident, span: Span) -> Self {
-        Self::Deprecated {
-            ident: ident.clone(),
-            note: "#[rule(...)] is deprecated, please use #[validate(custom(...)))] instead."
-                .to_string(),
-            span,
-        }
-    }
-
-    pub fn new_custom_meta_list_deprecated(ident: &syn::Ident, span: Span) -> Self {
-        Self::Deprecated {
-            ident: ident.clone(),
-            note: "#[validate(custom(...))] is deprecated, please use #[validate(custom = ...)] instead."
-                .to_string(),
-            span,
-        }
-    }
-
     pub fn add_index(&self, index: usize) -> Self {
         match self {
             Self::Deprecated { ident, note, span } => Self::Deprecated {

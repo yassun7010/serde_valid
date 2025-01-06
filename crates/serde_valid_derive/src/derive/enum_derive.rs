@@ -1,6 +1,5 @@
 use super::named_struct_derive::collect_named_fields_validators_list;
 use super::unnamed_struct_derive::collect_unnamed_fields_validators_list;
-use crate::attribute::rule::{collect_rules_from_named_struct, collect_rules_from_unnamed_struct};
 use crate::attribute::variant_validate::collect_variant_custom_from_variant;
 use crate::attribute::Validator;
 use crate::error::{array_errors_tokens, new_type_errors_tokens, object_errors_tokens};
@@ -9,7 +8,6 @@ use crate::types::CommaSeparatedTokenStreams;
 use crate::warning::WithWarnings;
 use proc_macro2::TokenStream;
 use quote::quote;
-use std::collections::HashSet;
 use std::iter::FromIterator;
 pub type Variants = syn::punctuated::Punctuated<syn::Variant, syn::token::Comma>;
 
@@ -92,25 +90,12 @@ fn expand_enum_variant_named_fields_validation(
     variant: &syn::Variant,
     named_fields: &syn::FieldsNamed,
 ) -> Result<WithWarnings<Validator>, crate::Errors> {
+    let mut warnings = vec![];
     let mut errors = vec![];
 
     let variant_ident = &variant.ident;
     let mut fields_idents = CommaSeparatedTokenStreams::new();
     let rename_map = collect_serde_rename_map(named_fields);
-
-    let (
-        rule_fields,
-        WithWarnings {
-            data: rules,
-            mut warnings,
-        },
-    ) = match collect_rules_from_named_struct(&variant.ident, &variant.attrs) {
-        Ok(field_rules) => field_rules,
-        Err(variant_errors) => {
-            errors.extend(variant_errors);
-            (HashSet::new(), WithWarnings::new(Validator::new()))
-        }
-    };
 
     let enum_validates = match collect_variant_custom_from_variant(&input.attrs) {
         Ok(validations) => {
@@ -132,11 +117,7 @@ fn expand_enum_variant_named_fields_validation(
                     fields_idents.push(quote!(#field_ident));
                     quote!(#token)
                 } else {
-                    if rule_fields.contains(field_ident) {
-                        fields_idents.push(quote!(#field_ident));
-                    } else {
-                        fields_idents.push(quote!(#field_ident: _));
-                    }
+                    fields_idents.push(quote!(#field_ident));
                     quote!()
                 }
             }))
@@ -158,7 +139,6 @@ fn expand_enum_variant_named_fields_validation(
 
                     #enum_validates
                     #validates
-                    #rules
 
                     if !(__rule_vec_errors.is_empty() && __property_vec_errors_map.is_empty()) {
                         Err(#variant_errors)?
@@ -178,24 +158,11 @@ fn expand_enum_variant_unnamed_fields_varidation(
     variant: &syn::Variant,
     unnamed_fields: &syn::FieldsUnnamed,
 ) -> Result<WithWarnings<Validator>, crate::Errors> {
+    let mut warnings = vec![];
     let mut errors = vec![];
 
     let variant_ident = &variant.ident;
     let mut fields_idents = CommaSeparatedTokenStreams::new();
-
-    let (
-        rule_fields,
-        WithWarnings {
-            data: rules,
-            mut warnings,
-        },
-    ) = match collect_rules_from_unnamed_struct(&variant.ident, &variant.attrs) {
-        Ok(field_rules) => field_rules,
-        Err(variant_errors) => {
-            errors.extend(variant_errors);
-            (HashSet::new(), WithWarnings::new(Validator::new()))
-        }
-    };
 
     let enum_validates = match collect_variant_custom_from_variant(&input.attrs) {
         Ok(validations) => {
@@ -217,11 +184,7 @@ fn expand_enum_variant_unnamed_fields_varidation(
                     fields_idents.push(quote!(#field_ident));
                     quote!(#token)
                 } else {
-                    if rule_fields.contains(field_ident) {
-                        fields_idents.push(quote!(#field_ident));
-                    } else {
-                        fields_idents.push(quote!(_));
-                    }
+                    fields_idents.push(quote!(#field_ident));
                     quote!()
                 }
             }))
@@ -247,7 +210,6 @@ fn expand_enum_variant_unnamed_fields_varidation(
 
                     #enum_validates
                     #validates
-                    #rules
 
                     if !(__rule_vec_errors.is_empty() && __item_vec_errors_map.is_empty()) {
                         Err(#variant_errors)?

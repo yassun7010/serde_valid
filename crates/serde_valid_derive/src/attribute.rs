@@ -2,7 +2,6 @@ use proc_macro2::TokenStream;
 
 pub mod common;
 pub mod field_validate;
-pub mod rule;
 pub mod struct_validate;
 pub mod variant_validate;
 
@@ -82,7 +81,6 @@ enum_str! {
 
 enum_str! {
     pub enum MetaListStructValidation {
-        Custom = "custom",
     }
 }
 
