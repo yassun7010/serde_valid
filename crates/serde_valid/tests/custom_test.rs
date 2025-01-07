@@ -286,7 +286,7 @@ fn named_struct_custom_closure_vec_errors_is_err() {
 fn filed_custom_validation_using_self() {
     fn food_validation(kind: &str, food: &str) -> Result<(), serde_valid::validation::Error> {
         match kind {
-            "cat" => {
+            "Cat" => {
                 if food == "CatFood" {
                     Ok(())
                 } else {
@@ -295,7 +295,7 @@ fn filed_custom_validation_using_self() {
                     ))
                 }
             }
-            "dog" => {
+            "Dog" => {
                 if food == "DogFood" {
                     Ok(())
                 } else {
@@ -310,7 +310,7 @@ fn filed_custom_validation_using_self() {
 
     #[derive(Validate)]
     struct Pet {
-        #[validate(enumerate = ["cat", "dog"])]
+        #[validate(enumerate = ["Cat", "Dog"])]
         kind: String,
 
         #[validate(custom = |food| food_validation(&self.kind, food))]
@@ -318,13 +318,13 @@ fn filed_custom_validation_using_self() {
     }
 
     let cat = Pet {
-        kind: "cat".to_string(),
+        kind: "Cat".to_string(),
         food: "CatFood".to_string(),
     };
     assert!(cat.validate().is_ok());
 
     let invalid = Pet {
-        kind: "cat".to_string(),
+        kind: "Cat".to_string(),
         food: "DogFood".to_string(),
     };
 
