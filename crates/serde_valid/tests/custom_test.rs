@@ -281,3 +281,67 @@ fn named_struct_custom_closure_vec_errors_is_err() {
         .to_string()
     );
 }
+
+#[test]
+fn filed_custom_validation_use_self() {
+    fn food_validation(kind: &str, food: &str) -> Result<(), serde_valid::validation::Error> {
+        match kind {
+            "cat" => {
+                if food == "fish" {
+                    Ok(())
+                } else {
+                    Err(serde_valid::validation::Error::Custom(
+                        "Cat should eat fish.".to_string(),
+                    ))
+                }
+            }
+            "dog" => {
+                if food == "meat" {
+                    Ok(())
+                } else {
+                    Err(serde_valid::validation::Error::Custom(
+                        "Dog should eat meat.".to_string(),
+                    ))
+                }
+            }
+            _ => Err(serde_valid::validation::Error::Custom(
+                "Unknown pet type.".to_string(),
+            )),
+        }
+    }
+
+    #[derive(Validate)]
+    struct Pet {
+        #[validate(enumerate = ["cat", "dog"])]
+        kind: String,
+
+        #[validate(custom = |food| food_validation(&self.kind, food))]
+        food: String,
+    }
+
+    let cat = Pet {
+        kind: "cat".to_string(),
+        food: "fish".to_string(),
+    };
+    assert!(cat.validate().is_ok());
+
+    let invalid = Pet {
+        kind: "cat".to_string(),
+        food: "meat".to_string(),
+    };
+
+    assert_eq!(
+        invalid.validate().unwrap_err().to_string(),
+        json!({
+            "errors": [],
+            "properties": {
+                "food": {
+                    "errors": [
+                        "Cat should eat fish."
+                    ]
+                }
+            }
+        })
+        .to_string()
+    );
+}
