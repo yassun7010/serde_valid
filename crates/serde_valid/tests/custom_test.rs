@@ -281,3 +281,59 @@ fn named_struct_custom_closure_vec_errors_is_err() {
         .to_string()
     );
 }
+
+#[test]
+fn filed_custom_validation_using_self() {
+    fn food_validation(kind: &str, food: &str) -> Result<(), serde_valid::validation::Error> {
+        match kind {
+            "Cat" => {
+                if food == "CatFood" {
+                    Ok(())
+                } else {
+                    Err(serde_valid::validation::Error::Custom(
+                        "Cat should eat CatFood.".to_string(),
+                    ))
+                }
+            }
+            "Dog" => {
+                if food == "DogFood" {
+                    Ok(())
+                } else {
+                    Err(serde_valid::validation::Error::Custom(
+                        "Dog should eat DogFood.".to_string(),
+                    ))
+                }
+            }
+            _ => Ok(()),
+        }
+    }
+
+    #[derive(Validate)]
+    struct Pet {
+        #[validate(enumerate = ["Cat", "Dog"])]
+        kind: String,
+
+        #[validate(custom = |food| food_validation(&self.kind, food))]
+        food: String,
+    }
+
+    let invalid = Pet {
+        kind: "Cat".to_string(),
+        food: "DogFood".to_string(),
+    };
+
+    assert_eq!(
+        invalid.validate().unwrap_err().to_string(),
+        json!({
+            "errors": [],
+            "properties": {
+                "food": {
+                    "errors": [
+                        "Cat should eat CatFood."
+                    ]
+                }
+            }
+        })
+        .to_string()
+    );
+}

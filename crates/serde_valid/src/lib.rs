@@ -256,6 +256,40 @@
 //! assert!(s.validate().is_ok());
 //! ```
 //!
+//! You can use **closure**, so you can access other fields of the struct by using the `self` keyword.
+//!
+//! ```rust
+//! use serde_valid::Validate;
+//!
+//! #[derive(Validate)]
+//! struct Data {
+//!     val1: i32,
+//!     #[validate(custom = |val2: &i32| {
+//!         if self.val1 < *val2 {
+//!             Ok(())
+//!         } else {
+//!             Err(serde_valid::validation::Error::Custom("val2 must be greater than val1".to_owned()))
+//!         }
+//!     })]
+//!     val2: i32,
+//! }
+//!
+//! let s = Data { val1: 2, val2: 1 };
+//!
+//! assert_eq!(
+//!     s.validate().unwrap_err().to_string(),
+//!     serde_json::json!({
+//!         "errors": [],
+//!         "properties": {
+//!             "val2": {
+//!                 "errors": ["val2 must be greater than val1"]
+//!             }
+//!         }
+//!     })
+//!     .to_string()
+//! );
+//! ```
+//!
 //! Custom validation is suitable for handling convenience validations not defined in JSON Schema.
 //! `serde_valid::utils::*` provides convenience functions for specific types.
 //!
