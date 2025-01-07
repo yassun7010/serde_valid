@@ -304,9 +304,7 @@ fn filed_custom_validation_use_self() {
                     ))
                 }
             }
-            _ => Err(serde_valid::validation::Error::Custom(
-                "Unknown pet type.".to_string(),
-            )),
+            _ => Ok(()),
         }
     }
 
