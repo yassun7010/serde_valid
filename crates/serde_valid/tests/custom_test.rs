@@ -322,13 +322,7 @@ fn filed_custom_validation_complex_closure() {
         #[validate(custom = kind_validation)]
         kind: String,
 
-        #[validate(custom = |food| {
-            if kind_validation(&self.kind).is_ok() {
-                food_validation(&self.kind, food)
-            } else {
-                Ok(())
-            }
-        })]
+        #[validate(custom = |food| food_validation(&self.kind, food))]
         food: String,
     }
 
