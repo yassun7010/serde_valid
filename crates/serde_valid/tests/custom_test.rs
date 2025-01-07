@@ -283,7 +283,7 @@ fn named_struct_custom_closure_vec_errors_is_err() {
 }
 
 #[test]
-fn filed_custom_validation_use_self() {
+fn filed_custom_validation_using_self() {
     fn food_validation(kind: &str, food: &str) -> Result<(), serde_valid::validation::Error> {
         match kind {
             "cat" => {
