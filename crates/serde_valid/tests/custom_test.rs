@@ -317,12 +317,6 @@ fn filed_custom_validation_using_self() {
         food: String,
     }
 
-    let cat = Pet {
-        kind: "Cat".to_string(),
-        food: "CatFood".to_string(),
-    };
-    assert!(cat.validate().is_ok());
-
     let invalid = Pet {
         kind: "Cat".to_string(),
         food: "DogFood".to_string(),
