@@ -287,20 +287,20 @@ fn filed_custom_validation_using_self() {
     fn food_validation(kind: &str, food: &str) -> Result<(), serde_valid::validation::Error> {
         match kind {
             "cat" => {
-                if food == "fish" {
+                if food == "CatFood" {
                     Ok(())
                 } else {
                     Err(serde_valid::validation::Error::Custom(
-                        "Cat should eat fish.".to_string(),
+                        "Cat should eat CatFood.".to_string(),
                     ))
                 }
             }
             "dog" => {
-                if food == "meat" {
+                if food == "DogFood" {
                     Ok(())
                 } else {
                     Err(serde_valid::validation::Error::Custom(
-                        "Dog should eat meat.".to_string(),
+                        "Dog should eat DogFood.".to_string(),
                     ))
                 }
             }
@@ -319,13 +319,13 @@ fn filed_custom_validation_using_self() {
 
     let cat = Pet {
         kind: "cat".to_string(),
-        food: "fish".to_string(),
+        food: "CatFood".to_string(),
     };
     assert!(cat.validate().is_ok());
 
     let invalid = Pet {
         kind: "cat".to_string(),
-        food: "meat".to_string(),
+        food: "DogFood".to_string(),
     };
 
     assert_eq!(
@@ -335,7 +335,7 @@ fn filed_custom_validation_using_self() {
             "properties": {
                 "food": {
                     "errors": [
-                        "Cat should eat fish."
+                        "Cat should eat CatFood."
                     ]
                 }
             }
