@@ -586,7 +586,7 @@ pub use error::{
 #[allow(unused_imports)]
 pub use features::*;
 use indexmap::IndexMap;
-use std::collections::HashMap;
+use std::{borrow::Cow, collections::HashMap};
 pub use validation::{
     ValidateEnumerate, ValidateExclusiveMaximum, ValidateExclusiveMinimum, ValidateMaxItems,
     ValidateMaxLength, ValidateMaxProperties, ValidateMaximum, ValidateMinItems, ValidateMinLength,
@@ -661,7 +661,7 @@ where
 
         for (key, value) in self.iter() {
             if let Err(errors) = value.validate() {
-                items.insert(key.into(), errors);
+                items.insert(Cow::from(key.into()), errors);
             }
         }
 
@@ -685,7 +685,7 @@ where
 
         for (key, value) in self.iter() {
             if let Err(errors) = value.validate() {
-                items.insert(key.into(), errors);
+                items.insert(Cow::from(key.into()), errors);
             }
         }
 

@@ -5,6 +5,8 @@ mod into_error;
 mod message;
 mod object_errors;
 
+use std::borrow::Cow;
+
 pub use crate::error::{
     EnumerateError, ExclusiveMaximumError, ExclusiveMinimumError, MaxItemsError, MaxLengthError,
     MaxPropertiesError, MaximumError, MinItemsError, MinLengthError, MinPropertiesError,
@@ -104,5 +106,5 @@ where
 pub type VecErrors<E = crate::validation::Error> = Vec<E>;
 pub type ItemErrorsMap<E> = IndexMap<usize, Errors<E>>;
 pub type ItemVecErrorsMap<E> = IndexMap<usize, VecErrors<E>>;
-pub type PropertyErrorsMap<E> = IndexMap<String, Errors<E>>;
-pub type PropertyVecErrorsMap<E> = IndexMap<String, VecErrors<E>>;
+pub type PropertyErrorsMap<E> = IndexMap<Cow<'static, str>, Errors<E>>;
+pub type PropertyVecErrorsMap<E> = IndexMap<Cow<'static, str>, VecErrors<E>>;

@@ -33,7 +33,7 @@ impl Field for NamedField<'_> {
 
     fn key(&self) -> proc_macro2::TokenStream {
         let name = &self.name;
-        quote!(#name.to_string())
+        quote!(std::borrow::Cow::from(#name))
     }
 
     fn errors_variable(&self) -> proc_macro2::TokenStream {

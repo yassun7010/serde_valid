@@ -89,7 +89,7 @@ impl Localize for PropertyErrorsMap<crate::validation::Error> {
         M: fluent::memoizer::MemoizerKind,
     {
         self.iter()
-            .map(|(property, error)| (property.to_string(), error.localize(bundle)))
+            .map(|(property, error)| ((*property).clone(), error.localize(bundle)))
             .collect()
     }
 }
