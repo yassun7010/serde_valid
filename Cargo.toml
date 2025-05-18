@@ -3,12 +3,12 @@ resolver = "2"
 members = ["crates/*", "xtask"]
 
 [workspace.package]
-edition = "2021"
 version = "1.0.5"
-license = "MIT"
-repository = "https://github.com/yassun7010/serde_valid.git"
 authors = ["yassun7010 <yassun7010@outlook.com>"]
-keywords = ["validation", "serde", "json_schema"]
+edition = "2021"
+repository = "https://github.com/yassun7010/serde_valid.git"
+license = "MIT"
+keywords = ["json_schema", "serde", "validation"]
 
 [workspace.dependencies]
 itertools = "0.13.0"
