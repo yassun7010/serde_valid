@@ -1,10 +1,10 @@
 [package]
 name = "xtask"
-edition.workspace = true
 version.workspace = true
-license.workspace = true
-repository.workspace = true
 authors.workspace = true
+edition.workspace = true
+repository.workspace = true
+license.workspace = true
 keywords.workspace = true
 
 [dependencies]

@@ -1,13 +1,13 @@
 [package]
 name = "serde_valid_literal"
-description = "Literal Value type based JSON."
-categories = []
+version.workspace = true
 authors.workspace = true
+edition.workspace = true
+description = "Literal Value type based JSON."
 repository.workspace = true
 license.workspace = true
-edition.workspace = true
 keywords.workspace = true
-version.workspace = true
+categories = []
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
